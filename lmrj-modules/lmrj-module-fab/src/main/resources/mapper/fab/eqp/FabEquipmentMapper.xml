@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.eqp.mapper.FabEquipmentMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.office_id,
+       t.step_id,
+       t.step_code,
+       t.active_flag,
+       t.bc_code,
+       t.ip,
+       t.port,
+       t.device_id,
+       t.model_id,
+       t.model_name,
+       t.protocol_name,
+       t.fab,
+       t.line_no,
+       t.location,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+
+	<update id="updateActiveFlag">
+		update FAB_EQUIPMENT set ACTIVE_FLAG = #{activeFlag} where id = #{id}
+	</update>
+
+
+</mapper>

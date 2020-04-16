@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.gem.param.mapper.EqpParamSettingMapper" >
+
+  <sql id="Base_Column_List" >
+    t.ID,
+    t.PARAM_DEFINE_ID,
+    t.PARAM_CODE,
+    t.PARAM_NAME,
+    t.PARAM_SHORTNAME,
+    t.PARAM_UNIT,
+    t.MODEL_ID,
+    t.MODEL_NAME,
+    t.PROTOCOL,
+    t.PROTOCOL_SUB,
+    t.PROTOCOL_VALUE,
+    t.SET_VALUE,
+    t.DEF_VALUE,
+    t.MIN_VALUE,
+    t.MAX_VALUE,
+    t.SHOW_FLAG,
+    t.MONITOR_FLAG,
+    t.VAL_MAPPING_FLAG,
+    t.SUB_EQP_ID,
+    t.REMARKS,
+    t.CREATE_BY AS "createBy.id",
+    t.CREATE_DATE,
+    t.UPDATE_BY AS "updateBy.id",
+    t.UPDATE_DATE,
+    t.DEL_FLAG
+  </sql>
+
+  <update id="clearSetValue">
+    update eqp_param_setting set SET_VALUE = null
+  </update>
+
+  <update id="updateValue">
+    update eqp_param_setting set SET_VALUE = #{setValue} where PROTOCOL_VALUE=#{protocolValue}
+  </update>
+
+</mapper>

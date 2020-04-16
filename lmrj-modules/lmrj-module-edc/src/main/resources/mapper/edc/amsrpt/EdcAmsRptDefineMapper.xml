@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.amsrpt.mapper.EdcAmsRptDefineMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.alarm_id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.repeat_alarm_desc,
+       t.repeat_num,
+       t.repeat_cycle,
+       t.station_id,
+       t.station_code,
+       t.active_flag,
+       t.active_date,
+       t.active_user_id,
+       t.inactive_date,
+       t.inactive_user_id,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>

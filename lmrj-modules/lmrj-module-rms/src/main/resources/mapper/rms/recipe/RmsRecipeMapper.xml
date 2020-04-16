@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rms.recipe.mapper.RmsRecipeMapper">
+
+    <sql id="Base_Column_List">
+       t.id,
+       t.recipe_code,
+       t.recipe_name,
+       t.recipe_desc,
+       t.recipe_type,
+       t.eqp_id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.version_type,
+       t.version_no,
+       t.status,
+       t.gold_active_flag,
+       t.last_recipe_id,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+
+    <select id="findLastByRecipeCode" resultType="com.lmrj.rms.recipe.entity.RmsRecipe">
+        select
+        <include refid="Base_Column_List" />
+        from rms_recipe t
+        where recipe_code = #{recipeCode} and  eqp_model_id  = #{eqpModelId}
+        and id != #{id} and STATUS = 'Y' and VERSION_TYPE='GOLD'
+    </select>
+
+    <select id="findMaxVersionNo" resultType="string">
+        select max(version_no)
+        from rms_recipe where
+        recipe_code =#{recipeCode}
+        AND version_type=#{versionType}
+        AND del_flag = '0'
+
+        <if test="eqpId != null and eqpId != ''">
+            and EQP_ID = #{eqpId}
+        </if>
+
+        <if test="eqpModelId != null and eqpModelId != ''">
+            and EQP_MODEL_ID = #{eqpModelId}
+        </if>
+    </select>
+
+</mapper>

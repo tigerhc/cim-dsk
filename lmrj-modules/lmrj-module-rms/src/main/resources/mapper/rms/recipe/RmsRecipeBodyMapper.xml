@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rms.recipe.mapper.RmsRecipeBodyMapper">
+
+    <sql id="Base_Column_List">
+        t.ID
+        t.RECIPE_ID
+        t.PARA_CODE
+        t.PARA_NAME
+        t.SET_VALUE
+        t.MIN_VALUE
+        t.MAX_VALUE
+        t.REMARKS
+        t.CREATE_BY
+        t.CREATE_DATE
+        t.UPDATE_BY
+        t.UPDATE_DATE
+        t.UPDATE_CNT
+        t.DEL_FLAG
+	</sql>
+
+    <insert id="copy">
+        INSERT INTO RMS_RECIPE_BODY(
+            ID
+            RECIPE_ID
+            PARA_CODE
+            PARA_NAME
+            SET_VALUE
+            MIN_VALUE
+            MAX_VALUE
+            REMARKS
+            CREATE_BY
+            CREATE_DATE
+            UPDATE_BY
+            UPDATE_DATE
+            UPDATE_CNT
+            DEL_FLAG
+        )
+        select
+            sys_guid(),
+            #{recipeIdNew},
+            RECIPE_ID
+            PARA_CODE
+            PARA_NAME
+            SET_VALUE
+            MIN_VALUE
+            MAX_VALUE
+            REMARKS
+            CREATE_BY
+            CREATE_DATE
+            UPDATE_BY
+            UPDATE_DATE
+            UPDATE_CNT
+            DEL_FLAG
+        from RMS_RECIPE_BODY where recipe_id=#{recipeIdOld}
+    </insert>
+
+    <!--<if test="dbName == 'oracle'">'%'||#{id}||'%'</if>-->
+    <!--<if test="dbName == 'mssql'">'%'+#{id}+'%'</if>-->
+    <!--<if test="dbName == 'mysql'">concat('%',#{id},'%')</if>-->
+
+
+
+</mapper>

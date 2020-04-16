@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmrj.gem.evt.mapper.GemEvtCollectEventSpoolingMapper">
+
+    <!-- 开启二级缓存 -->
+    <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>-->
+
+    <insert id="transfer">
+      insert into gem_evt_collect_event
+              (ID               ,
+          EQP_ID,
+        EVENT_ID,
+        EVENT_DESC,
+        REMARKS,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE,
+        DEL_FLAG    )
+      select
+        ID            ,
+          EQP_ID,
+        EVENT_ID,
+        EVENT_DESC,
+        REMARKS,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        now(),
+        DEL_FLAG
+        from gem_evt_collect_event_spooling where id = #{id}
+    </insert>
+
+
+    <delete id="deleteByIdnoLogic">
+        delete from gem_evt_collect_event_spooling where id = #{id}
+    </delete>
+
+</mapper>

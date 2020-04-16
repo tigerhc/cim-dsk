@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.state.mapper.EdcEqpStateMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.state,
+       t.state_previous,
+       t.state_10,
+       t.start_time,
+       t.end_time,
+       t.state_times,
+       t.create_date,
+       t.update_date
+	</sql>
+       <select id="getAllByTime" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+            SELECT
+                  t.id,
+                  t.eqp_id,
+                  t.state,
+                  t.state_previous,
+                  t.state_10,
+                  start_time,
+                  t.end_time,
+                  t.state_times,
+                  t.create_date,
+                  t.update_date
+              FROM
+                  edc_eqp_state t
+              WHERE
+              DATE_FORMAT(start_time,'%Y-%m-%d')=#{time}
+
+       </select>
+</mapper>

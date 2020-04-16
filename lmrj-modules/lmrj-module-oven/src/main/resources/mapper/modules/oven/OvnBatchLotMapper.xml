@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.oven.batchlot.mapper.OvnBatchLotMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.office_id,
+       t.step_id,
+       t.step_code,
+       t.recipe_code,
+       t.recipe_version_no,
+       t.start_time,
+       t.end_time,
+       t.filename,
+       t.lot_id,
+       t.check_flag,
+       t.check_result,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+
+       <select id="selectFabStatus" resultType="com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus" parameterType="String">
+              SELECT
+                  t.EQP_ID eqpId,
+                  t.LOT_ID lotId,
+                  t.EQP_STATUS eqpStatus,
+                  t.RECIPE_NAME recipeName,
+                  f.MODEL_NAME modelName
+              FROM
+                  fab_equipment_status t
+                  left join  fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+              WHERE
+                  t.EQP_ID IN (
+                      SELECT
+                          eqp_id
+                      FROM
+                          FAB_EQUIPMENT
+                      WHERE
+                          OFFICE_ID = #{officeId}
+                  ) and t.del_flag = '0'
+                  order by f.SORT_CODE
+       </select>
+       <select id="selectFabStatusParam" resultType="map" parameterType="java.util.List">
+              SELECT
+              eqp_id eqpId,
+              PARAM_CODE paramCode,
+              PARAM_VALUE paramValue
+              FROM
+              edc_param_record_dtl
+              where eqp_id in
+
+              <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                     #{item.eqpId}
+              </foreach>
+       </select>
+       <select id="selectChartByCase" resultType="map" parameterType="String">
+              SELECT
+                  count(eqp_id) COUNT,EQP_STATUS
+              FROM
+                  fab_equipment_status
+              WHERE
+                  DEL_FLAG = 0
+                  and
+                   EQP_ID IN (
+                      SELECT
+                          eqp_id
+                      FROM
+                          FAB_EQUIPMENT
+                      WHERE
+                          OFFICE_ID = #{officeId}
+                  )
+              GROUP BY
+                  EQP_STATUS
+       </select>
+</mapper>

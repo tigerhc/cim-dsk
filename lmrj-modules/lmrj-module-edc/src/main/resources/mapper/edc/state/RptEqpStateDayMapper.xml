@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.state.mapper.RptEqpStateDayMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.period_date,
+       t.run_time,
+       t.idle_time,
+       t.down_time,
+       t.pm_time,
+       t.other_time,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+
+    <select id="findEqpOee" resultType="map">
+        select max(eqp_id) eqpId, period_date periodDate,
+        round(sum(run_time)/3600,2) runTime,
+        round(sum(idle_time)/3600,2) idleTime,
+        round(sum(down_time)/3600,2) downTime,
+        round(sum(pm_time)/3600,2) pmTime,
+        round(sum(other_time)/3600,2) otherTime
+        from rpt_eqp_state_day
+        where period_date between #{beginTime} and #{endTime}
+        and eqp_id in
+        <foreach collection="eqpIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by period_date
+    </select>
+    <select id="findEqpsOee" resultType="map">
+        select eqp_id eqpId, max(period_date) periodDate,
+        round(sum(run_time)/3600,2) runTime,
+        round(sum(idle_time)/3600,2) idleTime,
+        round(sum(down_time)/3600,2) downTime,
+        round(sum(pm_time)/3600,2) pmTime,
+        round(sum(other_time)/3600,2) otherTime
+        from rpt_eqp_state_day
+        where period_date between #{beginTime} and #{endTime}
+        and eqp_id in
+        <foreach collection="eqpIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by eqp_id
+
+    </select>
+</mapper>

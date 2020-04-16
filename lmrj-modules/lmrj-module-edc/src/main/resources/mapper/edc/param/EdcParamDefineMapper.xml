@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.param.mapper.EdcParamDefineMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.process_type_id,
+       t.process_type_code,
+       t.param_code,
+       t.param_name,
+       t.param_desc,
+       t.param_shortname,
+       t.param_unit,
+       t.param_category_id,
+       t.param_category_code,
+       t.active_flag,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>

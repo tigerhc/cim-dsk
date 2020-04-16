@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cim-dsk</artifactId>
+        <groupId>com.lmrj</groupId>
+        <version>2.0.0.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>lmrj-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>lmrj-module-core</module>
+        <module>lmrj-module-fab</module>
+        <module>lmrj-module-oven</module>
+        <module>lmrj-module-rms</module>
+        <module>lmrj-module-edc</module>
+        <module>lmrj-module-gem</module>
+        <module>lmrj-module-dsk</module>
+    </modules>
+
+
+</project>

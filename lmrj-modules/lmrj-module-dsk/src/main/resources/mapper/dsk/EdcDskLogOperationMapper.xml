@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.dsk.eqplog.mapper.EdcDskLogOperationMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.eqp_no,
+       t.recipe_code,
+       t.day_yield,
+       t.lot_yield,
+       t.date,
+       t.event_id,
+       t.event_name,
+       t.event_detail,
+       t.event_params,
+       t.order_no,
+       t.lot_no,
+       t.lot_num,
+       t.duration,
+       t.create_date,
+       t.create_by
+	</sql>
+</mapper>

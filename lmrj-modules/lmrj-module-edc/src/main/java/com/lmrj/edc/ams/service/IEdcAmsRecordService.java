@@ -1,0 +1,19 @@
+package com.lmrj.edc.ams.service;
+
+import com.lmrj.common.mybatis.mvc.service.ICommonService;
+import com.lmrj.edc.ams.entity.EdcAmsRecord;
+
+/**
+* All rights Reserved, Designed By www.lmrj.com
+*
+* @version V1.0
+* @package com.lmrj.edc.ams.service
+* @title: edc_ams_record服务接口
+* @description: edc_ams_record服务接口
+* @author: 张伟江
+* @date: 2019-06-14 15:51:23
+* @copyright: 2019 www.lmrj.com Inc. All rights reserved.
+*/
+public interface IEdcAmsRecordService extends ICommonService<EdcAmsRecord> {
+
+}

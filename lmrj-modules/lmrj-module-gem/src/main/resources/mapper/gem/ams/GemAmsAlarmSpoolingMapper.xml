@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lmrj.gem.ams.mapper.GemAmsAlarmSpoolingMapper">
+    <!--replace(uuid(),'-','')-->
+    <insert id="transfer">
+        insert into gem_ams_alarm
+            (ID               ,
+            EQP_ID        ,
+            ALARM_ID,
+            ALARM_NAME,
+            ALARM_SWITCH,
+            REMARKS,
+            CREATE_BY,
+            CREATE_DATE,
+            UPDATE_BY,
+            UPDATE_DATE,
+            DEL_FLAG      )
+        select
+            ID            ,
+            EQP_ID        ,
+            ALARM_ID,
+            ALARM_NAME,
+            ALARM_SWITCH,
+            REMARKS,
+            CREATE_BY,
+            CREATE_DATE,
+            UPDATE_BY,
+            now(),
+            DEL_FLAG
+        from gem_ams_alarm_spooling where id = #{id}
+    </insert>
+
+
+    <delete id="deleteByIdnoLogic">
+        delete from gem_ams_alarm_spooling where id = #{id}
+    </delete>
+
+</mapper>
