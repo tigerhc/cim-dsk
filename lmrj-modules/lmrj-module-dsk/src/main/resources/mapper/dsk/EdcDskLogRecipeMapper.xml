@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.dsk.eqplog.mapper.EdcDskLogRecipeMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.eqp_no,
+       t.recipe_code,
+       t.happen_date,
+       t.order_no,
+       t.lot_no,
+       t.lot_num,
+       t.create_date,
+       t.create_by
+	</sql>
+</mapper>

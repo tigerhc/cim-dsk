@@ -27,27 +27,30 @@ public class OvnBatchLotParam extends BaseDataEntity {
     /**编号*/
     @TableField(value = "batch_id")
 	private String batchId;
-    /**温度PV1*/
-    @TableField(value = "temp_pv1")
-	private String tempPv1;
+    /**温度PV*/
+    @TableField(value = "temp_pv")
+	private String tempPv;
+    /**温度SP*/
+    @TableField(value = "temp_sp")
+    private String tempSp;
     /**温度范围最小值*/
     @TableField(value = "temp_min")
     private String tempMin;
     /**温度范围最大值*/
     @TableField(value = "temp_max")
     private String tempMax;
-    /**温度SP1*/
-    @TableField(value = "temp_sp1")
-	private String tempSp1;
 
     /**段位*/
     @TableField(value = "step")
 	private Short step;
 
-    @TableField(value = "temps_title")
-    private String tempsTitle;
-    @TableField(value = "temps_value")
-    private String tempsValue;
+    //@TableField(value = "temps_title")
+    //private String tempsTitle;
+    //@TableField(value = "temps_value")
+    //private String tempsValue;
+
+    @TableField(value = "other_temps_value")
+    private String otherTempsValue;
 
 
 

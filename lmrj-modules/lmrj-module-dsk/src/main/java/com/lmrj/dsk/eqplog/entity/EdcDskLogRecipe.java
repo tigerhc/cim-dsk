@@ -1,9 +1,12 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
 import lombok.Data;
 
@@ -14,17 +17,18 @@ import java.util.Date;
  *
  * @version V1.0
  * @package com.lmrj.dsk.eqplog.entity
- * @title: edc_dsk_log_operation实体
- * @description: edc_dsk_log_operation实体
+ * @title: edc_dsk_log_recipe实体
+ * @description: edc_dsk_log_recipe实体
  * @author: 张伟江
- * @date: 2020-04-14 10:10:16
+ * @date: 2020-04-17 17:21:17
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 
-@TableName("edc_dsk_log_operation")
+@TableName("edc_dsk_log_recipe")
 @SuppressWarnings("serial")
 @Data
-public class EdcDskLogOperation extends AbstractEntity {
+public class EdcDskLogRecipe extends AbstractEntity {
+
     @TableId(value = "id", type = IdType.UUID)
     protected String id;
     /**设备号*/
@@ -36,35 +40,15 @@ public class EdcDskLogOperation extends AbstractEntity {
     /**设备类型名称*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
-    /**设备名*/
+    /**设备序列*/
     @TableField(value = "eqp_no")
     private String eqpNo;
     /**配方CODE*/
     @TableField(value = "recipe_code")
     private String recipeCode;
-    /**日投入数*/
-    @TableField(value = "day_yield")
-    private Integer dayYield;
-    /**批量投入数*/
-    @TableField(value = "lot_yield")
-    private Integer lotYield;
     /**发生时刻*/
-    @TableField(value = "create_date")
-    private Date createDate;
-    /**事件ID 0:停止中　, 1:自动运转中 2: 制品等待/材料等待 3~:警报代码*/
-    @TableField(value = "event_id")
-    private String eventId;
-    @TableField(value = "alarm_code")
-    private String alarmCode;
-    /**事件的内容*/
-    @TableField(value = "event_name")
-    private String eventName;
-    /**事件详细信息*/
-    @TableField(value = "event_detail")
-    private String eventDetail;
-    /**事件参数*/
-    @TableField(value = "event_params")
-    private String eventParams;
+    @TableField(value = "happen_date")
+    private Date happenDate;
     /**作业指示书订单*/
     @TableField(value = "order_no")
     private String orderNo;
@@ -74,8 +58,15 @@ public class EdcDskLogOperation extends AbstractEntity {
     /**作业指示书品番*/
     @TableField(value = "lot_num")
     private String lotNum;
-    /**持续时间*/
-    @TableField(value = "duration")
-    private Double duration;
+
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
+    protected String createBy; // 创建者
+    @TableField(exist = false)
+    protected String createByName; // 创建者姓名
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    protected Date createDate; // 创建日期
+
 
 }

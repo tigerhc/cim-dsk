@@ -58,6 +58,8 @@ public class OvnBatchLot extends BaseDataEntity {
     /**作业记录文件名*/
     @TableField(value = "filename")
 	private String filename;
+    @TableField(value = "other_temps_title")
+    private String otherTempsTitle;
     /**批次号*/
     @TableField(value = "lot_id")
 	private String lotId;

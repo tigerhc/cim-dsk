@@ -40,7 +40,9 @@ public class EdcEvtRecord extends AbstractEntity {
     @Excel(name = "事件id", orderNum = "2")
     @TableField(value = "event_id")
     private String eventId;
-    @TableField(value = "EVENT_PARAMS")
+    @TableField(value = "event_desc")
+    private String eventDesc;
+    @TableField(value = "event_params")
     private String eventParams;
     /**开始日期*/
     @Excel(name = "开始日期", orderNum = "3")
@@ -54,5 +56,5 @@ public class EdcEvtRecord extends AbstractEntity {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     protected Date createDate; // 创建日期
-	
+
 }

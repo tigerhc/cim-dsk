@@ -1,10 +1,15 @@
 package com.lmrj.dsk.edc.handler;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.Lists;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.edc.ams.entity.EdcAmsRecord;
+import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.evt.entity.EdcEvtRecord;
+import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
@@ -46,11 +51,15 @@ public class EdcDskLogHandler {
     IOvnBatchLotService ovnBatchLotService;
     @Autowired
     private IFabEquipmentService fabEquipmentService;
+    @Autowired
+    IEdcEvtRecordService edcEvtRecordService;
+    @Autowired
+    IEdcAmsRecordService edcAmsRecordService;
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
-    //@RabbitHandler
-    //@RabbitListener(queues = {"C2S.Q.PRODUCTIONLOG.DATA"})
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.PRODUCTIONLOG.DATA"})
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息" + msg);
@@ -68,16 +77,68 @@ public class EdcDskLogHandler {
         //}
     }
 
-    //@RabbitHandler
-    //@RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
         log.info("recieved message:" + msg);
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
-        List<EdcDskLogOperation> list = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {
-        });
-        edcDskLogOperationService.insertBatch(list);
+        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
+        edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
+
+        //插入event或者alarm中
+        //(エラーや装置の稼働変化)
+        //0:停止中
+        //1:自動運転開始(再開含む)　
+        //2:ALM発生
+        //3:製品待ち/材料待ち
+        //4:電源ON時
+        //5:電源OFF時
+        //6:マニュアル1サイクル運転開始
+        //7:マニュアル1サイクル運転停止
+        //※項目4～7は装置によるため別途協議
+        List<EdcEvtRecord> edcEvtRecordList = Lists.newArrayList();
+        List<EdcAmsRecord> edcAmsRecordList = Lists.newArrayList();
+        String status = "";
+        for(EdcDskLogOperation edcDskLogOperation: edcDskLogOperationlist){
+            String eventId = edcDskLogOperation.getEventId();
+            if("2".equals(eventId)){
+                EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
+                edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
+                edcAmsRecord.setAlarmCode(edcDskLogOperation.getAlarmCode());
+                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventDetail());
+                edcAmsRecord.setAlarmSwitch("1");
+                edcAmsRecord.setStartDate(edcDskLogOperation.getCreateDate());
+                edcAmsRecordList.add(edcAmsRecord);
+                status = "ALARM";
+            }else{
+                EdcEvtRecord edcEvtRecord = new EdcEvtRecord();
+                edcEvtRecord.setEqpId(edcDskLogOperation.getEqpId());
+                edcEvtRecord.setEventId(eventId);
+                edcEvtRecord.setEventDesc(edcDskLogOperation.getEventName());
+                edcEvtRecord.setEventParams(edcDskLogOperation.getEventDetail());
+                edcEvtRecord.setStartDate(edcDskLogOperation.getCreateDate());
+                edcEvtRecordList.add(edcEvtRecord);
+                if("0".equals(eventId)||"7".equals(eventId)){
+                    status = "STOP";
+                }else if("1".equals(eventId)||"6".equals(eventId)){
+                    status = "RUN";
+                }else if("3".equals(eventId)){
+                    status = "IDLE";
+                }
+            }
+
+        }
+        if(edcEvtRecordList.size() != 0){
+            edcEvtRecordService.insertBatch(edcEvtRecordList);
+        }
+        if(edcAmsRecordList.size() != 0){
+            edcAmsRecordService.insertBatch(edcAmsRecordList);
+        }
+        if(StringUtil.isNotBlank(status)){
+            fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status);
+        }
         //edcDskLogOperation.setCreateDate(new Date());
     }
 

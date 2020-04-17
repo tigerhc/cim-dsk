@@ -45,8 +45,6 @@ import java.util.Map;
 public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper,OvnBatchLot> implements IOvnBatchLotService {
     @Autowired
     IOvnBatchLotParamService ovnBatchLotParamService;
-    @Autowired
-    private OvnBatchLotMapper ovnBatchLotMapper;
     String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
 
     @Override
@@ -66,17 +64,17 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
 
     @Override
     public List<FabEquipmentOvenStatus> selectFabStatus(String s) {
-        return ovnBatchLotMapper.selectFabStatus(s);
+        return baseMapper.selectFabStatus(s);
     }
 
     @Override
     public List<Map> selectFabStatusParam( List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList) {
-        return ovnBatchLotMapper.selectFabStatusParam( fabEquipmentOvenStatusList);
+        return baseMapper.selectFabStatusParam( fabEquipmentOvenStatusList);
     }
 
     @Override
     public List<Map> selectChart(String s) {
-        return ovnBatchLotMapper.selectChartByCase(s);
+        return baseMapper.selectChartByCase(s);
     }
 
     @Override
@@ -167,11 +165,11 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             ovnBatchLotParam.setCreateDate(DateUtil.parseDate(tempArray[0], "yyyy-MM-dd HH:mm:ss"));
             //为edcBatchTemDtl设置参数
             //ovnBatchLotParam.preInsert();
-            ovnBatchLotParam.setTempPv1(tempArray[1]);
+            ovnBatchLotParam.setTempPv(tempArray[1]);
             ovnBatchLotParam.setStep(Short.parseShort(tempArray[2]));
             ovnBatchLotParam.setTempMax(tempArray[3]);
             ovnBatchLotParam.setTempMin(tempArray[4]);
-            ovnBatchLotParam.setTempSp1(tempArray[5]);
+            ovnBatchLotParam.setTempSp(tempArray[5]);
             ovnBatchLotParamList.add(ovnBatchLotParam);
         }
         if(ovnBatchLotParamList.size()<=5){
@@ -184,7 +182,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
         //判断温度曲线是否正常
         ovnBatchLot.setCheckFlag("Y");
         for(OvnBatchLotParam temp :ovnBatchLotParamList){
-            Double pv = Double.parseDouble(temp.getTempPv1());
+            Double pv = Double.parseDouble(temp.getTempPv());
             Double max = Double.parseDouble(temp.getTempMax());
             Double min = Double.parseDouble(temp.getTempMin());
             if( pv>max|| pv<min){

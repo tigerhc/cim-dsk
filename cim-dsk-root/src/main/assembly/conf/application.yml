@@ -1,19 +1,20 @@
 server:
-  port: 8082
+  port: 800
 
 #spring
 spring:
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
   rabbitmq:
-#    LOCAL
-    addresses: localhost:5672
-#    DSK
-    #addresses: 10.160.144.8:5672
-    # JD云
-#    addresses: 116.196.70.56:5672
+    #    DSK
+    addresses: 10.160.144.8:5672
     username: admin
     password: admin123456
     template:
-      receive-timeout: 10000
+      receive-timeout: 40000
       reply-timeout: 40000
     listener:
       simple:
@@ -22,7 +23,10 @@ spring:
           max-attempts: 3
           initial-interval: 1000
         default-requeue-rejected: false
-
+  #    listener:
+  #      retry:
+  #        max-attempts: 3
+  #        enabled: true
   session:
     store-type: none
   devtools:
@@ -31,10 +35,10 @@ spring:
   cache:
     type: redis
   mail:                    #邮件发送
-    host: smtp.exmail.qq.com
-    username: zhangwj@lmrj.com
-    sender: zhangwj@lmrj.com
-    password: Ivo123123
+    host: msout.sanken-ele.co.jp
+    username: lihuan@ms5.sanken-ele.co.jp
+    sender: MES-INFO
+    password: hl1018%a
     port: 25
     properties:
       mail:
@@ -44,7 +48,7 @@ spring:
             enable: true
             required: true
   redis:   #redis 配置
-    host: localhost
+    host: 10.160.144.8
     port: 6378
     password: Ivo!@#
     jedis:
@@ -67,14 +71,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-    url: jdbc:mysql://localhost:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
     password: root123
-    #    url: jdbc:mysql://10.160.144.8:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
-    #    password: root123
-
-#    url: jdbc:mysql://116.196.70.56:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
-#    password: Pp123!@#
-
+    url: jdbc:mysql://10.160.144.8:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
     type: com.alibaba.druid.pool.DruidDataSource   #这里是配置druid连接池，以下都是druid的配置信息
     filters: stat,wall,slf4j
     maxActive: 20
@@ -133,7 +131,7 @@ mybatis-plus:
 logging:
   level:
     #    root: debug
-    com.lmrj.web.modules: DEBUG
+    com.lmrj.eap.modules: DEBUG
 
 #shiro
 shiro:
@@ -171,8 +169,3 @@ swagger:
     show-request-headers: true
     request-timeout: 5000
     submit-methods: get,delete
-flowable:
-  #关闭定时任务JOB
-  async-executor-activate: false
-  #  将databaseSchemaUpdate设置为true。当Flowable发现库与数据库表结构不一致时，会自动将数据库表结构升级至新版本。
-  database-schema-update: false

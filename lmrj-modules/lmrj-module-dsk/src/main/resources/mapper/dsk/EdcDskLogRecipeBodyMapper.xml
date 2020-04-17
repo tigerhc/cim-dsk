@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.dsk.eqplog.mapper.EdcDskLogRecipeBodyMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.recipe_log_id,
+       t.para_code,
+       t.para_name,
+       t.set_value,
+       t.pre_value,
+       t.min_value,
+       t.max_value
+	</sql>
+</mapper>
