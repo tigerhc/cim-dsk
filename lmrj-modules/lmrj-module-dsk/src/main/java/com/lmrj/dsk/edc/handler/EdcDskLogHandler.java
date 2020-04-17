@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogRecipeService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
@@ -55,6 +57,8 @@ public class EdcDskLogHandler {
     IEdcEvtRecordService edcEvtRecordService;
     @Autowired
     IEdcAmsRecordService edcAmsRecordService;
+    @Autowired
+    IEdcDskLogRecipeService edcDskLogRecipeService;
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
@@ -85,7 +89,9 @@ public class EdcDskLogHandler {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
         List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
-        edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
+        if(edcDskLogOperationlist != null && edcDskLogOperationlist.size()>0){
+            edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
+        }
 
         //插入event或者alarm中
         //(エラーや装置の稼働変化)
@@ -140,6 +146,17 @@ public class EdcDskLogHandler {
             fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status);
         }
         //edcDskLogOperation.setCreateDate(new Date());
+    }
+
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.RECIPELOG.DATA"})
+    public void parseRecipelog(String msg) {
+        log.info("recieved message 开始解析{}recipe文件 : {} " + msg);
+        List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {});
+        if(edcDskLogRecipeList != null && edcDskLogRecipeList.size()>0){
+            edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
+        }
+
     }
 
     @RabbitHandler

@@ -11,6 +11,7 @@ import com.lmrj.common.mvc.entity.AbstractEntity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -58,6 +59,8 @@ public class EdcDskLogRecipe extends AbstractEntity {
     /**作业指示书品番*/
     @TableField(value = "lot_num")
     private String lotNum;
+    @TableField(exist = false)
+    List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList;
 
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     protected String createBy; // 创建者

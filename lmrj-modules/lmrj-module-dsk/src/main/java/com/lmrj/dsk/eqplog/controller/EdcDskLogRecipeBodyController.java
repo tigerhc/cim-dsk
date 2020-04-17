@@ -3,8 +3,8 @@ package com.lmrj.dsk.eqplog.controller;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.core.log.LogAspectj;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
-import com.lmrj.web.aspectj.annotation.LogAspectj;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
