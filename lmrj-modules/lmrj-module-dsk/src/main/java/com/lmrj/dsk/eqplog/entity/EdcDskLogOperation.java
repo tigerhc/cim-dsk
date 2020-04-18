@@ -1,9 +1,12 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
 import lombok.Data;
 
@@ -48,9 +51,11 @@ public class EdcDskLogOperation extends AbstractEntity {
     /**批量投入数*/
     @TableField(value = "lot_yield")
     private Integer lotYield;
-    /**发生时刻*/
-    @TableField(value = "create_date")
-    private Date createDate;
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @TableField(value = "start_time")
+    private Date startTime;
+
     /**事件ID 0:停止中　, 1:自动运转中 2: 制品等待/材料等待 3~:警报代码*/
     @TableField(value = "event_id")
     private String eventId;
@@ -72,10 +77,19 @@ public class EdcDskLogOperation extends AbstractEntity {
     @TableField(value = "lot_no")
     private String lotNo;
     /**作业指示书品番*/
-    @TableField(value = "lot_num")
-    private String lotNum;
+    @TableField(value = "production_no")
+    private String productionNo;
     /**持续时间*/
     @TableField(value = "duration")
     private Double duration;
+
+
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
+    protected String createBy; // 创建者
+    /**发生时刻*/
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @TableField(value = "create_date")
+    private Date createDate;
 
 }

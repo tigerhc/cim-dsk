@@ -67,18 +67,22 @@ public class EdcDskLogHandler {
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息" + msg);
-        List<EdcDskLogProduction> list = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
+        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
-        edcDskLogProductionService.insertBatch(list);
-        //if("TEMPERATURE-UPLOAD".equals(edcDskLogProduction.getEventId())){
-        //    //"20190623202600.csv"
-        //    try {
-        //        logger.info("开始解析{}温度曲线文件{}", edcDskLogProduction.getEqpId(), edcDskLogProduction.getEventParams());
-        //        ovnBatchLotService.resolveTemperatureFile(edcDskLogProduction.getEqpId(), edcDskLogProduction.getEventParams());
-        //    } catch (Exception e) {
-        //        e.printStackTrace();
-        //    }
-        //}
+
+        if(edcDskLogProductionList.size()>0){
+            EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
+            String eqpId = edcDskLogProduction0.getEqpId();
+            if(StringUtil.isNotBlank(eqpId)){
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+                edcDskLogProductionList.forEach(edcDskLogProduction -> {
+                    edcDskLogProduction.setEqpNo(fabEquipment.getEqpNo());
+                    edcDskLogProduction.setEqpModelId(fabEquipment.getModelId());
+                    edcDskLogProduction.setEqpModelName(fabEquipment.getModelName());
+                });
+            }
+        }
+        edcDskLogProductionService.insertBatch(edcDskLogProductionList);
     }
 
     @RabbitHandler
@@ -89,6 +93,20 @@ public class EdcDskLogHandler {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
         List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
+
+        if(edcDskLogOperationlist.size()>0){
+            EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
+            String eqpId = edcDskLogOperation0.getEqpId();
+            if(StringUtil.isNotBlank(eqpId)){
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+                edcDskLogOperationlist.forEach(edcDskLogOperation -> {
+                    edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
+                    edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
+                    edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
+                });
+            }
+        }
+
         if(edcDskLogOperationlist != null && edcDskLogOperationlist.size()>0){
             edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
         }

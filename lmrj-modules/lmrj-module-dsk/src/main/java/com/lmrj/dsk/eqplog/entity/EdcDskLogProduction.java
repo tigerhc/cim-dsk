@@ -1,9 +1,11 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
 import lombok.Data;
 
@@ -39,12 +41,12 @@ public class EdcDskLogProduction extends AbstractEntity {
     /**设备名*/
     @TableField(value = "eqp_no")
     private String eqpNo;
-    /**产量*/
-    @TableField(value = "yield")
-    private Integer yield;
-    /**批次产量*/
-    @TableField(value = "yield_lot")
-    private Integer yieldLot;
+    /**日投入数*/
+    @TableField(value = "day_yield")
+    private Integer dayYield;
+    /**批量投入数*/
+    @TableField(value = "lot_yield")
+    private Integer lotYield;
     /**制品的批号*/
     @TableField(value = "material_lot_no")
     private String materialLotNo;
@@ -61,18 +63,22 @@ public class EdcDskLogProduction extends AbstractEntity {
     @TableField(value = "lot_no")
     private String lotNo;
     /**作业指示书机种*/
-    @TableField(value = "lot_device")
-    private String lotDevice;
+    @TableField(value = "production_no")
+    private String productionNo;
     /**作业指示书序列号*/
-    @TableField(value = "lot_no_no")
-    private String lotNoNo;
+    @TableField(value = "order_no")
+    private String orderNo;
     /**判定结果*/
     @TableField(value = "judge_result")
     private String judgeResult;
     /**开始时间*/
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
     private Date startTime;
     /**结束时间*/
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "end_time")
     private Date endTime;
     /**持续时间*/

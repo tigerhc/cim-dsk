@@ -36,10 +36,10 @@ public class EdcDskLogRecipe extends AbstractEntity {
     @TableField(value = "eqp_id")
     private String eqpId;
     /**设备类型*/
-    @TableField(value = "eqp_model_id")
+    @TableField(exist = false)
     private String eqpModelId;
     /**设备类型名称*/
-    @TableField(value = "eqp_model_name")
+    @TableField(exist = false)
     private String eqpModelName;
     /**设备序列*/
     @TableField(value = "eqp_no")
@@ -49,6 +49,8 @@ public class EdcDskLogRecipe extends AbstractEntity {
     private String recipeCode;
     /**发生时刻*/
     @TableField(value = "happen_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date happenDate;
     /**作业指示书订单*/
     @TableField(value = "order_no")
@@ -59,8 +61,6 @@ public class EdcDskLogRecipe extends AbstractEntity {
     /**作业指示书品番*/
     @TableField(value = "lot_num")
     private String lotNum;
-    @TableField(exist = false)
-    List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList;
 
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     protected String createBy; // 创建者
@@ -70,6 +70,9 @@ public class EdcDskLogRecipe extends AbstractEntity {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     protected Date createDate; // 创建日期
+
+    @TableField(exist = false)
+    List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList;
 
 
 }
