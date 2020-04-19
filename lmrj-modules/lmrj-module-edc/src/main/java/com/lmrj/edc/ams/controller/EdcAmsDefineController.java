@@ -1,18 +1,15 @@
 package com.lmrj.edc.ams.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
-import com.lmrj.edc.ams.entity.EdcAmsDefine;
-import com.lmrj.edc.ams.entity.EdcAmsDefineI18n;
-import com.lmrj.edc.ams.service.IEdcAmsDefineService;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
-import com.lmrj.cim.utils.UserUtil;
-import org.apache.commons.text.StringEscapeUtils;
+import com.lmrj.edc.ams.entity.EdcAmsDefine;
+import com.lmrj.edc.ams.service.IEdcAmsDefineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,9 +74,9 @@ public class EdcAmsDefineController extends BaseCRUDController<EdcAmsDefine> {
      * @param response
      */
     public void preSave(EdcAmsDefine entity, HttpServletRequest request, HttpServletResponse response) {
-        String edcParamRecordDtlListJson = StringEscapeUtils.unescapeHtml4(request.getParameter("_detail"));
-        List<EdcAmsDefineI18n> edcParamRecordDtlList = JSONObject.parseArray(edcParamRecordDtlListJson, EdcAmsDefineI18n.class);
-        entity.setEdcAmsDefineI18nList(edcParamRecordDtlList);
+        //String edcParamRecordDtlListJson = StringEscapeUtils.unescapeHtml4(request.getParameter("_detail"));
+        //List<EdcAmsDefineI18n> edcParamRecordDtlList = JSONObject.parseArray(edcParamRecordDtlListJson, EdcAmsDefineI18n.class);
+        //entity.setEdcAmsDefineI18nList(edcParamRecordDtlList);
     }
 
     @PutMapping("/active_flag/{alarmId}/{flag}")

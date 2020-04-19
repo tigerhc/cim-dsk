@@ -1,7 +1,8 @@
 package com.lmrj.dsk.config;
 
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,14 +12,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQDskConfig {
 
+    @Autowired
+    private RabbitAdmin rabbitAdmin;
     @Bean
     public Queue operationLogQueue() {
-        return QueueBuilder.durable("C2S.Q.OPERATIONLOG.DATA").build();
-    }
-
-    @Bean
-    public Queue productionLogQueue() {
-        return QueueBuilder.durable("C2S.Q.PRODUCTIONLOG.DATA").build();
+        String[] queueNames = {"C2S.Q.PRODUCTIONLOG.DATA",
+                "C2S.Q.OPERATIONLOG.DATA","C2S.Q.RECIPELOG.DATA","C2S.Q.TEMPLOG.DATA"};
+        for(String queueName :queueNames){
+            Queue queue=new Queue(queueName,true,false,false);
+            rabbitAdmin.declareQueue(queue);
+        }
+        return null;
     }
 
 }

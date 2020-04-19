@@ -4,15 +4,16 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.edc.ams.entity.EdcAmsDefine;
 import com.lmrj.edc.ams.entity.EdcAmsDefineI18n;
-import com.lmrj.edc.ams.mapper.EdcAmsDefineI18nMapper;
 import com.lmrj.edc.ams.mapper.EdcAmsDefineMapper;
 import com.lmrj.edc.ams.service.IEdcAmsDefineI18nService;
 import com.lmrj.edc.ams.service.IEdcAmsDefineService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,25 +33,19 @@ import java.util.List;
 public class EdcAmsDefineServiceImpl  extends CommonServiceImpl<EdcAmsDefineMapper,EdcAmsDefine> implements  IEdcAmsDefineService {
 
     @Autowired
-    private EdcAmsDefineMapper edcAmsDefineMapper;
-
-    @Autowired
-    private EdcAmsDefineI18nMapper edcAmsDefineI18nMapper;
-
-    @Autowired
     private IEdcAmsDefineI18nService edcAmsDefineI18nService;
     @Override
     public boolean editFlag(String alarmId, String flag) {
-        EdcAmsDefine edcAmsDefine= edcAmsDefineMapper.selectById(alarmId);
+        EdcAmsDefine edcAmsDefine= this.selectById(alarmId);
         edcAmsDefine.setMonitorFlag(flag);
-        edcAmsDefineMapper.updateById(edcAmsDefine);
+        this.updateById(edcAmsDefine);
         return true;
     }
 
     @Override
     public EdcAmsDefine selectById(Serializable id){
         EdcAmsDefine edcParamRecord = super.selectById(id);
-        List<EdcAmsDefineI18n> edcParamRecordDtlList = edcAmsDefineI18nMapper.selectList(new EntityWrapper<EdcAmsDefineI18n>(EdcAmsDefineI18n.class).eq("alarm_id",id));
+        List<EdcAmsDefineI18n> edcParamRecordDtlList = edcAmsDefineI18nService.selectList(new EntityWrapper<EdcAmsDefineI18n>(EdcAmsDefineI18n.class).eq("alarm_id",id));
         edcParamRecord.setEdcAmsDefineI18nList(edcParamRecordDtlList);
         return edcParamRecord;
     }
@@ -65,6 +60,42 @@ public class EdcAmsDefineServiceImpl  extends CommonServiceImpl<EdcAmsDefineMapp
             edcParamRecordDtl.setAlarmId(edcParamRecord.getId());
         }
         edcAmsDefineI18nService.insertBatch(edcParamRecordDtlList);
+        return true;
+    }
+
+    @Override
+    public boolean insertOrUpdate(EdcAmsDefine edcAmsDefine) {
+        try {
+            // 获得以前的数据
+            List<EdcAmsDefineI18n> oldEdcAmsDefineI18nList = edcAmsDefineI18nService.selectList(new EntityWrapper<EdcAmsDefineI18n>(EdcAmsDefineI18n.class).eq("alarm_id", edcAmsDefine.getId()));
+            // 字段
+            List<EdcAmsDefineI18n> edcAmsDefineI18nList = edcAmsDefine.getEdcAmsDefineI18nList();
+            // 更新主表
+            super.insertOrUpdate(edcAmsDefine);
+            List<String> newsEdcAmsDefineI18nIdList = new ArrayList<String>();
+            // 保存或更新数据
+            for (EdcAmsDefineI18n edcAmsDefineI18n : edcAmsDefineI18nList) {
+                // 设置不变更的字段
+                if (StringUtil.isEmpty(edcAmsDefineI18n.getId())) {
+                    // 保存字段列表
+                    edcAmsDefineI18n.setAlarmId(edcAmsDefine.getId());
+                    edcAmsDefineI18nService.insert(edcAmsDefineI18n);
+                } else {
+                    edcAmsDefineI18nService.insertOrUpdate(edcAmsDefineI18n);
+                }
+                newsEdcAmsDefineI18nIdList.add(edcAmsDefineI18n.getId());
+            }
+            // 删除老数据
+            for (EdcAmsDefineI18n rmsRecipeBody : oldEdcAmsDefineI18nList) {
+                String rmsRecipeBodyId = rmsRecipeBody.getId();
+                if (!newsEdcAmsDefineI18nIdList.contains(rmsRecipeBodyId)) {
+                    edcAmsDefineI18nService.deleteById(rmsRecipeBodyId);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
         return true;
     }
 }
