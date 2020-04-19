@@ -4,12 +4,7 @@ server:
 #spring
 spring:
   rabbitmq:
-#    LOCAL
-    addresses: localhost:5672
-#    DSK
-    #addresses: 10.160.144.8:5672
-    # JD云
-#    addresses: 116.196.70.56:5672
+    addresses: 116.196.70.56:5672
     username: admin
     password: admin123456
     template:
@@ -67,8 +62,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-    url: jdbc:mysql://localhost:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
-    password: root123
+    url: jdbc:mysql://116.196.70.56:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
+    password: Pp123!@#
+
     type: com.alibaba.druid.pool.DruidDataSource   #这里是配置druid连接池，以下都是druid的配置信息
     filters: stat,wall,slf4j
     maxActive: 20
