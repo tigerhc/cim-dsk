@@ -40,4 +40,17 @@ public class EdcDskLogRecipeServiceImpl  extends CommonServiceImpl<EdcDskLogReci
         edcDskLogRecipe.setEdcDskLogRecipeBodyList(rmsRecipeBodyList);
         return edcDskLogRecipe;
     }
+
+    @Override
+    public boolean insert(EdcDskLogRecipe edcDskLogRecipe) {
+        // 保存主表
+        super.insert(edcDskLogRecipe);
+        // 保存细表
+        List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList = edcDskLogRecipe.getEdcDskLogRecipeBodyList();
+        for (EdcDskLogRecipeBody edcDskLogRecipeBody : edcDskLogRecipeBodyList) {
+            edcDskLogRecipeBody.setRecipeLogId(edcDskLogRecipe.getId());
+        }
+        edcDskLogRecipeBodyService.insertBatch(edcDskLogRecipeBodyList);
+        return true;
+    }
 }

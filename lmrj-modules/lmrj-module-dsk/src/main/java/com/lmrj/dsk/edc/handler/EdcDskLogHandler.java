@@ -145,7 +145,7 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setStartDate(edcDskLogOperation.getCreateDate());
                 edcEvtRecordList.add(edcEvtRecord);
                 if("0".equals(eventId)||"7".equals(eventId)){
-                    status = "STOP";
+                    status = "DOWN";
                 }else if("1".equals(eventId)||"6".equals(eventId)){
                     status = "RUN";
                 }else if("3".equals(eventId)){
@@ -173,7 +173,10 @@ public class EdcDskLogHandler {
         if(edcDskLogRecipeList == null ||  edcDskLogRecipeList.size() == 0){
             return;
         }
-        edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
+        //edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
+        edcDskLogRecipeList.forEach(edcDskLogRecipe -> {
+            edcDskLogRecipeService.insert(edcDskLogRecipe);
+        });
     }
 
     @RabbitHandler
