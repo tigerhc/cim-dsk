@@ -4,7 +4,6 @@ import com.lmrj.common.mybatis.mvc.service.ITreeCommonService;
 import com.lmrj.core.sys.entity.Menu;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Title:
@@ -58,6 +57,4 @@ public interface IMenuService extends ITreeCommonService<Menu> {
 	 * @return
 	 */
 	List<Menu> findMenuByUserIdAndNodeId(String userId, String nodeId);
-
-    List<Map> selectChart();
 }

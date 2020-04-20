@@ -135,14 +135,4 @@
         WHERE rm.role_id= #{roleId} and t.enabled = 1
     </select>
 
-    <select id="selectChart" resultType="map">
-              SELECT
-                  count(eqp_id) COUNT,EQP_STATUS
-              FROM
-                  fab_equipment_status
-              WHERE
-                  DEL_FLAG = 0
-              GROUP BY
-                  EQP_STATUS
-       </select>
 </mapper>

@@ -1,29 +1,33 @@
 package com.lmrj.cim.modules.sys.controller;
 
-import com.lmrj.common.utils.FastJsonUtils;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.core.log.LogType;
 import com.lmrj.cim.common.helper.VueTreeHelper;
-import com.lmrj.core.sys.service.IMenuService;
-import com.lmrj.core.sys.entity.Menu;
+import com.lmrj.cim.utils.MenuTreeHelper;
+import com.lmrj.cim.utils.UserUtils;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mvc.controller.BaseBeanController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.log.LogType;
+import com.lmrj.core.sys.entity.Menu;
+import com.lmrj.core.sys.service.IMenuService;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.cim.utils.MenuTreeHelper;
-import com.lmrj.cim.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/sys/menu")
@@ -124,14 +128,6 @@ public class MenuController extends BaseBeanController<Menu> {
         List<Menu> treeNodeList = menuService.findMenuByUserId(UserUtils.getUser().getId());
         List<MenuTreeHelper.MenuTreeNode> menuTreeNodes = MenuTreeHelper.create().sort(treeNodeList);
         FastJsonUtils.print(menuTreeNodes);
-    }
-
-
-    @GetMapping("chart")
-    public void chart(HttpServletRequest request) {
-        //方案模版
-        List<Map> map=menuService.selectChart();
-         FastJsonUtils.print(map);
     }
 
     @PostMapping("{id}/changeSort")

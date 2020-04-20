@@ -33,10 +33,6 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
 
     @Autowired
     private FabEquipmentMapper fabEquipmentMapper;
-    @Override
-    public List<Map> selectChart() {
-        return baseMapper.selectChart();
-    }
 
     @Override
     public int updateStatus(String eqpID,String status) {
@@ -80,5 +76,9 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
         return baseMapper.selectEqpStatus(officeId);
     }
 
-    ;
+    @Override
+    public List<Map> selectEqpStatusChart() {
+        return baseMapper.selectEqpStatusChart();
+    }
+
 }

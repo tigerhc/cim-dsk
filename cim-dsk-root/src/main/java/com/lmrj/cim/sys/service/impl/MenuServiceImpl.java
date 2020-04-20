@@ -1,17 +1,16 @@
 package com.lmrj.cim.sys.service.impl;
 
+import com.lmrj.cim.modules.sys.mapper.MenuMapper;
 import com.lmrj.common.mybatis.mvc.service.impl.TreeCommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
-import com.lmrj.util.lang.StringUtil;
 import com.lmrj.core.sys.entity.Menu;
-import com.lmrj.cim.modules.sys.mapper.MenuMapper;
 import com.lmrj.core.sys.service.IMenuService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Transactional
 @Service("menuService")
@@ -90,8 +89,4 @@ public class MenuServiceImpl extends TreeCommonServiceImpl<MenuMapper, Menu> imp
 		return baseMapper.findMenuByUserIdAndNodeId(userId,nodeId);
 	}
 
-	@Override
-	public List<Map> selectChart() {
-		return baseMapper.selectChart();
-	}
 }

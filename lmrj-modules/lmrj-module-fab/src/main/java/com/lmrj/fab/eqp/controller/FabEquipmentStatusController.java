@@ -46,10 +46,11 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     private IFabEquipmentStatusService fabEquipmentStatusService;
 
     @GetMapping("chart")
-    public Response chart(HttpServletRequest request) {
-        //方案模版
-        List<Map> map=fabEquipmentStatusService.selectChart();
-        return  Response.ok(map.toString());
+    public void chart(HttpServletRequest request) {
+        List<Map> map=fabEquipmentStatusService.selectEqpStatusChart();
+        FastJsonUtils.print(map);
+        //List<Map> map=fabEquipmentStatusService.selectEqpStatusChart();
+        //return  Response.ok(map.toString());
     }
 
     @RequestMapping(value = "batch/initstatus", method = { RequestMethod.GET, RequestMethod.POST })

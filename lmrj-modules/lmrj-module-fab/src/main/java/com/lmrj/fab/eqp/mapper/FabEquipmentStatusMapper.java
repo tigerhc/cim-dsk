@@ -22,7 +22,7 @@ import java.util.Map;
 @Mapper
 public interface FabEquipmentStatusMapper extends BaseMapper<FabEquipmentStatus> {
 
-    List<Map> selectChart();
+    List<Map> selectEqpStatusChart();
 
     int updateStatus(@Param("eqpID") String eqpID, @Param("status") String status);
 

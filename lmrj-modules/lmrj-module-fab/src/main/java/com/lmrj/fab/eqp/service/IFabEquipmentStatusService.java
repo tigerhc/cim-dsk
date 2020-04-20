@@ -19,8 +19,6 @@ import java.util.Map;
 */
 public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentStatus> {
 
-    public List<Map> selectChart();
-
     int updateStatus(String eqpID, String status);
 
     int updateLot(String eqpID, String lotId);
@@ -28,4 +26,6 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
     boolean initStatus(List idList);
 
     List<FabEquipmentStatus> selectEqpStatus(String officeId);
+
+    List<Map> selectEqpStatusChart();
 }

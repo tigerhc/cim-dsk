@@ -18,7 +18,7 @@
        t.update_date,
        t.del_flag
 	</sql>
-   <select id="selectChart" resultType="map">
+   <select id="selectEqpStatusChart" resultType="map">
           SELECT
               count(eqp_id) COUNT,EQP_STATUS
           FROM
@@ -26,7 +26,8 @@
           WHERE
               DEL_FLAG = 0
           GROUP BY
-              EQP_STATUS
+              eqp_status
+          ORDER BY eqp_status
    </select>
 
    <update id="updateStatus">
@@ -39,25 +40,14 @@
 
     <select id="selectEqpStatus" resultType="com.lmrj.fab.eqp.entity.FabEquipmentStatus" parameterType="String">
         SELECT
-        t.EQP_ID eqpId,
-        t.LOT_ID lotId,
-        t.EQP_STATUS eqpStatus,
-        t.RECIPE_NAME recipeName,
-        f.MODEL_NAME modelName
+        <include refid="Base_Column_List" />, f.MODEL_NAME modelName
         FROM
         fab_equipment_status t
-        left join  fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
-        WHERE
-        t.EQP_ID IN (
-        SELECT
-        eqp_id
-        FROM
-        FAB_EQUIPMENT
-        WHERE del_flag = '0' and active_flag = '1'
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+        WHERE t.del_flag = '0' and f.active_flag = '1'
         <if test="officeId != null and officeId != ''">
-            and OFFICE_ID = #{officeId}
+            and f.OFFICE_ID = #{officeId}
         </if>
-        ) and t.del_flag = '0'
         order by f.SORT_CODE
     </select>
 
