@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 /**
  * All rights Reserved, Designed By www.gzst.gov.cn
  *
@@ -67,10 +66,9 @@ public class EdcDskLogHandler {
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息" + msg);
-        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
-        });
+        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
 
-        if(edcDskLogProductionList.size()>0){
+        if(edcDskLogProductionList != null && edcDskLogProductionList.size()>0){
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
             if(StringUtil.isNotBlank(eqpId)){
@@ -81,8 +79,10 @@ public class EdcDskLogHandler {
                     edcDskLogProduction.setEqpModelName(fabEquipment.getModelName());
                 });
             }
+
+            edcDskLogProductionService.insertBatch(edcDskLogProductionList);
         }
-        edcDskLogProductionService.insertBatch(edcDskLogProductionList);
+
     }
 
     @RabbitHandler
@@ -94,22 +94,22 @@ public class EdcDskLogHandler {
         //    System.out.println("接收到的消息"+msg);
         List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
 
-        if(edcDskLogOperationlist.size()>0){
-            EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
-            String eqpId = edcDskLogOperation0.getEqpId();
-            if(StringUtil.isNotBlank(eqpId)){
-                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-                edcDskLogOperationlist.forEach(edcDskLogOperation -> {
-                    edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
-                    edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
-                    edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
-                });
-            }
+        if(edcDskLogOperationlist == null ||  edcDskLogOperationlist.size() == 0){
+            return;
         }
 
-        if(edcDskLogOperationlist != null && edcDskLogOperationlist.size()>0){
-            edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
+        EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
+        String eqpId = edcDskLogOperation0.getEqpId();
+        if(StringUtil.isNotBlank(eqpId)){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            edcDskLogOperationlist.forEach(edcDskLogOperation -> {
+                edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
+                edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
+                edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
+            });
         }
+
+        edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
 
         //插入event或者alarm中
         //(エラーや装置の稼働変化)
@@ -152,7 +152,6 @@ public class EdcDskLogHandler {
                     status = "IDLE";
                 }
             }
-
         }
         if(edcEvtRecordList.size() != 0){
             edcEvtRecordService.insertBatch(edcEvtRecordList);
@@ -171,10 +170,10 @@ public class EdcDskLogHandler {
     public void parseRecipelog(String msg) {
         log.info("recieved message 开始解析{}recipe文件 : {} " + msg);
         List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {});
-        if(edcDskLogRecipeList != null && edcDskLogRecipeList.size()>0){
-            edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
+        if(edcDskLogRecipeList == null ||  edcDskLogRecipeList.size() == 0){
+            return;
         }
-
+        edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
     }
 
     @RabbitHandler
@@ -182,16 +181,15 @@ public class EdcDskLogHandler {
     public void parseTempHlog(String msg) {
         log.info("recieved message 开始解析{}温度曲线文件 : {} " + msg);
         OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
-        if(ovnBatchLot != null){
-            String eqpId = ovnBatchLot.getEqpId();
-            if(StringUtil.isNotBlank(eqpId)){
-                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-                ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
-                ovnBatchLotService.insert(ovnBatchLot);
-            }
-
+        if(ovnBatchLot == null){
+            return;
         }
-
+        String eqpId = ovnBatchLot.getEqpId();
+        if(StringUtil.isNotBlank(eqpId)){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
+            ovnBatchLotService.insert(ovnBatchLot);
+        }
     }
 
 

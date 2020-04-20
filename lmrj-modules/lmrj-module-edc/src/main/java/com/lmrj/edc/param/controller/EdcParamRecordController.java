@@ -2,19 +2,24 @@ package com.lmrj.edc.param.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.toolkit.CollectionUtils;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
-import com.lmrj.util.lang.ObjectUtil;
+import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.sys.entity.User;
 import com.lmrj.edc.param.entity.EdcParamRecord;
 import com.lmrj.edc.param.entity.EdcParamRecordDtl;
 import com.lmrj.edc.param.service.IEdcParamRecordDtlService;
 import com.lmrj.edc.param.service.IEdcParamRecordService;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.core.sys.entity.User;
-import com.lmrj.cim.utils.UserUtil;
+import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
+import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
+import com.lmrj.util.lang.ObjectUtil;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +45,9 @@ public class EdcParamRecordController extends BaseCRUDController<EdcParamRecord>
     protected IEdcParamRecordService edcParamRecordService;
     @Autowired
     private IEdcParamRecordDtlService edcParamRecordDtlService;
+    @Autowired
+    protected IFabEquipmentStatusService fabEquipmentStatusService;
+
     public EdcParamRecord get(String id) {
         if (!ObjectUtil.isNullOrEmpty(id)) {
             return edcParamRecordService.selectById(id);
@@ -78,6 +86,9 @@ public class EdcParamRecordController extends BaseCRUDController<EdcParamRecord>
         List<EdcParamRecordDtl> edcParamRecordDtlList = JSONObject.parseArray(edcParamRecordDtlListJson, EdcParamRecordDtl.class);
         entity.setEdcParamRecordDtlList(edcParamRecordDtlList);
     }
+
+
+
 
     //@RequestMapping(value = "/save", method = RequestMethod.POST)
     //@ResponseBody

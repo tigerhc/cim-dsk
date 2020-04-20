@@ -27,8 +27,8 @@ import java.util.List;
 public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapper,FabEquipment> implements  IFabEquipmentService {
 
     @Override
-    public void inactiveEqp(String id) {
-        baseMapper.updateActiveFlag(id, "0");
+    public void activeEqp(String id, String flag) {
+        baseMapper.updateActiveFlag(id, flag);
     }
 
     @Override

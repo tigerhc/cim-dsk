@@ -32,12 +32,10 @@ import java.util.Map;
 public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipmentStatusMapper,FabEquipmentStatus> implements  IFabEquipmentStatusService {
 
     @Autowired
-    private FabEquipmentStatusMapper fabEquipmentStatusMapper;
-    @Autowired
     private FabEquipmentMapper fabEquipmentMapper;
     @Override
     public List<Map> selectChart() {
-        return fabEquipmentStatusMapper.selectChart();
+        return baseMapper.selectChart();
     }
 
     @Override
@@ -75,5 +73,12 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
             }
         }
         return true;
-    };
+    }
+
+    @Override
+    public List<FabEquipmentStatus> selectEqpStatus(String officeId) {
+        return baseMapper.selectEqpStatus(officeId);
+    }
+
+    ;
 }

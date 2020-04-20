@@ -9,7 +9,7 @@
        t.eqp_model_name,
        t.eqp_no,
        t.recipe_code,
-       t.happen_date,
+       t.start_time,
        t.order_no,
        t.lot_no,
        t.lot_num,

@@ -1,17 +1,19 @@
 package com.lmrj.oven.batchlot.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
+import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.common.utils.ServletUtils;
+import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.sys.entity.Organization;
+import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
-import com.lmrj.core.sys.entity.Organization;
-import com.lmrj.cim.utils.OfficeUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +53,10 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
 
     @GetMapping("testMsg")
     public void sendMsg(String msg){
-        rabbitTemplate.convertAndSend("S2C.T.CURE.COMMAND","测试发送");
+        //rabbitTemplate.convertAndSend("S2C.T.CURE.COMMAND","测试发送");
+        OvnBatchLot ovnBatchLot = new OvnBatchLot();
+        ovnBatchLot.setId("11111");
+        FastJsonUtils.print(ovnBatchLot);
     }
 
     /**
@@ -85,8 +91,8 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     }
 
     @GetMapping("listEqp")
-    public void list(HttpServletRequest request){
-        List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList=ovnBatchLotService.selectFabStatus("21100019");
+    public void list(HttpServletRequest request, HttpServletResponse response){
+        List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList=ovnBatchLotService.selectFabStatus("");
         if (CollectionUtils.isEmpty(fabEquipmentOvenStatusList)) {
             FastJsonUtils.print(fabEquipmentOvenStatusList);
         }
@@ -109,7 +115,9 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
                 }
             }
         });
-        FastJsonUtils.print(fabEquipmentOvenStatusList);
+        String content = JSON.toJSONString(fabEquipmentOvenStatusList);
+        ServletUtils.printJson(response, content);
+        //FastJsonUtils.print(fabEquipmentOvenStatusList);
     }
     @GetMapping("chart")
     public void chart(HttpServletRequest request) {

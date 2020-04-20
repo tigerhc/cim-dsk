@@ -40,8 +40,10 @@
                           eqp_id
                       FROM
                           FAB_EQUIPMENT
-                      WHERE
-                          OFFICE_ID = #{officeId}
+                      WHERE del_flag = '0' and active_flag = '1'
+                       <if test="officeId != null and officeId != ''">
+                           and OFFICE_ID = #{officeId}
+                       </if>
                   ) and t.del_flag = '0'
                   order by f.SORT_CODE
        </select>

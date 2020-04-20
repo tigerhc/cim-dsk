@@ -6,6 +6,9 @@ import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.common.collect.Lists;
+import com.lmrj.cim.utils.OfficeUtils;
+import com.lmrj.cim.utils.PageRequest;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
@@ -13,15 +16,12 @@ import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.core.sys.entity.Organization;
-import com.lmrj.cim.utils.OfficeUtils;
-import com.lmrj.cim.utils.PageRequest;
-import com.lmrj.cim.utils.UserUtil;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -103,12 +104,13 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         }
     }
 
-    @RequestMapping(value = "{id}/inactiveeqp", method = RequestMethod.POST)
+    //@RequestMapping(value = "{id}/inactiveeqp", method = RequestMethod.POST)
+    @PutMapping("/active_flag/{id}/{flag}")
     @ResponseBody
-    public Response update(@PathVariable("id") String id,
+    public Response update(@PathVariable String id, @PathVariable String flag,
                            HttpServletRequest request, HttpServletResponse response) {
-        fabEquipmentService.inactiveEqp(id);
-        return Response.ok("停用设备成功");
+        fabEquipmentService.activeEqp(id, flag);
+        return Response.ok("修改成功");
     }
 
 

@@ -1,12 +1,14 @@
 package com.lmrj.fab.eqp.controller;
 
+import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
-import com.lmrj.core.log.LogAspectj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +58,14 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
         List idList = java.util.Arrays.asList(ids);
         fabEquipmentStatusService.initStatus(idList);
         return Response.ok("初始化成功");
+    }
+
+    @GetMapping("listEqpStatus")
+    public void list(HttpServletRequest request, HttpServletResponse response){
+        List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("");
+        if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
+            FastJsonUtils.print(fabEquipmentStatusList);
+        }
+        FastJsonUtils.print(fabEquipmentStatusList);
     }
 }

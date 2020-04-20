@@ -48,10 +48,10 @@ public class EdcDskLogRecipe extends AbstractEntity {
     @TableField(value = "recipe_code")
     private String recipeCode;
     /**发生时刻*/
-    @TableField(value = "happen_date")
+    @TableField(value = "start_time")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    private Date happenDate;
+    private Date startTime;
     /**作业指示书订单*/
     @TableField(value = "order_no")
     private String orderNo;

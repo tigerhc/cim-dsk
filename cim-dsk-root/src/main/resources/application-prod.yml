@@ -48,7 +48,7 @@ spring:
             enable: true
             required: true
   redis:   #redis 配置
-    host: 10.160.144.8
+    host: localhost
     port: 6378
     password: Ivo!@#
     jedis:

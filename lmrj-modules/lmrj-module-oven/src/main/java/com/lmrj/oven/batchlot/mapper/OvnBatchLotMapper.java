@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Mapper
 public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
 
-     List<FabEquipmentOvenStatus> selectFabStatus(String officeId);
+     List<FabEquipmentOvenStatus> selectFabStatus(@Param("officeId") String officeId);
 
      List<Map> selectFabStatusParam(List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList);
 

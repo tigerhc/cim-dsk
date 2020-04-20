@@ -16,7 +16,7 @@ import com.lmrj.fab.eqp.entity.FabEquipment;
 */
 public interface IFabEquipmentService extends ICommonService<FabEquipment> {
 
-    void inactiveEqp(String id);
+    void activeEqp(String id, String flag);
 
     FabEquipment findEqpByCode(String eqpId);
 }
