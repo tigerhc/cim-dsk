@@ -122,7 +122,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @GetMapping("chart")
     public void chart(HttpServletRequest request) {
         //方案模版
-        List<Map> list=ovnBatchLotService.selectChart("21100019");
+        List<Map> list=ovnBatchLotService.selectChart("");
         //排序
         list.forEach(map -> {
             if("DOWN".equals(map.get("EQP_STATUS"))){

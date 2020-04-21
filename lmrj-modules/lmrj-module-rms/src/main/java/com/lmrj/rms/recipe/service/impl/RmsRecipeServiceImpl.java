@@ -62,22 +62,24 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
     @Override
     public RmsRecipe selectByIdAndCompareParam(String id){
-        RmsRecipe rmsRecipe = super.selectById(id);
-        List<RmsRecipeBody> rmsRecipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>(RmsRecipeBody.class).eq("recipe_id",id));
-        rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyList);
-
+        //RmsRecipe rmsRecipe = super.selectById(id);
+        //List<RmsRecipeBody> rmsRecipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>(RmsRecipeBody.class).eq("recipe_id",id));
+        //rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyList);
+        RmsRecipe rmsRecipe = this.selectById(id);
         RmsRecipe oldRecipe = this.findLastByRecipeCode(id);
-        rmsRecipe.setOldId(oldRecipe.getId());
-        List<RmsRecipeBody> oldRmsRecipeBodyList = oldRecipe.getRmsRecipeBodyDtlList();
-        Map<String,RmsRecipeBody> rmsRecipeBodyMap = Maps.newHashMap();
-        for(RmsRecipeBody rmsRecipeBody : oldRmsRecipeBodyList){
-            rmsRecipeBodyMap.put(rmsRecipeBody.getParaCode(), rmsRecipeBody);
-        }
-        for(RmsRecipeBody rmsRecipeBody: rmsRecipeBodyList){
-            RmsRecipeBody oldRmsRecipeBody = rmsRecipeBodyMap.get(rmsRecipeBody.getParaCode());
-            rmsRecipeBody.setSetValueOld(oldRmsRecipeBody.getSetValue());
-            rmsRecipeBody.setMinValueOld(oldRmsRecipeBody.getMinValue());
-            rmsRecipeBody.setMaxValueOld(oldRmsRecipeBody.getMaxValue());
+        if(oldRecipe != null){
+            rmsRecipe.setOldId(oldRecipe.getId());
+            List<RmsRecipeBody> oldRmsRecipeBodyList = oldRecipe.getRmsRecipeBodyDtlList();
+            Map<String,RmsRecipeBody> rmsRecipeBodyMap = Maps.newHashMap();
+            for(RmsRecipeBody rmsRecipeBody : oldRmsRecipeBodyList){
+                rmsRecipeBodyMap.put(rmsRecipeBody.getParaCode(), rmsRecipeBody);
+            }
+            for(RmsRecipeBody rmsRecipeBody: rmsRecipe.getRmsRecipeBodyDtlList()){
+                RmsRecipeBody oldRmsRecipeBody = rmsRecipeBodyMap.get(rmsRecipeBody.getParaCode());
+                rmsRecipeBody.setSetValueOld(oldRmsRecipeBody.getSetValue());
+                rmsRecipeBody.setMinValueOld(oldRmsRecipeBody.getMinValue());
+                rmsRecipeBody.setMaxValueOld(oldRmsRecipeBody.getMaxValue());
+            }
         }
         return rmsRecipe;
     }
@@ -211,6 +213,9 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     @Override
     public RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe){
         RmsRecipe rmsRecipeLast =  baseMapper.findLastByRecipeCode(rmsRecipe.getId(), rmsRecipe.getRecipeCode(), rmsRecipe.getEqpModelId());
+        if(rmsRecipeLast==null){
+            return null;
+        }
         List<RmsRecipeBody> rmsRecipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>(RmsRecipeBody.class).eq("recipe_id",rmsRecipeLast.getId()));
         rmsRecipeLast.setRmsRecipeBodyDtlList(rmsRecipeBodyList);
         return rmsRecipeLast;
