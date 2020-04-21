@@ -1,9 +1,9 @@
 package com.lmrj.dsk.eqplog.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,4 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("edcDskLogProductionService")
 public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLogProductionMapper,EdcDskLogProduction> implements  IEdcDskLogProductionService {
 
+    //@Override
+    //public boolean insert(EdcDskLogProduction edcDskLogProduction) {
+    //    // 保存主表
+    //    super.insert(edcDskLogProduction);
+    //    // 保存细表
+    //    List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList = edcDskLogProduction.get();
+    //    for (EdcDskLogRecipeBody edcDskLogRecipeBody : edcDskLogRecipeBodyList) {
+    //        edcDskLogRecipeBody.setRecipeLogId(edcDskLogRecipe.getId());
+    //    }
+    //    edcDskLogRecipeBodyService.insertBatch(edcDskLogRecipeBodyList);
+    //    return true;
+    //}
 }

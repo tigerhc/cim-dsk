@@ -61,10 +61,20 @@ public class EdcAmsRecord extends AbstractEntity {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date endDate;
 
+    /**警报开关 1:set 0:cleared*/
+    @Excel(name = "批次", orderNum = "8")
+    @TableField(value = "lot_no")
+    private String lotNo;
+
+    /**警报开关 1:set 0:cleared*/
+    @Excel(name = "批次产量", orderNum = "9")
+    @TableField(value = "lot_yield")
+    private Integer lotYield;
+
     @Excel(name = "创建时间", orderNum = "7")
     @TableField(value = "create_date", fill = FieldFill.INSERT, update = "now()")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     protected Date createDate; // 创建日期
-	
+
 }

@@ -133,6 +133,8 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setAlarmCode(edcDskLogOperation.getAlarmCode());
                 edcAmsRecord.setAlarmName(edcDskLogOperation.getEventDetail());
                 edcAmsRecord.setAlarmSwitch("1");
+                edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
+                edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
                 edcAmsRecord.setStartDate(edcDskLogOperation.getCreateDate());
                 edcAmsRecordList.add(edcAmsRecord);
                 status = "ALARM";
