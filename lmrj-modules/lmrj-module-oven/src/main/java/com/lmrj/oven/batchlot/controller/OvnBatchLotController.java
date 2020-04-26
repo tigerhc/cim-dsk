@@ -87,6 +87,18 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         if(office != null){
             entity.setOfficeName(office.getName());
         }
+        if((entity.getOtherTempsTitle().length()-1) == entity.getOtherTempsTitle().lastIndexOf(",")){
+            String other = entity.getOtherTempsTitle().substring(0,entity.getOtherTempsTitle().length()-1);
+            entity.setOtherTempsTitle(other);
+        }
+        if((entity.getOtherTempsTitle().length()-1) == entity.getOtherTempsTitle().lastIndexOf(",")){
+            String other = entity.getOtherTempsTitle().substring(0,entity.getOtherTempsTitle().length()-1);
+            entity.setOtherTempsTitle(other);
+        }
+        String otherTempsTitle = entity.getOtherTempsTitle().replaceAll("当前值","PV");
+        otherTempsTitle = otherTempsTitle.replaceAll("现在值","PV");
+        otherTempsTitle = otherTempsTitle.replaceAll("温区","");
+        entity.setOtherTempsTitle(otherTempsTitle);
         return entity;
     }
 

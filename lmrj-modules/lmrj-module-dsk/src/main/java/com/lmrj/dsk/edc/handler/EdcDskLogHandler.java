@@ -16,6 +16,7 @@ import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -193,6 +194,8 @@ public class EdcDskLogHandler {
         if(StringUtil.isNotBlank(eqpId)){
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
+            List<OvnBatchLotParam> OvnBatchLotParamList =  ovnBatchLot.getOvnBatchLotParamList();
+            ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size()-1).getCreateDate());
             ovnBatchLotService.insert(ovnBatchLot);
         }
     }
