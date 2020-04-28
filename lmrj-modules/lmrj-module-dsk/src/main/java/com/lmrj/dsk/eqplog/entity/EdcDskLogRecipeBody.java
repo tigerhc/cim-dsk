@@ -47,7 +47,7 @@ public class EdcDskLogRecipeBody extends AbstractEntity {
     /**规格最大值*/
     @TableField(value = "max_value")
     private String maxValue;
-    @TableField(value = "sortNo")
+    @TableField(value = "sort_no")
     private Integer sortNo;
 
 }
