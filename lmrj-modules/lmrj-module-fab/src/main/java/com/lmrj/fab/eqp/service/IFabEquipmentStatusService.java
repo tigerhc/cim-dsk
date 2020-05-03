@@ -25,7 +25,7 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
 
     boolean initStatus(List idList);
 
-    List<FabEquipmentStatus> selectEqpStatus(String officeId);
+    List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab);
 
     List<Map> selectEqpStatusChart();
 }

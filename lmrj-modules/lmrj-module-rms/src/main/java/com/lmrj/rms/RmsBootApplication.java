@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2Doc
 @EnableSwagger2
-@ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.common.oss","com.lmrj.common.sms","com.lmrj.web","com.lmrj.rms","com.lmrj.fab"})
+@ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.rms","com.lmrj.fab"})
 @SpringBootApplication
 public class RmsBootApplication {
     public static void main(String[] args) throws Exception {

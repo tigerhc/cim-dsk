@@ -7,9 +7,32 @@
        t.eqp_id,
        t.alarm_code,
        t.alarm_name,
+       t.alarm_detail,
        t.alarm_switch,
        t.start_date,
        t.end_date,
-       t.del_flag
+       t.create_date
 	</sql>
+    <select id="selectAmsRecord" resultType="com.lmrj.edc.ams.entity.EdcAmsRecord">
+           SELECT
+           <include refid="Base_Column_List" />, f.MODEL_NAME modelName
+           FROM
+           edc_ams_record t
+           LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+           WHERE f.active_flag = '1'
+           <if test="officeId != null and officeId != ''">
+                  and f.OFFICE_ID = #{officeId}
+           </if>
+           <if test="lineNo != null and lineNo != ''">
+                  and f.line_no = #{lineNo}
+           </if>
+           <if test="department != null and department != ''">
+                  and f.department = #{department}
+           </if>
+           <if test="fab != null and fab != ''">
+                  and f.fab = #{fab}
+           </if>
+           order by t.start_date desc
+           limit 5
+    </select>
 </mapper>

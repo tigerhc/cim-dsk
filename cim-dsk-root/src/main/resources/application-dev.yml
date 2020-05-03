@@ -1,13 +1,13 @@
 server:
-  port: 8082
+  port: 800
 
 #spring
 spring:
   rabbitmq:
 #    LOCAL
     addresses: localhost:5672
-#    DSK
-    #addresses: 10.160.144.8:5672
+#    DSK..
+#    addresses: 10.160.144.8:5672
     # JD云
 #    addresses: 116.196.70.56:5672
     username: admin
@@ -121,7 +121,7 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     cache-enabled: false
   configuration-properties:
-    dbType: oracle #设置全局属性用于控制数据库的类型
+    dbType: mysql #设置全局属性用于控制数据库的类型
 
 #logging
 logging:
@@ -131,7 +131,7 @@ logging:
 
 #shiro
 shiro:
-  filter-chain-definitions: /swagger/api-docs=anon;/v2/api-docs=anon;/swagger-resources/**=anon;/swagger-ui.html=anon;/webjars/**=anon;/monitor/druid/**=anon;/jcaptcha*=anon;/oss/upload/**=anon;/sso/oauth2/**=anon;/**=authc;/services/*=anon;
+  filter-chain-definitions: /swagger/api-docs=anon;/v2/api-docs=anon;/swagger-resources/**=anon;/swagger-ui.html=anon;/webjars/**=anon;/monitor/druid/**=anon;/jcaptcha*=anon;/oss/upload/**=anon;/sso/oauth2/**=anon;/**=authc;/jn/**=anon;
 
 #定时任务配置
 quartz:

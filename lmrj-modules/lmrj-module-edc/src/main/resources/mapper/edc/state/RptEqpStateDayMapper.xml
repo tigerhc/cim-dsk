@@ -49,4 +49,52 @@
         group by eqp_id
 
     </select>
+
+    <select id="selectGroupState" resultType="map">
+        SELECT f.${groupName} groupName,
+        max(period_date) periodDate,
+        sum(run_time) runTime,
+        sum(idle_time) idleTime,
+        sum(down_time) downTime,
+        sum(pm_time) pmTime,
+        sum(other_time) otherTime
+        FROM
+        rpt_eqp_state_day t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        WHERE t.period_date between #{beginTime} and #{endTime}
+        <if test="officeId != null and officeId != ''">
+            and f.step_code = #{officeId}
+        </if>
+        <if test="lineNo != null and lineNo != ''">
+            and f.line_no = #{lineNo}
+        </if>
+        <if test="fab != null and fab != ''">
+            and f.fab = #{fab}
+        </if>
+        group by f.${groupName}
+    </select>
+
+    <select id="selectEqpStateByPeriod" resultType="map">
+        SELECT
+        period_date periodDate,
+        sum(run_time) runTime,
+        sum(idle_time) idleTime,
+        sum(down_time) downTime,
+        sum(pm_time) pmTime,
+        sum(other_time) otherTime
+        FROM
+        rpt_eqp_state_day t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        WHERE t.period_date between #{beginTime} and #{endTime}
+        <if test="officeId != null and officeId != ''">
+            and f.OFFICE_ID = #{officeId}
+        </if>
+        <if test="lineNo != null and lineNo != ''">
+            and f.line_no = #{lineNo}
+        </if>
+        <if test="fab != null and fab != ''">
+            and f.fab = #{fab}
+        </if>
+        group by t.period_date
+    </select>
 </mapper>

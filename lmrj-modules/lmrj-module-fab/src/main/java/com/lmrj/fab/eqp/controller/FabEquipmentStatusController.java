@@ -63,7 +63,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @GetMapping("listEqpStatus")
     public void list(HttpServletRequest request, HttpServletResponse response){
-        List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("");
+        List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "");
         if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
             FastJsonUtils.print(fabEquipmentStatusList);
         }

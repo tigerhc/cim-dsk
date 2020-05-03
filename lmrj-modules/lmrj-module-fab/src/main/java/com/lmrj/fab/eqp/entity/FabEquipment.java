@@ -34,7 +34,6 @@ public class FabEquipment extends BaseDataEntity {
 	private String eqpNo;
 	/**部门ID*/
 	@TableField(value = "office_id")
-	@Excel(name = "部门id", orderNum = "2")
 	private String officeId;
 	@TableField(exist = false)
 	@Excel(name = "部门名称", orderNum = "3")
@@ -70,7 +69,6 @@ public class FabEquipment extends BaseDataEntity {
 	@TableField(value = "device_id")
 	private String deviceId;
 	/**设备型号*/
-	@Excel(name = "设备型号", orderNum = "11")
 	@TableField(value = "model_id")
 	private String modelId;
 	 /**设备型号名称*/

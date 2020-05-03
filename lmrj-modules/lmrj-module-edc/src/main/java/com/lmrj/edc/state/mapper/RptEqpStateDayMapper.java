@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -20,6 +21,11 @@ import java.util.List;
  */
 @Mapper
 public interface RptEqpStateDayMapper extends BaseMapper<RptEqpStateDay> {
-    List findEqpOee(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpIds") List eqpIds);
-    List findEqpsOee(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpIds") List eqpIds);
+    List<Map> findEqpOee(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpIds") List eqpIds);
+
+    List<Map> findEqpsOee(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpIds") List eqpIds);
+
+    List<Map> selectGroupState(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab, @Param("groupName") String groupName);
+
+    List<Map> selectEqpStateByPeriod(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab);
 }

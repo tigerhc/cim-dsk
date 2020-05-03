@@ -48,6 +48,12 @@
         <if test="officeId != null and officeId != ''">
             and f.OFFICE_ID = #{officeId}
         </if>
+        <if test="lineNo != null and lineNo != ''">
+            and f.line_no = #{lineNo}
+        </if>
+        <if test="fab != null and fab != ''">
+            and f.fab = #{fab}
+        </if>
         order by f.SORT_CODE
     </select>
 

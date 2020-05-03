@@ -3,6 +3,8 @@ package com.lmrj.edc.ams.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +17,5 @@ import com.lmrj.edc.ams.entity.EdcAmsRecord;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcAmsRecordService extends ICommonService<EdcAmsRecord> {
-
+    List<EdcAmsRecord> selectAmsRecord(String officeId, String lineNo,String department, String fab);
 }

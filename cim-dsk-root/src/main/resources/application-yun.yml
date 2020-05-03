@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 800
 
 #spring
 spring:
@@ -80,6 +80,10 @@ spring:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
     connection-properties: druid.stat.merggSql=ture;druid.stat.slowSqlMillis=5000
+    druid:
+      filter:
+        stat:
+          enabled: true
 
 ##mybatis
 #mybatis:

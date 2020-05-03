@@ -44,6 +44,9 @@ public class EdcAmsRecord extends AbstractEntity {
     @Excel(name = "警报名称", orderNum = "3")
     @TableField(value = "alarm_name")
     private String alarmName;
+    @Excel(name = "报警详细", orderNum = "3")
+    @TableField(value = "alarm_detail")
+    private String alarmDetail;
     /**警报开关 1:set 0:cleared*/
     @Excel(name = "警报开关", orderNum = "4")
     @TableField(value = "alarm_switch")
