@@ -4,6 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
@@ -84,5 +85,8 @@ public class EdcDskLogProduction extends AbstractEntity {
     /**持续时间*/
     @TableField(value = "duration")
     private Double duration;
-
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    protected Date createDate; // 创建日期
 }

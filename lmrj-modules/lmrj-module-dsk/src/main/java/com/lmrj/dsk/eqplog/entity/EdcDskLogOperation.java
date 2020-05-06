@@ -51,7 +51,7 @@ public class EdcDskLogOperation extends AbstractEntity {
     /**批量投入数*/
     @TableField(value = "lot_yield")
     private Integer lotYield;
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss.SSS")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
     private Date startTime;
@@ -89,7 +89,7 @@ public class EdcDskLogOperation extends AbstractEntity {
     /**发生时刻*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    @TableField(value = "create_date")
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
     private Date createDate;
 
 }

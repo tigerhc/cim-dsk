@@ -136,7 +136,7 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
-                edcAmsRecord.setStartDate(edcDskLogOperation.getCreateDate());
+                edcAmsRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcAmsRecordList.add(edcAmsRecord);
                 status = "ALARM";
             }else{
@@ -145,7 +145,7 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventId(eventId);
                 edcEvtRecord.setEventDesc(edcDskLogOperation.getEventName());
                 edcEvtRecord.setEventParams(edcDskLogOperation.getEventDetail());
-                edcEvtRecord.setStartDate(edcDskLogOperation.getCreateDate());
+                edcEvtRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcEvtRecordList.add(edcEvtRecord);
                 if("0".equals(eventId)||"7".equals(eventId)){
                     status = "DOWN";

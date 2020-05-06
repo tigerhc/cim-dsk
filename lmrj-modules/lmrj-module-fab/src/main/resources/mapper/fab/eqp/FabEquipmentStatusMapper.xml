@@ -31,11 +31,11 @@
    </select>
 
    <update id="updateStatus">
-      update FAB_EQUIPMENT_STATUS set EQP_STATUS = #{status} where EQP_ID = #{eqpID}
+      update FAB_EQUIPMENT_STATUS set EQP_STATUS = #{status}, update_date = now() where EQP_ID = #{eqpID}
    </update>
 
    <update id="updateLot">
-      update FAB_EQUIPMENT_STATUS set LOT_ID = #{lotId} where EQP_ID = #{eqpID}
+      update FAB_EQUIPMENT_STATUS set LOT_ID = #{lotId}, update_date = now() where EQP_ID = #{eqpID}
    </update>
 
     <select id="selectEqpStatus" resultType="com.lmrj.fab.eqp.entity.FabEquipmentStatus" parameterType="String">

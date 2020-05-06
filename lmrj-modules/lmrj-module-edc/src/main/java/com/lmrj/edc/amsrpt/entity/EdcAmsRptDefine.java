@@ -1,9 +1,12 @@
 package com.lmrj.edc.amsrpt.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
+
 import java.util.Date;
 import java.util.List;
 
@@ -38,10 +41,10 @@ public class EdcAmsRptDefine extends BaseDataEntity {
     private String repeatAlarmDesc;
     /**重复次数*/
     @TableField(value = "repeat_num")
-    private Double repeatNum;
+    private Integer repeatNum;
     /**周期(时间间隔)*/
     @TableField(value = "repeat_cycle")
-    private Double repeatCycle;
+    private Integer repeatCycle;
     /**站点ID*/
     @TableField(value = "station_id")
     private String stationId;
@@ -52,12 +55,16 @@ public class EdcAmsRptDefine extends BaseDataEntity {
     @TableField(value = "active_flag")
     private String activeFlag;
     /**启用时间*/
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "active_date")
     private Date activeDate;
     /**启动人ID*/
     @TableField(value = "active_user_id")
     private String activeUserId;
     /**停用时间*/
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "inactive_date")
     private Date inactiveDate;
     /**停用人ID*/

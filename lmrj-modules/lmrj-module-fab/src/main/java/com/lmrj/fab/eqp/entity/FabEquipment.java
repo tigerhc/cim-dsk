@@ -29,6 +29,9 @@ public class FabEquipment extends BaseDataEntity {
 	@TableField(value = "eqp_id")
 	@Excel(name = "设备id", orderNum = "1")
 	private String eqpId;
+	@TableField(value = "eqp_name")
+	@Excel(name = "设备Name", orderNum = "1")
+	private String eqpName;
 	@Excel(name = "设备no", orderNum = "1")
 	@TableField(value = "eqp_no")
 	private String eqpNo;
