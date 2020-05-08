@@ -36,7 +36,10 @@ public class MesLotTrack extends BaseDataEntity {
     @TableField(value = "lot_no")
     private String lotNo;
     /**作业指示书机种*/
-    @Excel(name = "机种", orderNum = "3")
+    @Excel(name = "品名", orderNum = "3")
+    @TableField(value = "production_name")
+    private String productionName;
+    @Excel(name = "品番", orderNum = "3")
     @TableField(value = "production_no")
     private String productionNo;
     /**作业指示书序列号*/
@@ -47,6 +50,9 @@ public class MesLotTrack extends BaseDataEntity {
     @Excel(name = "产量", orderNum = "5")
     @TableField(value = "lot_yield")
     private Integer lotYield;
+    @Excel(name = "设备产量", orderNum = "5")
+    @TableField(value = "lot_yield_eqp")
+    private Integer lotYieldEqp;
     /**开始时间*/
     @Excel(name = "开始时间", orderNum = "6")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")

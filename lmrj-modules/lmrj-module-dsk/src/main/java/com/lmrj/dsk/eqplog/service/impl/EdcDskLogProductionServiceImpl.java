@@ -35,4 +35,23 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     //    edcDskLogRecipeBodyService.insertBatch(edcDskLogRecipeBodyList);
     //    return true;
     //}
+
+    //production日志定时清除
+    //清除批次中间运行数据,只保留开始和结束
+    public boolean clearMiddleProductionLog() {
+        //select lot_no,eqp_id  from edc_dsk_log_production where start_time between  '2020-05-05 09:51:44' and '2020-05-06 09:51:44'
+        //group by lot_no
+        //
+        //select * from edc_dsk_log_production where lot_no = '0505B' and eqp_id='SIM-PRINTER1' order by start_time desc limit 1
+        //
+        //select * from edc_dsk_log_production where lot_no = '0505B' and eqp_id='SIM-PRINTER1' order by start_time asc limit 1
+        //delete from edc_dsk_log_production where lot_no = '0505B1' and eqp_id='SIM-PRINTER1'  and (id != '11' or id != '2')
+        return true;
+    }
+  //获取当前产量
+    public boolean clearMiddleProductionLog2() {
+        return true;
+    }
+
+
 }

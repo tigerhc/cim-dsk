@@ -92,7 +92,7 @@ public class MesTrackService {
         MesResult result = JsonUtil.from(msg, MesResult.class);
         if("Y".equals(result.flag)){
             //Map<String, String> content = Maps.newHashMap();
-            //content.put("RECIPE_NAME", recipeName);
+            //content.put("RECIPE_NAME", recipeCode);
             //result.setContent(content);
             //简单处理
             result.setContent(recipeName);

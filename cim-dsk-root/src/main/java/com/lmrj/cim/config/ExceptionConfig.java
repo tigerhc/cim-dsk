@@ -1,6 +1,7 @@
 package com.lmrj.cim.config;
 
 import com.lmrj.common.http.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * @copyright: 2017 www.lmrj.com Inc. All rights reserved.
  */
 @RestControllerAdvice
+@Slf4j
 public class ExceptionConfig {
 
     /**
@@ -54,6 +56,7 @@ public class ExceptionConfig {
     @ExceptionHandler(Exception.class)
     //@ResponseStatus(HttpStatus.BAD_REQUEST)
     public Object globalException(HttpServletRequest request, Throwable ex) {
+        log.error("Control Exception:", ex);
         return Response.error(getStatus(request).value(), ex.getMessage());
     }
 

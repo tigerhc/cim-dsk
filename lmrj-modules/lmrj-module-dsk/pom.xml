@@ -28,6 +28,11 @@
             <artifactId>lmrj-module-oven</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lmrj</groupId>
+            <artifactId>lmrj-module-mes</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

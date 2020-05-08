@@ -38,6 +38,8 @@ public class MesLotTrackLog extends AbstractEntity {
     /**作业指示书批量*/
     @TableField(value = "lot_no")
     private String lotNo;
+    @TableField(value = "production_name")
+    private String productionName;
     /**作业指示书机种*/
     @TableField(value = "production_no")
     private String productionNo;

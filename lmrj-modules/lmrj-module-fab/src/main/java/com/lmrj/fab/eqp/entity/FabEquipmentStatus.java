@@ -29,8 +29,8 @@ public class FabEquipmentStatus extends BaseDataEntity {
     @TableField(value = "control_state")
     private String controlState;
     /**批次*/
-    @TableField(value = "lot_id")
-    private String lotId;
+    @TableField(value = "lot_no")
+    private String lotNo;
     /**设备状态*/
     @TableField(value = "eqp_status")
     private String eqpStatus;
@@ -38,8 +38,8 @@ public class FabEquipmentStatus extends BaseDataEntity {
     @TableField(value = "connection_status")
     private String connectionStatus;
     /**程序名称*/
-    @TableField(value = "recipe_name")
-    private String recipeName;
+    @TableField(value = "recipe_code")
+    private String recipeCode;
     /**锁机标志*/
     @TableField(value = "lock_flag")
     private String lockFlag;

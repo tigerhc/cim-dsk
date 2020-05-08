@@ -6,10 +6,10 @@
        t.id,
        t.eqp_id,
        t.control_state,
-       t.lot_id,
+       t.lot_no,
        t.eqp_status,
        t.connection_status,
-       t.recipe_name,
+       t.recipe_code,
        t.lock_flag,
        t.remarks,
        t.create_by,
@@ -31,11 +31,21 @@
    </select>
 
    <update id="updateStatus">
-      update FAB_EQUIPMENT_STATUS set EQP_STATUS = #{status}, update_date = now() where EQP_ID = #{eqpID}
+      update FAB_EQUIPMENT_STATUS set  update_date = now()
+       <if test="status != null and status != ''">
+           , EQP_STATUS = #{status}
+       </if>
+       <if test="lotNo != null and lotNo != ''">
+           , lot_no = #{lotNo}
+       </if>
+       <if test="recipeCode != null and recipeCode != ''">
+           , recipe_code = #{recipeCode}
+       </if>
+      where EQP_ID = #{eqpID}
    </update>
 
    <update id="updateLot">
-      update FAB_EQUIPMENT_STATUS set LOT_ID = #{lotId}, update_date = now() where EQP_ID = #{eqpID}
+      update FAB_EQUIPMENT_STATUS set LOT_NO = #{lotNo}, update_date = now() where EQP_ID = #{eqpID}
    </update>
 
     <select id="selectEqpStatus" resultType="com.lmrj.fab.eqp.entity.FabEquipmentStatus" parameterType="String">

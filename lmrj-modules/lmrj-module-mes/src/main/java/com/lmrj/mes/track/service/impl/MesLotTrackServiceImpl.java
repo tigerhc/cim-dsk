@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -39,88 +40,191 @@ import java.util.Map;
 public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper, MesLotTrack> implements IMesLotTrackService {
 
     @Autowired
+    private AmqpTemplate rabbitTemplate;
+    @Autowired
     IMesLotTrackLogService mesLotTrackLogService;
     @Autowired
-    private AmqpTemplate rabbitTemplate;
+    IFabEquipmentService fabEquipmentService;
 
-    public void trackIn(String eqpId, String lotNo, String recipeCode, String opId) {
+    public MesResult trackin4DSK(String eqpId, String productionName,String productionNo,String orderNo, String lotNo, String recipeCode, String opId) {
+        MesResult result = MesResult.ok("default");
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if(fabEquipment == null){
+            return MesResult.error("eqp not found");
+        }
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
         MesLotTrack mesLotTrack = new MesLotTrack();
         if (mesLotTrackList.size() > 0) {
             mesLotTrack = mesLotTrackList.get(0);
-            mesLotTrack.setStartTime(new Date());
-            mesLotTrack.setCreateBy(opId);
+            //mesLotTrack.setStartTime(new Date());
         } else {
-            mesLotTrack = new MesLotTrack();
-            mesLotTrack.setEqpId(eqpId);
-            mesLotTrack.setLotNo(lotNo);
-            mesLotTrack.setCreateBy(opId);
             mesLotTrack.setStartTime(new Date());
         }
+        mesLotTrack.setEqpId(eqpId);
+        mesLotTrack.setLotNo(lotNo);
+        mesLotTrack.setCreateBy(opId);
+        mesLotTrack.setProductionName(productionName);
+        mesLotTrack.setProductionNo(productionNo);
+        mesLotTrack.setOrderNo(orderNo);
+
+
         this.insertOrUpdate(mesLotTrack);
 
         MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
         mesLotTrackLog.setEqpId(eqpId);
         mesLotTrackLog.setLotNo(lotNo);
+        mesLotTrackLog.setProductionName(productionName);
+        mesLotTrackLog.setProductionNo(productionNo);
+        mesLotTrackLog.setOrderNo(orderNo);
         mesLotTrackLog.setCreateBy(opId);
         mesLotTrackLog.setEventCode("TRACKIN");
         mesLotTrackLogService.insert(mesLotTrackLog);
 
         //发送至EAP客户端 Map
         Map<String, String> map = Maps.newHashMap();
-        map.put("LOT_ID", lotNo);
+        map.put("METHOD", "TRACKIN");
+        map.put("LOT_NO", lotNo);
         map.put("EQP_ID", eqpId);
-        String bc = "SH_FOL_OV1";
-        if(eqpId.indexOf("OVEN")>=0 || eqpId.indexOf("CM-EC-")>=0){
-            bc = "SH_FOL_OV1";
-        }else if(eqpId.indexOf("-PC")>=0){
-            bc = "BC3";
-        }
-        Object test=rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, JsonUtil.toJsonString(map));
-        byte[] message = (byte[]) test;
-        String msg = null;
-        try {
-            msg = new String(message, "UTF-8");
-            String msg2 = new String(message, "GBK");
-            log.info("encode UTF-8: {}", msg);
-            log.info("encode GBK: {}", msg2);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        // TODO: 2019/6/23 打印返回结果
-        MesResult result = JsonUtil.from(msg, MesResult.class);
-        if("Y".equals(result.flag)){
-            //Map<String, String> content = Maps.newHashMap();
-            //content.put("RECIPE_NAME", recipeName);
-            //result.setContent(content);
-            //简单处理
-            //result.setContent(recipeName);
-        }
+        String bc = "SIM-BC1";
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
 
-        // TODO: 2019/6/23 判断结果,成功则更新设备状态表
-        //return JsonUtil.toJsonString(result);
+        if (replyMsg != null) {
+            result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.flag)) {
+                //Map<String, String> content = Maps.newHashMap();
+                //content.put("RECIPE_NAME", recipeCode);
+                //result.setContent(content);
+                //简单处理
+                //result.setContent(recipeCode);
+            }
+        }
+        return result;
     }
 
-    public void trackOut(String eqpId, String lotNo, String recipeCode, String opId) {
+    public MesResult trackout4DSK(String eqpId, String productionName,String productionNo,String orderNo, String lotNo, String yield, String recipeCode, String opId) {
+        MesResult result = MesResult.ok("default");
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if(fabEquipment == null){
+            return MesResult.error("eqp not found");
+        }
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
         MesLotTrack mesLotTrack = new MesLotTrack();
         if (mesLotTrackList.size() > 0) {
             mesLotTrack = mesLotTrackList.get(0);
-            mesLotTrack.setEndTime(new Date());
-            mesLotTrack.setCreateBy(opId);
-        } else {
-            mesLotTrack = new MesLotTrack();
-            mesLotTrack.setEqpId(eqpId);
-            mesLotTrack.setLotNo(lotNo);
-            mesLotTrack.setCreateBy(opId);
-            mesLotTrack.setEndTime(new Date());
+        }else{
+            return MesResult.error("please track in first");
         }
+        mesLotTrack.setEndTime(new Date());
+        mesLotTrack.setEqpId(eqpId);
+        mesLotTrack.setLotNo(lotNo);
+        mesLotTrack.setLotYield(Integer.parseInt(yield));
+        mesLotTrack.setUpdateBy(opId);
+        mesLotTrack.setProductionName(productionName);
+        mesLotTrack.setProductionNo(productionNo);
+        mesLotTrack.setOrderNo(orderNo);
         this.insertOrUpdate(mesLotTrack);
+
         MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
         mesLotTrackLog.setEqpId(eqpId);
         mesLotTrackLog.setLotNo(lotNo);
+        mesLotTrackLog.setLotYield(Integer.parseInt(yield));
+        mesLotTrackLog.setProductionName(productionName);
+        mesLotTrackLog.setProductionNo(productionNo);
+        mesLotTrackLog.setOrderNo(orderNo);
         mesLotTrackLog.setCreateBy(opId);
         mesLotTrackLog.setEventCode("TRACKOUT");
         mesLotTrackLogService.insert(mesLotTrackLog);
+
+        //发送至EAP客户端 Map
+        //Map<String, String> map = Maps.newHashMap();
+        //map.put("METHOD", "TRACKOUT");
+        //map.put("LOT_NO", lotNo);
+        //map.put("EQP_ID", eqpId);
+        //String bc = "SIM-BC1";
+        //String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
+        //
+        //if (replyMsg != null) {
+        //    result = JsonUtil.from(replyMsg, MesResult.class);
+        //    if ("Y".equals(result.flag)) {
+        //        //Map<String, String> content = Maps.newHashMap();
+        //        //content.put("RECIPE_NAME", recipeCode);
+        //        //result.setContent(content);
+        //        //简单处理
+        //        //result.setContent(recipeCode);
+        //    }
+        //}
+        return result;
     }
+
+    //public MesResult trackIn(String eqpId, String lotNo, String recipeCode, String opId) {
+    //    MesResult result = MesResult.ok("default");
+    //    FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+    //    if(fabEquipment == null){
+    //        return MesResult.error("eqp not found");
+    //    }
+    //    List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
+    //    MesLotTrack mesLotTrack = new MesLotTrack();
+    //    if (mesLotTrackList.size() > 0) {
+    //        mesLotTrack = mesLotTrackList.get(0);
+    //        mesLotTrack.setStartTime(new Date());
+    //        mesLotTrack.setCreateBy(opId);
+    //    } else {
+    //        mesLotTrack.setEqpId(eqpId);
+    //        mesLotTrack.setLotNo(lotNo);
+    //        mesLotTrack.setCreateBy(opId);
+    //        mesLotTrack.setStartTime(new Date());
+    //    }
+    //    this.insertOrUpdate(mesLotTrack);
+    //
+    //    MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
+    //    mesLotTrackLog.setEqpId(eqpId);
+    //    mesLotTrackLog.setLotNo(lotNo);
+    //    mesLotTrackLog.setCreateBy(opId);
+    //    mesLotTrackLog.setEventCode("TRACKIN");
+    //    mesLotTrackLogService.insert(mesLotTrackLog);
+    //
+    //    //发送至EAP客户端 Map
+    //    Map<String, String> map = Maps.newHashMap();
+    //    map.put("METHOD", "TRACKIN");
+    //    map.put("LOT_NO", lotNo);
+    //    map.put("EQP_ID", eqpId);
+    //    String bc = "SIM-BC1";
+    //    String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
+    //
+    //    if (replyMsg != null) {
+    //        result = JsonUtil.from(replyMsg, MesResult.class);
+    //        if ("Y".equals(result.flag)) {
+    //            //Map<String, String> content = Maps.newHashMap();
+    //            //content.put("RECIPE_NAME", recipeCode);
+    //            //result.setContent(content);
+    //            //简单处理
+    //            //result.setContent(recipeCode);
+    //        }
+    //    }
+    //    return result;
+    //}
+
+    //public MesResult trackOut(String eqpId, String lotNo, String recipeCode, String opId) {
+    //    List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
+    //    MesLotTrack mesLotTrack = new MesLotTrack();
+    //    if (mesLotTrackList.size() > 0) {
+    //        mesLotTrack = mesLotTrackList.get(0);
+    //        mesLotTrack.setEndTime(new Date());
+    //        mesLotTrack.setCreateBy(opId);
+    //    } else {
+    //        mesLotTrack = new MesLotTrack();
+    //        mesLotTrack.setEqpId(eqpId);
+    //        mesLotTrack.setLotNo(lotNo);
+    //        mesLotTrack.setCreateBy(opId);
+    //        mesLotTrack.setEndTime(new Date());
+    //    }
+    //    this.insertOrUpdate(mesLotTrack);
+    //    MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
+    //    mesLotTrackLog.setEqpId(eqpId);
+    //    mesLotTrackLog.setLotNo(lotNo);
+    //    mesLotTrackLog.setCreateBy(opId);
+    //    mesLotTrackLog.setEventCode("TRACKOUT");
+    //    mesLotTrackLogService.insert(mesLotTrackLog);
+    //    return MesResult.ok("default");
+    //}
 }

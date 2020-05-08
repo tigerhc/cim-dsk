@@ -117,8 +117,8 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
         if(!fileExistFlag){
             try {
                 // TODO: 2019/6/24 打印日志
-                //this.sendMail(eqptId,lotId,"文件不存在",fileName+"文件不存在");
-                //imMesCallService.save(eventId, "1", eqptId, "CureFtpFileAnalysis", "处理结束,文件不存在", lotId);
+                //this.sendMail(eqptId,lotNo,"文件不存在",fileName+"文件不存在");
+                //imMesCallService.save(eventId, "1", eqptId, "CureFtpFileAnalysis", "处理结束,文件不存在", lotNo);
                 return null;
             }catch (Exception e){
                 e.printStackTrace();

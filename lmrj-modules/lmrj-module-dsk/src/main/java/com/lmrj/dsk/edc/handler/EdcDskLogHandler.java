@@ -1,5 +1,6 @@
 package com.lmrj.dsk.edc.handler;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
@@ -15,6 +16,9 @@ import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
+import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotTrackLogService;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
@@ -26,6 +30,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +64,10 @@ public class EdcDskLogHandler {
     IEdcAmsRecordService edcAmsRecordService;
     @Autowired
     IEdcDskLogRecipeService edcDskLogRecipeService;
+    @Autowired
+    IMesLotTrackLogService mesLotTrackLogService;
+    @Autowired
+    IMesLotTrackService mesLotTrackService;
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
@@ -83,7 +92,26 @@ public class EdcDskLogHandler {
 
             edcDskLogProductionService.insertBatch(edcDskLogProductionList);
         }
+        EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
+        int lotYield = lastProduction.getLotYield();
+        String lotNo =  lastProduction.getLotNo();
+        String eqpId =  lastProduction.getEqpId();
+        String recipeCode =  lastProduction.getRecipeCode();
 
+        boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp="+lotYield , new EntityWrapper().eq("eqp_id", eqpId).eq("lot_no", lotNo));
+        if(!updateFlag){
+            MesLotTrack mesLotTrack = new MesLotTrack();
+            mesLotTrack.setEqpId(eqpId);
+            mesLotTrack.setLotNo(lotNo);
+            mesLotTrack.setCreateBy("EQP");
+            mesLotTrack.setLotYieldEqp(lotYield);
+            mesLotTrack.setStartTime(new Date());
+            mesLotTrackService.insert(mesLotTrack);
+        }
+
+        if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
+            fabEquipmentStatusService.updateStatus(eqpId,"", lotNo, recipeCode);
+        }
     }
 
     @RabbitHandler
@@ -131,14 +159,19 @@ public class EdcDskLogHandler {
             if("2".equals(eventId)){
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
-                edcAmsRecord.setAlarmCode(edcDskLogOperation.getAlarmCode());
+                String alarmCode = edcDskLogOperation.getAlarmCode();
+                edcAmsRecord.setAlarmCode(alarmCode);
                 edcAmsRecord.setAlarmName(edcDskLogOperation.getEventDetail());
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
                 edcAmsRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcAmsRecordList.add(edcAmsRecord);
-                status = "ALARM";
+                if("War04002004".equals(alarmCode)|| "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode) ){
+
+                }else{
+                    status = "ALARM";
+                }
             }else{
                 EdcEvtRecord edcEvtRecord = new EdcEvtRecord();
                 edcEvtRecord.setEqpId(edcDskLogOperation.getEqpId());
@@ -163,7 +196,7 @@ public class EdcDskLogHandler {
             edcAmsRecordService.insertBatch(edcAmsRecordList);
         }
         if(StringUtil.isNotBlank(status)){
-            fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status);
+            fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
         }
         //edcDskLogOperation.setCreateDate(new Date());
     }

@@ -42,6 +42,8 @@ public class EdcDskLogProduction extends AbstractEntity {
     /**设备名*/
     @TableField(value = "eqp_no")
     private String eqpNo;
+    @TableField(value = "recipe_code")
+    private String recipeCode;
     /**日投入数*/
     @TableField(value = "day_yield")
     private Integer dayYield;

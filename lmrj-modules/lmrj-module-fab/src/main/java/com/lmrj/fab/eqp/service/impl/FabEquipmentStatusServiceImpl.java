@@ -35,8 +35,8 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
     private FabEquipmentMapper fabEquipmentMapper;
 
     @Override
-    public int updateStatus(String eqpID,String status) {
-        return baseMapper.updateStatus(eqpID,status);
+    public int updateStatus(String eqpID,String status, String lotNo, String recipeCode) {
+        return baseMapper.updateStatus(eqpID,status, lotNo, recipeCode);
     }
 
     @Override
@@ -78,6 +78,8 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
 
     @Override
     public List<Map> selectEqpStatusChart() {
+        //List<Map> list = baseMapper.selectEqpStatusChart();
+        // TODO: 2020/5/8 尽量补齐其他状态,若状态不存在,则补0
         return baseMapper.selectEqpStatusChart();
     }
 

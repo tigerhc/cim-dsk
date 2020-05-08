@@ -56,10 +56,8 @@ public class MesTrackController extends BaseCRUDController<RmsRecipe> {
     }
 
     @RequestMapping(value = "test2", method = { RequestMethod.GET, RequestMethod.POST })
-    public void test2(Model model, @RequestParam String EQP_ID, HttpServletRequest request, HttpServletResponse response) {
-        logger.info("receive :"+EQP_ID);
-        preList(model, request, response);
-        String content = JSON.toJSONString(EQP_ID);
+    public void test2(Model model, HttpServletRequest request, HttpServletResponse response) {
+        String content = "111";
         ServletUtils.printJson(response,content);
     }
 
