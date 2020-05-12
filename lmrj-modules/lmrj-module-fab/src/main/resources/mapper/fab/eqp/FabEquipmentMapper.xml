@@ -5,6 +5,8 @@
 	<sql id="Base_Column_List" >
        t.id,
        t.eqp_id,
+       t.eqp_name,
+       t.eqp_no,
        t.office_id,
        t.step_id,
        t.step_code,
