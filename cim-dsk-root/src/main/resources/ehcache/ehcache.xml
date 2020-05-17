@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache name="lmrj-lmrj-mybatis">
+<ehcache name="lmrj-lmrj-mybatis" updateCheck="false">
 
 	<diskStore path="java.io.tmpdir" />
 
@@ -35,23 +35,23 @@
 		eternal="false" timeToIdleSeconds="3600" timeToLiveSeconds="0"
 		overflowToDisk="false" statistics="true">
 	</cache>
-	
+
 	<cache name="sysCache" maxEntriesLocalHeap="2000" eternal="false"
 		timeToIdleSeconds="3600" timeToLiveSeconds="0" overflowToDisk="false"
 		statistics="true">
 	</cache>
-	
+
 	<cache name="userCache" maxEntriesLocalHeap="2000" eternal="false"
 		timeToIdleSeconds="3600" timeToLiveSeconds="0" overflowToDisk="false"
 		statistics="true">
 	</cache>
-	
+
 	<!--网页解析缓存-->
 	<cache name="htmlComponentCache" maxEntriesLocalHeap="2000" eternal="true"
 		timeToLiveSeconds="0" timeToIdleSeconds="0" overflowToDisk="false"
 		statistics="true">
 	</cache>
-	
+
 	<!--HQL SQL解析缓存-->
 	<cache name="dynamicCache" maxEntriesLocalHeap="2000" eternal="true"
 		timeToLiveSeconds="0" timeToIdleSeconds="0" overflowToDisk="false"

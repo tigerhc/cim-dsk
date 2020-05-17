@@ -1,9 +1,11 @@
 package com.lmrj.fab.eqp.mapper;
 
-import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.fab.eqp.entity.FabEquipment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.gzst.gov.cn
@@ -26,5 +28,6 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
    * @return
       */
   Integer updateActiveFlag(@Param("id") String id, @Param("activeFlag") String activeFlag);
-    
+  List<String> eqpIdlist();
+
 }

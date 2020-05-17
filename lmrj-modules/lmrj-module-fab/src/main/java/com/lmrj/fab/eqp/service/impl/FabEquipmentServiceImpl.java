@@ -39,4 +39,9 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
         }
         return fabEquipmentList.get(0);
     }
+
+    @Override
+    public List<String> eqpIdlist() {
+        return baseMapper.eqpIdlist();
+    }
 }

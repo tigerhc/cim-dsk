@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.common.collect.Lists;
 import com.lmrj.cim.utils.OfficeUtils;
@@ -16,6 +17,7 @@ import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -70,6 +72,23 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
     @Autowired
     private IFabEquipmentService fabEquipmentService;
+
+
+    /**
+     * 设备列表下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/eqpIdlist", method = { RequestMethod.GET, RequestMethod.POST })
+    public void eqpIdlist(Model model, HttpServletRequest request,
+                          HttpServletResponse response) {
+        List<String> eqpids = fabEquipmentService.eqpIdlist();
+        String content = JSON.toJSONString(eqpids);
+        ServletUtils.printJson(response, content);
+    }
+
 
     /**
      * 在返回数据之前编辑数据

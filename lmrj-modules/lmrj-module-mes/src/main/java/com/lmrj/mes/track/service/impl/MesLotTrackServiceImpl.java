@@ -6,11 +6,13 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -45,6 +47,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IMesLotTrackLogService mesLotTrackLogService;
     @Autowired
     IFabEquipmentService fabEquipmentService;
+    @Autowired
+    IFabEquipmentStatusService fabEquipmentStatusService;
 
     public MesResult trackin4DSK(String eqpId, String productionName,String productionNo,String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok("default");
@@ -96,6 +100,20 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 //result.setContent(content);
                 //简单处理
                 //result.setContent(recipeCode);
+            }
+        }
+
+        //直接更新fab status
+        log.info("更新SIM-DM线状态数据, {}, {}", lotNo, recipeCode);
+        if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
+            if("SIM-DM1".equals(eqpId)){
+                fabEquipmentStatusService.updateStatus("SIM-DM1","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM2","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM3","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM4","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM5","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM6","RUN", lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus("SIM-DM7","RUN", lotNo, recipeCode);
             }
         }
         return result;

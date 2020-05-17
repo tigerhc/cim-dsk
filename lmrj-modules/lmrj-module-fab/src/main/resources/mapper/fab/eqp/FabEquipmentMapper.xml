@@ -33,5 +33,9 @@
 		update FAB_EQUIPMENT set ACTIVE_FLAG = #{activeFlag} where id = #{id}
 	</update>
 
+       <select id="eqpIdlist" resultType="string">
+              select eqp_id from fab_equipment where del_flag = '0' and active_flag='1'
+               order by sort_code, step_id
+       </select>
 
 </mapper>
