@@ -18,5 +18,5 @@ import java.util.Map;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
-    List<Map> pdtChart2(String line);
+    List<Map> pdtChart(String line);
 }

@@ -1,12 +1,20 @@
 package com.lmrj.edc.lot.controller;
 
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
+import com.lmrj.edc.lot.service.IRptLotYieldDayService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,4 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiresPathPermission("edc:rptlotyieldday")
 public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay> {
 
+    @Autowired
+    private IRptLotYieldDayService rptLotYieldDayService;
+    // 获取产量
+    @RequestMapping("/pdtChart")
+    public Response findProduction(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response) {
+        Response res=new Response();
+        List<Map> maps =  rptLotYieldDayService.pdtChart("");
+        res.put("yield",maps);
+        return res;
+    }
 }

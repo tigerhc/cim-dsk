@@ -89,6 +89,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         map.put("METHOD", "TRACKIN");
         map.put("LOT_NO", lotNo);
         map.put("EQP_ID", eqpId);
+        map.put("ORDER_NO", orderNo);
+        map.put("PRODUCTION_NO", productionNo);
+        map.put("PRODUCTION_NAME", productionName);
+
         String bc = "SIM-BC1";
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
 

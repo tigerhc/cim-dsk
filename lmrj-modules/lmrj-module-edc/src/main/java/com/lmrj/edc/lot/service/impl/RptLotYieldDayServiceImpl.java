@@ -34,7 +34,7 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Override
-    public List<Map> pdtChart2(String line) {
+    public List<Map> pdtChart(String line) {
         List<Map> list = baseMapper.selectDaypdt("", "", "SIM");
         List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield();
         Map<String, Integer> planYieldmap = Maps.newHashMap();
