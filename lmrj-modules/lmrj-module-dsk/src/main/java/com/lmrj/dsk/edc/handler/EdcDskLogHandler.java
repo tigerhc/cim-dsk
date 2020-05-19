@@ -87,6 +87,7 @@ public class EdcDskLogHandler {
                     edcDskLogProduction.setEqpNo(fabEquipment.getEqpNo());
                     edcDskLogProduction.setEqpModelId(fabEquipment.getModelId());
                     edcDskLogProduction.setEqpModelName(fabEquipment.getModelName());
+                    edcDskLogProduction.setJudgeResult("Y");
                 });
             }
 
