@@ -1,4 +1,4 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.Dict;

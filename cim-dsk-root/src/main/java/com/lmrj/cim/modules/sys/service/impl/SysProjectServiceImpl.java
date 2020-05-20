@@ -1,6 +1,6 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
-import com.lmrj.cim.sys.service.ISysProjectService;
+import com.lmrj.cim.modules.sys.service.ISysProjectService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.SysProject;
 import com.lmrj.cim.modules.sys.mapper.SysProjectMapper;

@@ -1,4 +1,4 @@
-package com.lmrj.cim.sys.service;
+package com.lmrj.cim.modules.sys.service;
 
 
 /**

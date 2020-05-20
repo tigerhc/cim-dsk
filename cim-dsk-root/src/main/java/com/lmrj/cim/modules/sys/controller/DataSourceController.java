@@ -2,7 +2,7 @@ package com.lmrj.cim.modules.sys.controller;
 
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.sys.entity.DataSource;
-import com.lmrj.cim.sys.service.IDataSourceService;
+import com.lmrj.cim.modules.sys.service.IDataSourceService;
 import com.lmrj.core.entity.ResponseError;
 import com.lmrj.cim.modules.sys.data.SysDatabaseEnum;
 import com.lmrj.common.http.PageResponse;

@@ -19,7 +19,7 @@ import com.lmrj.core.sys.entity.Role;
 import com.lmrj.core.sys.entity.SysProject;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.core.sys.entity.UserRole;
-import com.lmrj.cim.sys.service.ISysProjectService;
+import com.lmrj.cim.modules.sys.service.ISysProjectService;
 import com.lmrj.core.sys.service.IUserService;
 import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.cim.utils.PageRequest;

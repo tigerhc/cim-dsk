@@ -1,8 +1,13 @@
 package com.lmrj.cim.modules.sys.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.core.sys.entity.Attachment;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -17,5 +22,5 @@ import org.apache.ibatis.annotations.Mapper;
 */
 @Mapper
 public interface AttachmentMapper extends BaseMapper<Attachment> {
-
+    List<Attachment> selectAttachmentPage(Page<Attachment> page, @Param("ew") Wrapper<Attachment> wrapper);
 }

@@ -1,4 +1,4 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.cim.modules.sys.mapper.OrganizationMapper;

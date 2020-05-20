@@ -9,7 +9,7 @@ import com.lmrj.core.sys.entity.Menu;
 import com.lmrj.core.sys.entity.Role;
 import com.lmrj.core.log.LogType;
 import com.lmrj.core.sys.service.IMenuService;
-import com.lmrj.cim.sys.service.IRoleMenuService;
+import com.lmrj.cim.modules.sys.service.IRoleMenuService;
 import com.lmrj.core.sys.service.IRoleService;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;

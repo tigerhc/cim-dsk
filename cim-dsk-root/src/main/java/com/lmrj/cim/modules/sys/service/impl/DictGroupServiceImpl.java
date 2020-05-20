@@ -1,6 +1,6 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
-import com.lmrj.cim.sys.service.IDictGroupService;
+import com.lmrj.cim.modules.sys.service.IDictGroupService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.DictGroup;
 import com.lmrj.cim.modules.sys.mapper.DictGroupMapper;

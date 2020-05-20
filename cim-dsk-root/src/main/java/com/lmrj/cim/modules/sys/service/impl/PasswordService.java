@@ -1,4 +1,4 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
 import com.lmrj.cim.config.autoconfigure.ShiroConfigProperties;
 import org.apache.shiro.crypto.RandomNumberGenerator;

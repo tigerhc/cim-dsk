@@ -124,7 +124,7 @@ public class DashboardServiceImpl  implements IDashboardService {
         //"tool_stat":"PM"
         edcAmsRecordList.forEach(edcAmsRecord -> {
             FipinqtoolOA fipinqtoolOA = new FipinqtoolOA();
-            fipinqtoolOA.setAlarm_code("故障");
+            fipinqtoolOA.setAlarm_code(edcAmsRecord.getAlarmName());
             String time = DateUtil.formatDate(edcAmsRecord.getStartDate(), "yyyy-MM-dd HH:mm:ss");
             fipinqtoolOA.setEvt_timestamp(time);
             fipinqtoolOA.setStart_timestamp(time);

@@ -1,7 +1,7 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
 
-import com.lmrj.cim.sys.service.ISettingService;
+import com.lmrj.cim.modules.sys.service.ISettingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

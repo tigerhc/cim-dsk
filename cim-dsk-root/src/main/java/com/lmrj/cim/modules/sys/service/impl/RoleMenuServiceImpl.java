@@ -1,6 +1,6 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
-import com.lmrj.cim.sys.service.IRoleMenuService;
+import com.lmrj.cim.modules.sys.service.IRoleMenuService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.util.lang.StringUtil;

@@ -5,7 +5,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.log.LogType;
 import com.lmrj.core.sys.entity.DictGroup;
 import com.lmrj.core.sys.entity.Role;
-import com.lmrj.cim.sys.service.IDictGroupService;
+import com.lmrj.cim.modules.sys.service.IDictGroupService;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mvc.controller.BaseBeanController;

@@ -1,6 +1,6 @@
-package com.lmrj.cim.sys.service.impl;
+package com.lmrj.cim.modules.sys.service.impl;
 
-import com.lmrj.cim.sys.service.IDataSourceService;
+import com.lmrj.cim.modules.sys.service.IDataSourceService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.DataSource;
 import com.lmrj.cim.modules.sys.mapper.DataSourceMapper;
