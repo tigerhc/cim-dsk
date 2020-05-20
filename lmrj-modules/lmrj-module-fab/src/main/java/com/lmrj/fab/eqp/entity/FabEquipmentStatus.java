@@ -43,5 +43,14 @@ public class FabEquipmentStatus extends BaseDataEntity {
     /**锁机标志*/
     @TableField(value = "lock_flag")
     private String lockFlag;
+    /**日投入数*/
+    @TableField(value = "day_yield")
+    private Integer dayYield;
+    /**批次产量*/
+    @TableField(value = "lot_yield")
+    private Integer lotYield;
+    /**批次设备产量*/
+    @TableField(value = "lot_yield_eqp")
+    private Integer lotYieldEqp;
 
 }

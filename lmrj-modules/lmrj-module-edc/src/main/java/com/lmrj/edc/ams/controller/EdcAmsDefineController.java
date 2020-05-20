@@ -79,9 +79,9 @@ public class EdcAmsDefineController extends BaseCRUDController<EdcAmsDefine> {
         //entity.setEdcAmsDefineI18nList(edcParamRecordDtlList);
     }
 
-    @PutMapping("/active_flag/{alarmId}/{flag}")
-    public Response editFlag(@PathVariable String alarmId, @PathVariable String flag) {
-        edcAmsDefineService.editFlag(alarmId, flag);
+    @PutMapping("/active_flag/{id}/{flag}")
+    public Response editFlag(@PathVariable String id, @PathVariable String flag) {
+        edcAmsDefineService.editFlag(id, flag);
         return Response.ok("修改成功");
     }
 

@@ -56,6 +56,20 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if(fabEquipment == null){
             return MesResult.error("eqp not found");
         }
+
+        MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
+        mesLotTrackLog.setEqpId(eqpId);
+        mesLotTrackLog.setLotNo(lotNo);
+        mesLotTrackLog.setProductionName(productionName);
+        mesLotTrackLog.setProductionNo(productionNo);
+        mesLotTrackLog.setOrderNo(orderNo);
+        mesLotTrackLog.setCreateBy(opId);
+        mesLotTrackLog.setEventCode("TRACKIN");
+        mesLotTrackLogService.insert(mesLotTrackLog);
+
+        if("SIM-DM1".equals(eqpId) || "SIM-FP".equals(eqpId) ){
+            return trackin4DSKLine( eqpId,  productionName, productionNo, orderNo,  lotNo,  recipeCode,  opId);
+        }
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
         MesLotTrack mesLotTrack = new MesLotTrack();
         if (mesLotTrackList.size() > 0) {
@@ -73,16 +87,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
 
         this.insertOrUpdate(mesLotTrack);
-
-        MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
-        mesLotTrackLog.setEqpId(eqpId);
-        mesLotTrackLog.setLotNo(lotNo);
-        mesLotTrackLog.setProductionName(productionName);
-        mesLotTrackLog.setProductionNo(productionNo);
-        mesLotTrackLog.setOrderNo(orderNo);
-        mesLotTrackLog.setCreateBy(opId);
-        mesLotTrackLog.setEventCode("TRACKIN");
-        mesLotTrackLogService.insert(mesLotTrackLog);
 
         //发送至EAP客户端 Map
         Map<String, String> map = Maps.newHashMap();
@@ -109,15 +113,80 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
         //直接更新fab status
         log.info("更新SIM-DM线状态数据, {}, {}", lotNo, recipeCode);
-        if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
-            if("SIM-DM1".equals(eqpId)){
-                fabEquipmentStatusService.updateStatus("SIM-DM1","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM2","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM3","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM4","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM5","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM6","RUN", lotNo, recipeCode);
-                fabEquipmentStatusService.updateStatus("SIM-DM7","RUN", lotNo, recipeCode);
+        if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
+            fabEquipmentStatusService.updateStatus(eqpId, "RUN", lotNo, recipeCode);
+        }
+        return result;
+    }
+
+    /**
+     * 针对线别track in,直接更新这条线全部设备
+     * @param lineId
+     * @param productionName
+     * @param productionNo
+     * @param orderNo
+     * @param lotNo
+     * @param recipeCode
+     * @param opId
+     * @return
+     */
+    public MesResult trackin4DSKLine(String lineId, String productionName,String productionNo,String orderNo, String lotNo, String recipeCode, String opId){
+
+        MesResult result = MesResult.ok("default");
+        String[] eqpids = {"SIM-PRINTER1", "SIM-YGAZO1",
+                "SIM-DM1",
+                "SIM-DM2",
+                "SIM-DM3",
+                "SIM-DM4",
+                "SIM-DM5",
+                "SIM-DM6",
+                "SIM-DM7",
+                "SIM-REFLOW1",
+                "SIM-HGAZO1"
+        };
+
+        for(String eqpId: eqpids){
+            List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
+            MesLotTrack mesLotTrack = new MesLotTrack();
+            if (mesLotTrackList.size() > 0) {
+                mesLotTrack = mesLotTrackList.get(0);
+                //mesLotTrack.setStartTime(new Date());
+            } else {
+                mesLotTrack.setStartTime(new Date());
+            }
+            mesLotTrack.setEqpId(eqpId);
+            mesLotTrack.setLotNo(lotNo);
+            mesLotTrack.setCreateBy(opId);
+            mesLotTrack.setProductionName(productionName);
+            mesLotTrack.setProductionNo(productionNo);
+            mesLotTrack.setOrderNo(orderNo);
+            this.insertOrUpdate(mesLotTrack);
+
+            //直接更新fab status
+            log.info("[{}]更新SIM-DM线状态数据, {}, {}", eqpId, lotNo, recipeCode);
+            if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
+                fabEquipmentStatusService.updateStatus(eqpId,"RUN", lotNo, recipeCode);
+            }
+
+            //发送至EAP客户端 Map
+            Map<String, String> map = Maps.newHashMap();
+            map.put("METHOD", "TRACKIN");
+            map.put("LOT_NO", lotNo);
+            map.put("EQP_ID", eqpId);
+            map.put("ORDER_NO", orderNo);
+            map.put("PRODUCTION_NO", productionNo);
+            map.put("PRODUCTION_NAME", productionName);
+            String bc = "SIM-BC1";
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.flag)) {
+                    //Map<String, String> content = Maps.newHashMap();
+                    //content.put("RECIPE_NAME", recipeCode);
+                    //result.setContent(content);
+                    //简单处理
+                    //result.setContent(recipeCode);
+                }
             }
         }
         return result;
@@ -129,6 +198,22 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if(fabEquipment == null){
             return MesResult.error("eqp not found");
         }
+
+        MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
+        mesLotTrackLog.setEqpId(eqpId);
+        mesLotTrackLog.setLotNo(lotNo);
+        mesLotTrackLog.setLotYield(Integer.parseInt(yield));
+        mesLotTrackLog.setProductionName(productionName);
+        mesLotTrackLog.setProductionNo(productionNo);
+        mesLotTrackLog.setOrderNo(orderNo);
+        mesLotTrackLog.setCreateBy(opId);
+        mesLotTrackLog.setEventCode("TRACKOUT");
+        mesLotTrackLogService.insert(mesLotTrackLog);
+
+        if("SIM-DM1".equals(eqpId) || "SIM-FP".equals(eqpId)){
+            return trackout4DSKLine(  eqpId,  productionName, productionNo, orderNo,  lotNo,  yield,  recipeCode,  opId);
+        }
+
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
         MesLotTrack mesLotTrack = new MesLotTrack();
         if (mesLotTrackList.size() > 0) {
@@ -145,36 +230,40 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrack.setProductionNo(productionNo);
         mesLotTrack.setOrderNo(orderNo);
         this.insertOrUpdate(mesLotTrack);
+        return result;
+    }
 
-        MesLotTrackLog mesLotTrackLog = new MesLotTrackLog();
-        mesLotTrackLog.setEqpId(eqpId);
-        mesLotTrackLog.setLotNo(lotNo);
-        mesLotTrackLog.setLotYield(Integer.parseInt(yield));
-        mesLotTrackLog.setProductionName(productionName);
-        mesLotTrackLog.setProductionNo(productionNo);
-        mesLotTrackLog.setOrderNo(orderNo);
-        mesLotTrackLog.setCreateBy(opId);
-        mesLotTrackLog.setEventCode("TRACKOUT");
-        mesLotTrackLogService.insert(mesLotTrackLog);
+    public MesResult trackout4DSKLine(String lineId, String productionName,String productionNo,String orderNo, String lotNo, String yield, String recipeCode, String opId) {
+        MesResult result = MesResult.ok("default");
+        String[] eqpids = {"SIM-PRINTER1", "SIM-YGAZO1",
+                "SIM-DM1",
+                "SIM-DM2",
+                "SIM-DM3",
+                "SIM-DM4",
+                "SIM-DM5",
+                "SIM-DM6",
+                "SIM-DM7",
+                "SIM-REFLOW1",
+                "SIM-HGAZO1"
+        };
+        for(String eqpId: eqpids){
+            List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo));
 
-        //发送至EAP客户端 Map
-        //Map<String, String> map = Maps.newHashMap();
-        //map.put("METHOD", "TRACKOUT");
-        //map.put("LOT_NO", lotNo);
-        //map.put("EQP_ID", eqpId);
-        //String bc = "SIM-BC1";
-        //String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
-        //
-        //if (replyMsg != null) {
-        //    result = JsonUtil.from(replyMsg, MesResult.class);
-        //    if ("Y".equals(result.flag)) {
-        //        //Map<String, String> content = Maps.newHashMap();
-        //        //content.put("RECIPE_NAME", recipeCode);
-        //        //result.setContent(content);
-        //        //简单处理
-        //        //result.setContent(recipeCode);
-        //    }
-        //}
+            if (mesLotTrackList.size() == 0) {
+                return MesResult.error("please track in first");
+            }
+            MesLotTrack mesLotTrack = mesLotTrackList.get(0);
+            mesLotTrack.setEndTime(new Date());
+            mesLotTrack.setEqpId(eqpId);
+            mesLotTrack.setLotNo(lotNo);
+            mesLotTrack.setLotYield(Integer.parseInt(yield));
+            mesLotTrack.setUpdateBy(opId);
+            mesLotTrack.setProductionName(productionName);
+            mesLotTrack.setProductionNo(productionNo);
+            mesLotTrack.setOrderNo(orderNo);
+            this.insertOrUpdate(mesLotTrack);
+
+        }
         return result;
     }
 

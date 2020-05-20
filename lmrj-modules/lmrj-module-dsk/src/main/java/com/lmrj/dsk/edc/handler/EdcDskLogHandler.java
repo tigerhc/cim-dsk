@@ -95,14 +95,19 @@ public class EdcDskLogHandler {
         }
         EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
         int lotYield = lastProduction.getLotYield();
+        int dayYield = lastProduction.getDayYield();
         String lotNo =  lastProduction.getLotNo();
         String eqpId =  lastProduction.getEqpId();
         String recipeCode =  lastProduction.getRecipeCode();
+        String productionNo =  lastProduction.getProductionNo();
+        String orderNo =  lastProduction.getOrderNo();
 
         boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp="+lotYield , new EntityWrapper().eq("eqp_id", eqpId).eq("lot_no", lotNo));
         if(!updateFlag){
             MesLotTrack mesLotTrack = new MesLotTrack();
             mesLotTrack.setEqpId(eqpId);
+            mesLotTrack.setProductionNo(productionNo);
+            mesLotTrack.setOrderNo(orderNo);
             mesLotTrack.setLotNo(lotNo);
             mesLotTrack.setCreateBy("EQP");
             mesLotTrack.setLotYieldEqp(lotYield);
@@ -111,7 +116,7 @@ public class EdcDskLogHandler {
         }
 
         if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
-            fabEquipmentStatusService.updateStatus(eqpId,"", lotNo, recipeCode);
+            fabEquipmentStatusService.updateYield(eqpId,"", lotNo, recipeCode, lotYield, dayYield);
         }
     }
 

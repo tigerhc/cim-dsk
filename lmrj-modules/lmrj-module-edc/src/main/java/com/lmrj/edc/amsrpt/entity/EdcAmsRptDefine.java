@@ -45,6 +45,9 @@ public class EdcAmsRptDefine extends BaseDataEntity {
     /**周期(时间间隔)*/
     @TableField(value = "repeat_cycle")
     private Integer repeatCycle;
+    /**动作CODE*/
+    @TableField(value = "action_code")
+    private String actionCode;
     /**站点ID*/
     @TableField(value = "station_id")
     private String stationId;

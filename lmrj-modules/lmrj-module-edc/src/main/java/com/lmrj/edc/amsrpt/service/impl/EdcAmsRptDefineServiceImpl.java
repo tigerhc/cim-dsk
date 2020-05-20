@@ -2,19 +2,20 @@ package com.lmrj.edc.amsrpt.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
-import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefineAct;
+import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
 import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefineActEmail;
+import com.lmrj.edc.amsrpt.mapper.EdcAmsRptDefineMapper;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineActEmailService;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineActService;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
-import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
-import com.lmrj.edc.amsrpt.mapper.EdcAmsRptDefineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -42,10 +43,10 @@ public class EdcAmsRptDefineServiceImpl  extends CommonServiceImpl<EdcAmsRptDefi
     @Override
     public EdcAmsRptDefine selectById(Serializable id){
         EdcAmsRptDefine edcParamRecord = super.selectById(id);
-        List<EdcAmsRptDefineActEmail> edcParamRecordDtlList = edcAmsRptDefineActEmailService.selectList(new EntityWrapper<EdcAmsRptDefineActEmail>(EdcAmsRptDefineActEmail.class).eq("rpt_alarm_id",id));
-        edcParamRecord.setEdcAmsRptDefineActEmailList(edcParamRecordDtlList);
-        List<EdcAmsRptDefineAct> edcAmsRptDefineActList = edcAmsRptDefineActService.selectList(new EntityWrapper<EdcAmsRptDefineAct>(EdcAmsRptDefineAct.class).eq("rpt_alarm_id",id));
-        edcParamRecord.setEdcAmsRptDefineAct(edcAmsRptDefineActList);
+        List<EdcAmsRptDefineActEmail> edcAmsRptDefineActEmailList = edcAmsRptDefineActEmailService.selectList(new EntityWrapper<EdcAmsRptDefineActEmail>(EdcAmsRptDefineActEmail.class).eq("rpt_alarm_id",id));
+        edcParamRecord.setEdcAmsRptDefineActEmailList(edcAmsRptDefineActEmailList);
+        //List<EdcAmsRptDefineAct> edcAmsRptDefineActList = edcAmsRptDefineActService.selectList(new EntityWrapper<EdcAmsRptDefineAct>(EdcAmsRptDefineAct.class).eq("rpt_alarm_id",id));
+        //edcParamRecord.setEdcAmsRptDefineAct(edcAmsRptDefineActList);
         return edcParamRecord;
     }
 
@@ -53,19 +54,39 @@ public class EdcAmsRptDefineServiceImpl  extends CommonServiceImpl<EdcAmsRptDefi
     public boolean insert(EdcAmsRptDefine edcParamRecord) {
         // 保存主表
         super.insert(edcParamRecord);
-        List<EdcAmsRptDefineActEmail> edcParamRecordDtlList = edcParamRecord.getEdcAmsRptDefineActEmailList();
-        for (EdcAmsRptDefineActEmail edcParamRecordDtl : edcParamRecordDtlList) {
-            // 保存字段列表
-            edcParamRecordDtl.setRptAlarmId(edcParamRecord.getId());
+        List<EdcAmsRptDefineActEmail> emailList = edcParamRecord.getEdcAmsRptDefineActEmailList();
+        if(emailList != null){
+            for (EdcAmsRptDefineActEmail email : emailList) {
+                email.setRptAlarmId(edcParamRecord.getId());
+            }
+            edcAmsRptDefineActEmailService.insertBatch(emailList);
         }
-        edcAmsRptDefineActEmailService.insertBatch(edcParamRecordDtlList);
-
-        List<EdcAmsRptDefineAct> edcAmsRptDefineActList = edcParamRecord.getEdcAmsRptDefineAct();
-        for (EdcAmsRptDefineAct edcParamRecordDtl : edcAmsRptDefineActList) {
-            // 保存字段列表
-            edcParamRecordDtl.setRptAlarmId(edcParamRecord.getId());
-        }
-        edcAmsRptDefineActService.insertBatch(edcAmsRptDefineActList);
+        //List<EdcAmsRptDefineAct> edcAmsRptDefineActList = edcParamRecord.getEdcAmsRptDefineAct();
+        //for (EdcAmsRptDefineAct edcParamRecordDtl : edcAmsRptDefineActList) {
+        //    // 保存字段列表
+        //    edcParamRecordDtl.setRptAlarmId(edcParamRecord.getId());
+        //}
+        //edcAmsRptDefineActService.insertBatch(edcAmsRptDefineActList);
         return true;
     }
+
+    @Override
+    public boolean editFlag(String id, String flag) {
+        EdcAmsRptDefine edcAmsRptDefine= super.selectById(id);
+        edcAmsRptDefine.setActiveFlag(flag);
+        this.updateById(edcAmsRptDefine);
+        return true;
+    }
+
+    @Override
+    public boolean deleteById(Serializable id) {
+        super.deleteById(id);
+        //删除细表
+        Map<String, Object> columnMap = new HashMap<String, Object>();
+        columnMap.put("rpt_alarm_id", id);
+        return edcAmsRptDefineActEmailService.deleteByMap(columnMap);
+
+
+    }
+
 }

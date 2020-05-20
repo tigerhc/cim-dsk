@@ -1,21 +1,15 @@
 package com.lmrj.edc.amsrpt.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
-import com.lmrj.edc.ams.service.IEdcAmsDefineService;
-import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
-import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefineAct;
-import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefineActEmail;
-import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
-import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
-import com.lmrj.cim.utils.UserUtil;
-import org.apache.commons.text.StringEscapeUtils;
+import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
+import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -50,15 +44,15 @@ public class EdcAmsRptDefineController extends BaseCRUDController<EdcAmsRptDefin
     private IEdcAmsRptDefineService edcAmsRptDefineService;
 
 
-    @Autowired
-    private IEdcAmsDefineService edcAmsDefineService;
-    public EdcAmsRptDefine get(String id) {
-        if (!ObjectUtil.isNullOrEmpty(id)) {
-            return edcAmsRptDefineService.selectById(id);
-        } else {
-            return newModel();
-        }
-    }
+    //@Autowired
+    //private IEdcAmsDefineService edcAmsDefineService;
+    //public EdcAmsRptDefine get(String id) {
+    //    if (!ObjectUtil.isNullOrEmpty(id)) {
+    //        return edcAmsRptDefineService.selectById(id);
+    //    } else {
+    //        return newModel();
+    //    }
+    //}
 
     @Override
     public void afterAjaxList(PageResponse<EdcAmsRptDefine> pagejson) {
@@ -80,19 +74,17 @@ public class EdcAmsRptDefineController extends BaseCRUDController<EdcAmsRptDefin
      * @param response
      */
     public void preSave(EdcAmsRptDefine entity, HttpServletRequest request, HttpServletResponse response) {
-        String edcParamRecordDtlListJson = StringEscapeUtils.unescapeHtml4(request.getParameter("_detail"));
-        String mails=StringEscapeUtils.unescapeHtml4(request.getParameter("_detail_mail"));
-        List<EdcAmsRptDefineAct> edcAmsRptDefineAct = JSONObject.parseArray(edcParamRecordDtlListJson, EdcAmsRptDefineAct.class);
-       List<EdcAmsRptDefineActEmail>  edcAmsRptDefineActEmailList=JSONObject.parseArray(mails, EdcAmsRptDefineActEmail.class);
-        entity.setEdcAmsRptDefineAct(edcAmsRptDefineAct);
-        entity.setEdcAmsRptDefineActEmailList(edcAmsRptDefineActEmailList);
+       // String edcParamRecordDtlListJson = StringEscapeUtils.unescapeHtml4(request.getParameter("_detail"));
+       // String mails=StringEscapeUtils.unescapeHtml4(request.getParameter("_detail_mail"));
+       // List<EdcAmsRptDefineAct> edcAmsRptDefineAct = JSONObject.parseArray(edcParamRecordDtlListJson, EdcAmsRptDefineAct.class);
+       //List<EdcAmsRptDefineActEmail>  edcAmsRptDefineActEmailList=JSONObject.parseArray(mails, EdcAmsRptDefineActEmail.class);
+       // entity.setEdcAmsRptDefineAct(edcAmsRptDefineAct);
+       // entity.setEdcAmsRptDefineActEmailList(edcAmsRptDefineActEmailList);
     }
 
-    @PutMapping("/active_flag/{arm_id}/{flag}")
-    public Response editFlag(@PathVariable String arm_id, @PathVariable String flag) {
-        EdcAmsRptDefine edcAmsRptDefine=edcAmsRptDefineService.selectById(arm_id);
-        edcAmsRptDefine.setActiveFlag(flag);
-        edcAmsRptDefineService.updateById(edcAmsRptDefine);
+    @PutMapping("/active_flag/{id}/{flag}")
+    public Response editFlag(@PathVariable String id, @PathVariable String flag) {
+        edcAmsRptDefineService.editFlag(id, flag);
         return Response.ok("修改成功");
     }
 }

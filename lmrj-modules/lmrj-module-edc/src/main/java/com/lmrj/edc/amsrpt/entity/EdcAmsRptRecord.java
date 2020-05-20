@@ -1,9 +1,12 @@
 package com.lmrj.edc.amsrpt.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -44,8 +47,19 @@ public class EdcAmsRptRecord extends BaseDataEntity {
     /**设备型号名称*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    /**作业指示书机种*/
+    @TableField(value = "production_no")
+    private String productionNo;
+    /**作业指示书批量*/
+    @TableField(value = "lot_no")
+    private String lotNo;
+    /**处理结果*/
+    @TableField(value = "deal_flag")
+    private String dealFlag;
     /**处理时间*/
     @TableField(value = "deal_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date dealDate;
     /**处理人ID*/
     @TableField(value = "deal_user_id")

@@ -11,6 +11,9 @@
        t.alarm_name,
        t.eqp_model_id,
        t.eqp_model_name,
+       t.production_no,
+       t.lot_no,
+       t.deal_flag
        t.deal_date,
        t.deal_user_id,
        t.deal_user_name,

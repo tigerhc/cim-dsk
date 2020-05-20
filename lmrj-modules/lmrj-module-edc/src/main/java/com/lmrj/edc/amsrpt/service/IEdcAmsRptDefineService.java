@@ -15,5 +15,5 @@ import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcAmsRptDefineService extends ICommonService<EdcAmsRptDefine> {
-
+    boolean editFlag(String id, String flag);
 }

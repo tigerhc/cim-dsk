@@ -35,8 +35,8 @@ public class EdcAmsDefineServiceImpl  extends CommonServiceImpl<EdcAmsDefineMapp
     @Autowired
     private IEdcAmsDefineI18nService edcAmsDefineI18nService;
     @Override
-    public boolean editFlag(String alarmId, String flag) {
-        EdcAmsDefine edcAmsDefine= this.selectById(alarmId);
+    public boolean editFlag(String id, String flag) {
+        EdcAmsDefine edcAmsDefine= this.selectById(id);
         edcAmsDefine.setMonitorFlag(flag);
         this.updateById(edcAmsDefine);
         return true;

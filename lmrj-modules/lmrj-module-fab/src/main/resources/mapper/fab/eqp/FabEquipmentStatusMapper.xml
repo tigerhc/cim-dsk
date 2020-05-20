@@ -10,6 +10,9 @@
        t.eqp_status,
        t.connection_status,
        t.recipe_code,
+       t.day_yield,
+       t.lot_yield,
+       t.lot_yield_eqp,
        t.lock_flag,
        t.remarks,
        t.create_by,
@@ -43,6 +46,28 @@
        </if>
       where EQP_ID = #{eqpID}
    </update>
+
+    <update id="updateYield">
+        update FAB_EQUIPMENT_STATUS set  update_date = now()
+        <if test="status != null and status != ''">
+            , EQP_STATUS = #{status}
+        </if>
+        <if test="lotNo != null and lotNo != ''">
+            , lot_no = #{lotNo}
+        </if>
+        <if test="recipeCode != null and recipeCode != ''">
+            , recipe_code = #{recipeCode}
+        </if>
+        <if test="lotYield != null and lotYield != ''">
+            , lot_yield = #{lotYield}
+        </if>
+        <if test="dayYield != null and dayYield != ''">
+            , day_yield = #{dayYield}
+        </if>
+        where EQP_ID = #{eqpID}
+    </update>
+
+
 
    <update id="updateLot">
       update FAB_EQUIPMENT_STATUS set LOT_NO = #{lotNo}, update_date = now() where EQP_ID = #{eqpID}

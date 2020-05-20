@@ -20,6 +20,7 @@ import java.util.Map;
 public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentStatus> {
 
     int updateStatus(String eqpID, String status, String lotNo, String recipeCode);
+    int updateYield(String eqpID, String status, String lotNo, String recipeCode, int lotYield, int dayYield);
 
     int updateLot(String eqpID, String lotId);
 
