@@ -8,11 +8,13 @@ import com.lmrj.edc.amsrpt.mapper.EdcAmsRptDefineMapper;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineActEmailService;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineActService;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,42 @@ public class EdcAmsRptDefineServiceImpl  extends CommonServiceImpl<EdcAmsRptDefi
         //    edcParamRecordDtl.setRptAlarmId(edcParamRecord.getId());
         //}
         //edcAmsRptDefineActService.insertBatch(edcAmsRptDefineActList);
+        return true;
+    }
+
+    @Override
+    public boolean insertOrUpdate(EdcAmsRptDefine edcParamRecord) {
+        try {
+            // 获得以前的数据
+            List<EdcAmsRptDefineActEmail> oldEmailList = edcAmsRptDefineActEmailService.selectList(new EntityWrapper<EdcAmsRptDefineActEmail>(EdcAmsRptDefineActEmail.class).eq("rpt_alarm_id", edcParamRecord.getId()));
+            // 字段
+            List<EdcAmsRptDefineActEmail> emailList = edcParamRecord.getEdcAmsRptDefineActEmailList();
+            // 更新主表
+            super.insertOrUpdate(edcParamRecord);
+            List<String> newsEdcAmsRptDefineActEmailIdList = new ArrayList<String>();
+            // 保存或更新数据
+            for (EdcAmsRptDefineActEmail email : emailList) {
+                // 设置不变更的字段
+                if (StringUtil.isEmpty(email.getId())) {
+                    // 保存字段列表
+                    email.setRptAlarmId(edcParamRecord.getId());
+                    edcAmsRptDefineActEmailService.insert(email);
+                } else {
+                    edcAmsRptDefineActEmailService.insertOrUpdate(email);
+                }
+                newsEdcAmsRptDefineActEmailIdList.add(email.getId());
+            }
+            // 删除没有找到ID的数据,说明此ID已在前台删除
+            for (EdcAmsRptDefineActEmail edcAmsRptDefineActEmail : oldEmailList) {
+                String rmsRecipeBodyId = edcAmsRptDefineActEmail.getId();
+                if (!newsEdcAmsRptDefineActEmailIdList.contains(rmsRecipeBodyId)) {
+                    edcAmsRptDefineActEmailService.deleteById(rmsRecipeBodyId);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
         return true;
     }
 
