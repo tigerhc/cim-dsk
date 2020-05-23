@@ -37,5 +37,7 @@ public class ApsPlanPdtYield extends BaseDataEntity {
     /**投入数*/
     @TableField(value = "plan_qty")
     private Integer planQty;
+    @TableField(value = "sort_no")
+    private Integer sortNo;
 
 }

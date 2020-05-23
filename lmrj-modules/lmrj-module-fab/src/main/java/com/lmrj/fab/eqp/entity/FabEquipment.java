@@ -51,6 +51,8 @@ public class FabEquipment extends BaseDataEntity {
 	@Excel(name = "工序编码", orderNum = "5")
 	@TableField(value = "step_code")
 	private String stepCode;
+	@TableField(value = "step_yield_flag")
+	private String stepYieldFlag;
 	/**有效标志*/
 	@Excel(name = "有效标记", orderNum = "6")
 	@TableField(value = "active_flag")

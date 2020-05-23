@@ -29,6 +29,7 @@ public interface FabEquipmentStatusMapper extends BaseMapper<FabEquipmentStatus>
             , @Param("lotYield") int lotYield, @Param("dayYield") int dayYield);
     int updateLot(@Param("eqpID") String eqpID, @Param("lotNo") String lotNo);
 
+    List<Map> selectYield(@Param("lineNo") String lineNo);
     List<FabEquipmentStatus> selectEqpStatus(@Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab);
 
 }

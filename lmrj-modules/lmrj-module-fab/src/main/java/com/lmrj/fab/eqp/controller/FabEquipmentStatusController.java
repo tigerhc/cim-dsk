@@ -8,6 +8,7 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,9 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     @Autowired
     private IFabEquipmentStatusService fabEquipmentStatusService;
 
+    @Autowired
+    private IFabEquipmentService fabEquipmentService;
+
     @GetMapping("chart")
     public void chart(HttpServletRequest request) {
         List<Map> map=fabEquipmentStatusService.selectEqpStatusChart();
@@ -68,5 +72,21 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
             FastJsonUtils.print(fabEquipmentStatusList);
         }
         FastJsonUtils.print(fabEquipmentStatusList);
+    }
+
+    @GetMapping("listPdtStatus")
+    public void listPdtStatus(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response){
+        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo);
+        //List<FabEquipment> fabEquipmentList =  fabEquipmentService.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo).eq("step_yield_flag","1"));
+        //List<String> eqpIds = Lists.newArrayList();
+        //fabEquipmentList.forEach(fabEquipment -> {
+        //    eqpIds.add(fabEquipment.getEqpId());
+        //});
+        //List<FabEquipmentStatus> fabEquipmentStatusList = fabEquipmentStatusService.selectList(new EntityWrapper<FabEquipmentStatus>().in("eqp_id", eqpIds));
+        //List<>
+        //if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
+        //    FastJsonUtils.print(fabEquipmentStatusList);
+        //}
+        FastJsonUtils.print(maps);
     }
 }

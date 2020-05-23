@@ -1,9 +1,14 @@
 package com.lmrj.edc.amsrpt.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.lmrj.core.entity.BaseDataEntity;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lmrj.common.mvc.entity.AbstractEntity;
 import lombok.Data;
+
 import java.util.Date;
 
 /**
@@ -21,8 +26,9 @@ import java.util.Date;
 @TableName("edc_ams_rpt_record_dtl")
 @SuppressWarnings("serial")
 @Data
-public class EdcAmsRptRecordDtl extends BaseDataEntity {
-
+public class EdcAmsRptRecordDtl extends AbstractEntity {
+    @TableId(value = "id", type = IdType.UUID)
+    protected String id;
     /**REPEAT ALARM ID*/
     @TableField(value = "rpt_alarm_id")
     private String rptAlarmId;
@@ -46,9 +52,13 @@ public class EdcAmsRptRecordDtl extends BaseDataEntity {
     private String alarmSwitch;
     /**开始时间*/
     @TableField(value = "start_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date startDate;
     /**结束时间*/
     @TableField(value = "end_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date endDate;
 
 }

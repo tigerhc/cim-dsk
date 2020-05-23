@@ -9,6 +9,7 @@
        t.plan_date,
        t.lot_qty,
        t.plan_qty,
+        t.sort_no,
        t.remarks,
        t.create_by,
        t.create_date,

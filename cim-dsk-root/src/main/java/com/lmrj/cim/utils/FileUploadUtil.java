@@ -53,48 +53,55 @@ public class FileUploadUtil {
 		return defaultBaseDir;
 	}
 
-	/**
-	 * 以默认配置进行文件上传
-	 *
-	 * @param request
-	 *            当前请求
-	 * @param file
-	 *            上传的文件
-	 * @param result
-	 *            添加出错信息
-	 * @return
-	 * @throws IOException
-	 * @throws FileNameLengthLimitExceededException
-	 * @throws InvalidExtensionException
-	 * @throws FileSizeLimitExceededException
-	 */
-	public static final String upload(HttpServletRequest request, MultipartFile file)
-			throws FileSizeLimitExceededException, InvalidExtensionException, FileNameLengthLimitExceededException,
-			IOException {
-		return upload(request, file, DEFAULT_ALLOWED_EXTENSION);
-	}
 
 	/**
-	 * 以默认配置进行文件上传
+	 * 文件上传
 	 *
-	 * @param request
-	 *            当前请求
+	 * @param baseDir
+	 *            相对应用的基目录
 	 * @param file
 	 *            上传的文件
-	 * @param result
-	 *            添加出错信息
 	 * @param allowedExtension
-	 *            允许上传的文件类型
-	 * @return
-	 * @throws IOException
-	 * @throws FileNameLengthLimitExceededException
+	 *            允许的文件类型 null 表示允许所有
+	 * @param maxSize
+	 *            最大上传的大小 -1 表示不限制
+	 * @param needDatePathAndRandomName
+	 *            是否需要日期目录和随机文件名前缀
+	 * @return 返回上传成功的文件名
 	 * @throws InvalidExtensionException
+	 *             如果MIME类型不允许
 	 * @throws FileSizeLimitExceededException
+	 *             如果超出最大大小
+	 * @throws FileNameLengthLimitExceededException
+	 *             文件名太长
+	 * @throws IOException
+	 *             比如读写文件出错时
 	 */
-	public static final String upload(HttpServletRequest request, MultipartFile file, String[] allowedExtension)
-			throws FileSizeLimitExceededException, InvalidExtensionException, FileNameLengthLimitExceededException,
-			IOException {
-		return upload(request, getDefaultBaseDir(), file, allowedExtension, DEFAULT_MAX_SIZE, true);
+	public static final String upload(String baseDir, MultipartFile file,
+                                      String[] allowedExtension, long maxSize, boolean needDatePathAndRandomName)
+			throws InvalidExtensionException, FileSizeLimitExceededException, IOException,
+			FileNameLengthLimitExceededException {
+
+		int fileNamelength = file.getOriginalFilename().length();
+		if (fileNamelength > FileUploadUtil.DEFAULT_FILE_NAME_LENGTH) {
+			throw new FileNameLengthLimitExceededException(file.getOriginalFilename(), fileNamelength,
+					FileUploadUtil.DEFAULT_FILE_NAME_LENGTH);
+		}
+
+		assertAllowed(file, allowedExtension, maxSize);
+		String filename = extractFilename(file, baseDir, needDatePathAndRandomName);
+		//extractUploadDir(request);
+		File desc = getAbsoluteFile("/", filename);
+		//File desc = getAbsoluteFile(extractUploadDir(request), filename);
+
+		try{
+			//使用此方法保存必须要绝对路径且文件夹必须已存在,否则报错
+			file.transferTo(desc.getAbsoluteFile());
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return filename;
 	}
 
 	/**
@@ -122,8 +129,8 @@ public class FileUploadUtil {
 	 * @throws IOException
 	 *             比如读写文件出错时
 	 */
-	public static final String upload(HttpServletRequest request, String baseDir, MultipartFile file,
-                                      String[] allowedExtension, long maxSize, boolean needDatePathAndRandomName)
+	public static final String uploadImg(HttpServletRequest request, String baseDir, MultipartFile file,
+									  String[] allowedExtension, long maxSize, boolean needDatePathAndRandomName)
 			throws InvalidExtensionException, FileSizeLimitExceededException, IOException,
 			FileNameLengthLimitExceededException {
 
@@ -135,19 +142,23 @@ public class FileUploadUtil {
 
 		assertAllowed(file, allowedExtension, maxSize);
 		String filename = extractFilename(file, baseDir, needDatePathAndRandomName);
-
-		File desc = getAbsoluteFile(extractUploadDir(request), filename);
-
+		File desc = new File(filename);
+		if (!desc.getParentFile().exists()) {
+			desc.getParentFile().mkdirs();
+		}
+		if (!desc.exists()) {
+			desc.createNewFile();
+		}
 		file.transferTo(desc);
 		return filename;
 	}
 
 	private static final File getAbsoluteFile(String uploadDir, String filename) throws IOException {
 
-		uploadDir = FilenameUtils.normalizeNoEndSeparator(uploadDir);
+		//uploadDir = FilenameUtils.normalizeNoEndSeparator(uploadDir);
+		//File desc = new File(uploadDir + "/" + filename);
 
-		File desc = new File(uploadDir + "/" + filename);
-
+		File desc = new File(filename);
 		if (!desc.getParentFile().exists()) {
 			desc.getParentFile().mkdirs();
 		}

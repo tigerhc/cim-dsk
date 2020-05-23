@@ -106,4 +106,10 @@
         </foreach>
     </select>
 
+    <select id="selectYield" resultType="map">
+        select step_code, max(lot_no) lot_no , sum(lot_yield) lot_yield , min(eqp_status) eqp_status from fab_equipment_status t left join fab_equipment e on t.eqp_id = e.eqp_id
+        where line_no= #{lineNo} and step_yield_flag='1'
+        group by step_code order by e.sort_code
+    </select>
+
 </mapper>

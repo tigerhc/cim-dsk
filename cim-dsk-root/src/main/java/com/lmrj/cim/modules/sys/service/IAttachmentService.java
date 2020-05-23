@@ -23,8 +23,11 @@ import java.util.List;
  * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
  */
 public interface IAttachmentService extends ICommonService<Attachment> {
-    public Attachment upload(HttpServletRequest request, MultipartFile file) throws FileUploadBase.FileSizeLimitExceededException,
+    Attachment upload(HttpServletRequest request, MultipartFile file, String biz, String bizc) throws FileUploadBase.FileSizeLimitExceededException,
             InvalidExtensionException, FileNameLengthLimitExceededException, IOException;
 
-    List<Attachment> selectList(String bizId, String bizCategory);
+    Attachment uploadImg(HttpServletRequest request, MultipartFile file, String biz, String bizc) throws FileUploadBase.FileSizeLimitExceededException,
+            InvalidExtensionException, FileNameLengthLimitExceededException, IOException;
+
+    List<Attachment> selectList(String bizId, String bizCategory,String contentType);
 }

@@ -8,6 +8,7 @@ import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -70,5 +71,7 @@ public class EdcAmsRptRecord extends BaseDataEntity {
     /**处理说明*/
     @TableField(value = "deal_desc")
     private String dealDesc;
+    @TableField(exist = false)
+    private List<EdcAmsRptRecordDtl> edcAmsRptRecordDtlList;
 
 }

@@ -53,6 +53,10 @@ public class AttachmentServiceImpl extends CommonServiceImpl<AttachmentMapper, A
     private String[] allowedExtension;
     @Value("${upload.base.dir}")
     private String baseDir;
+    @Value("${upload.base.imgurl}")
+    private String  baseImgUrl;
+    @Value("${upload.base.imgdir}")
+    private String baseImgDir;
 
     @Override
     public Page<Attachment> selectPage(Page<Attachment> page, Wrapper<Attachment> wrapper) {
@@ -66,7 +70,7 @@ public class AttachmentServiceImpl extends CommonServiceImpl<AttachmentMapper, A
     }
 
     @Override
-    public List<Attachment> selectList(String bizId, String bizCategory ) {
+    public List<Attachment> selectList(String bizId, String bizCategory , String contentType) {
         if(StringUtil.isBlank(bizId)){
             return Lists.newArrayList();
         }
@@ -74,26 +78,48 @@ public class AttachmentServiceImpl extends CommonServiceImpl<AttachmentMapper, A
         if(StringUtil.isNotBlank(bizCategory)){
             wrapper.eq("biz_category", bizCategory);
         }
+        if(StringUtil.isNotBlank(contentType)){
+            wrapper.eq("content_type", contentType);
+        }
         return baseMapper.selectList(wrapper);
     }
 
     @Override
-    public Attachment upload(HttpServletRequest request, MultipartFile file) throws FileSizeLimitExceededException,
+    public Attachment upload(HttpServletRequest request, MultipartFile file, String biz, String bizc) throws FileSizeLimitExceededException,
             InvalidExtensionException, FileNameLengthLimitExceededException, IOException {
-        String url = FileUploadUtil.upload(request, baseDir, file, allowedExtension, maxSize,
-                needDatePathAndRandomName);
+        String ip = IpUtils.getIpAddr(request);
+        return doUpload(file,baseDir, biz, bizc,  ip, "file");
+    }
+
+    @Override
+    public Attachment uploadImg(HttpServletRequest request, MultipartFile file, String biz, String bizc) throws FileSizeLimitExceededException,
+            InvalidExtensionException, FileNameLengthLimitExceededException, IOException {
+        String ip = IpUtils.getIpAddr(request);
+        return doUpload(file,baseImgDir, biz, bizc,  ip, "img");
+    }
+
+    public Attachment doUpload(MultipartFile file, String dir, String biz, String bizc, String ip,String contentType ) throws FileSizeLimitExceededException,
+            InvalidExtensionException, FileNameLengthLimitExceededException, IOException {
+        String url = FileUploadUtil.upload( dir, file, allowedExtension, maxSize, needDatePathAndRandomName);
         String filename = file.getOriginalFilename();
         long size = file.getSize();
         String realFileName = StringUtil.getFileNameNoEx(filename);
         String fileext = StringUtil.getExtensionName(filename);
         // 保存上传的信息
         Attachment attachment = new Attachment();
+        attachment.setContentType(contentType);
         attachment.setFileExt(fileext);
         attachment.setFileName(realFileName);
-        attachment.setFilePath(url);
+        if("img".equals(contentType)){
+            attachment.setFilePath(baseImgUrl+url.replace(baseImgDir,""));
+        }else{
+            attachment.setFilePath(url);
+        }
         attachment.setFileSize(size);
+        attachment.setBizId(biz);
+        attachment.setBizCategory(bizc);
         attachment.setStatus("1");
-        attachment.setUploadIp(IpUtils.getIpAddr(request));
+        attachment.setUploadIp(ip);
         attachment.setUploadTime(new Date());
         attachment.setUserId(UserUtils.getUser().getId());
         insert(attachment);
@@ -116,5 +142,11 @@ public class AttachmentServiceImpl extends CommonServiceImpl<AttachmentMapper, A
         FileUtil.delFile(basePath + filePath);
         return super.deleteById(id);
     }
+
+    //public static void main(String[] args) {
+    //    File file = new File("/upload/11");
+    //    System.out.println(file.getAbsolutePath());
+    //}
+
 
 }

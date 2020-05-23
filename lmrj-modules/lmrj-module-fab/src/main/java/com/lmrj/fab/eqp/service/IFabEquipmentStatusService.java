@@ -29,4 +29,6 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
     List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab);
 
     List<Map> selectEqpStatusChart();
+
+    List<Map> selectYield(String lineNo);
 }
