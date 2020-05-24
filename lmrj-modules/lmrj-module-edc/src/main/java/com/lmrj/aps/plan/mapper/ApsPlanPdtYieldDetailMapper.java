@@ -3,6 +3,7 @@ package com.lmrj.aps.plan.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ import java.util.List;
  */
 @Mapper
 public interface ApsPlanPdtYieldDetailMapper extends BaseMapper<ApsPlanPdtYieldDetail> {
-    List<ApsPlanPdtYieldDetail> selectDayYield();
+    List<ApsPlanPdtYieldDetail> selectDayYield(@Param("beginTime") String beginTime, @Param("endTime") String endTime , @Param("lineNo") String lineNo );
 }

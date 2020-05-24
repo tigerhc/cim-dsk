@@ -92,4 +92,13 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
         return baseMapper.selectYield(lineNo);
     }
 
+    @Override
+    public FabEquipmentStatus findByEqpId(String eqpId) {
+        List<FabEquipmentStatus> fabEquipmentStatusList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId));
+        if(fabEquipmentStatusList.size() == 0){
+            return null;
+        }
+        return fabEquipmentStatusList.get(0);
+    }
+
 }

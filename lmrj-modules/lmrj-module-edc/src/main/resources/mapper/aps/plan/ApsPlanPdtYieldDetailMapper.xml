@@ -18,7 +18,8 @@
 	</sql>
     <select id="selectDayYield" resultType="com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail">
            select plan_date, sum(plan_qty) plan_qty from aps_plan_pdt_yield_detail t
-           group by plan_date
-           order by plan_date
+           where t.plan_date between #{beginTime} and #{endTime}
+           group by t.plan_date
+           order by t.plan_date
     </select>
 </mapper>

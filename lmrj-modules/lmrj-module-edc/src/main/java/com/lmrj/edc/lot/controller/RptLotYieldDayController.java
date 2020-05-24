@@ -38,10 +38,11 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     @Autowired
     private IRptLotYieldDayService rptLotYieldDayService;
     // 获取产量
+
     @RequestMapping("/pdtChart")
-    public Response findProduction(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response) {
+    public Response findProduction(@RequestParam String lineNo,@RequestParam String beginTime,@RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res=new Response();
-        List<Map> maps =  rptLotYieldDayService.pdtChart("");
+        List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo);
         res.put("yield",maps);
         return res;
     }

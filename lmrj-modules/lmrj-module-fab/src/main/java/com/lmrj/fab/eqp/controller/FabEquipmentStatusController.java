@@ -89,4 +89,5 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
         //}
         FastJsonUtils.print(maps);
     }
+
 }
