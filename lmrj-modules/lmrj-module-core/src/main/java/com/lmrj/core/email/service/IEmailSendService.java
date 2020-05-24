@@ -1,4 +1,4 @@
-package com.lmrj.cim.modules.email.service;
+package com.lmrj.core.email.service;
 
 import java.util.Map;
 

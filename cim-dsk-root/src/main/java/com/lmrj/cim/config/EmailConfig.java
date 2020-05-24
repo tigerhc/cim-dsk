@@ -1,6 +1,6 @@
 package com.lmrj.cim.config;
 
-import com.lmrj.cim.modules.email.dao.EmailDaoImpl;
+import com.lmrj.core.email.dao.EmailDaoImpl;
 import com.lmrj.common.email.disruptor.EmailDao;
 import com.lmrj.common.email.disruptor.EmailHelper;
 import org.springframework.context.annotation.Bean;

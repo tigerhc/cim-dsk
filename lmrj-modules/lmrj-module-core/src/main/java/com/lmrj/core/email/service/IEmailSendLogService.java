@@ -1,6 +1,6 @@
-package com.lmrj.cim.modules.email.service;
+package com.lmrj.core.email.service;
 
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
+import com.lmrj.core.email.entity.EmailSendLog;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 
 import java.io.Serializable;

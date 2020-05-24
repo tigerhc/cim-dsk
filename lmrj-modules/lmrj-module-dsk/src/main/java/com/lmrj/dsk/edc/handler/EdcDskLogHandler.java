@@ -3,6 +3,8 @@ package com.lmrj.dsk.edc.handler;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.gzst.gov.cn
@@ -70,6 +73,8 @@ public class EdcDskLogHandler {
     IMesLotTrackService mesLotTrackService;
     @Autowired
     private IEmailSendService emailSendService;
+    String[] paramEdit = {"固晶位置下压量", "第一固晶位 Y 修正"};
+
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
@@ -188,15 +193,18 @@ public class EdcDskLogHandler {
                 String eventParams =  edcDskLogOperation.getEventDetail();
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
-                String[] paramEdit = {"固晶位置下压量", "第一固晶位 Y 修正"};
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
                 if("PARAM CHG1".equals(eventDesc)){
                     for (String paramName : paramEditList) {
                         if(eventParams.contains(paramName)){
-
+                            Map<String, Object> datas = Maps.newHashMap();
+                            datas.put("EQP_ID",edcEvtRecord.getEqpId());
+                            datas.put("PARAM_CODE",eventParams);
+                            datas.put("OLD_VAL","");
+                            datas.put("NEW_VAL","");
+                            emailSendService.send("hanzy@ms5.sanken-ele.co.jp", "PARAM_CHANGE",datas);
                             break;
                         }
-
                     }
                 }
                 edcEvtRecord.setEventParams(eventParams);

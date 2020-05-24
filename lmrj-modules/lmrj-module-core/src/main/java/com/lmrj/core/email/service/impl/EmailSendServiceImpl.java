@@ -1,10 +1,10 @@
-package com.lmrj.cim.modules.email.service.impl;
+package com.lmrj.core.email.service.impl;
 
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
-import com.lmrj.cim.modules.email.entity.EmailTemplate;
-import com.lmrj.cim.modules.email.service.IEmailSendLogService;
-import com.lmrj.cim.modules.email.service.IEmailSendService;
-import com.lmrj.cim.modules.email.service.IEmailTemplateService;
+import com.lmrj.core.email.entity.EmailSendLog;
+import com.lmrj.core.email.entity.EmailTemplate;
+import com.lmrj.core.email.service.IEmailSendLogService;
+import com.lmrj.core.email.service.IEmailSendService;
+import com.lmrj.core.email.service.IEmailTemplateService;
 import com.lmrj.common.email.disruptor.EmailHelper;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.util.lang.StringUtil;

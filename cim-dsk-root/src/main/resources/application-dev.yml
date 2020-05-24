@@ -25,6 +25,10 @@ spring:
 
   session:
     store-type: none
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
   devtools:
     restart:
       enabled: true        #这里是为了热部署的，与mybatis是无关的
@@ -170,3 +174,15 @@ flowable:
   async-executor-activate: false
   #  将databaseSchemaUpdate设置为true。当Flowable发现库与数据库表结构不一致时，会自动将数据库表结构升级至新版本。
   database-schema-update: false
+
+#文件上传配置
+upload:
+  base:
+    dir: /upload
+    imgurl: http://pjad.com:9529/img
+    imgdir: /lmrj/vue/share/img/
+  allowed:
+    #允许的文件扩展名
+    extension: mp4,bmp, gif, jpg, jpeg, png,doc, docx, xls, xlsx, ppt, pptx,html,htm,txt,rar, zip, gz, bz2,pdf
+  max:
+    size: 52428800 #最大文件大小 50M

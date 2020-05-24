@@ -1,10 +1,10 @@
-package com.lmrj.cim.modules.email.task;
+package com.lmrj.core.email.task;
 
 import com.alibaba.fastjson.JSON;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
-import com.lmrj.cim.modules.email.service.IEmailSendLogService;
-import com.lmrj.cim.modules.email.service.IEmailSendService;
+import com.lmrj.core.email.entity.EmailSendLog;
+import com.lmrj.core.email.service.IEmailSendLogService;
+import com.lmrj.core.email.service.IEmailSendService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

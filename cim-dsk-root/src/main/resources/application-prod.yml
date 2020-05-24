@@ -8,6 +8,10 @@ spring:
       force: true
       charset: UTF-8
       enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
   rabbitmq:
     #    DSK
     addresses: 10.160.144.8:5672
@@ -37,7 +41,7 @@ spring:
   mail:                    #邮件发送
     host: msout.sanken-ele.co.jp
     username: lihuan@ms5.sanken-ele.co.jp
-    sender: MES-INFO
+    sender: CIM-INFO<lihuan@ms5.sanken-ele.co.jp>
     password: hl1018%a
     port: 25
     properties:
@@ -169,3 +173,15 @@ swagger:
     show-request-headers: true
     request-timeout: 5000
     submit-methods: get,delete
+
+#文件上传配置
+upload:
+  base:
+    dir: /upload
+    imgurl: http://10.160.144.8:83/img
+    imgdir: E:/CIM/share/img/
+  allowed:
+    #允许的文件扩展名
+    extension: mp4,bmp, gif, jpg, jpeg, png,doc, docx, xls, xlsx, ppt, pptx,html,htm,txt,rar, zip, gz, bz2,pdf
+  max:
+    size: 52428800 #最大文件大小 50M

@@ -1,8 +1,8 @@
-package com.lmrj.cim.modules.email.service.impl;
+package com.lmrj.core.email.service.impl;
 
-import com.lmrj.cim.modules.email.entity.EmailTemplate;
-import com.lmrj.cim.modules.email.mapper.EmailTemplateMapper;
-import com.lmrj.cim.modules.email.service.IEmailTemplateService;
+import com.lmrj.core.email.entity.EmailTemplate;
+import com.lmrj.core.email.mapper.EmailTemplateMapper;
+import com.lmrj.core.email.service.IEmailTemplateService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

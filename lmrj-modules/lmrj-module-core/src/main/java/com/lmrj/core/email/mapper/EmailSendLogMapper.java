@@ -1,6 +1,6 @@
-package com.lmrj.cim.modules.email.mapper;
+package com.lmrj.core.email.mapper;
 
-import com.lmrj.cim.modules.email.entity.EmailTemplate;
+import com.lmrj.core.email.entity.EmailSendLog;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,13 +9,13 @@ import org.apache.ibatis.annotations.Mapper;
 *
 * @version V1.0
 * @package com.lmrj.web.modules.email.mapper
-* @title: 邮件模板数据库控制层接口
-* @description: 邮件模板数据库控制层接口
+* @title: 邮件发送日志数据库控制层接口
+* @description: 邮件发送日志数据库控制层接口
 * @author: 张飞
-* @date: 2018-09-12 10:59:18
+* @date: 2018-09-12 10:58:46
 * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
 */
 @Mapper
-public interface EmailTemplateMapper extends BaseMapper<EmailTemplate> {
+public interface EmailSendLogMapper extends BaseMapper<EmailSendLog> {
 
 }

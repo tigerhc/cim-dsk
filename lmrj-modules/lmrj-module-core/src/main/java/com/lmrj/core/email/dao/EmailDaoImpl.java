@@ -1,7 +1,7 @@
-package com.lmrj.cim.modules.email.dao;
+package com.lmrj.core.email.dao;
 
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
-import com.lmrj.cim.modules.email.service.IEmailSendLogService;
+import com.lmrj.core.email.entity.EmailSendLog;
+import com.lmrj.core.email.service.IEmailSendLogService;
 import com.lmrj.common.email.data.EmailResult;
 import com.lmrj.common.email.disruptor.EmailDao;
 import com.lmrj.common.email.disruptor.EmailData;

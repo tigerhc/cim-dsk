@@ -1,10 +1,10 @@
-package com.lmrj.cim.modules.email.controller;
+package com.lmrj.core.email.controller;
 
 import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.core.email.service.IEmailSendLogService;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.log.LogType;
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
-import com.lmrj.cim.modules.email.service.IEmailSendLogService;
+import com.lmrj.core.email.entity.EmailSendLog;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mvc.controller.BaseBeanController;

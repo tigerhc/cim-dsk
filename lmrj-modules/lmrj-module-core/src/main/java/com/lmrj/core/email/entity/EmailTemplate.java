@@ -1,4 +1,4 @@
-package com.lmrj.cim.modules.email.entity;
+package com.lmrj.core.email.entity;
 
 import com.lmrj.core.entity.DataEntity;
 import com.baomidou.mybatisplus.annotations.TableField;

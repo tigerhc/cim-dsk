@@ -1,9 +1,9 @@
-package com.lmrj.cim.modules.email.service.impl;
+package com.lmrj.core.email.service.impl;
 
-import com.lmrj.cim.modules.email.entity.EmailSendLog;
-import com.lmrj.cim.modules.email.mapper.EmailSendLogMapper;
-import com.lmrj.cim.modules.email.service.IEmailSendLogService;
-import com.lmrj.cim.modules.email.service.IEmailSendService;
+import com.lmrj.core.email.entity.EmailSendLog;
+import com.lmrj.core.email.mapper.EmailSendLogMapper;
+import com.lmrj.core.email.service.IEmailSendLogService;
+import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import java.util.List;
 */
 @Transactional
 @Service("emailsendlogService")
-public class EmailSendLogServiceImpl  extends CommonServiceImpl<EmailSendLogMapper,EmailSendLog> implements  IEmailSendLogService {
+public class EmailSendLogServiceImpl  extends CommonServiceImpl<EmailSendLogMapper,EmailSendLog> implements IEmailSendLogService {
     @Autowired
     private IEmailSendService emailSendService;
     @Override

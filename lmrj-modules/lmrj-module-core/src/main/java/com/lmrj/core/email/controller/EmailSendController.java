@@ -1,12 +1,12 @@
-package com.lmrj.cim.modules.email.controller;
+package com.lmrj.core.email.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.controller.BaseController;
+import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.log.LogType;
-import com.lmrj.cim.modules.email.service.IEmailSendService;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
