@@ -46,7 +46,7 @@ public class EmailSendServiceImpl implements IEmailSendService {
     private EmailHelper emailHelper; //自动注入的Bean
 
     @Value("${spring.mail.sender}")
-    private String sender; //发送的人
+    private String sender; //昵称
 
     @Override
     public void send(String email, String code, Map<String, Object> datas) {
@@ -88,13 +88,13 @@ public class EmailSendServiceImpl implements IEmailSendService {
         }*/
     }
 
-     private void sendEmail(String eventId,String to,String subject,String text){
+    public void sendEmail(String eventId,String to,String subject,String text){
         try {
             MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
             //true表示需要创建一个multipart message
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom(sender);
-            helper.setTo(to); //自己给自己发送邮件
+            helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(text,true);
             emailHelper.sendAsync(eventId,message,null);
@@ -121,6 +121,7 @@ public class EmailSendServiceImpl implements IEmailSendService {
         }
         return content;
     }
+
 
     @Override
     public void send(String eventId, String email, String code, Map<String, Object> datas) {

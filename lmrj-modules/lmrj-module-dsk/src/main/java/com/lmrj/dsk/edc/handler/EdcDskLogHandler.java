@@ -68,6 +68,8 @@ public class EdcDskLogHandler {
     IMesLotTrackLogService mesLotTrackLogService;
     @Autowired
     IMesLotTrackService mesLotTrackService;
+    @Autowired
+    private IEmailSendService emailSendService;
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
@@ -182,8 +184,22 @@ public class EdcDskLogHandler {
                 EdcEvtRecord edcEvtRecord = new EdcEvtRecord();
                 edcEvtRecord.setEqpId(edcDskLogOperation.getEqpId());
                 edcEvtRecord.setEventId(eventId);
-                edcEvtRecord.setEventDesc(edcDskLogOperation.getEventName());
-                edcEvtRecord.setEventParams(edcDskLogOperation.getEventDetail());
+                String eventDesc = edcDskLogOperation.getEventName();
+                String eventParams =  edcDskLogOperation.getEventDetail();
+                edcEvtRecord.setEventDesc(eventDesc);
+                // TODO: 2020/5/24  部分参数不可修改判断
+                String[] paramEdit = {"固晶位置下压量", "第一固晶位 Y 修正"};
+                List<String> paramEditList = Lists.newArrayList(paramEdit);
+                if("PARAM CHG1".equals(eventDesc)){
+                    for (String paramName : paramEditList) {
+                        if(eventParams.contains(paramName)){
+
+                            break;
+                        }
+
+                    }
+                }
+                edcEvtRecord.setEventParams(eventParams);
                 edcEvtRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcEvtRecordList.add(edcEvtRecord);
                 if("0".equals(eventId)||"7".equals(eventId)){
