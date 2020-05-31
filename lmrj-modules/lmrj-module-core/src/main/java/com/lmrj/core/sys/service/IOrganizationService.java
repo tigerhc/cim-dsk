@@ -20,4 +20,5 @@ public interface IOrganizationService extends ITreeCommonService<Organization> {
 	public List<Organization> findListByUserId(String userid);
 
 	List<Organization> findChildren(String officeId);
+	List<Organization> findStep(String userId);
 }

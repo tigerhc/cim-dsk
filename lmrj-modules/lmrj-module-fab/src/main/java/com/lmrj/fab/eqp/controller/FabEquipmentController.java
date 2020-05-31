@@ -7,6 +7,7 @@ import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.DateResponse;
@@ -53,6 +54,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -88,10 +90,16 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     public void eqpIdlist(Model model, HttpServletRequest request,
                           HttpServletResponse response) {
         List<String> eqpids = fabEquipmentService.eqpIdlist();
-        String content = JSON.toJSONString(eqpids);
+        List<Map> list = Lists.newArrayList();
+        for (String eqpid : eqpids) {
+            Map map = Maps.newHashMap();
+            map.put("id", eqpid);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
-
 
     /**
      * 在返回数据之前编辑数据

@@ -18,4 +18,8 @@
        t.update_date,
        t.del_flag
 	</sql>
+
+       <!--<select id="findlotYield">-->
+
+       <!--</select>-->
 </mapper>

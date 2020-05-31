@@ -1,11 +1,16 @@
 package com.lmrj.edc.lot.service.impl;
 
+import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.edc.lot.service.IRptLotYieldService;
 import com.lmrj.edc.lot.entity.RptLotYield;
 import com.lmrj.edc.lot.mapper.RptLotYieldMapper;
+import com.lmrj.edc.lot.service.IRptLotYieldService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,5 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("rptLotYieldService")
 public class RptLotYieldServiceImpl  extends CommonServiceImpl<RptLotYieldMapper,RptLotYield> implements  IRptLotYieldService {
+    @Autowired
+    public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
+    @Override
+    public List<Map> findLotYield(String line) {
+        List<Map> yieldList = baseMapper.findLotYield(line);
+        return yieldList;
+    }
 }

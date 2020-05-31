@@ -29,7 +29,7 @@ public class DashboardController {
 
     @Autowired
     IDashboardService dashboardServiceImpl;
-
+    // 获取组织机构信息
     //{"trx_id":"FBPBISDAT","action_flg":"Q","iary":[{"data_cate":"TOLG","DATA_ITEM":"101A"}]}
     @RequestMapping("/q1-bak")
     public void getToolGroupInfo(String fab_id_fk ,HttpServletRequest request, HttpServletResponse response) {
@@ -47,6 +47,7 @@ public class DashboardController {
         return "{\"oary\":[{\"data_cate\":\"TOLG\",\"data_desc\":\"返工间设备组\",\"data_ext\":\"$TFG\",\"data_id\":\"1\",\"data_item\":\"101A\",\"data_seq_id\":\"8DNJ62ARJS384IU4VVN92NLQG\",\"ext_1\":\"返工间设备组\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"激光组\",\"data_ext\":\"$TJG\",\"data_id\":\"1\",\"data_item\":\"101A\",\"data_seq_id\":\"AHO93HJ3XE2PVJQHPSRAG6LG6\",\"ext_1\":\"激光组\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"ALD自动化组\",\"data_ext\":\"$TZDH\",\"data_id\":\"1\",\"data_item\":\"101A\",\"data_seq_id\":\"BD4WHOJ0QZFN8RXJNZK1P1M8K\",\"ext_1\":\"ALD自动化\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"制绒设备组\",\"data_ext\":\"$TZR\",\"data_id\":\"1\",\"data_item\":\"101A\",\"data_seq_id\":\"C1LJ5IHM0K5W5H32V0N7NONVH\",\"ext_1\":\"印刷机\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"LID组\",\"data_ext\":\"$TLID\",\"data_id\":\"10\",\"data_item\":\"101A\",\"data_seq_id\":\"F48VH2IIER0D42GR0AEPIXWX9\",\"ext_1\":\"LID组\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"101A包装\",\"data_ext\":\"$PACK\",\"data_id\":\"14\",\"data_item\":\"101A\",\"data_seq_id\":\"CBKXTE1O9ABBPIK9FKIX6B32B\",\"ext_1\":\"101A包装\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"EL测试机\",\"data_ext\":\"ELCSJ\",\"data_id\":\"15\",\"data_item\":\"101A\",\"data_seq_id\":\"BRNUB9F5E14EFYDTEOW6VNJAR\",\"ext_1\":\"EL测试机\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"扩散设备组\",\"data_ext\":\"$TKS\",\"data_id\":\"2\",\"data_item\":\"101A\",\"data_seq_id\":\"43AU41NQU3N2F3P8AQSSO8AFJ\",\"ext_1\":\"印刷后画像\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"刻蚀设备组\",\"data_ext\":\"$TKES\",\"data_id\":\"3\",\"data_item\":\"101A\",\"data_seq_id\":\"DSOUFQ4NXR13QNC4ICILSA6H9\",\"ext_1\":\"DM\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"ALD组\",\"data_ext\":\"$TALD\",\"data_id\":\"4\",\"data_item\":\"101A\",\"data_seq_id\":\"3QBQBGTTUV50AEYX73FM1D7XG\",\"ext_1\":\"ALD组\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"PECVD设备组\",\"data_ext\":\"$TPECVD\",\"data_id\":\"5\",\"data_item\":\"101A\",\"data_seq_id\":\"8VRHLVXAI140UWELHDAF5OWCJ\",\"ext_1\":\"REFLOW\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"丝网印刷设备组\",\"data_ext\":\"$TSWYS\",\"data_id\":\"6\",\"data_item\":\"101A\",\"data_seq_id\":\"I4ZLFCKQKVUHKNHJXHEAVUTE\",\"ext_1\":\"画像\"},{\"data_cate\":\"TOLG\",\"data_desc\":\"测试分选组\",\"data_ext\":\"$TCSFX\",\"data_id\":\"8\",\"data_item\":\"101A\",\"data_seq_id\":\"2MBAFEH3S244VTT39627HYLIP\",\"ext_1\":\"测试分选组\"}],\"rtn_code\":\"0000000\",\"rtn_mesg\":\"success\",\"tbl_cnt\":13,\"telephone\":\"\",\"trx_id\":\"FBPBISDAT\",\"type_id\":\"O\"}";
     }
 
+    //获取设备状态
     @RequestMapping("/q2-1")
     public void setRightTopData(String fab_id_fk, HttpServletRequest request, HttpServletResponse response) {
         FipinqtoolO fipinqtoolO =  dashboardServiceImpl.findEqpStateByFab(fab_id_fk);
@@ -196,6 +197,7 @@ public class DashboardController {
     }
 
 
+    //获取设备历史状态
     @RequestMapping("/q3")
     public void getEqpStatus5DayByFabId(@RequestParam String fab_id_fk,HttpServletRequest request, HttpServletResponse response) {
         FipinqtoolO fipinqtoolO =  dashboardServiceImpl.findEqpStateByPeriod(fab_id_fk);
@@ -207,6 +209,7 @@ public class DashboardController {
         return "{\"oaryD\":[{\"crop_mobility\":0.7,\"date\":\"2020-04-13\",\"toolStatusRate\":{\"OTHER\":0,\"DOWN\":0.29,\"STOP\":0,\"IDLE\":0,\"RUN\":0.7,\"PM\":0.01}},{\"crop_mobility\":0.71,\"date\":\"2020-04-12\",\"toolStatusRate\":{\"OTHER\":0,\"DOWN\":0.29,\"STOP\":0,\"IDLE\":0,\"RUN\":0.71,\"PM\":0}},{\"crop_mobility\":0.75,\"date\":\"2020-04-11\",\"toolStatusRate\":{\"OTHER\":0,\"DOWN\":0.25,\"STOP\":0,\"IDLE\":0,\"RUN\":0.75,\"PM\":0}},{\"crop_mobility\":0.73,\"date\":\"2020-04-10\",\"toolStatusRate\":{\"OTHER\":0,\"DOWN\":0.27,\"STOP\":0,\"IDLE\":0,\"RUN\":0.73,\"PM\":0}},{\"crop_mobility\":0.95,\"date\":\"2020-04-08\",\"toolStatusRate\":{\"OTHER\":0,\"DOWN\":0.05,\"STOP\":0,\"IDLE\":0,\"RUN\":0.95,\"PM\":0}}],\"rtn_code\":\"0000000\",\"rtn_mesg\":\"SUCCESS\",\"trx_id\":\"FIPINQTOL\",\"type_id\":\"O\"} ";
     }
 
+    //获取设备状态
     @RequestMapping("/q4")
     public void getToolStatusByFabId(@RequestParam String fab_id_fk, HttpServletRequest request, HttpServletResponse response) {
         FbpbistolO fbpbistolO =  dashboardServiceImpl.findEqpStatusByFabId(fab_id_fk);
@@ -219,6 +222,7 @@ public class DashboardController {
     //}
 
 
+    //获取报警信息
     @RequestMapping("/q5")
     public void updateAlarmByFab(@RequestParam String fab_id_fk, HttpServletRequest request, HttpServletResponse response) {
         FipinqtoolO fipinqtoolO =  dashboardServiceImpl.findAlarmByFab(fab_id_fk);
@@ -230,6 +234,7 @@ public class DashboardController {
         return "{\"oary\":[{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2019-09-11 13:14:28.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2019-09-11 13:14:28.0\",\"tool_dsc\":\"ALD主机台\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:00:00.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:00:00.0\",\"tool_dsc\":\"10#PECVD装卸片机\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:00:00.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:00:00.0\",\"tool_dsc\":\"02#PECVD\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:00:00.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:00:00.0\",\"tool_dsc\":\"06#PECVD\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:00:00.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:00:00.0\",\"tool_dsc\":\"07#PECVD\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:00:00.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:00:00.0\",\"tool_dsc\":\"26#PECVD\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:07:29.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:07:29.0\",\"tool_dsc\":\"丝网1线子设备22号机(ATM检测)_B\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 07:14:03.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 07:14:03.0\",\"tool_dsc\":\"丝网1线子设备26号机分选_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-09 17:08:50.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-09 17:08:50.0\",\"tool_dsc\":\"丝网1线子设备27号机分选_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-09 17:08:49.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-09 17:08:49.0\",\"tool_dsc\":\"丝网1线子设备27号机分选_B\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-13 07:13:14.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-13 07:13:14.0\",\"tool_dsc\":\"丝网2线子设备烘箱5_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-13 17:23:54.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-13 17:23:54.0\",\"tool_dsc\":\"丝网2线子设备烘箱7_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-04-14 08:58:24.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-04-14 08:58:24.0\",\"tool_dsc\":\"丝网9线子设备印刷机8_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-03-22 19:53:42.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-03-22 19:53:42.0\",\"tool_dsc\":\"丝网10线子设备印刷机4_A\"},{\"alarm_code\":\"故障\",\"evt_timestamp\":\"2020-03-22 20:57:15.0\",\"fab_id_fk\":\"101A\",\"start_timestamp\":\"2020-03-22 20:57:15.0\",\"tool_dsc\":\"丝网10线子设备烘箱5_A\"}],\"rtn_code\":\"0000000\",\"rtn_mesg\":\"SUCCESS\",\"trx_id\":\"FIPINQTOL\",\"type_id\":\"O\"}";
     }
 
+    // 获取设备状态-站点
     //@RequestMapping("/q6")
     //public void q6(@RequestParam String bay_id,HttpServletRequest request, HttpServletResponse response) {
     //    FipinqtoolO fipinqtoolO =  dashboardServiceImpl.findEqpStateByStep(bay_id);

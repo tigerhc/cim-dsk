@@ -60,7 +60,7 @@ public class EdcDskLogHandler {
     @Autowired
     IOvnBatchLotService ovnBatchLotService;
     @Autowired
-    private IFabEquipmentService fabEquipmentService;
+    IFabEquipmentService fabEquipmentService;
     @Autowired
     IEdcEvtRecordService edcEvtRecordService;
     @Autowired
@@ -74,7 +74,18 @@ public class EdcDskLogHandler {
     @Autowired
     private IEmailSendService emailSendService;
 
-    String[] paramEdit = {"固晶位置下压量", "第一固晶位 Y 修正"};
+    String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
+            "Pick up press level", "取晶位置下压量",
+            "1st bonding pos  Z", "第一固晶位置 Z",
+            "Bonding press level", "固晶位置下压量",
+            "Pickup search level", "取晶搜索高度",
+            "Pickup search speed", "取晶搜索速度",
+            "1st plunge up height", "第1段突上量",
+            "2nd plunge up height", "第2段突上量"
+    };
+
+    String[] emails = {"hanzy@ms5.sanken-ele.co.jp","suchang@ms5.sanken-ele.co.jp",
+            "zhudd@lmrj.com","403396835@qq.com"};
 
 
 
@@ -195,7 +206,7 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
-                if("PARAM CHG1".equals(eventDesc)){
+                if("PARAM CHG1".equals(eventDesc)||"PRODUCT SET".equals(eventDesc)){
                     for (String paramName : paramEditList) {
                         if(eventParams.contains(paramName)){
                             Map<String, Object> datas = Maps.newHashMap();
@@ -203,7 +214,8 @@ public class EdcDskLogHandler {
                             datas.put("PARAM_CODE",eventParams);
                             datas.put("OLD_VAL","");
                             datas.put("NEW_VAL","");
-                            emailSendService.send("hanzy@ms5.sanken-ele.co.jp", "PARAM_CHANGE",datas);
+
+                            emailSendService.send(emails, "PARAM_CHANGE",datas);
                             break;
                         }
                     }

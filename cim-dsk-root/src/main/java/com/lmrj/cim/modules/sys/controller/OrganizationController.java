@@ -2,6 +2,8 @@ package com.lmrj.cim.modules.sys.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.lmrj.cim.common.helper.VueTreeHelper;
+import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mvc.controller.BaseBeanController;
@@ -14,15 +16,12 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.CacheUtils;
 import com.lmrj.common.utils.ServletUtils;
-import com.lmrj.util.lang.StringUtil;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.log.LogType;
-import com.lmrj.cim.common.helper.VueTreeHelper;
 import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.core.sys.service.IOrganizationService;
-import com.lmrj.cim.utils.OfficeUtils;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,7 +70,7 @@ public class OrganizationController extends BaseBeanController<Organization> {
             entityWrapper.like("name",keyword);
         }
         List<Organization> treeNodeList = organizationService.selectTreeList(entityWrapper);
-        List<VueTreeHelper.VueTreeNode> vueTreeNodes = VueTreeHelper.create().sort(treeNodeList,"id,name,parentId,parentIds,remarks");
+        List<VueTreeHelper.VueTreeNode> vueTreeNodes = VueTreeHelper.create().sort(treeNodeList,"id,name,parentId,parentIds,remarks,orgType,orgGrade");
         String content = JSON.toJSONString(vueTreeNodes);
         ServletUtils.printJson(response, content);
     }
@@ -139,17 +137,15 @@ public class OrganizationController extends BaseBeanController<Organization> {
         return Response.ok("添加成功");
     }
 
-    @GetMapping(value = "{id}/update")
-    public ModelAndView update(@PathVariable("id") String id, Model model, HttpServletRequest request,
-                               HttpServletResponse response) {
-        Organization entity = organizationService.selectById(id);
-        model.addAttribute("data", entity);
-        return displayModelAndView ("edit");
-    }
+    //@GetMapping(value = "{id}/update")
+    //public ModelAndView update(@PathVariable("id") String id, Model model, HttpServletRequest request,
+    //                           HttpServletResponse response) {
+    //    Organization entity = organizationService.selectById(id);
+    //    model.addAttribute("data", entity);
+    //    return displayModelAndView ("edit");
+    //}
 
     @PostMapping("{id}/update")
-    @LogAspectj(logType = LogType.UPDATE)
-    @RequiresMethodPermissions("update")
     public Response update(Organization entity, BindingResult result,
                            HttpServletRequest request, HttpServletResponse response) {
         // 验证错误
@@ -205,7 +201,13 @@ public class OrganizationController extends BaseBeanController<Organization> {
         return Response.ok("刷新成功");
     }
 
-
-
+    @RequestMapping(value = "findStep")
+    @LogAspectj(logType = LogType.SELECT)
+    @RequiresMethodPermissions("list")
+    public void findStep(HttpServletResponse response) throws IOException {
+        List<Organization> treeNodeList = organizationService.findStep("");
+        String content = JSON.toJSONString(treeNodeList );
+        ServletUtils.printJson(response, content);
+    }
 
 }

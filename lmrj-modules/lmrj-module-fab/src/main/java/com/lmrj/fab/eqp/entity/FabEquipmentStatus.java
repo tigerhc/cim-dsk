@@ -28,6 +28,9 @@ public class FabEquipmentStatus extends BaseDataEntity {
     /**控制状态*/
     @TableField(value = "control_state")
     private String controlState;
+    /**品番(产品品号)*/
+    @TableField(value = "production_no")
+    private String productionNo;
     /**批次*/
     @TableField(value = "lot_no")
     private String lotNo;

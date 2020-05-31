@@ -62,13 +62,18 @@ public class ApsPlanPdtYieldController extends BaseCRUDController<ApsPlanPdtYiel
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             periodDate = DateUtil.formatDate(calendar.getTime(),"yyyyMMdd");
         }
-        List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).like("production_name", "SIM"));
-        int yieldQty = 0;
-        for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
-            int qty = apsPlanPdtYieldDetail.getPlanQty();
-            yieldQty = yieldQty+qty;
-        }
         FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId("SIM-REFLOW1");
+
+        //按照当日产量来算,比较复杂
+        //List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).like("production_name", "SIM"));
+        //int yieldQty = 0;
+        //for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
+        //    int qty = apsPlanPdtYieldDetail.getPlanQty();
+        //    yieldQty = yieldQty+qty;
+        //}
+
+        List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("lot_no", fabEquipmentStatus.getLotNo()).eq("production_no", fabEquipmentStatus.getProductionNo()));
+        int yieldQty = yieldList.get(0).getPlanQty();
         List<RptLotYield> lotYieldDaylList = Lists.newArrayList();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
@@ -99,7 +104,12 @@ public class ApsPlanPdtYieldController extends BaseCRUDController<ApsPlanPdtYiel
         map2.put("number",lotYieldAll);
         Map map3=new HashMap();
         map3.put("name","达成率");
-        map3.put("number",lotYieldAll*100/yieldQty);
+        if(yieldQty==0){
+            map3.put("number",100);
+        }else{
+            map3.put("number",lotYieldAll*100/yieldQty);
+        }
+
         //方案模版
         mapList.add(map);
         mapList.add(map1);

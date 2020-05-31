@@ -22,4 +22,10 @@
        t.update_date,
        t.del_flag
 	</sql>
+    <select id="findLotYield" resultType="java.util.Map">
+           select production_name, order_no, lot_no ,step_id  ,
+                  case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
+           from rpt_lot_yield
+           group by production_name, order_no, lot_no ,step_id
+    </select>
 </mapper>

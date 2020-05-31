@@ -1,6 +1,7 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
@@ -89,7 +90,21 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
     }
     @Override
     public List<Map> selectYield(String lineNo){
-        return baseMapper.selectYield(lineNo);
+        List<Map> yields =  baseMapper.selectYield(lineNo);
+        List<Map> wips =  baseMapper.selectLotwip(lineNo);
+        Map wipMap = Maps.newHashMap();
+        for (Map wip : wips) {
+            wipMap.put(wip.get("step_code"),wip.get("count")+"|"+wip.get("lot_yield") );
+        }
+        for (Map yield : yields) {
+            String count = (String) wipMap.get(yield.get("step_code"));
+            if(count == null){
+                yield.put("waitwip", "0-0");
+            }else{
+                yield.put("waitwip", count);
+            }
+        }
+        return yields;
     }
 
     @Override

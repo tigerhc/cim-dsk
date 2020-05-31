@@ -16,6 +16,9 @@
 		<result column="parent_ids" property="parentIds" jdbcType="VARCHAR" />
 		<result column="hasChildren" property="hasChildren" />
 
+		<result column="org_type" property="orgType" jdbcType="VARCHAR" />
+		<result column="org_grade" property="orgGrade" jdbcType="VARCHAR" />
+
 		<!-- 扩展模块 -->
 		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
 
@@ -29,6 +32,8 @@
 		t.parent_id,
 		t.parent_ids,
 		t.parent_id AS parent_id,
+		t.org_type,
+		t.org_grade ,
 		p.name AS parent_name,
 		t.remarks,
 		(select count(*) from sys_organization s
@@ -57,6 +62,7 @@
 		<where>
 			${ew.sqlSegment}
 		</where>
+		order by t.sort_no
 	</select>
 
 	<!-- 通过用户ID组织机构 -->

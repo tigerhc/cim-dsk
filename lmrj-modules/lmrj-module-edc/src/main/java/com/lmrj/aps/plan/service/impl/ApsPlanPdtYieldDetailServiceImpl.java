@@ -29,4 +29,9 @@ public class ApsPlanPdtYieldDetailServiceImpl extends CommonServiceImpl<ApsPlanP
     public List<ApsPlanPdtYieldDetail> selectDayYield(String beginTime, String endTime, String lineNo) {
         return baseMapper.selectDayYield(beginTime, endTime,lineNo);
     }
+
+    @Override
+    public void deleteByPeriod(String period) {
+        baseMapper.deleteByPeriod(period);
+    }
 }

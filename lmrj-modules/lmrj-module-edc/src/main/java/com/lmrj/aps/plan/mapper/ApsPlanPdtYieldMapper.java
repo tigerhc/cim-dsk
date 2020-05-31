@@ -2,9 +2,11 @@ package com.lmrj.aps.plan.mapper;
 
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
- /**
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +19,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ApsPlanPdtYieldMapper extends BaseMapper<ApsPlanPdtYield> {
-    
+
+    @Delete("delete from aps_plan_pdt_yield where plan_date = #{period} ")
+    void deleteByPeriod(@Param("period") String period);
 }

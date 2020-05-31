@@ -24,5 +24,9 @@ public class OrganizationServiceImpl extends TreeCommonServiceImpl<OrganizationM
 	public List<Organization> findChildren(String officeId) {
 		return this.selectList(new EntityWrapper<Organization>().eq("parent_id",officeId));
 	}
+	@Override
+	public List<Organization> findStep(String userId){
+		return baseMapper.findStep(userId);
+	}
 
 }

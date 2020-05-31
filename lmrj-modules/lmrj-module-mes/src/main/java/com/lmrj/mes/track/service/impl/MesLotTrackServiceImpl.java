@@ -96,6 +96,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         map.put("ORDER_NO", orderNo);
         map.put("PRODUCTION_NO", productionNo);
         map.put("PRODUCTION_NAME", productionName);
+        map.put("OPID",opId);
 
         String bc = "SIM-BC1";
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
@@ -176,6 +177,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             map.put("ORDER_NO", orderNo);
             map.put("PRODUCTION_NO", productionNo);
             map.put("PRODUCTION_NAME", productionName);
+            map.put("OPID",opId);
             String bc = "SIM-BC1";
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
             if (replyMsg != null) {

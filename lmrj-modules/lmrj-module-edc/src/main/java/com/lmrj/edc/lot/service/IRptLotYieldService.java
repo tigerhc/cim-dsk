@@ -3,6 +3,9 @@ package com.lmrj.edc.lot.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.lot.entity.RptLotYield;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +18,5 @@ import com.lmrj.edc.lot.entity.RptLotYield;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IRptLotYieldService extends ICommonService<RptLotYield> {
-
+    List<Map> findLotYield(String line);
 }

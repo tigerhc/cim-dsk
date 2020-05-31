@@ -59,7 +59,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @RequestMapping(value = "batch/initstatus", method = { RequestMethod.GET, RequestMethod.POST })
     @ResponseBody
-    public Response batchDelete(@RequestParam(value = "ids", required = false) String[] ids) {
+    public Response initstatus(@RequestParam(value = "ids", required = false) String[] ids) {
         List idList = java.util.Arrays.asList(ids);
         fabEquipmentStatusService.initStatus(idList);
         return Response.ok("初始化成功");

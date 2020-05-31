@@ -18,5 +18,5 @@ import java.util.List;
  */
 public interface IApsPlanPdtYieldDetailService extends ICommonService<ApsPlanPdtYieldDetail> {
     List<ApsPlanPdtYieldDetail> selectDayYield(String beginTime, String endTime, String lineNo);
-
+    void deleteByPeriod(String period);
 }

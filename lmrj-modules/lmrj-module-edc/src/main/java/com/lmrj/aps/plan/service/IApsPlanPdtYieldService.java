@@ -15,5 +15,5 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IApsPlanPdtYieldService extends ICommonService<ApsPlanPdtYield> {
-
+    void deleteByPeriod(String period);
 }

@@ -2,8 +2,11 @@ package com.lmrj.aps.plan.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.google.common.collect.Lists;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -39,5 +42,7 @@ public class ApsPlanPdtYield extends BaseDataEntity {
     private Integer planQty;
     @TableField(value = "sort_no")
     private Integer sortNo;
+    @TableField(exist = false)
+    private List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetailList = Lists.newArrayList();
 
 }
