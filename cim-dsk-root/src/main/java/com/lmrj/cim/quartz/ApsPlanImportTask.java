@@ -34,7 +34,7 @@ public class ApsPlanImportTask {
     public String dir;
 
 
-    @Scheduled(cron = "0 9 0/1 * * ?")
+    @Scheduled(cron = "0 30 0/6 * * ?")
     public void dskaps() {
         log.error("定时任务开始执行");
         String[] extensions = {"xls"};

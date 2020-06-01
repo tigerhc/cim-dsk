@@ -70,9 +70,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1];
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-            String lotNo = lotNos[4].substring(0, 5);
+            String lotNo = lotNos[lotNos.length-1].substring(0, 5);
             String orderNo = lotNos[0].substring(0, 8);
-            String productionNo = lotNos[4].substring(5, 12); //5002915
+            String productionNo = lotNos[lotNos.length-1].substring(5, 12); //5002915
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.trackin4DSK(eqpId, productionName, productionNo, orderNo, lotNo, "", opId);
             if ("Y".equals(result.flag)) {
@@ -100,9 +100,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1];
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-            String lotNo = lotNos[4].substring(0, 5);
+            String lotNo = lotNos[lotNos.length-1].substring(0, 5);
             String orderNo = lotNos[0].substring(0, 8);
-            String productionNo = lotNos[4].substring(5, 12); //5002915
+            String productionNo = lotNos[lotNos.length-1].substring(5, 12); //5002915
             MesResult result = mesLotTrackService.trackout4DSK(eqpId, productionName, productionNo, orderNo, lotNo, yield, "", opId);
             if ("Y".equals(result.flag)) {
                 return "Y";
