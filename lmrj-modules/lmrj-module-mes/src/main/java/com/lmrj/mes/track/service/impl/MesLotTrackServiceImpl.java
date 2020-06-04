@@ -99,16 +99,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         map.put("OPID",opId);
 
         String bc = "SIM-BC1";
-        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
-
-        if (replyMsg != null) {
-            result = JsonUtil.from(replyMsg, MesResult.class);
-            if ("Y".equals(result.flag)) {
-                //Map<String, String> content = Maps.newHashMap();
-                //content.put("RECIPE_NAME", recipeCode);
-                //result.setContent(content);
-                //简单处理
-                //result.setContent(recipeCode);
+        if(eqpId.contains("DM") || eqpId.contains("TRM") ){
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.flag)) {
+                }
             }
         }
 

@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -18,4 +19,6 @@ import java.util.List;
 */
 public interface IEdcAmsRecordService extends ICommonService<EdcAmsRecord> {
     List<EdcAmsRecord> selectAmsRecord(String officeId, String lineNo,String department, String fab);
+    List<Map>  selectAlarmCountByLine(String beginTime, String endTime, String lineNo);
+    List<Map>  selectAlarmCountByEqp(String beginTime, String endTime, String eqpId);
 }

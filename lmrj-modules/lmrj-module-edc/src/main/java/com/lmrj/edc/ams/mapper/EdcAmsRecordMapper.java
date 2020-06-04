@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -21,4 +22,8 @@ import java.util.List;
 @Mapper
 public interface EdcAmsRecordMapper extends BaseMapper<EdcAmsRecord> {
  List<EdcAmsRecord> selectAmsRecord(@Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("department") String department, @Param("fab") String fab);
+
+
+ List<Map> selectAlarmCountByLine(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo);
+ List<Map> selectAlarmCountByEqp(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
 }

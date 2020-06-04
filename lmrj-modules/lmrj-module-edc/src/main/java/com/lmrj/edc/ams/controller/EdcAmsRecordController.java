@@ -5,25 +5,29 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.lmrj.cim.utils.PageRequest;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
-import com.lmrj.util.calendar.DateUtil;
-import com.lmrj.util.lang.StringUtil;
+import com.lmrj.core.log.LogAspectj;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.cim.utils.PageRequest;
+import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.lang.StringUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -47,6 +51,23 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
 
     @Autowired
     private IEdcAmsRecordService iEdcAmsRecordService;
+
+    @RequestMapping("/selectAlarmCountByLine")
+    public Response selectAlarmCountByLine(@RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res=new Response();
+        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByLine(beginTime,endTime,lineNo);
+        res.put("record",maps);
+        return res;
+    }
+
+    @RequestMapping("/selectAlarmCountByEqp")
+    public Response selectAlarmCountByEqp(@RequestParam String eqpId, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res=new Response();
+        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByEqp(beginTime,endTime,eqpId);
+        res.put("record",maps);
+        return res;
+    }
+
     @GetMapping("export")
     public Response export(HttpServletRequest request) {
         Response response = Response.ok("导出成功");

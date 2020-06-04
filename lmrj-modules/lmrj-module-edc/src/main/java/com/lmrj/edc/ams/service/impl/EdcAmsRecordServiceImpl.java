@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,4 +30,16 @@ public class EdcAmsRecordServiceImpl  extends CommonServiceImpl<EdcAmsRecordMapp
     public List<EdcAmsRecord> selectAmsRecord(String officeId, String lineNo, String department, String fab){
         return baseMapper.selectAmsRecord(officeId, lineNo,department, fab);
     }
+
+    @Override
+    public List<Map> selectAlarmCountByLine(String beginTime, String endTime, String lineNo) {
+        return baseMapper.selectAlarmCountByLine(beginTime, endTime,lineNo);
+    }
+
+    @Override
+    public List<Map> selectAlarmCountByEqp(String beginTime, String endTime, String eqpId) {
+        return baseMapper.selectAlarmCountByEqp(beginTime, endTime,eqpId);
+    }
+
+
 }
