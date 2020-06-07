@@ -52,6 +52,6 @@ public class MsMeasureConfig extends BaseDataEntity {
     private String imgFlag;
 
     @TableField(exist = false)
-    private List<MsMeasureConfigDetail> list = Lists.newArrayList();
+    private List<MsMeasureConfigDetail> detail = Lists.newArrayList();
 
 }

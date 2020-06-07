@@ -39,7 +39,7 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public MsMeasureRecord selectById(Serializable id){
         MsMeasureRecord msMeasureRecord = super.selectById(id);
         List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id",id));
-        msMeasureRecord.setList(edcParamRecordDtlList);
+        msMeasureRecord.setDetail(edcParamRecordDtlList);
         return msMeasureRecord;
     }
 
@@ -48,7 +48,7 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
         // 保存主表
         super.insert(msMeasureRecord);
         // 保存细表
-        List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecord.getList();
+        List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecord.getDetail();
         for (MsMeasureRecordDetail edcParamRecordDtl : edcParamRecordDtlList) {
             edcParamRecordDtl.setMsRecordId(msMeasureRecord.getId());
         }
@@ -62,7 +62,7 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
             // 获得以前的数据
             List<MsMeasureRecordDetail> oldMsMeasureRecordDetailList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id", msMeasureRecord.getId()));
             // 字段
-            List<MsMeasureRecordDetail> msMeasureRecordDetailList = msMeasureRecord.getList();
+            List<MsMeasureRecordDetail> msMeasureRecordDetailList = msMeasureRecord.getDetail();
             // 更新主表
             super.insertOrUpdate(msMeasureRecord);
             List<String> newsMsMeasureRecordDetailIdList = new ArrayList<String>();

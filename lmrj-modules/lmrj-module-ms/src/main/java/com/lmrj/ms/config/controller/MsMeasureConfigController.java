@@ -59,10 +59,10 @@ public class MsMeasureConfigController extends BaseCRUDController<MsMeasureConfi
     //                          HttpServletResponse response) {
     //    Response res= new Response();
     //    FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-    //    List<MsMeasureConfig> list = commonService.selectList(new EntityWrapper<MsMeasureConfig>().eq("eqp_model_id" ,fabEquipment.getModelId()));
-    //    //String content = JSON.toJSONString(list);
+    //    List<MsMeasureConfig> detail = commonService.selectList(new EntityWrapper<MsMeasureConfig>().eq("eqp_model_id" ,fabEquipment.getModelId()));
+    //    //String content = JSON.toJSONString(detail);
     //    //ServletUtils.printJson(response, content);
-    //    res.put("data",list);
+    //    res.put("data",detail);
     //    return res;
     //}
 
@@ -81,11 +81,11 @@ public class MsMeasureConfigController extends BaseCRUDController<MsMeasureConfi
         list.forEach(msMeasureConfig -> {
             String id = msMeasureConfig.getId();
             List<MsMeasureConfigDetail> edcParamRecordDtlList = msMeasureConfigDetailService.selectList(new com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper<MsMeasureConfigDetail>(MsMeasureConfigDetail.class).eq("ms_config_id",id));
-            msMeasureConfig.setList(edcParamRecordDtlList);
+            msMeasureConfig.setDetail(edcParamRecordDtlList);
         });
         String content = JSON.toJSONString(list);
         ServletUtils.printJson(response, content);
-        //res.put("data",list);
+        //res.put("data",detail);
         //return res;
     }
 }

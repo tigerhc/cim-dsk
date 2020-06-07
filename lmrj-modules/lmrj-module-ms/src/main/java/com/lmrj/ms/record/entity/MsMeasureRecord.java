@@ -62,6 +62,6 @@ public class MsMeasureRecord extends BaseDataEntity {
     @TableField(value = "img_flag")
     private String imgFlag;
     @TableField(exist = false)
-    private List<MsMeasureRecordDetail> list = Lists.newArrayList();
+    private List<MsMeasureRecordDetail> detail = Lists.newArrayList();
 
 }

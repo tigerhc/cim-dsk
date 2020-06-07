@@ -39,7 +39,7 @@ public class MsMeasureConfigServiceImpl  extends CommonServiceImpl<MsMeasureConf
     public MsMeasureConfig selectById(Serializable id){
         MsMeasureConfig msMeasureConfig = super.selectById(id);
         List<MsMeasureConfigDetail> msMeasureConfigDetailList = msMeasureConfigDetailService.selectList(new EntityWrapper<MsMeasureConfigDetail>(MsMeasureConfigDetail.class).eq("ms_config_id",id));
-        msMeasureConfig.setList(msMeasureConfigDetailList);
+        msMeasureConfig.setDetail(msMeasureConfigDetailList);
         return msMeasureConfig;
     }
 
@@ -48,7 +48,7 @@ public class MsMeasureConfigServiceImpl  extends CommonServiceImpl<MsMeasureConf
         // 保存主表
         super.insert(msMeasureConfig);
         // 保存细表
-        List<MsMeasureConfigDetail> detailList = msMeasureConfig.getList();
+        List<MsMeasureConfigDetail> detailList = msMeasureConfig.getDetail();
         for (MsMeasureConfigDetail msMeasureConfigDetail : detailList) {
             msMeasureConfigDetail.setMsConfigId(msMeasureConfig.getId());
         }
@@ -62,7 +62,7 @@ public class MsMeasureConfigServiceImpl  extends CommonServiceImpl<MsMeasureConf
             // 获得以前的数据
             List<MsMeasureConfigDetail> oldDetailList = msMeasureConfigDetailService.selectList(new EntityWrapper<MsMeasureConfigDetail>(MsMeasureConfigDetail.class).eq("ms_config_id", msMeasureConfig.getId()));
             // 字段
-            List<MsMeasureConfigDetail> detailList = msMeasureConfig.getList();
+            List<MsMeasureConfigDetail> detailList = msMeasureConfig.getDetail();
             // 更新主表
             super.insertOrUpdate(msMeasureConfig);
             List<String> newsMsMeasureRecordDetailIdList = new ArrayList<String>();
