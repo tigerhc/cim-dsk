@@ -3,6 +3,8 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 
+import java.util.Date;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +17,6 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogProduction> {
+    EdcDskLogProduction findNextYield(String eqpId, Date startTime);
 
 }

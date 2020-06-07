@@ -6,15 +6,14 @@ import com.google.common.collect.Maps;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
-import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.cim.utils.ExcelUtil;
+import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -44,8 +43,9 @@ public class RptYieldTask {
     public void dskaps() {
         log.error("定时任务开始执行");
         //2天前
-        Calendar.getInstance().add(Calendar.DAY_OF_MONTH, -2);
-        mesLotTrackLogService.selectList(new EntityWrapper<>().ge("create_date", ))
+        Calendar cal= Calendar.getInstance();
+        cal .add(Calendar.DAY_OF_MONTH, -2);
+        mesLotTrackLogService.selectList(new EntityWrapper<MesLotTrackLog>().ge("create_date",cal.getTime() ));
 
 
         String[] extensions = {"xls"};
@@ -206,12 +206,31 @@ public class RptYieldTask {
             apsPlanPdtYieldDetail.setPlanQty(singleYieldMap.get(apsPlanPdtYieldDetail.getProductionNo()));
         }
         System.out.println(apsPlanPdtYieldDetailList.size());
-        apsPlanPdtYieldService.deleteByPeriod(period);
-        apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
+        //apsPlanPdtYieldService.deleteByPeriod(period);
+        //apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
 
 
 
     }
+
+
+    //public static void main(String[] args) {
+    //    try {
+    //
+    //        String fileName = "G:\\SIM 内観(1).xlsm";
+    //        XSSFWorkbook xwb = new XSSFWorkbook(new FileInputStream(fileName));
+    //        XSSFSheet xSheet = xwb.getSheetAt(0);  //获取excel表的第一个sheet
+    //        XSSFCell xCell=xSheet.getRow(0).getCell(0);
+    //        xCell.setCellValue("111");
+    //
+    //        FileOutputStream out = new FileOutputStream(fileName);
+    //        xwb.write(out);
+    //        out.close();
+    //
+    //    } catch (Exception e) {
+    //        e.printStackTrace();
+    //    }
+    //}
 }

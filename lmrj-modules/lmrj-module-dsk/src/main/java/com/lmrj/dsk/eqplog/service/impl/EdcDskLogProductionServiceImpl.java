@@ -7,6 +7,8 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -54,4 +56,9 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }
 
 
+    @Override
+    public EdcDskLogProduction findNextYield(String eqpId, Date startTime) {
+        EdcDskLogProduction edcDskLogProduction = baseMapper.findNextYield(eqpId, startTime);
+        return edcDskLogProduction;
+    }
 }

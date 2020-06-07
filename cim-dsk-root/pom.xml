@@ -62,6 +62,11 @@
             <artifactId>lmrj-module-mes</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lmrj</groupId>
+            <artifactId>lmrj-module-ms</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <!--引入标签-->
         <dependency>
             <groupId>com.lmrj</groupId>

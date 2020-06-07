@@ -83,6 +83,9 @@ public class Oauth2Filter extends AccessControlFilter {
                 if(String.valueOf(request1.getRequestURL()).contains("dashboard")){
                     return Boolean.TRUE;
                 }
+                if(String.valueOf(request1.getRequestURL()).contains("/ms")){
+                    return Boolean.TRUE;
+                }
                 responseResult = Response.error(ResponseError.TOKEN_IS_NULL,MessageUtils.getMessage("error."+ResponseError.TOKEN_IS_NULL));
             }
         } catch (AuthenticationException e) {

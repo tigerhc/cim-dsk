@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.ms.config.mapper.MsMeasureConfigDetailMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.ms_config_id,
+       t.item_code,
+       t.item_name,
+       t.para_code,
+       t.para_name,
+       t.limit_min,
+       t.limit_max,
+       t.limit_type,
+       t.show_type,
+       t.col_count,
+       t.col_name,
+       t.row_count,
+       t.row_name,
+       t.sort_no,
+       t.active_flag,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>

@@ -1,10 +1,14 @@
 package com.lmrj.dsk.eqplog.mapper;
 
-import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.Date;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +21,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProduction> {
-    
+
+ @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and start_time  >= #{startTime} limit 1")
+ EdcDskLogProduction findNextYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
 }

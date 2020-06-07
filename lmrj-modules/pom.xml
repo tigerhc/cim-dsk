@@ -20,6 +20,7 @@
         <module>lmrj-module-gem</module>
         <module>lmrj-module-dsk</module>
         <module>lmrj-module-mes</module>
+        <module>lmrj-module-ms</module>
     </modules>
 
 
