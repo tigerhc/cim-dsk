@@ -42,10 +42,10 @@ public class MsMeasureConfigDetail extends BaseDataEntity {
     private String paraName;
     /**最小值*/
     @TableField(value = "limit_min")
-    private Double limitMin;
+    private String limitMin;
     /**最大值*/
     @TableField(value = "limit_max")
-    private Double limitMax;
+    private String limitMax;
     /**界限类型0、范围值（需转换成数值，并进行比较）1、固定值该类型控制保存时的值检查，避免空项提交。*/
     @TableField(value = "limit_type")
     private String limitType;
