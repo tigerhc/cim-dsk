@@ -1,7 +1,10 @@
 package com.lmrj.dsk.eqplog.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.lmrj.common.mvc.entity.AbstractEntity;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
@@ -22,8 +25,10 @@ import java.util.Date;
 @TableName("edc_dsk_log_production_his")
 @SuppressWarnings("serial")
 @Data
-public class EdcDskLogProductionHis extends BaseDataEntity {
+public class EdcDskLogProductionHis extends AbstractEntity {
 
+    @TableId(value = "id", type = IdType.UUID)
+    protected String id;
     /**设备号*/
     @TableField(value = "eqp_id")
     private String eqpId;
@@ -79,4 +84,28 @@ public class EdcDskLogProductionHis extends BaseDataEntity {
     @TableField(value = "duration")
     private Double duration;
 
+    public EdcDskLogProductionHis() {
+    }
+
+    public EdcDskLogProductionHis(EdcDskLogProduction edcDskLogProduction) {
+        this.id = edcDskLogProduction.getId();
+        this.eqpId = edcDskLogProduction.getEqpId();
+        this.eqpModelId = edcDskLogProduction.getEqpModelId();
+        this.eqpModelName = edcDskLogProduction.getEqpModelName();
+        this.eqpNo = edcDskLogProduction.getEqpNo();
+        this.recipeCode = edcDskLogProduction.getRecipeCode();
+        this.dayYield = edcDskLogProduction.getDayYield();
+        this.lotYield = edcDskLogProduction.getLotYield();
+        this.materialLotNo = edcDskLogProduction.getMaterialLotNo();
+        this.materialModel = edcDskLogProduction.getMaterialModel();
+        this.materialNo = edcDskLogProduction.getMaterialNo();
+        this.materialNo2 = edcDskLogProduction.getMaterialNo2();
+        this.lotNo = edcDskLogProduction.getLotNo();
+        this.productionNo = edcDskLogProduction.getProductionNo();
+        this.orderNo = edcDskLogProduction.getOrderNo();
+        this.judgeResult = edcDskLogProduction.getJudgeResult();
+        this.startTime = edcDskLogProduction.getStartTime();
+        this.endTime = edcDskLogProduction.getEndTime();
+        this.duration = edcDskLogProduction.getDuration();
+    }
 }

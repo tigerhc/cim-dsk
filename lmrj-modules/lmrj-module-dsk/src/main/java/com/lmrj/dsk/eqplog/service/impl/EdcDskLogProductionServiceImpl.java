@@ -2,12 +2,16 @@ package com.lmrj.dsk.eqplog.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.Data;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -60,5 +64,35 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     public EdcDskLogProduction findNextYield(String eqpId, Date startTime) {
         EdcDskLogProduction edcDskLogProduction = baseMapper.findNextYield(eqpId, startTime);
         return edcDskLogProduction;
+
     }
+
+    @Override
+    public List<EdcDskLogProductionHis> findBackUpYield(Date startTime, Date endTime) {
+        List<EdcDskLogProductionHis> hisList = new LinkedList<>();
+        List<String> deleteList = new LinkedList<>();
+        List<EdcDskLogProduction> yields = baseMapper.findYields(startTime, endTime);
+        for (int i = 0;i < yields.size(); i++){
+            if(yields.get(i).getDayYield() == 1 || yields.get(i).getLotYield() == 1){
+                continue;
+            }else {
+                if (i == yields.size()-1){
+                    break;
+                }else {
+                    if (yields.get(i + 1).getDayYield() == 1 || yields.get(i + 1).getLotYield() == 1){
+                        continue;
+                    }else {
+                        deleteList.add(yields.get(i).getId());
+                        EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
+                        hisList.add(edcDskLogProductionHis);
+                    }
+                }
+
+            }
+        }
+        super.deleteBatchIds(deleteList);
+        return hisList;
+    }
+
+
 }

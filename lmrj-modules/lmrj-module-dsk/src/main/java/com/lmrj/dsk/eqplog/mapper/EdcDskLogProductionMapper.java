@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -24,4 +25,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
  @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and start_time  >= #{startTime} limit 1")
  EdcDskLogProduction findNextYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
+
+ @Select("select * from edc_dsk_log_production where start_time  >= #{startTime} and end_time <= #{endTime} order by start_time limit 1000")
+ List<EdcDskLogProduction> findYields(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

@@ -7,6 +7,8 @@ import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionHisMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -23,4 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("edcDskLogProductionHisService")
 public class EdcDskLogProductionHisServiceImpl  extends CommonServiceImpl<EdcDskLogProductionHisMapper,EdcDskLogProductionHis> implements  IEdcDskLogProductionHisService {
 
+    @Override
+    public boolean insert(List<EdcDskLogProductionHis> backUpYield) {
+        boolean insert = super.insertBatch(backUpYield);
+        return insert;
+    }
 }

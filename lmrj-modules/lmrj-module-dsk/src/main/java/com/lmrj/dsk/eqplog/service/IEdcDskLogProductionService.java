@@ -2,8 +2,11 @@ package com.lmrj.dsk.eqplog.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 
+import javax.xml.crypto.Data;
 import java.util.Date;
+import java.util.List;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -18,5 +21,7 @@ import java.util.Date;
 */
 public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogProduction> {
     EdcDskLogProduction findNextYield(String eqpId, Date startTime);
+
+    List<EdcDskLogProductionHis> findBackUpYield(Date startTime, Date endTime);
 
 }
