@@ -24,10 +24,4 @@ import java.util.List;
 @Transactional
 @Service("edcDskLogProductionHisService")
 public class EdcDskLogProductionHisServiceImpl  extends CommonServiceImpl<EdcDskLogProductionHisMapper,EdcDskLogProductionHis> implements  IEdcDskLogProductionHisService {
-
-    @Override
-    public boolean insert(List<EdcDskLogProductionHis> backUpYield) {
-        boolean insert = super.insertBatch(backUpYield);
-        return insert;
-    }
 }

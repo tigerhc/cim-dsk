@@ -8,7 +8,6 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,7 +86,6 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
                         hisList.add(edcDskLogProductionHis);
                     }
                 }
-
             }
         }
         super.deleteBatchIds(deleteList);

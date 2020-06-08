@@ -3,8 +3,6 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 
-import java.util.List;
-
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -17,7 +15,5 @@ import java.util.List;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcDskLogProductionHisService extends ICommonService<EdcDskLogProductionHis> {
-
-    boolean insert(List<EdcDskLogProductionHis> backUpYield);
 
 }
