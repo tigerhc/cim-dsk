@@ -24,4 +24,6 @@ public interface RptLotYieldMapper extends BaseMapper<RptLotYield> {
 
     List<Map> findLotYield(@Param("officeId") String lineNo);
 
+    //Integer updateYield(String lotNo);
+
 }

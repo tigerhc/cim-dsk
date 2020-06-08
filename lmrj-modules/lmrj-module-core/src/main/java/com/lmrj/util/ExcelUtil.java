@@ -1,4 +1,4 @@
-package com.lmrj.cim.utils;
+package com.lmrj.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.hssf.usermodel.*;

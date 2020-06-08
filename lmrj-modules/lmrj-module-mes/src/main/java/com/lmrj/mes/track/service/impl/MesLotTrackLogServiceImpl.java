@@ -1,11 +1,14 @@
 package com.lmrj.mes.track.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackLogMapper;
+import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -22,5 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("mesLotTrackLogService")
 public class MesLotTrackLogServiceImpl  extends CommonServiceImpl<MesLotTrackLogMapper,MesLotTrackLog> implements  IMesLotTrackLogService {
+    @Override
+    public List<MesLotTrackLog> findLatestLotEqp(Date startTime){
+        return baseMapper.findLatestLotEqp(startTime);
+    }
 
 }

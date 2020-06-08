@@ -16,4 +16,5 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 */
 public interface IApsPlanPdtYieldService extends ICommonService<ApsPlanPdtYield> {
     void deleteByPeriod(String period);
+    void readNewApsPlan();
 }

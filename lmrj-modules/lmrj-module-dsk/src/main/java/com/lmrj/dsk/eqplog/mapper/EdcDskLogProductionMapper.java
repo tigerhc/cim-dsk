@@ -28,4 +28,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
  @Select("select * from edc_dsk_log_production where create_date  >= #{startTime} and create_date <= #{endTime} order by start_time limit 1000")
  List<EdcDskLogProduction> findYields(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+ @Select("select max(lot_yield) lot_yield  from edc_dsk_log_production where eqp_id=#{eqpId} and production_no=#{productionNo} and lot_no=#{lotNo}")
+ Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
 }

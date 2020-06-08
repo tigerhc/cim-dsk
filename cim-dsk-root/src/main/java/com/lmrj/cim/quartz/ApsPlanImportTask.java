@@ -6,7 +6,7 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
-import com.lmrj.cim.utils.ExcelUtil;
+import com.lmrj.util.ExcelUtil;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class ApsPlanImportTask {
 
     @Scheduled(cron = "0 30 0/6 * * ?")
     public void dskaps() {
-        log.error("定时任务开始执行");
+        log.info("定时任务开始执行");
         String[] extensions = {"xls"};
         List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
         if(files.size() == 0){
@@ -49,7 +49,7 @@ public class ApsPlanImportTask {
             }
         }
         this.readApsPlan(lastFile.getAbsolutePath());
-        log.error("定时任务开始执行结束");
+        log.info("定时任务开始执行结束");
     }
 
     private void readApsPlan(String path){

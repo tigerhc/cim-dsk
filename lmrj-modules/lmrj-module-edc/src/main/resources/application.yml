@@ -1,6 +1,7 @@
 server:
     port: 8082
-
+aps:
+  dir: D:\1项目\大连三垦\2需求分设\APS\
 #spring
 spring:
   resources:

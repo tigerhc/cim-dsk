@@ -1,10 +1,15 @@
 package com.lmrj.mes.track.mapper;
 
-import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.mes.track.entity.MesLotTrackLog;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.Date;
+import java.util.List;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +22,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface MesLotTrackLogMapper extends BaseMapper<MesLotTrackLog> {
-    
+
+    @Select("select * from  mes_lot_track_log where CONCAT(lot_no,create_date) in (select CONCAT(lot_no, max(create_date)) from mes_lot_track_log where create_date > #{startTime}  group by lot_no)")
+    List<MesLotTrackLog> findLatestLotEqp(@Param("startTime") Date startTime);
 }

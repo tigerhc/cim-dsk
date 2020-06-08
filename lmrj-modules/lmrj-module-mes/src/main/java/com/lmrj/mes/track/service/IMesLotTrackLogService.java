@@ -3,6 +3,9 @@ package com.lmrj.mes.track.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 
+import java.util.Date;
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -16,4 +19,5 @@ import com.lmrj.mes.track.entity.MesLotTrackLog;
 */
 public interface IMesLotTrackLogService extends ICommonService<MesLotTrackLog> {
 
+    List<MesLotTrackLog> findLatestLotEqp(Date startTime);
 }

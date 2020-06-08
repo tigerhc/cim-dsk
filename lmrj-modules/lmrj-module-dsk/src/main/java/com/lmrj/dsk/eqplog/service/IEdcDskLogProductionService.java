@@ -4,7 +4,6 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 
@@ -23,5 +22,9 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
     EdcDskLogProduction findNextYield(String eqpId, Date startTime);
 
     List<EdcDskLogProductionHis> findBackUpYield(Date startTime, Date endTime);
+
+    Integer findNewYieldByLot(String eqpId,String productionNo, String lotNo);
+
+
 
 }
