@@ -1,13 +1,19 @@
 package com.lmrj.ms.eqp.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.lmrj.common.http.DateResponse;
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.ms.eqp.entity.MsEqpAblility;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
 
 /**
@@ -28,5 +34,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiresPathPermission("ms:mseqpablility")
 @LogAspectj(title = "ms_eqp_ablility")
 public class MsEqpAblilityController extends BaseCRUDController<MsEqpAblility> {
+
+    @RequestMapping(value = {"list/{eqpModelId}"}, method = {RequestMethod.GET, RequestMethod.POST})
+    public Response findByModelId(@PathVariable String eqpModelId){
+        List<MsEqpAblility> list = commonService.selectList(new EntityWrapper<MsEqpAblility>().eq("eqp_model_id",eqpModelId));
+        return DateResponse.ok(list);
+    }
 
 }
