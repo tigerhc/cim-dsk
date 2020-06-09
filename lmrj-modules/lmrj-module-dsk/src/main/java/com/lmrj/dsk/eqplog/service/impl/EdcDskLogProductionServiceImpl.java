@@ -67,10 +67,10 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }
 
     @Override
-    public List<EdcDskLogProductionHis> findBackUpYield(Date startTime, Date endTime) {
+    public List<EdcDskLogProductionHis> findBackUpYield(String eqpId,Date startTime, Date endTime) {
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
         List<String> deleteList = new LinkedList<>();
-        List<EdcDskLogProduction> yields = baseMapper.findYields(startTime, endTime);
+        List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId,startTime, endTime);
         for (int i = 0;i < yields.size(); i++){
             if(yields.get(i).getDayYield() == 1 || yields.get(i).getLotYield() == 1){
                 continue;

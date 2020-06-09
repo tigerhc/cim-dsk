@@ -21,7 +21,7 @@ import java.util.List;
 public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogProduction> {
     EdcDskLogProduction findNextYield(String eqpId, Date startTime);
 
-    List<EdcDskLogProductionHis> findBackUpYield(Date startTime, Date endTime);
+    List<EdcDskLogProductionHis> findBackUpYield(String eqpId,Date startTime, Date endTime);
 
     Integer findNewYieldByLot(String eqpId,String productionNo, String lotNo);
 
