@@ -2,6 +2,7 @@ package com.lmrj.cim.quartz;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.edc.lot.entity.RptLotYield;
 import com.lmrj.edc.lot.service.IRptLotYieldService;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
@@ -30,21 +31,33 @@ public class RptYieldTask {
      *
      * rpt_lot_yield: 批次产量,当前站点的产量
      */
-    @Scheduled(cron = "0 51 0/1 * * ?")
+    @Scheduled(cron = "0 0/20 * * * ?")
     public void updateYield() {
         log.info("定时任务开始执行");
         //2天前
         Calendar cal= Calendar.getInstance();
-        cal .add(Calendar.DAY_OF_MONTH, -30);
+        cal .add(Calendar.DAY_OF_MONTH, -1);
         List<MesLotTrackLog> trackLogList =  mesLotTrackLogService.findLatestLotEqp(cal.getTime());
         for (MesLotTrackLog mesLotTrackLog : trackLogList) {
             String lotNo = mesLotTrackLog.getLotNo();
             String productionNo = mesLotTrackLog.getProductionNo();
-            Integer yield = edcDskLogProductionService.findNewYieldByLot(mesLotTrackLog.getEqpId(),productionNo,  lotNo);
+            String productionName = mesLotTrackLog.getProductionName();
+            String eqpId = mesLotTrackLog.getEqpId();
+            Integer yield = edcDskLogProductionService.findNewYieldByLot(eqpId,productionNo,  lotNo);
             if(yield == null){
                 continue;
             }else{
-                boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp="+yield , new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
+                boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp="+yield+", eqp_id='"+eqpId+"'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
+                if(!updateFlag){
+                    RptLotYield rptLotYield= new RptLotYield();
+                    rptLotYield.setLotNo(lotNo);
+                    rptLotYield.setProductionNo(productionNo);
+                    rptLotYield.setProductionName(productionName);
+                    rptLotYield.setEqpId(eqpId);
+                    rptLotYield.setLotYieldEqp(yield);
+                    rptLotYield.setLotYield(0);
+                    rptLotYieldService.insert(rptLotYield);
+                }
             }
         }
         log.info("定时任务开始执行结束");

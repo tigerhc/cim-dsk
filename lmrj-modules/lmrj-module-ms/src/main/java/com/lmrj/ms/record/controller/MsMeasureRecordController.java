@@ -7,6 +7,7 @@ import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 
 /**
@@ -43,6 +45,8 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         try {
             String record = request.getReader().readLine();
             MsMeasureRecord msMeasureRecord = JsonUtil.from(record,MsMeasureRecord.class);
+            String recordId = DateUtil.getDate("yyyyMMddHHmmssSSS")+UUID.randomUUID().toString().replace("-","").substring(0,3);
+            msMeasureRecord.setRecordId(recordId);
             boolean flag = commonService.insert(msMeasureRecord);
             if(flag){
                 res.ok(msMeasureRecord);
@@ -59,6 +63,10 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         }
         return res.error("无法解析");
 
+    }
+
+    public static void main(String[] args) {
+        System.out.println(DateUtil.getDate("yyyyMMddHHmmssSSS")+UUID.randomUUID().toString().replace("-","").substring(0,15));
     }
 
 }

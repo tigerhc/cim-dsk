@@ -88,7 +88,9 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
                 }
             }
         }
-        super.deleteBatchIds(deleteList);
+        if(deleteList.size() != 0 ){
+            super.deleteBatchIds(deleteList);
+        }
         return hisList;
     }
 
