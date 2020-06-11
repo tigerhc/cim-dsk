@@ -213,13 +213,13 @@ public class MesTrackService {
         return msg;
     }
 
-    public String getSVMsg(String eqpId,String VID){
+    public String getSVMsg(String eqpId,String vId){
         // TODO: 2019/6/23 打印日志
         // TODO: 2019/6/23 校验开关
 
         Map<String, String> map = Maps.newHashMap();
         map.put("EQP_ID", eqpId);
-        map.put("VID", VID);
+        map.put("VID", vId);
         String bc = "SH_FOL_OV1";
         if(eqpId.indexOf("OVEN")>=0|| eqpId.indexOf("CM-EC-")>=0){
             bc = "SH_FOL_OV1";
