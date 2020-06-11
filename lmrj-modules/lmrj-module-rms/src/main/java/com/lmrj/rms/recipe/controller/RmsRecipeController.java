@@ -62,6 +62,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      * @param request
      * @param response
      */
+    @Override
     public void preSave(RmsRecipe entity, HttpServletRequest request, HttpServletResponse response) {
         String edcParamRecordDtlListJson = StringEscapeUtils.unescapeHtml4(request.getParameter("_detail"));
         List<RmsRecipeBody> edcParamRecordDtlList = JSONObject.parseArray(edcParamRecordDtlListJson, RmsRecipeBody.class);
@@ -92,7 +93,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
             ImportExcel ei = new ImportExcel(file, 1, 0);
             List<RmsRecipe> list = ei.getDataList(RmsRecipe.class);
             if(list.size()>5){
-                response.error("导入参数失败！行数超过5条");
+                Response.error("导入参数失败！行数超过5条");
             }
             List<RmsRecipe> updateList = Lists.newArrayList();
             for(RmsRecipe param : list){
@@ -115,6 +116,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         return response;
     }
 
+    @Override
     @RequestMapping(value = "/{id}/findLast", method = { RequestMethod.GET, RequestMethod.POST })
     public void find(Model model, @PathVariable("id") String id, HttpServletRequest request,
                      HttpServletResponse response) {

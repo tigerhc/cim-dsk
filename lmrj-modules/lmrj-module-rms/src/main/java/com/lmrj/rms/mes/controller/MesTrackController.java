@@ -99,4 +99,10 @@ public class MesTrackController extends BaseCRUDController<RmsRecipe> {
         String result =  mesTrackService.stopEqp(EQP_ID, STEP_ID,USER_ID, PARAMS);
         ServletUtils.printJson(response,result);
     }
+
+    @RequestMapping(value = "getSVMsg", method = { RequestMethod.GET, RequestMethod.POST })
+    public void getSVMsg(Model model, @RequestParam String EQP_ID, @RequestParam String VID,HttpServletRequest request, HttpServletResponse response){
+        String result = mesTrackService.getSVMsg(EQP_ID,VID);
+        ServletUtils.printJson(response,result);
+    }
 }

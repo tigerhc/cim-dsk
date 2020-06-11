@@ -40,6 +40,7 @@ public class ProductionBackUpTask {
         calEnd.add(Calendar.DAY_OF_MONTH, -3);
         List<String> eqpIdlist = fabEquipmentService.eqpIdlist();
         for (String eqpId : eqpIdlist) {
+            log.info("开始备份"+ eqpId + "设备的数据");
             while (true){
                 try{
                     List<EdcDskLogProductionHis> backUpYield = edcDskLogProductionService.findBackUpYield(eqpId,calstart.getTime(), calEnd.getTime());
@@ -52,6 +53,7 @@ public class ProductionBackUpTask {
                 }
 
             }
+            log.info(eqpId + "设备的数据备份完成");
         }
         // TODO: 2020/6/8
         log.error("backupPdt定时任务开始执行结束");

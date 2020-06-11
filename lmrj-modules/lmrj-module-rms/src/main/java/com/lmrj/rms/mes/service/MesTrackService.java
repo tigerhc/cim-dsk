@@ -212,4 +212,33 @@ public class MesTrackService {
         // TODO: 2019/6/23 判断结果,成功则更新设备状态表
         return msg;
     }
+
+    public String getSVMsg(String eqpId,String VID){
+        // TODO: 2019/6/23 打印日志
+        // TODO: 2019/6/23 校验开关
+
+        Map<String, String> map = Maps.newHashMap();
+        map.put("EQP_ID", eqpId);
+        map.put("VID", VID);
+        String bc = "SH_FOL_OV1";
+        if(eqpId.indexOf("OVEN")>=0|| eqpId.indexOf("CM-EC-")>=0){
+            bc = "SH_FOL_OV1";
+        }else if(eqpId.indexOf("-PC")>=0){
+            bc = "BC3";
+        }
+        logger.info("start");
+        Object test=rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, JsonUtil.toJsonString(map));
+        logger.info("end");
+        byte[] message = (byte[]) test;
+        String msg = null;
+        try {
+            msg = new String(message, "UTF-8");
+            logger.info("encode UTF-8: {}", msg);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        // TODO: 2019/6/23 打印返回结果
+        // TODO: 2019/6/23 判断结果,成功则更新设备状态表
+        return msg;
+    }
 }

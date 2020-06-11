@@ -134,6 +134,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return true;
     }
 
+    @Override
     public boolean uploadRecipe(String eqpId, String recipeName) {
         return uploadOvenRecipe(eqpId, recipeName);
     }
