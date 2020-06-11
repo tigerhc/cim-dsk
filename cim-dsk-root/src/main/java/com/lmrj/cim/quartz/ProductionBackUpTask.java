@@ -28,7 +28,7 @@ public class ProductionBackUpTask {
     /**
      * 备份数据 edc_dsk_log_production -- >   edc_dsk_log_production_his
      */
-//    @Scheduled(cron = "0 11 12 * * ?")
+    //@Scheduled(cron = "0 10 * * * ?")
     @Scheduled(cron = "0 0 1 * * ?")
     public void backupPdt() {
         log.error("backupPdt定时任务开始执行");
@@ -37,17 +37,16 @@ public class ProductionBackUpTask {
         //calstart.add(Calendar.DAY_OF_MONTH, -9);
         calstart.add(Calendar.DAY_OF_MONTH, -40);
         Calendar calEnd = Calendar.getInstance();
-        calEnd.add(Calendar.DAY_OF_MONTH, -7);
+        calEnd.add(Calendar.DAY_OF_MONTH, -3);
         List<String> eqpIdlist = fabEquipmentService.eqpIdlist();
         for (String eqpId : eqpIdlist) {
-            boolean flag = true;
-            while (flag){
+            while (true){
                 try{
                     List<EdcDskLogProductionHis> backUpYield = edcDskLogProductionService.findBackUpYield(eqpId,calstart.getTime(), calEnd.getTime());
                     if (backUpYield.size()==0){
-                        flag = false;
+                        break;
                     }
-                    edcDskLogProductionHisService.insertBatch(backUpYield);
+                    edcDskLogProductionHisService.insertBatch(backUpYield,2);
                 }catch (Exception e){
                     log.error("Exception:",e);
                 }

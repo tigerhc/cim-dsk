@@ -31,10 +31,9 @@ public class RptYieldTask {
      *
      * rpt_lot_yield: 批次产量,当前站点的产量
      */
-    @Scheduled(cron = "0 0/20 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void updateYield() {
         log.info("定时任务开始执行");
-        //2天前
         Calendar cal= Calendar.getInstance();
         cal .add(Calendar.DAY_OF_MONTH, -1);
         List<MesLotTrackLog> trackLogList =  mesLotTrackLogService.findLatestLotEqp(cal.getTime());
@@ -43,10 +42,16 @@ public class RptYieldTask {
             String productionNo = mesLotTrackLog.getProductionNo();
             String productionName = mesLotTrackLog.getProductionName();
             String eqpId = mesLotTrackLog.getEqpId();
+            if("SIM-DM1".equals(eqpId)){
+                eqpId = "SIM-REFLOW1";
+            }
             Integer yield = edcDskLogProductionService.findNewYieldByLot(eqpId,productionNo,  lotNo);
             if(yield == null){
                 continue;
             }else{
+                if("SIM-REFLOW1".equals(eqpId)){
+                    yield= yield*12 ;
+                }
                 boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp="+yield+", eqp_id='"+eqpId+"'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
                 if(!updateFlag){
                     RptLotYield rptLotYield= new RptLotYield();
