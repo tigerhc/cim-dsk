@@ -1,11 +1,6 @@
 package com.lmrj.fab.eqp.controller;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
-import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.cim.utils.OfficeUtils;
@@ -15,19 +10,14 @@ import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
-import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
-import com.lmrj.common.query.data.Page;
 import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
-import com.lmrj.common.query.utils.QueryableConvertUtils;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
-import com.lmrj.util.calendar.DateUtil;
-import com.lmrj.util.lang.StringUtil;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -48,7 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
@@ -77,7 +66,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
     @Autowired
     private IFabEquipmentService fabEquipmentService;
-
+    String title = "设备信息";
 
     /**
      * 设备列表下拉框
@@ -146,38 +135,47 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
 
 
+//    @GetMapping("export")
+//    //@LogAspectj(logType = LogType.EXPORT)
+////    @RequiresMethodPermissions("export")
+//    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+//
+//        super.export(queryable,  propertyPreFilterable,  request,  response);
+//        Response response2 = Response.ok("导出成功");
+//        try {
+//            EntityWrapper<FabEquipment> entityWrapper = new EntityWrapper(this.entityClass);
+//            this.preList(queryable, entityWrapper, request, response);
+//            propertyPreFilterable.addQueryProperty(new String[]{"id"});
+//            QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
+//            SerializeFilter filter = propertyPreFilterable.constructFilter(this.entityClass);
+//            Page pageBean = this.commonService.list(queryable, entityWrapper);
+//            List newList = Lists.newArrayList();
+//            newList.addAll(pageBean.getContent());
+//
+//
+//            String title = "设备信息";
+//            TemplateExportParams params = new TemplateExportParams("");
+//            Workbook book = ExcelExportUtil.exportExcel(new ExportParams(
+//                    title, title, ExcelType.XSSF), FabEquipment.class, newList);
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            book.write(bos);
+//            byte[] bytes = bos.toByteArray();
+//            String bytesRes = StringUtil.bytesToHexString2(bytes);
+//            title = title+ "-" + DateUtil.getDateTime();
+//            response2.put("bytes",bytesRes);
+//            response2.put("title",title);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return response2.error(999998,"导出失败");
+//        }
+//        return response2;
+//    }
+
     @GetMapping("export")
     //@LogAspectj(logType = LogType.EXPORT)
 //    @RequiresMethodPermissions("export")
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
-        Response response2 = Response.ok("导出成功");
-        try {
-            EntityWrapper<FabEquipment> entityWrapper = new EntityWrapper(this.entityClass);
-            this.preList(queryable, entityWrapper, request, response);
-            propertyPreFilterable.addQueryProperty(new String[]{"id"});
-            QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
-            SerializeFilter filter = propertyPreFilterable.constructFilter(this.entityClass);
-            Page pageBean = this.commonService.list(queryable, entityWrapper);
-            List newList = Lists.newArrayList();
-            newList.addAll(pageBean.getContent());
-
-
-            String title = "设备信息";
-            TemplateExportParams params = new TemplateExportParams("");
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams(
-                    title, title, ExcelType.XSSF), FabEquipment.class, newList);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            book.write(bos);
-            byte[] bytes = bos.toByteArray();
-            String bytesRes = StringUtil.bytesToHexString2(bytes);
-            title = title+ "-" + DateUtil.getDateTime();
-            response2.put("bytes",bytesRes);
-            response2.put("title",title);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return response2.error(999998,"导出失败");
-        }
-        return response2;
+        return doExport("设备信息", queryable,  propertyPreFilterable,  request,  response);
     }
 
     @RequestMapping(value = "import", method = RequestMethod.POST)
