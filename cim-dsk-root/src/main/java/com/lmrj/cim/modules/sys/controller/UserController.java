@@ -273,7 +273,7 @@ public class UserController extends BaseBeanController<User> {
 		}
 	}
 
-	@GetMapping("export")
+	//@GetMapping("export")
 	@LogAspectj(logType = LogType.EXPORT)
 	@RequiresMethodPermissions("export")
 	public Response export(HttpServletRequest request) {

@@ -91,7 +91,7 @@ public class LoginLogController extends BaseBeanController<LoginLog> {
 		return Response.ok("删除成功");
 	}
 
-    @GetMapping("export")
+    //@GetMapping("export")
     @LogAspectj(logType = LogType.EXPORT)
     @RequiresMethodPermissions("export")
     public Response export(HttpServletRequest request) {
