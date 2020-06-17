@@ -19,7 +19,6 @@ import com.lmrj.util.lang.StringUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -121,7 +120,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //
     //}
 
-    @GetMapping("export")
+    //@GetMapping("export")
     public Response export(HttpServletRequest request) {
         Response response = Response.ok("导出成功");
         try {

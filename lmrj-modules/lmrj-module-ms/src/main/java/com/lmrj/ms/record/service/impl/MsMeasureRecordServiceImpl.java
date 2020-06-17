@@ -38,7 +38,7 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     @Override
     public MsMeasureRecord selectById(Serializable id){
         MsMeasureRecord msMeasureRecord = super.selectById(id);
-        List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id",id));
+        List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id",id).orderBy("sort_no"));
         msMeasureRecord.setDetail(edcParamRecordDtlList);
         return msMeasureRecord;
     }

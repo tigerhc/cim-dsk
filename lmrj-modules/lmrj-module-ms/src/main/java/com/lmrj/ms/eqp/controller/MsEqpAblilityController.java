@@ -41,7 +41,8 @@ public class MsEqpAblilityController extends BaseCRUDController<MsEqpAblility> {
     private IFabEquipmentModelService fabEquipmentModelService;
     @RequestMapping(value = {"list/{eqpModelId}"}, method = {RequestMethod.GET, RequestMethod.POST})
     public Response findByModelId(@PathVariable String eqpModelId){
-        FabEquipmentModel model = fabEquipmentModelService.selectOne(new EntityWrapper<FabEquipmentModel>().eq("eqp_model_id",eqpModelId));
+        FabEquipmentModel model = fabEquipmentModelService.selectById(eqpModelId);
+        //FabEquipmentModel model = fabEquipmentModelService.selectOne(new EntityWrapper<FabEquipmentModel>().eq("id",eqpModelId));
         if(model == null){
             return DateResponse.error(eqpModelId+"不存在");
         }
@@ -50,7 +51,7 @@ public class MsEqpAblilityController extends BaseCRUDController<MsEqpAblility> {
 
         res.put("eqpModelId", eqpModelId);
         res.put("eqpModelName", model.getManufacturerName());
-        return DateResponse.ok(list);
+        return res;
     }
 
 }

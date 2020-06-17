@@ -1,5 +1,6 @@
 package com.lmrj.fab.eqp.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
@@ -26,12 +27,16 @@ public class FabEquipmentModel extends BaseDataEntity {
 	private String id;
     /**设备厂家*/
     @TableField(value = "manufacturer_name")
+    @Excel(name = "设备厂家", orderNum = "1", width = 12 )
 	private String manufacturerName;
     /**设备类型*/
     @TableField(value = "class_code")
+    @Excel(name = "设备类型", orderNum = "2", width = 20 )
 	private String classCode;
     @TableField(exist = false)
     private String modelName;
+    @TableField(value = "category")
+    private String category;
     /**SML文件路径*/
     @TableField(value = "sml_path")
 	private String smlPath;
@@ -40,6 +45,7 @@ public class FabEquipmentModel extends BaseDataEntity {
 	private String hostJavaClass;
     /**有效标志*/
     @TableField(value = "active_flag")
+    @Excel(name = "有效标志", orderNum = "3")
 	private String activeFlag;
     /**图片路径*/
     @TableField(value = "icon_path")

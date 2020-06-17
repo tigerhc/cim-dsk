@@ -52,11 +52,11 @@ public class MsMeasureRecordDetail extends BaseDataEntity {
     /**展现形式,input, grid*/
     @TableField(value = "show_type")
     private String showType;
-    /**行数*/
-    @TableField(value = "row_count")
-    private Integer rowCount;
+    /**行名*/
+    @TableField(value = "row_name")
+    private String rowName;
     /**排序号*/
     @TableField(value = "sort_no")
     private Integer sortNo;
-	
+
 }
