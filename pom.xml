@@ -68,6 +68,7 @@
     <modules>
         <module>lmrj-modules</module>
         <module>cim-dsk-root</module>
+        <module>cim-zsx-root</module>
     </modules>
 
     <!-- 阿里云maven仓库 -->
