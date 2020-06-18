@@ -7,6 +7,8 @@ import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
@@ -19,11 +21,7 @@ import com.lmrj.core.excel.ImportExcel;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -84,6 +82,14 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         // TODO: 2019/8/26 springmvc异常处理,当前好像已经有此功能了
         rmsRecipeService.uploadRecipe(eqpId, recipeName);
         return response;
+    }
+
+    @Override
+    @GetMapping("export")
+    //@LogAspectj(logType = LogType.EXPORT)
+//    @RequiresMethodPermissions("export")
+    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+        return doExport("配方信息", queryable,  propertyPreFilterable,  request,  response);
     }
 
     @RequestMapping(value = "import")

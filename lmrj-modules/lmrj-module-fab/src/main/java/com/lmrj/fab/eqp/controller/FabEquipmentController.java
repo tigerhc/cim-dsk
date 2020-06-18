@@ -171,6 +171,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 //        return response2;
 //    }
 
+    @Override
     @GetMapping("export")
     //@LogAspectj(logType = LogType.EXPORT)
 //    @RequiresMethodPermissions("export")

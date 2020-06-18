@@ -1,5 +1,6 @@
 package com.lmrj.rms.template.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
@@ -30,18 +31,23 @@ public class RmsRecipeTemplate extends BaseDataEntity {
     private String eqpModelName;
     /**本字段存储模板中的id,作为参数系统中的唯一标识。在创建时设置与本表id同。*/
     @TableField(value = "para_code")
+    @Excel(name = "参数代码", orderNum = "2", width = 20)
     private String paraCode;
     /**参数名*/
     @TableField(value = "para_name")
+    @Excel(name = "参数名称", orderNum = "2", width = 20)
     private String paraName;
     /**简称*/
     @TableField(value = "para_short_name")
+    @Excel(name = "参数简称", orderNum = "2", width = 20)
     private String paraShortName;
     /**单位*/
     @TableField(value = "para_unit")
+    @Excel(name = "单位", orderNum = "2", width = 20)
     private String paraUnit;
     /**设定值*/
     @TableField(value = "set_value")
+    @Excel(name = "设定值", orderNum = "2", width = 20)
     private String setValue;
     /**最小值*/
     @TableField(value = "limit_min")
@@ -54,9 +60,11 @@ public class RmsRecipeTemplate extends BaseDataEntity {
     private String limitType;
     /**显示标记 N、不在初次打开页面显示Y、在初次打开页面显示*/
     @TableField(value = "show_flag")
+    @Excel(name = "是否首页显示", orderNum = "2", width = 20)
     private String showFlag;
     /**监控标记 N、不监控Y、监控*/
     @TableField(value = "monitor_flag")
+    @Excel(name = "是否监控", orderNum = "2", width = 20)
     private String monitorFlag;
     /**参数等级1、提示2、警告3、停机4、停机+扣留*/
     @TableField(value = "para_level")
@@ -90,6 +98,7 @@ public class RmsRecipeTemplate extends BaseDataEntity {
     private String paraDesc;
     /**排序号*/
     @TableField(value = "sort_no")
+    @Excel(name = "排序号", orderNum = "2", width = 20)
     private Double sortNo;
     /**更新次数*/
     @TableField(value = "update_cnt")

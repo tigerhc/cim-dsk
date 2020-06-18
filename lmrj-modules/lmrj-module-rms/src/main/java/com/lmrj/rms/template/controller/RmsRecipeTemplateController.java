@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.rms.template.entity.RmsRecipeTemplate;
 import com.lmrj.rms.template.service.IRmsRecipeTemplateService;
@@ -44,5 +46,13 @@ public class RmsRecipeTemplateController extends BaseCRUDController<RmsRecipeTem
         List<RmsRecipeTemplate> recipeTemplateList= JSONObject.parseArray(str, RmsRecipeTemplate.class);
          iRmsRecipeTemplateService.updateBatchById(recipeTemplateList);
         return Response.ok("修改成功");
+    }
+
+    @Override
+    @GetMapping("export")
+    //@LogAspectj(logType = LogType.EXPORT)
+//    @RequiresMethodPermissions("export")
+    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+        return doExport("配方详情", queryable,  propertyPreFilterable,  request,  response);
     }
 }
