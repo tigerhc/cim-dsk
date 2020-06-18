@@ -1,5 +1,6 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -32,9 +33,11 @@ public class EdcDskLogProduction extends AbstractEntity {
     protected String id;
     /**设备号*/
     @TableField(value = "eqp_id")
+    @Excel(name = "设备号", orderNum = "1", width = 20)
     private String eqpId;
     /**设备类型*/
     @TableField(value = "eqp_model_id")
+    @Excel(name = "设备型号", orderNum = "1", width = 40)
     private String eqpModelId;
     /**设备类型名称*/
     @TableField(value = "eqp_model_name")
@@ -43,12 +46,15 @@ public class EdcDskLogProduction extends AbstractEntity {
     @TableField(value = "eqp_no")
     private String eqpNo;
     @TableField(value = "recipe_code")
+    @Excel(name = "配方名", orderNum = "1", width = 30)
     private String recipeCode;
     /**日投入数*/
     @TableField(value = "day_yield")
+    @Excel(name = "日产量", orderNum = "1", width = 20)
     private Integer dayYield;
     /**批量投入数*/
     @TableField(value = "lot_yield")
+    @Excel(name = "批次产量", orderNum = "1", width = 20)
     private Integer lotYield;
     /**制品的批号*/
     @TableField(value = "material_lot_no")
@@ -64,6 +70,7 @@ public class EdcDskLogProduction extends AbstractEntity {
     private String materialNo2;
     /**作业指示书批量*/
     @TableField(value = "lot_no")
+    @Excel(name = "批号", orderNum = "1", width = 20)
     private String lotNo;
     /**作业指示书机种*/
     @TableField(value = "production_no")
@@ -73,11 +80,13 @@ public class EdcDskLogProduction extends AbstractEntity {
     private String orderNo;
     /**判定结果*/
     @TableField(value = "judge_result")
+    @Excel(name = "判定结果", orderNum = "1", width = 20)
     private String judgeResult;
     /**开始时间*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
+    @Excel(name = "发生时间", orderNum = "1", width = 40)
     private Date startTime;
     /**结束时间*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")

@@ -1,5 +1,6 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -34,6 +35,7 @@ public class EdcDskLogRecipe extends AbstractEntity {
     protected String id;
     /**设备号*/
     @TableField(value = "eqp_id")
+    @Excel(name = "设备号", orderNum = "1", width = 20)
     private String eqpId;
     /**设备类型*/
     @TableField(exist = false)
@@ -46,11 +48,13 @@ public class EdcDskLogRecipe extends AbstractEntity {
     private String eqpNo;
     /**配方CODE*/
     @TableField(value = "recipe_code")
+    @Excel(name = "配方名", orderNum = "1", width = 30)
     private String recipeCode;
     /**发生时刻*/
     @TableField(value = "start_time")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @Excel(name = "发生时间", orderNum = "1", width = 40)
     private Date startTime;
     /**作业指示书订单*/
     @TableField(value = "order_no")

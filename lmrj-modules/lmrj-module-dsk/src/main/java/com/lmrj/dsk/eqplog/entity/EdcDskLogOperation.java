@@ -1,5 +1,6 @@
 package com.lmrj.dsk.eqplog.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -32,28 +33,34 @@ public class EdcDskLogOperation extends AbstractEntity {
     protected String id;
     /**设备号*/
     @TableField(value = "eqp_id")
+    @Excel(name = "设备号", orderNum = "1", width = 20)
     private String eqpId;
     /**设备类型*/
     @TableField(value = "eqp_model_id")
     private String eqpModelId;
     /**设备类型名称*/
     @TableField(value = "eqp_model_name")
+    @Excel(name = "设备型号", orderNum = "1", width = 40)
     private String eqpModelName;
     /**设备名*/
     @TableField(value = "eqp_no")
     private String eqpNo;
     /**配方CODE*/
     @TableField(value = "recipe_code")
+    @Excel(name = "配方名", orderNum = "1", width = 30)
     private String recipeCode;
     /**日投入数*/
     @TableField(value = "day_yield")
+    @Excel(name = "日产量", orderNum = "1", width = 20)
     private Integer dayYield;
     /**批量投入数*/
     @TableField(value = "lot_yield")
+    @Excel(name = "批次产量", orderNum = "1", width = 20)
     private Integer lotYield;
     @JSONField(format="yyyy-MM-dd HH:mm:ss.SSS")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
+    @Excel(name = "发生时间", orderNum = "1", width = 40)
     private Date startTime;
 
     /**事件ID 0:停止中　, 1:自动运转中 2: 制品等待/材料等待 3~:警报代码*/

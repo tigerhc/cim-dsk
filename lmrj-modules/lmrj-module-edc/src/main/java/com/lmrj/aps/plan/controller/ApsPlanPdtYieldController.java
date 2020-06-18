@@ -4,8 +4,11 @@ import com.google.common.collect.Lists;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.edc.lot.entity.RptLotYield;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -52,6 +56,14 @@ public class ApsPlanPdtYieldController extends BaseCRUDController<ApsPlanPdtYiel
 
     @Autowired
     private IRptLotYieldService rptLotYieldService;
+
+    @Override
+    @GetMapping("export")
+    //@LogAspectj(logType = LogType.EXPORT)
+//    @RequiresMethodPermissions("export")
+    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+        return doExport("月计划信息", queryable,  propertyPreFilterable,  request,  response);
+    }
 
     @GetMapping("indexFour")
     public void indexFour(HttpServletRequest request) throws ParseException {
