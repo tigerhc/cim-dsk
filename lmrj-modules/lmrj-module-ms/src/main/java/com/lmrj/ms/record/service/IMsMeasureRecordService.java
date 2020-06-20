@@ -3,6 +3,9 @@ package com.lmrj.ms.record.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +18,5 @@ import com.lmrj.ms.record.entity.MsMeasureRecord;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord> {
-
+    List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
 }

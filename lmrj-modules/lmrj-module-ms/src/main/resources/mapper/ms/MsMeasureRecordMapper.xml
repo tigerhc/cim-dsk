@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.ms.record.mapper.MsMeasureRecordMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.lot_no,
+       t.production_no,
+       t.wafer_id,
+       t.ms_item,
+       t.eqp_id,
+       t.timing,
+       t.sample_count,
+       t.status,
+       t.approve_result,
+       t.file_flag,
+       t.img_flag,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+
+       <select id="findDetailBytime" resultType="java.util.Map">
+              select t.*
+              from ms_measure_record r left join ms_measure_record_detail t on t.ms_record_id = r.id
+              where r.eqp_id = #{eqpId}
+                and r.create_date between #{beginTime} and #{endTime}
+              order by t.create_date, t.ms_record_id
+       </select>
+</mapper>

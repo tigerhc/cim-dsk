@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -90,5 +91,11 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
             throw new RuntimeException(e.getMessage());
         }
         return true;
+    }
+
+    @Override
+    public List<Map> findDetailBytime(String eqpId, String beginTime, String endTime) {
+        List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
+        return detail;
     }
 }

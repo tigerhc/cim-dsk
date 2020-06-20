@@ -1,24 +1,30 @@
 package com.lmrj.ms.record.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
 import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
-import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.ms.record.service.IMsMeasureRecordService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -40,6 +46,8 @@ import java.util.UUID;
 @LogAspectj(title = "ms_measure_record")
 public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecord> {
 
+    @Autowired
+    IMsMeasureRecordService msMeasureRecordService;
     @RequestMapping(value = "/clientsave", method = { RequestMethod.GET, RequestMethod.POST })
     public Response insert( HttpServletRequest request,
                                   HttpServletResponse response){
@@ -47,7 +55,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         try {
             String record = request.getReader().readLine();
             MsMeasureRecord msMeasureRecord = JsonUtil.from(record,MsMeasureRecord.class);
-            String recordId = DateUtil.getDate("yyyyMMddHHmmssSSS")+UUID.randomUUID().toString().replace("-","").substring(0,3);
+            String recordId = StringUtil.randomTimeUUID("MS");
             msMeasureRecord.setRecordId(recordId);
             msMeasureRecord.setApproveResult("Y");
             if(StringUtil.isBlank(msMeasureRecord.getStatus())){
@@ -77,8 +85,18 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
 
     }
 
-    public static void main(String[] args) {
-        System.out.println(DateUtil.getDate("yyyyMMddHHmmssSSS")+UUID.randomUUID().toString().replace("-","").substring(0,15));
+    @RequestMapping(value = "/rptmsrecordbytime/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
+                                      HttpServletRequest request, HttpServletResponse response){
+        List<Map> maps =  msMeasureRecordService.findDetailBytime(beginTime,endTime,eqpId);
+        return DateResponse.ok(maps);
     }
 
+    @RequestMapping(value = "/rptmsrecordbytime2/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void rptMsRecordByTime2(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
+                                  HttpServletRequest request, HttpServletResponse response){
+        List<Map> maps =  msMeasureRecordService.findDetailBytime(beginTime,endTime,eqpId);
+        String content = JSON.toJSONStringWithDateFormat(maps, JSON.DEFFAULT_DATE_FORMAT);
+        ServletUtils.printJson(response, content);
+    }
 }
