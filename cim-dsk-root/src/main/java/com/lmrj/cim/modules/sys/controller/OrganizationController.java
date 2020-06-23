@@ -194,7 +194,7 @@ public class OrganizationController extends BaseBeanController<Organization> {
         return Response.ok("删除成功");
     }
 
-    @PostMapping("initCache")
+    @RequestMapping("initCache")
     @LogAspectj(logType = LogType.DELETE)
     public Response initCache() {
         OfficeUtils.initOffice();

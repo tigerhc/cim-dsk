@@ -1,5 +1,6 @@
 package com.lmrj.ms.record.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.google.common.collect.Lists;
@@ -24,35 +25,45 @@ import java.util.List;
 @SuppressWarnings("serial")
 @Data
 public class MsMeasureRecord extends BaseDataEntity {
-    /**批号*/
+    /**流水号*/
+    @Excel(name = "流水号", orderNum = "1")
     @TableField(value = "record_id")
     private String recordId;
 
     /**批号*/
+    @Excel(name = "批号", orderNum = "2")
     @TableField(value = "lot_no")
     private String lotNo;
     /**机种*/
+    @Excel(name = "产品", orderNum = "3")
     @TableField(value = "production_no")
     private String productionNo;
     /**晶圆ID*/
+    @Excel(name = "晶圆ID", orderNum = "4")
     @TableField(value = "wafer_id")
     private String waferId;
     /**量测项目,用逗号隔开*/
     @TableField(value = "ms_item")
     private String msItem;
     /**设备号*/
+    @Excel(name = "设备号", orderNum = "5")
     @TableField(value = "eqp_id")
     private String eqpId;
+    @Excel(name = "设备名", orderNum = "6")
+    @TableField(exist = false)
+    private String eqpName;
     /**时机*/
     @TableField(value = "timing")
     private String timing;
     /**采样数*/
+    @Excel(name = "采样数", orderNum = "7")
     @TableField(value = "sample_count")
     private Integer sampleCount;
     /**状态 0:创建1: 已提交 N:作废*/
     @TableField(value = "status")
     private String status;
     /**判定结果,若超出范围,则N*/
+    @Excel(name = "判定结果", orderNum = "8")
     @TableField(value = "approve_result")
     private String approveResult;
     /**采样文件*/

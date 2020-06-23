@@ -2,12 +2,15 @@ package com.lmrj.ms.record.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.lmrj.common.http.DateResponse;
+import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
 import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
 import com.lmrj.ms.record.service.IMsMeasureRecordService;
@@ -48,6 +51,29 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
 
     @Autowired
     IMsMeasureRecordService msMeasureRecordService;
+    @Autowired
+    private IFabEquipmentService fabEquipmentService;
+
+    /**
+     * 在返回list数据之前编辑数据
+     *
+     * @param pagejson
+     */
+    @Override
+    public void afterPage(PageResponse<MsMeasureRecord> pagejson, HttpServletRequest request, HttpServletResponse response) {
+        List<MsMeasureRecord> list = pagejson.getResults();
+        for(MsMeasureRecord msMeasureRecord: list){
+
+            if(msMeasureRecord.getEqpId() != null){
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(msMeasureRecord.getEqpId());
+                if(fabEquipment != null){
+                    msMeasureRecord.setEqpName(fabEquipment.getEqpName());
+                }
+            }
+        }
+    }
+
+
     @RequestMapping(value = "/clientsave", method = { RequestMethod.GET, RequestMethod.POST })
     public Response insert( HttpServletRequest request,
                                   HttpServletResponse response){
