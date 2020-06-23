@@ -220,8 +220,16 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             }
             ftpFile.getName();
         }
+    }
 
-
-
+    @Override
+    public List<Map> findDetailBytime(String eqpId, String beginTime, String endTime) {
+        int count = baseMapper.findCountBytime(eqpId,  beginTime,  endTime);
+        if(count>100000){
+            return null;
+        }else{
+            List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
+            return detail;
+        }
     }
 }

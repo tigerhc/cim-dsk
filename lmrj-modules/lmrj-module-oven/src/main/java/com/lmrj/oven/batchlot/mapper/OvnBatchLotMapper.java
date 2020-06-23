@@ -28,4 +28,8 @@ public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
      List<Map> selectFabStatusParam(List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList);
 
     List<Map> selectChartByCase(String officeId);
+
+    int findCountBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
+
+    List<Map> findDetailBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
 }

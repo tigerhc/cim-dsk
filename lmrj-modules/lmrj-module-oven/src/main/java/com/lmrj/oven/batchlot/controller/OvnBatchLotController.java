@@ -1,9 +1,12 @@
 package com.lmrj.oven.batchlot.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.lmrj.cim.utils.OfficeUtils;
+import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.PageResponse;
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
@@ -17,7 +20,9 @@ import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -160,6 +165,22 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         //方案模版
         ovnBatchLotService.resolveAllTempFile(eqpId);
         return "resolve All OK";
+    }
+
+    @RequestMapping(value = "/tempbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
+                                  HttpServletRequest request, HttpServletResponse response) {
+        List<Map> maps = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
+        String content = "";
+        if (maps == null) {
+            content = JSON.toJSONString(DateResponse.error("请缩短时间范围"));
+        } else {
+            OvnBatchLot ovnBatchLot= ovnBatchLotService.selectOne(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId));
+            Response res = DateResponse.ok(maps);
+            res.put("title", ovnBatchLot.getOtherTempsTitle());
+            content = JSON.toJSONStringWithDateFormat(res, JSON.DEFFAULT_DATE_FORMAT);
+        }
+        ServletUtils.printJson(response, content);
     }
 
 }

@@ -31,4 +31,6 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     boolean resolveTemperatureFile(String eqptId, String fileName) throws Exception;
 
     void resolveAllTempFile(String eqpId);
+
+    List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
 }

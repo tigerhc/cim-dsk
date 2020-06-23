@@ -98,4 +98,12 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
         List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
         return detail;
     }
+
+    @Override
+    public List<Map> findDetailBytimeAndPro(String eqpId, String beginTime, String endTime, String productionNo) {
+        List<Map> detail =  baseMapper.findDetailBytimeAndPro(eqpId,  beginTime,  endTime, productionNo);
+        return detail;
+    }
+
+
 }

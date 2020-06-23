@@ -23,4 +23,6 @@ import java.util.Map;
 public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
 
  List<Map> findDetailBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
+ List<Map> findDetailBytimeAndPro(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
+
 }

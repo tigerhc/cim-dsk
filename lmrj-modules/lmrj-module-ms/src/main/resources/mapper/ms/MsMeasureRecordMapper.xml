@@ -30,4 +30,13 @@
                 and r.create_date between #{beginTime} and #{endTime}
               order by t.create_date, t.ms_record_id
        </select>
+
+       <select id="findDetailBytimeAndPro" resultType="java.util.Map">
+              select t.*
+              from ms_measure_record r left join ms_measure_record_detail t on t.ms_record_id = r.id
+              where r.eqp_id = #{eqpId}
+                and r.create_date between #{beginTime} and #{endTime}
+              and r.production_no = #{productionNo}
+              order by t.create_date, t.ms_record_id
+       </select>
 </mapper>

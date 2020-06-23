@@ -86,9 +86,9 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
     }
 
     @RequestMapping(value = "/rptmsrecordbytime/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
-    public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
+    public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,@RequestParam String productionNo,
                                       HttpServletRequest request, HttpServletResponse response){
-        List<Map> maps =  msMeasureRecordService.findDetailBytime(beginTime,endTime,eqpId);
+        List<Map> maps =  msMeasureRecordService.findDetailBytimeAndPro(beginTime,endTime,eqpId, productionNo);
         String content = JSON.toJSONStringWithDateFormat(DateResponse.ok(maps), JSON.DEFFAULT_DATE_FORMAT);
         ServletUtils.printJson(response, content);
     }

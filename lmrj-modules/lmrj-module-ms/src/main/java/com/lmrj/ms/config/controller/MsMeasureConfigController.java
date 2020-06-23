@@ -88,4 +88,22 @@ public class MsMeasureConfigController extends BaseCRUDController<MsMeasureConfi
         //res.put("data",detail);
         //return res;
     }
+
+    /**
+     * 设备列表下拉框
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/listProByEqp/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void listProByEqp(@PathVariable String eqpId, HttpServletRequest request,
+                          HttpServletResponse response) {
+        Response res= new Response();
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        List<MsMeasureConfig> list = commonService.selectList(new EntityWrapper<MsMeasureConfig>().eq("eqp_model_id" ,fabEquipment.getModelId()));
+        String content = JSON.toJSONString(list);
+        ServletUtils.printJson(response, content);
+        //res.put("data",detail);
+        //return res;
+    }
 }
