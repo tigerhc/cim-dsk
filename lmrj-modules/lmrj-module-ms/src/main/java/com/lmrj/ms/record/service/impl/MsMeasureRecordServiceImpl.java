@@ -105,5 +105,10 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
         return detail;
     }
 
+    @Override
+    public List<MsMeasureRecord> findRecordByRecordId(String recordId) {
+        return baseMapper.findRecordByRecordId(recordId);
+    }
+
 
 }

@@ -39,4 +39,14 @@
               and r.production_no = #{productionNo}
               order by t.create_date, t.ms_record_id
        </select>
+
+       <select id="findRecordByRecordId" resultMap="findDetail">
+              select *
+              from ms_measure_record
+              where record_id = #{recordId}
+       </select>
+       <resultMap id="findDetail" type="com.lmrj.ms.record.entity.MsMeasureRecord">
+              <id column="id" property="id"/>
+              <collection property="detail" select="com.lmrj.ms.record.mapper.MsMeasureRecordDetailMapper.findDetailByRecordId" column="id"></collection>
+       </resultMap>
 </mapper>

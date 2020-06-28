@@ -23,4 +23,10 @@
        t.update_date,
        t.del_flag
 	</sql>
+
+       <select id="findDetailByRecordId" resultType="com.lmrj.ms.record.entity.MsMeasureRecordDetail">
+              select *
+              from ms_measure_record_detail
+              where ms_record_id = #{id}
+       </select>
 </mapper>

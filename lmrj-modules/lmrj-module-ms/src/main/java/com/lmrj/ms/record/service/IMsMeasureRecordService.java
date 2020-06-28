@@ -2,6 +2,7 @@ package com.lmrj.ms.record.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
+import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
 
 import java.util.List;
 import java.util.Map;
@@ -20,4 +21,5 @@ import java.util.Map;
 public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord> {
     List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
     List<Map> findDetailBytimeAndPro(String eqpId, String beginTime, String endTime, String productionNo);
+    List<MsMeasureRecord> findRecordByRecordId(String recordId);
 }

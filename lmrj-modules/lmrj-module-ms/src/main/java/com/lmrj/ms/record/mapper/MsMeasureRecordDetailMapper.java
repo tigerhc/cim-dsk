@@ -4,7 +4,9 @@ import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
- /**
+import java.util.List;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +19,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface MsMeasureRecordDetailMapper extends BaseMapper<MsMeasureRecordDetail> {
-    
+ List<MsMeasureRecordDetail> findDetailByRecordId(String recordId);
 }
