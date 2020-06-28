@@ -25,20 +25,24 @@ import java.util.List;
 @SuppressWarnings("serial")
 @Data
 public class MsMeasureRecord extends BaseDataEntity {
-    /**批号*/
+    /**流水号*/
+    @Excel(name = "流水号", orderNum = "1")
     @TableField(value = "record_id")
     @Excel(name = "流水号", orderNum = "1", width = 40)
     private String recordId;
 
     /**批号*/
+    @Excel(name = "批号", orderNum = "2")
     @TableField(value = "lot_no")
     @Excel(name = "批号", orderNum = "4", width = 20)
     private String lotNo;
     /**机种*/
+    @Excel(name = "产品", orderNum = "3")
     @TableField(value = "production_no")
     @Excel(name = "产品", orderNum = "3", width = 40)
     private String productionNo;
     /**晶圆ID*/
+    @Excel(name = "晶圆ID", orderNum = "4")
     @TableField(value = "wafer_id")
     @Excel(name = "晶圆ID", orderNum = "5", width = 20)
     private String waferId;
@@ -46,14 +50,19 @@ public class MsMeasureRecord extends BaseDataEntity {
     @TableField(value = "ms_item")
     private String msItem;
     /**设备号*/
+    @Excel(name = "设备号", orderNum = "5")
     @TableField(value = "eqp_id")
     @Excel(name = "设备号", orderNum = "2", width = 20)
     private String eqpId;
+    @Excel(name = "设备名", orderNum = "6")
+    @TableField(exist = false)
+    private String eqpName;
     /**时机*/
     @TableField(value = "timing")
     @Excel(name = "时机", orderNum = "6", width = 20)
     private String timing;
     /**采样数*/
+    @Excel(name = "采样数", orderNum = "7")
     @TableField(value = "sample_count")
     @Excel(name = "采样数", orderNum = "7", width = 20)
     private Integer sampleCount;
@@ -62,6 +71,7 @@ public class MsMeasureRecord extends BaseDataEntity {
     @Excel(name = "状态", orderNum = "8", width = 20)
     private String status;
     /**判定结果,若超出范围,则N*/
+    @Excel(name = "判定结果", orderNum = "8")
     @TableField(value = "approve_result")
     @Excel(name = "判定结果", orderNum = "9", width = 20)
     private String approveResult;
