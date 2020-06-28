@@ -33,7 +33,7 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
 
     @Override
     public FabEquipment findEqpByCode(String eqpId) {
-        List<FabEquipment> fabEquipmentList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId));
+        List<FabEquipment> fabEquipmentList = baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("eqp_id", eqpId));
         if(fabEquipmentList.size() == 0){
             return null;
         }

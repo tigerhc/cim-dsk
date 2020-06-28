@@ -80,7 +80,15 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         Response response = Response.ok("上传成功");
         // TODO: 2019/8/26 判断返回结果
         // TODO: 2019/8/26 springmvc异常处理,当前好像已经有此功能了
-        rmsRecipeService.uploadRecipe(eqpId, recipeName);
+        boolean flag = false;
+        try {
+            flag = rmsRecipeService.uploadRecipe(eqpId, recipeName);
+            if (!flag){
+                response = Response.error(999998, "上传失败");
+            }
+        } catch (Exception e) {
+            response = Response.error(999998,e.getMessage());
+        }
         return response;
     }
 

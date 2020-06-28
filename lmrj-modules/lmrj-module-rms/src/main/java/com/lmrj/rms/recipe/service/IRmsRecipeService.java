@@ -15,7 +15,7 @@ import com.lmrj.rms.recipe.entity.RmsRecipe;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
-    boolean uploadRecipe(String eqpId, String recipeName);
+    boolean uploadRecipe(String eqpId, String recipeName) throws Exception;
     RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe);
     RmsRecipe findLastByRecipeCode(String id);
     boolean upgrade(RmsRecipe rmsRecipe);

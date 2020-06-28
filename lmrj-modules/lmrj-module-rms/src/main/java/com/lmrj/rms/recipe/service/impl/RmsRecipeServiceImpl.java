@@ -135,7 +135,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public boolean uploadRecipe(String eqpId, String recipeName) {
+    public boolean uploadRecipe(String eqpId, String recipeName) throws Exception{
         return uploadOvenRecipe(eqpId, recipeName);
     }
 
@@ -145,7 +145,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @param recipeName
      * @return
      */
-    public boolean uploadOvenRecipe(String eqpId, String recipeName) {
+    public boolean uploadOvenRecipe(String eqpId, String recipeName) throws Exception{
         Map<String, String> map = Maps.newHashMap();
         map.put("METHOD", "UPLOAD_RECIPE");
         map.put("RECIPE_NAME", recipeName);
@@ -154,6 +154,9 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
         Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
