@@ -1,12 +1,16 @@
 package com.lmrj.rms.template.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.fab.eqp.entity.FabEquipmentModel;
+import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.rms.template.entity.RmsRecipeTemplate;
 import com.lmrj.rms.template.service.IRmsRecipeTemplateService;
 import com.lmrj.core.log.LogAspectj;
@@ -39,6 +43,8 @@ public class RmsRecipeTemplateController extends BaseCRUDController<RmsRecipeTem
 
     @Autowired
     private IRmsRecipeTemplateService iRmsRecipeTemplateService;
+    @Autowired
+    private IFabEquipmentModelService fabEquipmentModelService;
     @RequestMapping(value = "batchUpdate", method = RequestMethod.POST)
     @ResponseBody
     public Response update(HttpServletRequest request, HttpServletResponse response) {
@@ -46,6 +52,21 @@ public class RmsRecipeTemplateController extends BaseCRUDController<RmsRecipeTem
         List<RmsRecipeTemplate> recipeTemplateList= JSONObject.parseArray(str, RmsRecipeTemplate.class);
          iRmsRecipeTemplateService.updateBatchById(recipeTemplateList);
         return Response.ok("修改成功");
+    }
+
+    @RequestMapping(value = {"list/{eqpModelId}"}, method = {RequestMethod.GET, RequestMethod.POST})
+    public Response findByModelId(@PathVariable String eqpModelId){
+        FabEquipmentModel model = fabEquipmentModelService.selectById(eqpModelId);
+        //FabEquipmentModel model = fabEquipmentModelService.selectOne(new EntityWrapper<FabEquipmentModel>().eq("id",eqpModelId));
+        if(model == null){
+            return DateResponse.error(eqpModelId+"不存在");
+        }
+        List<RmsRecipeTemplate> list = commonService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("eqp_model_id",eqpModelId));
+        Response res = DateResponse.ok(list);
+
+        res.put("eqpModelId", eqpModelId);
+        res.put("eqpModelName", model.getManufacturerName());
+        return res;
     }
 
     @Override
