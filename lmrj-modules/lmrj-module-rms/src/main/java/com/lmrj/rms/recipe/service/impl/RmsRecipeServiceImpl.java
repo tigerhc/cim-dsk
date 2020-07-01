@@ -11,6 +11,7 @@ import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
+import com.lmrj.rms.recipe.utils.FileUtil;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -21,12 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 
 /**
@@ -136,7 +133,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
     @Override
     public boolean uploadRecipe(String eqpId, String recipeName) throws Exception{
-        return uploadOvenRecipe(eqpId, recipeName);
+//        return uploadOvenRecipe(eqpId, recipeName);
+        return analysisFile(eqpId, recipeName);
     }
 
     /**
@@ -193,6 +191,44 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
             log.info("迁移文件结果:{};", copyFlag);
         }
+        return true;
+    }
+
+    public boolean analysisFile(String eqpId, String recipeName) throws Exception {
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        String fileName = "SIM6812-DI2";
+        String filePath = "C:/Users/daoda/Desktop/"+ fileName +".csv";
+//        InputStream inputStream = new FileInputStream("C:/Users/daoda/Desktop/"+ fileName +".csv");
+//        Workbook workbook = new XSSFWorkbook(inputStream);
+//        List<String[]> excelData = ExcelUtil.getExcelData(workbook);
+//        Map<String, String> contentMap = new HashMap<>();
+//        for (int i = 0; i < excelData.size(); i++) {
+//            String[] strings = excelData.get(i);
+//            if (strings[0] != null && strings[1] != null){
+//                contentMap.put(strings[0] + strings[1] , strings[4]);
+//            }
+//        }
+        Map<String, String> contentMap = FileUtil.analysis(filePath);
+        List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
+        for (String key : contentMap.keySet()) {
+            log.debug("key= " + key + " and value= " + contentMap.get(key));
+            RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
+            rmsRecipeBody.setParaCode(key);
+            String[] strings = contentMap.get(key).split("@@");
+            rmsRecipeBody.setParaName(strings[0]);
+            rmsRecipeBody.setSetValue(strings[1]);
+            rmsRecipeBodyDtlList.add(rmsRecipeBody);
+        }
+        RmsRecipe rmsRecipe = new RmsRecipe();
+        rmsRecipe.setRecipeCode(recipeName);
+        rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
+        rmsRecipe.setEqpId(eqpId);
+        rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+        rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+        this.insert(rmsRecipe);
         return true;
     }
 
