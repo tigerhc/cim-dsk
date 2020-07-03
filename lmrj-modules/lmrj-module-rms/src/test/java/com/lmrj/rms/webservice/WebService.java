@@ -1,14 +1,22 @@
-package com.lmrj.rms.mes.controller;
+package com.lmrj.rms.webservice;
 
+import com.lmrj.rms.RmsBootApplication;
 import com.lmrj.rms.recipe.service.DemoService;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-public class demo {
-    public static void main(String[] args) throws MalformedURLException {
+@SpringBootTest(classes = RmsBootApplication.class)
+@RunWith(SpringRunner.class)
+public class WebService {
+
+    @Test
+    public void webserviceClient() throws Exception{
         //创建WSDL文件的URL
         URL wsdlDocumentLocation=new URL("http://127.0.0.1:800/services/DemoService?wsdl");
         //创建服务名称
