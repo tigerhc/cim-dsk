@@ -29,4 +29,14 @@ public class FabEquipmentModelServiceImpl  extends CommonServiceImpl<FabEquipmen
     public List<Map> findLookup() {
         return baseMapper.findLookup();
     }
+
+    @Override
+    public List<String> manufacturerNameList() {
+        return baseMapper.manufacturerNameList();
+    }
+
+    @Override
+    public List<String> classCodeList() {
+        return baseMapper.classCodeList();
+    }
 }

@@ -47,5 +47,11 @@
             and EQP_MODEL_ID = #{eqpModelId}
         </if>
     </select>
+    
+    <select id="recipeCodeList" resultType="string">
+        select recipe_code
+        from rms_recipe
+        where del_flag = '0'
+    </select>
 
 </mapper>

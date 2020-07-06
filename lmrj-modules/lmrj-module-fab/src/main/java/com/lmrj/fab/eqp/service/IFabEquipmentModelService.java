@@ -19,4 +19,6 @@ import java.util.Map;
 */
 public interface IFabEquipmentModelService extends ICommonService<FabEquipmentModel> {
     public List<Map> findLookup();
+    List<String> manufacturerNameList();
+    List<String> classCodeList();
 }

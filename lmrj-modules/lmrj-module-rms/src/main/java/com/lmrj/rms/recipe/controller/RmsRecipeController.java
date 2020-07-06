@@ -3,6 +3,7 @@ package com.lmrj.rms.recipe.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -218,6 +220,28 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     public Response copyMaxValue(@RequestParam String recipeIdNew, @RequestParam String recipeIdOld, HttpServletRequest request, HttpServletResponse response) {
         Response res = Response.ok("提交规格最小值拷贝成功");
         return res;
+    }
+
+    /**
+     * 程序名称列表下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/recipeCodeList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void recordCodeList(Model model, HttpServletRequest request,
+                          HttpServletResponse response) {
+        List<String> recipeCodeList = rmsRecipeService.recipeCodeList();
+        List<Map> list = Lists.newArrayList();
+        for (String recipeCode : recipeCodeList) {
+            Map map = Maps.newHashMap();
+            map.put("id", recipeCode);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
     }
 
 }

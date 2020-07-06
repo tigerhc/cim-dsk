@@ -3,6 +3,8 @@ package com.lmrj.rms.recipe.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -20,4 +22,5 @@ public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     RmsRecipe findLastByRecipeCode(String id);
     boolean upgrade(RmsRecipe rmsRecipe);
     RmsRecipe selectByIdAndCompareParam(String id);
+    List<String> recipeCodeList();
 }

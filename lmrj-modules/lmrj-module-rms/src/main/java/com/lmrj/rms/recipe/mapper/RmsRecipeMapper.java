@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -21,4 +23,5 @@ public interface RmsRecipeMapper extends BaseMapper<RmsRecipe> {
 
  RmsRecipe findLastByRecipeCode(@Param("id") String id, @Param("recipeCode") String recipeCode, @Param("eqpModelId") String eqpModelId);
  String findMaxVersionNo(@Param("recipeCode") String recipeCode, @Param("eqpId") String eqpId, @Param("eqpModelId") String eqpModelId, @Param("versionType") String versionType);
+ List<String> recipeCodeList();
 }

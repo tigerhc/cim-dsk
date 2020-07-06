@@ -1,12 +1,16 @@
 package com.lmrj.fab.eqp.controller;
 
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
+import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.fab.eqp.entity.FabEquipmentModel;
 import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.util.lang.StringUtil;
@@ -14,6 +18,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.cim.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -93,6 +98,50 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
     private void lookup() throws IOException {
         List<Map> list = fabEquipmentModelService.findLookup();
         FastJsonUtils.print(list);
+    }
+
+    /**
+     * 设备厂家下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/manufacturerNameList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void manufacturerNameList(Model model, HttpServletRequest request,
+                          HttpServletResponse response) {
+        List<String> manufacturerNameList = fabEquipmentModelService.manufacturerNameList();
+        List<Map> list = Lists.newArrayList();
+        for (String manufacturerName : manufacturerNameList) {
+            Map map = Maps.newHashMap();
+            map.put("id", manufacturerName);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+    /**
+     * 设备类型下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/classCodeList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void classCodeList(Model model, HttpServletRequest request,
+                          HttpServletResponse response) {
+        List<String> classCodeList = fabEquipmentModelService.classCodeList();
+        List<Map> list = Lists.newArrayList();
+        for (String classCode : classCodeList) {
+            Map map = Maps.newHashMap();
+            map.put("id", classCode);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
     }
 
 }

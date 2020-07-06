@@ -82,6 +82,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
+    public List<String> recipeCodeList() {
+        return baseMapper.recipeCodeList();
+    }
+
+    @Override
     public boolean insert(RmsRecipe rmsRecipe) {
         // 保存主表
         super.insert(rmsRecipe);

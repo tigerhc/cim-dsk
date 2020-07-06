@@ -21,5 +21,7 @@ import java.util.Map;
 @Mapper
 public interface FabEquipmentModelMapper extends BaseMapper<FabEquipmentModel> {
   List<Map> findLookup();
+  List<String> manufacturerNameList();
+  List<String> classCodeList();
 
 }
