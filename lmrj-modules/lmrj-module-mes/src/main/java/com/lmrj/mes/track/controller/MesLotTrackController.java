@@ -16,6 +16,7 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -47,6 +48,7 @@ import java.io.ByteArrayOutputStream;
 @ViewPrefix("mes/meslottrack")
 //@RequiresPathPermission("mes:meslottrack")
 @LogAspectj(title = "mes_lot_track")
+@Slf4j
 public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     @Autowired
@@ -57,8 +59,37 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
     //}
 
-    //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
+    //50029150702D 37368342             037368342ED   J.SIM6812M(E)D-URA F2971
     @RequestMapping(value = "/dsktrackin/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("dsktrackin :  {}", trackinfo);
+        try{
+            if(trackinfo.length()< 30){
+                return "trackinfo too short";
+            }
+            String[] trackinfos = trackinfo.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1];
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+
+            String  productionNo  = lotNos[0].substring(0, 7); //5002915
+            String  lotNo = lotNos[0].substring(7, 12); //0702D
+            String  orderNo= lotNos[1]; //37368342
+            //String eqpId ="SIM-DM1";
+            MesResult result = mesLotTrackService.trackin4DSK(eqpId, productionName, productionNo, orderNo, lotNo, "", opId);
+            if ("Y".equals(result.flag)) {
+                return "Y";
+            } else {
+                return result.msg;
+            }
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
+    @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         try{
             if(trackinfo.length()< 30){
