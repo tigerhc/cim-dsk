@@ -9,6 +9,8 @@ import com.lmrj.edc.evt.service.IEdcEvtDefineService;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
+import com.lmrj.util.lang.ArrayUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -29,6 +31,9 @@ public class EdcSecsLogHandler {
     @Autowired
     IFabEquipmentService fabEquipmentService;
 
+    @Autowired
+    IFabEquipmentStatusService fabEquipmentStatusService;
+
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -46,8 +51,9 @@ public class EdcSecsLogHandler {
         System.out.println("接收到的消息" + msg);
         EdcEvtRecord edcEvtRecord = JsonUtil.from(msg, EdcEvtRecord.class);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(edcEvtRecord.getEqpId());
+        String modelId = "";
         if(fabEquipment != null){
-            String modelId = fabEquipment.getModelId();
+            modelId = fabEquipment.getModelId();
 
             EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
             if(edcEvtDefine != null){
@@ -55,6 +61,23 @@ public class EdcSecsLogHandler {
             }
         }
         edcEvtRecordService.insert(edcEvtRecord);
+        //Mold单独处理
+        if("TRM".equals(fabEquipment.getStepCode())){
+            handleMoldYield(edcEvtRecord);
+        }
+
+    }
+    //处理Mold产量特殊事件
+    //通过track in获取设备开始shotcount数
+    public void handleMoldYield(EdcEvtRecord evtRecord){
+        String eqpId = evtRecord.getEqpId();
+        String[] ceids = {"2021","2031", "2041"};
+        String ceid = evtRecord.getEventId();
+        if(ArrayUtil.contains(ceids,ceid)){
+            fabEquipmentStatusService.increaseYield(eqpId, 12);
+            // TODO: 2020/7/8 写入 edc_dsk_log_production
+        }
+
     }
 
 }

@@ -67,7 +67,11 @@
         where EQP_ID = #{eqpID}
     </update>
 
-
+    <update id="increaseYield">
+        update FAB_EQUIPMENT_STATUS set  update_date = now(),
+          lot_yield = lot_yield+${increasedYield},day_yield = day_yield+${increasedYield}
+        where EQP_ID = #{eqpID}
+    </update>
 
    <update id="updateLot">
       update FAB_EQUIPMENT_STATUS set LOT_NO = #{lotNo}, update_date = now() where EQP_ID = #{eqpID}

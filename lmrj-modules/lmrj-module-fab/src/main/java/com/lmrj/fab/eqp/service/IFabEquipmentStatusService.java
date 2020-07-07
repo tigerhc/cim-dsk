@@ -21,6 +21,7 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
 
     int updateStatus(String eqpID, String status, String lotNo, String recipeCode);
     int updateYield(String eqpID, String status, String lotNo, String recipeCode, int lotYield, int dayYield);
+    int increaseYield(String eqpID, int increasedYield);
 
     int updateLot(String eqpID, String lotId);
 

@@ -50,7 +50,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     @Autowired
     IFabEquipmentStatusService fabEquipmentStatusService;
 
-    // TODO: 2020/7/3 锁表超时后,报错,此时锁的动作还在吗? 
+    // TODO: 2020/7/3 锁表超时后,报错,此时锁的动作还在吗?
     public MesResult trackin4DSK(String eqpId, String productionName,String productionNo,String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok("default");
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
@@ -114,7 +114,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         //直接更新fab status
         log.info("更新SIM-DM线状态数据, {}, {}", lotNo, recipeCode);
         if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
-            fabEquipmentStatusService.updateStatus(eqpId, "RUN", lotNo, recipeCode);
+            //fabEquipmentStatusService.updateStatus(eqpId, "RUN", lotNo, recipeCode);
+            fabEquipmentStatusService.updateYield(eqpId, "RUN", lotNo, recipeCode,0,0);
         }
         return result;
     }
