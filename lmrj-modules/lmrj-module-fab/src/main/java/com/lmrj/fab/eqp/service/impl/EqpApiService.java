@@ -1,6 +1,7 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * time:2016-8-5
  */
 @Slf4j
+@Service
 public class EqpApiService implements Serializable {
     private static final long serialVersionUID = -3450064362986273896L;
 
