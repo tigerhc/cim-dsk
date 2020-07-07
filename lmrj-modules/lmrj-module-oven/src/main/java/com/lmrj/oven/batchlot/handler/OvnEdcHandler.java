@@ -167,7 +167,7 @@ public class OvnEdcHandler {
     //}
 
     @RabbitHandler
-    @RabbitListener(queues= {"S2C.T.CURE.COMMAND"})
+    @RabbitListener(queues= {"S2C.Q.CURE.BC1.COMMAND"})
     public String cureParam2(byte[] message) {
         String msg = new String(message);
         System.out.println("接收到的消息" + msg);
