@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rms.log.mapper.RmsRecipeLogMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.recipe_code,
+       t.recipe_name,
+       t.version_type,
+       t.version_no,
+       t.lot_id,
+       t.param,
+       t.remarks,
+       t.create_by,
+       t.create_date
+	</sql>
+</mapper>

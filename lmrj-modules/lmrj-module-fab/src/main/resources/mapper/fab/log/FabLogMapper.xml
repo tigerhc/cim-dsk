@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.log.mapper.FabLogMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.event_id,
+       t.event_name,
+       t.eqp_id,
+       t.eqp_name,
+       t.lot_no,
+       t.recipe_code,
+       t.event_status,
+       t.event_desc,
+       t.origin_id,
+       t.create_by,
+       t.create_date
+	</sql>
+</mapper>
