@@ -168,10 +168,9 @@ public class OvnEdcHandler {
 
     @RabbitHandler
     @RabbitListener(queues= {"S2C.Q.CURE.BC1.COMMAND"})
-    public String cureParam2(byte[] message) {
-        String msg = new String(message);
-        System.out.println("接收到的消息" + msg);
-        List<EdcParamRecord> list = JsonUtil.from(msg, new TypeReference<List<EdcParamRecord>>() {
+    public String cureParam2(String message) {
+        System.out.println("接收到的消息" + message);
+        List<EdcParamRecord> list = JsonUtil.from(message, new TypeReference<List<EdcParamRecord>>() {
         });
         System.out.println(list);
         //插入新数据,同时备份一份到his表

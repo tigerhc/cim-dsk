@@ -43,16 +43,7 @@ public class DemoServiceImpl implements DemoService {
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
         Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, param);
-        byte[] message = (byte[]) test;
-        String msg = null;
-        try {
-            msg = new String(message, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
-            log.error("Exception:", e);
-        }
-        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
-        return "SIM-DM5#";
+        return (String) test;
     }
 
 }
