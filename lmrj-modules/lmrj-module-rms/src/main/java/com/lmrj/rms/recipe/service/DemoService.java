@@ -11,6 +11,6 @@ public interface DemoService {
     //接口方法名
     @WebMethod
     @WebResult(name = "String", targetNamespace = "")
-    public String findRecipeName(@WebParam(name = "eqpId") String eqpId);
+    public String findRecipeName(@WebParam(name = "eqpId") String eqpId) throws Exception;
 
 }

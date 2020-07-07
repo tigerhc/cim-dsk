@@ -165,4 +165,22 @@ public class OvnEdcHandler {
     //    return "TEST2";
     //
     //}
+
+    @RabbitHandler
+    @RabbitListener(queues= {"S2C.T.CURE.COMMAND"})
+    public String cureParam2(byte[] message) {
+        String msg = new String(message);
+        System.out.println("接收到的消息" + msg);
+        List<EdcParamRecord> list = JsonUtil.from(msg, new TypeReference<List<EdcParamRecord>>() {
+        });
+        System.out.println(list);
+        //插入新数据,同时备份一份到his表
+//        for(EdcParamRecord edcParamRecord : list){
+//            //先删除dtl旧数据
+//            edcParamRecordDtlService.deleteByEqp(edcParamRecord.getEqpId());
+//            edcParamRecordService.insert(edcParamRecord);
+//            edcParamRecordService.transfer2His(edcParamRecord.getEqpId());
+//        }
+        return "RECIPE_NAME";
+    }
 }
