@@ -26,8 +26,4 @@ import java.util.List;
 @Service("sysConfigService")
 public class SysConfigServiceImpl  extends CommonServiceImpl<SysConfigMapper,SysConfig> implements  ISysConfigService {
 
-    @Override
-    public List<SysConfig> queryByConfigKey(String key) {
-        return baseMapper.queryByConfigKey(key);
-    }
 }

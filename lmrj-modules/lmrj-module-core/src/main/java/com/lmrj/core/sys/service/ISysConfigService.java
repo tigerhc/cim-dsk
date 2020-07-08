@@ -18,6 +18,4 @@ import java.util.List;
 */
 public interface ISysConfigService extends ICommonService<SysConfig> {
 
-    List<SysConfig>  queryByConfigKey(String key);
-
 }

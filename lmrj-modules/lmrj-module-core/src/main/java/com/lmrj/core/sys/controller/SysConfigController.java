@@ -1,5 +1,6 @@
 package com.lmrj.core.sys.controller;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
@@ -36,12 +37,9 @@ import java.util.List;
 @LogAspectj(title = "sys_config")
 public class SysConfigController extends BaseCRUDController<SysConfig> {
 
-    @Autowired
-    private ISysConfigService sysConfigService;
-
     @GetMapping("/{key}/getByKey")
     public String getCurrentUserProject(@PathVariable("key") String key){
-        List<SysConfig> sysConfigList=sysConfigService.queryByConfigKey(key);
+        List<SysConfig> sysConfigList = commonService.selectList(new EntityWrapper<SysConfig>().eq("CONFIG_KEY", key));
         return sysConfigList.get(0).getConfigValue();
         //FastJsonUtils.print(sysConfigList.get(0).getConfigValue());
     }

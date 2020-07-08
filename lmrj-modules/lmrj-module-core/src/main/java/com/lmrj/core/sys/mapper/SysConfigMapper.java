@@ -22,7 +22,4 @@ import java.util.List;
 @Mapper
 public interface SysConfigMapper extends BaseMapper<SysConfig> {
 
- @Select("select * from sys_config where config_key = #{key}")
- List<SysConfig> queryByConfigKey(@Param("key") String key);
-
 }
