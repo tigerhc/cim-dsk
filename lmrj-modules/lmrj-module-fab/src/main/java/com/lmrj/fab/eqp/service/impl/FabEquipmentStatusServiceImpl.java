@@ -44,6 +44,11 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
     public int updateYield(String eqpID, String status, String lotNo, String recipeCode, int lotYield, int dayYield) {
         return baseMapper.updateYield(eqpID,status, lotNo, recipeCode, lotYield, dayYield);
     }
+    @Override
+    public int increaseYield(String eqpID, int increasedYield) {
+        return baseMapper.increaseYield(eqpID, increasedYield);
+    }
+
 
     @Override
     public int updateLot(String eqpID,String lotId) {

@@ -83,9 +83,9 @@ public class EdcDskLogHandler {
             "1st plunge up height", "第1段突上量",
             "2nd plunge up height", "第2段突上量"
     };
-
+    // TODO: 2020/7/8 改为可配置
     String[] emails = {"hanzy@ms5.sanken-ele.co.jp","suchang@ms5.sanken-ele.co.jp",
-            "zhudd@lmrj.com","403396835@qq.com"};
+            "zhangwj@lmrj.com","403396835@qq.com"};
 
 
 
