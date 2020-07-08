@@ -88,7 +88,8 @@ public class EmailSendServiceImpl implements IEmailSendService {
         }*/
     }
 
-    public void sendEmail(String eventId,String to,String subject,String text){
+    @Override
+    public void sendEmail(String eventId, String to, String subject, String text){
         try {
             MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
             //true表示需要创建一个multipart message

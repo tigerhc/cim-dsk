@@ -35,7 +35,8 @@ public class FabLogServiceImpl  extends CommonServiceImpl<FabLogMapper,FabLog> i
     private AmqpTemplate rabbitTemplate;
 
     //公共打日志方法
-    public void save(String eventId, String userId,String deviceCode,String eventName,String eventDesc,String lotId){
+    @Override
+    public void save(String eventId, String userId, String deviceCode, String eventName, String eventDesc, String lotId){
         Map<String, Object> msgMap = new HashMap<String, Object>();
         msgMap.put("eventId", eventId);
         msgMap.put("msgName", "LogSave");

@@ -1,20 +1,31 @@
 package com.lmrj.edc.amsrpt.job;
 
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.email.service.IEmailSendService;
+import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
+import com.lmrj.edc.amsrpt.entity.EdcAmsRptRecord;
+import com.lmrj.edc.amsrpt.entity.EdcAmsRptRecordDtl;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptRecordService;
 import com.lmrj.fab.eqp.service.impl.EqpApiService;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zmq on 2017/4/25.
  */
 @Slf4j
-@Component
+//@Component
 public class RepeatAlarmJob {
 
     @Autowired
@@ -42,13 +53,13 @@ public class RepeatAlarmJob {
         String eventId = StringUtil.randomTimeUUID("RPT");
         fabLogService.save(eventId, "1", "", "repeatAlarmJob", "开始进入定时任务检查报警信息", "");
         //// TODO: 2020/7/7 查询配置,添加条件
-        List<EdcAmsRptDefine> amsRptDefineList = edcAmsRptDefineService.selectList(new EntityWrapper<>()); //
+        List<EdcAmsRptDefine> amsRptDefineList = edcAmsRptDefineService.selectList(new EntityWrapper<>());
 
-        for (EdcAmsRptDefine amsRptDefine : amsRptDefineList) {
-            mdStationAlarm = mdStationAlarmService.get(mdStationAlarm.getId());
+        for (EdcAmsRptDefine edcAmsRptDefine : amsRptDefineList) {
+//            mdStationAlarm = mdStationAlarmService.get(mdStationAlarm.getId());
 
-            Integer repeatAlarmCycle = mdStationAlarm.getCondCycleLength();
-            Integer repeatAlarmAmt = mdStationAlarm.getCondAlarmAmt();
+            Integer repeatAlarmCycle = edcAmsRptDefine.getRepeatCycle();
+            Integer repeatAlarmAmt = edcAmsRptDefine.getRepeatNum();
 
 
             calendar.add(Calendar.MINUTE, -repeatAlarmCycle);
@@ -56,9 +67,10 @@ public class RepeatAlarmJob {
 
             long repeatAlarmCycleMillisecond = repeatAlarmCycle * 60 * 1000;
             //查询基础alarm的定义
-            MdAlarm mdAlarm = mdAlarmService.getAlarmByIdAndDtId(mdStationAlarm.getAlarmId(), mdStationAlarm.getDeviceTypeId());
-            if (mdAlarm != null) {
+            List<EdcAmsRptRecord> edcAmsRptRecords = edcAmsRecordService.queryByAlarmId(edcAmsRptDefine.getAlarmId());
+            if (edcAmsRptRecords != null) {
                 //查询所有符合条件的设备
+
                 List<String> deviceCodeList = arAlarmRecordService.getDeviceCode(alarmStartDate, currentDate, mdAlarm.getAlarmAlid(), mdStationAlarm.getDeviceTypeId(), mdStationAlarm.getStationId());
                 for (int i = 0; i < deviceCodeList.size(); i++) {
                     String deviceCode = deviceCodeList.get(i);
