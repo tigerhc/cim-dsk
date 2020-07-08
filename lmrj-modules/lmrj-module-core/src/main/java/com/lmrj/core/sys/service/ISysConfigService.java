@@ -3,6 +3,8 @@ package com.lmrj.core.sys.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.core.sys.entity.SysConfig;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +17,7 @@ import com.lmrj.core.sys.entity.SysConfig;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface ISysConfigService extends ICommonService<SysConfig> {
+
+    List<SysConfig>  queryByConfigKey(String key);
 
 }

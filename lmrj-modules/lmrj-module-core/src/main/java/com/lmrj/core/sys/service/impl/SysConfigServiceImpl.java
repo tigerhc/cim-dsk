@@ -1,11 +1,14 @@
 package com.lmrj.core.sys.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.sys.service.ISysConfigService;
 import com.lmrj.core.sys.entity.SysConfig;
 import com.lmrj.core.sys.mapper.SysConfigMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 /**
@@ -23,4 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("sysConfigService")
 public class SysConfigServiceImpl  extends CommonServiceImpl<SysConfigMapper,SysConfig> implements  ISysConfigService {
 
+    @Override
+    public List<SysConfig> queryByConfigKey(String key) {
+        return baseMapper.queryByConfigKey(key);
+    }
 }

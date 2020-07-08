@@ -6,6 +6,9 @@ import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.sys.entity.SysConfig;
 import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.sys.service.ISysConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.AccessType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,9 +36,12 @@ import java.util.List;
 @LogAspectj(title = "sys_config")
 public class SysConfigController extends BaseCRUDController<SysConfig> {
 
+    @Autowired
+    private ISysConfigService sysConfigService;
+
     @GetMapping("/{key}/getByKey")
     public String getCurrentUserProject(@PathVariable("key") String key){
-        List<SysConfig> sysConfigList=commonService.selectList(new EntityWrapper<SysConfig>().eq("CONFIG_KEY", key));
+        List<SysConfig> sysConfigList=sysConfigService.queryByConfigKey(key);
         return sysConfigList.get(0).getConfigValue();
         //FastJsonUtils.print(sysConfigList.get(0).getConfigValue());
     }
