@@ -97,11 +97,11 @@ public class OvnEdcHandler {
     }
 
     @RabbitHandler
-    //@RabbitListener(queues= {"test_a"})
-    public void test(byte[] message) throws UnsupportedEncodingException {
+//    @RabbitListener(queues= {"test_a"})
+    public void test(byte[] message) throws Exception {
         String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息"+msg);
-        List<EdcAmsRecord> edcAmsRecordList = JsonUtil.from(msg, new TypeReference<List<EdcAmsRecord>>(){});
+        List<EdcAmsRecord> edcAmsRecordList = repeatAlarmUtil.getEdcAmsRecordList();
         repeatAlarmUtil.queryAlarmDefine();
         Date date = new Date();
         for (EdcAmsRecord edcAmsRecord:edcAmsRecordList) {

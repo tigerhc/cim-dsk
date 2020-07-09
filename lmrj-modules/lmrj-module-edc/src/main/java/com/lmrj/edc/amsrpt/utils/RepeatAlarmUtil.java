@@ -21,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +59,27 @@ public class RepeatAlarmUtil {
         for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
             redisTemplate.opsForList().rightPush("amsRptDefineList", amsRptDefine);
         }
+    }
+
+    //生成edcAmsRecordList测试用
+    public List<EdcAmsRecord> getEdcAmsRecordList() throws Exception {
+        List<EdcAmsRecord> edcAmsRecordList = new ArrayList<>();
+        for(int i = 0; i < 100; i++){
+            EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
+            edcAmsRecord.setId(i + "");
+            edcAmsRecord.setEqpId("SIM-DM3");
+            edcAmsRecord.setAlarmCode("War22002002");
+            edcAmsRecord.setAlarmName("固晶部 BDH00-2002  吸嘴计数已达到设定。");
+            edcAmsRecord.setLotNo("0514E");
+            edcAmsRecord.setLotYield(0);
+            edcAmsRecord.setAlarmSwitch("1");
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2020-05-20 15:37:19");
+            edcAmsRecord.setStartDate(date);
+            edcAmsRecord.setEndDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2020-06-20 15:37:19"));
+            edcAmsRecord.setCreateDate(date);
+            edcAmsRecordList.add(edcAmsRecord);
+        }
+        return edcAmsRecordList;
     }
 
     public void repeatAlarm(EdcAmsRecord edcAmsRecord){
@@ -101,10 +125,13 @@ public class RepeatAlarmUtil {
                 edcAmsRptRecord.setEqpModelName(fabEquipmentModelService.selectList(new EntityWrapper<FabEquipmentModel>().eq("id", amsRptDefine.getEqpModelId())).get(0).getModelName());
                 edcAmsRptRecord.setLotNo(edcAmsRecord.getLotNo());
                 edcAmsRptRecord.setRptAlarmId("1");
+                //保存一条edcAmsRptRecord记录
                 edcAmsRptRecordService.insert(edcAmsRptRecord);
                 List<EdcAmsRptRecordDtl> edcAmsRptRecordDtlList = new ArrayList<>();
                 List<EdcAmsRecord> edcAmsRecordList = (List<EdcAmsRecord>)redisTemplate.opsForList().range(key,0,-1);
                 for (EdcAmsRecord edcAmsRecord1:edcAmsRecordList) {
+                    //往数据库添加一条记录就移除一个
+                    redisTemplate.opsForList().leftPop(key);
                     EdcAmsRptRecordDtl edcAmsRptRecordDtl = new EdcAmsRptRecordDtl();
                     edcAmsRptRecordDtl.setAlarmCode(edcAmsRecord1.getAlarmCode());
                     edcAmsRptRecordDtl.setAlarmDetail(edcAmsRecord1.getAlarmDetail());
@@ -117,6 +144,7 @@ public class RepeatAlarmUtil {
                     edcAmsRptRecordDtl.setStartDate(edcAmsRecord1.getStartDate());
                     edcAmsRptRecordDtlList.add(edcAmsRptRecordDtl);
                 }
+                //保存一条edcAmsRptRecord记录对应的几条edcAmsRptRecordDtl记录
                 edcAmsRptRecordDtlService.insertBatch(edcAmsRptRecordDtlList);
             }else {
                 //否则，将第一个alarm移出集合
