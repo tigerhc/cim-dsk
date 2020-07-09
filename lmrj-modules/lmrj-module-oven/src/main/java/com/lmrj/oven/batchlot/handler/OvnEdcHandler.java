@@ -1,7 +1,10 @@
 package com.lmrj.oven.batchlot.handler;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
+import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
@@ -58,6 +61,8 @@ public class OvnEdcHandler {
     IEdcParamRecordDtlService edcParamRecordDtlService;
     @Autowired
     IFabEquipmentStatusService fabEquipmentStatusService;
+    @Autowired
+    RepeatAlarmUtil repeatAlarmUtil;
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
     @RabbitHandler
@@ -89,6 +94,25 @@ public class OvnEdcHandler {
         edcAmsRecord.setCreateDate(new Date());
         edcAmsRecordService.insert(edcAmsRecord);
         fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM","", "");
+    }
+
+    @RabbitHandler
+    //@RabbitListener(queues= {"test_a"})
+    public void test(byte[] message) throws UnsupportedEncodingException {
+        String msg = new String(message, "UTF-8");
+        System.out.println("接收到的消息"+msg);
+        List<EdcAmsRecord> edcAmsRecordList = JsonUtil.from(msg, new TypeReference<List<EdcAmsRecord>>(){});
+        repeatAlarmUtil.queryAlarmDefine();
+        Date date = new Date();
+        for (EdcAmsRecord edcAmsRecord:edcAmsRecordList) {
+            repeatAlarmUtil.repeatAlarm(edcAmsRecord);
+        }
+        Date date1 = new Date();
+        System.out.println(date1.getTime() - date.getTime());
+//        List<EdcAmsRecord> list = JsonUtil.from(msg, new TypeReference<List<EdcAmsRecord>>(){});
+//        for (EdcAmsRecord edcAmsRecord:list) {
+//            System.out.println(edcAmsRecord);
+//        }
     }
 
     @RabbitHandler
