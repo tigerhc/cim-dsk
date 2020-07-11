@@ -50,6 +50,112 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     @Autowired
     IFabEquipmentStatusService fabEquipmentStatusService;
 
+    /**
+     * 按照eqp和line获取recipe
+     * 当前line写死
+     * @param eqpId
+     * @param opId
+     * @return
+     */
+    public MesResult findRecipeName(String eqpId, String opId) {
+        String bc = "";
+        if("SIM-DM".equals(eqpId)){
+            bc = "SIM-BC1";
+        }else{
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            if (fabEquipment == null){
+                return MesResult.error(eqpId+"设备不存在");
+            }
+            bc = fabEquipment.getBcCode();
+        }
+
+        MesResult result = MesResult.ok("default");
+        String recipe ="";
+        if("SIM-DM".equals(eqpId)){
+            //recipe = "SIM6812M-DI1-1#,SIM6812M-DI2-2#,SIM6812M-MOS2-3#,SIM6812M-MOS2-4#,SIM6812M-MOS2-5#,SIM6812M-MIC1-6#,SIM6812M-MIC2-7#";
+            //实时获取值
+            Map<String, String> map = Maps.newHashMap();
+            map.put("METHOD", "FIND_RECIPE_NAME");
+            map.put("EQP_ID", "SIM-DM");
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.flag)) {
+                    recipe = (String) result.getContent();
+                }
+            }else{
+                return MesResult.error(eqpId+" not reply");
+            }
+
+
+        }else{
+            recipe = "RETEST";
+        }
+        result.setContent(recipe);
+        return result;
+    }
+
+    public MesResult findTemp(String eqpId, String opId) {
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            return MesResult.error(eqpId+"设备不存在");
+        }
+        String bc = fabEquipment.getBcCode();
+        Map<String, String> map = Maps.newHashMap();
+        map.put("EQP_ID", eqpId);
+        MesResult result = MesResult.ok("default");
+        String temps ="";
+        if("SIM-REFLOW1".equals(eqpId)){
+            //recipe = "151.1,152.1,153.1,154.1,155.1,156.1,157.1,158.1,159.1,160.1,161.1,162.1,163.1,164.1,165.1,166.1,167.1,168.1,169.1";
+            map.put("METHOD", "FIND_TEMP");
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.flag)) {
+                    temps = (String) result.getContent();
+                }
+            }else{
+                return MesResult.error(eqpId+" not reply");
+            }
+        }else{
+            temps = "TEMPTEST";
+        }
+        result.setContent(temps);
+        return result;
+    }
+
+    public MesResult findParam(String eqpId, String param, String opId) {
+        MesResult result = MesResult.ok("default");
+        String weight ="";
+        Map<String, String> map = Maps.newHashMap();
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_PARAM");
+        if("SIM-WT1".equals(eqpId)){
+            map.put("PARAM", param);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC1", JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.flag)) {
+                    weight = (String) result.getContent();
+                }
+            }else{
+                return MesResult.error(eqpId+" not reply");
+            }
+            //if("10200,10201".equals(param)){
+            //    weight = "111.1,222.1";
+            //}
+            //else if("10300,10301".equals(param)){
+            //    weight = "111.2,222.2";
+            //}else if("10400,10401".equals(param)){
+            //    weight = "111.3,222.3";
+            //}
+        }else{
+            weight = "TEMPTEST";
+        }
+        result.setContent(weight);
+        return result;
+    }
+
     // TODO: 2020/7/3 锁表超时后,报错,此时锁的动作还在吗?
     public MesResult trackin4DSK(String eqpId, String productionName,String productionNo,String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok("default");

@@ -71,7 +71,7 @@ public class EdcSecsLogHandler {
     //通过track in获取设备开始shotcount数
     public void handleMoldYield(EdcEvtRecord evtRecord){
         String eqpId = evtRecord.getEqpId();
-        String[] ceids = {"2021","2031", "2041"};
+        String[] ceids = {"11201","11202", "11203"};
         String ceid = evtRecord.getEventId();
         if(ArrayUtil.contains(ceids,ceid)){
             fabEquipmentStatusService.increaseYield(eqpId, 12);

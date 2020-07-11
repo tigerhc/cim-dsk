@@ -88,6 +88,54 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
+    @RequestMapping(value = "/findRecipeName/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findRecipeName(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("findRecipeName :  {}", opId);
+        try{
+            //String eqpId ="SIM-DM1";
+            MesResult result = mesLotTrackService.findRecipeName(eqpId, opId);
+            if ("Y".equals(result.flag)) {
+                return result.getContent().toString();
+            } else {
+                return result.msg;
+            }
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findTemp/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findTemp(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("findTemp :  {}", opId);
+        try{
+            //String eqpId ="SIM-DM1";
+            MesResult result = mesLotTrackService.findTemp(eqpId, opId);
+            if ("Y".equals(result.flag)) {
+                return result.getContent().toString();
+            } else {
+                return result.msg;
+            }
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("findTemp :  {}", opId);
+        try{
+            //String eqpId ="SIM-DM1";
+            MesResult result = mesLotTrackService.findParam(eqpId, param, opId);
+            if ("Y".equals(result.flag)) {
+                return result.getContent().toString();
+            } else {
+                return result.msg;
+            }
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
