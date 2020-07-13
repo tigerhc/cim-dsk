@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.log.entity.RmsRecipeLog;
 import com.lmrj.rms.log.mapper.RmsRecipeLogMapper;
+import com.lmrj.rms.recipe.entity.RmsRecipe;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,4 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("rmsRecipeLogService")
 public class RmsRecipeLogServiceImpl  extends CommonServiceImpl<RmsRecipeLogMapper,RmsRecipeLog> implements  IRmsRecipeLogService {
 
+    @Override
+    public void downloadLog(RmsRecipe recipe) {
+        RmsRecipeLog recipeLog = new RmsRecipeLog();
+        recipeLog.setEqpId(recipe.getEqpId());
+        recipeLog.setEqpModelId(recipe.getEqpModelId());
+        recipeLog.setEqpModelName(recipe.getEqpModelName());
+        recipeLog.setRecipeCode(recipe.getRecipeCode());
+        recipeLog.setRecipeName(recipe.getRecipeName());
+        recipeLog.setVersionNo(recipe.getVersionNo());
+        recipeLog.setVersionType(recipe.getVersionType());
+        baseMapper.insert(recipeLog);
+    }
 }

@@ -237,6 +237,67 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return true;
     }
 
+    @Override
+    public boolean downloadRecipe(String eqpId, String recipeName) throws Exception{
+        return download(eqpId, recipeName);
+    }
+
+    /**
+     * 下载recipe
+     * @param eqpId
+     * @param recipeName
+     * @return
+     */
+    public boolean download(String eqpId, String recipeName) throws Exception{
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "DOWN LOAD_RECIPE");
+        map.put("RECIPE_NAME", recipeName);
+        map.put("EQP_ID", eqpId);
+        map.put("USER_ID", "admin");
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        String bc = fabEquipment.getBcCode();
+        log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
+        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
+        String msg = (String) test;
+//        try {
+//            msg = new String(message, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
+//            log.error("Exception:", e);
+//        }
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        //判断返回值flag是否正确
+//        if ("Y".equals(mesResult.getFlag())) {
+//            //String content = mesResult.getContent().toString();
+//            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();
+//            List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
+//            for (String key : contentMap.keySet()) {
+//                log.debug("key= " + key + " and value= " + contentMap.get(key));
+//                RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
+//                rmsRecipeBody.setParaCode(key);
+//                rmsRecipeBody.setSetValue(contentMap.get(key));
+//                rmsRecipeBodyDtlList.add(rmsRecipeBody);
+//            }
+//            RmsRecipe rmsRecipe = new RmsRecipe();
+//            rmsRecipe.setRecipeCode(recipeName);
+//            rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
+//            rmsRecipe.setEqpId(eqpId);
+//            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+//            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+//            this.insert(rmsRecipe);
+//            //提前备份文件
+//            String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
+//            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
+//            log.info("迁移文件结果:{};", copyFlag);
+//        }
+        return true;
+    }
+
     /**
      * 获取recipe的上一个版本
      * 用于recipe升级时,和当前版本进行比较

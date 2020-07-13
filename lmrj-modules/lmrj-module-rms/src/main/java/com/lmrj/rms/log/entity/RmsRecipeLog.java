@@ -45,12 +45,12 @@ public class RmsRecipeLog extends BaseDataEntity {
     private String versionType;
     /**配方版本号*/
     @TableField(value = "version_no")
-    private Integer versionNo;
+    private Double versionNo;
     /**批次id*/
     @TableField(value = "lot_id")
     private String lotId;
     /**参数信息*/
     @TableField(value = "param")
     private String param;
-	
+
 }

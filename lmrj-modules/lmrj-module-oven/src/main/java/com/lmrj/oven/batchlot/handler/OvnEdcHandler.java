@@ -194,9 +194,9 @@ public class OvnEdcHandler {
     @RabbitListener(queues= {"S2C.Q.CURE.BC1.COMMAND"})
     public String cureParam2(String message) {
         System.out.println("接收到的消息" + message);
-        List<EdcParamRecord> list = JsonUtil.from(message, new TypeReference<List<EdcParamRecord>>() {
-        });
-        System.out.println(list);
+//        List<EdcParamRecord> list = JsonUtil.from(message, new TypeReference<List<EdcParamRecord>>() {
+//        });
+//        System.out.println(list);
         //插入新数据,同时备份一份到his表
 //        for(EdcParamRecord edcParamRecord : list){
 //            //先删除dtl旧数据
@@ -204,6 +204,6 @@ public class OvnEdcHandler {
 //            edcParamRecordService.insert(edcParamRecord);
 //            edcParamRecordService.transfer2His(edcParamRecord.getEqpId());
 //        }
-        return "RECIPE_NAME";
+        return "下载成功";
     }
 }

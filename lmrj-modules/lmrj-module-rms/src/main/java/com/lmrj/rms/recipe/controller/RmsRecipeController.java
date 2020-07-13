@@ -8,10 +8,12 @@ import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
+import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
@@ -54,6 +56,8 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
 
     @Autowired
     private IRmsRecipeService rmsRecipeService;
+    @Autowired
+    private IRmsRecipeLogService rmsRecipeLogService;
 
     /**
      * 保存数据之前,处理细表
@@ -91,6 +95,25 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         } catch (Exception e) {
             response = Response.error(999998,e.getMessage());
         }
+        return response;
+    }
+
+    @RequestMapping(value = "downloadrecipe")
+    //@LogAspectj(logType = LogType.SELECT)
+    //@RequiresMethodPermissions("list")
+    public Response downloadrecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
+        Response response = Response.ok("下载成功");
+        boolean flag = false;
+        try {
+            flag = rmsRecipeService.downloadRecipe(eqpId, recipeName);
+            if (!flag){
+                response = Response.error(999998, "下载失败");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response = Response.error(999998,e.getMessage());
+        }
+        rmsRecipeLogService.downloadLog(rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0));
         return response;
     }
 

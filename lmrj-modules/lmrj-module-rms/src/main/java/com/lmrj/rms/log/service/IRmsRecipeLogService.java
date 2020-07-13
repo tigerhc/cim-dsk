@@ -2,6 +2,7 @@ package com.lmrj.rms.log.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.rms.log.entity.RmsRecipeLog;
+import com.lmrj.rms.recipe.entity.RmsRecipe;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -16,4 +17,5 @@ import com.lmrj.rms.log.entity.RmsRecipeLog;
 */
 public interface IRmsRecipeLogService extends ICommonService<RmsRecipeLog> {
 
+    void downloadLog(RmsRecipe recipe);
 }
