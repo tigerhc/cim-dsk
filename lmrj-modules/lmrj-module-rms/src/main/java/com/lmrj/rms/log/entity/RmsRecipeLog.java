@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
-import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -62,7 +61,7 @@ public class RmsRecipeLog extends AbstractEntity {
     /**配方版本号*/
     @TableField(value = "version_no")
     @Excel(name = "版本号", orderNum = "7", width = 20)
-    private Double versionNo;
+    private Integer versionNo;
     /**批次id*/
     @TableField(value = "lot_id")
     @Excel(name = "批次", orderNum = "8", width = 20)

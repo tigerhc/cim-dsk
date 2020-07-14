@@ -362,7 +362,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         rmsRecipeNew.setCreateDate(new Date());
         rmsRecipeNew.setRecipeDesc("生效");
         int versionNo = findVersionNo(arRecipe.getRecipeCode(), arRecipe.getEqpId(), null, arRecipe.getVersionType());
-        rmsRecipeNew.setVersionNo((double) versionNo);
+        rmsRecipeNew.setVersionNo(versionNo);
         rmsRecipeNew.setRmsRecipeBodyDtlList(Lists.newArrayList());
         this.insert(rmsRecipeNew);
 
