@@ -74,9 +74,9 @@
             <version>1.0.5.RELEASE</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.lmrj</groupId>-->
-            <!--<artifactId>lmrj-common-oss</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+        <!--<groupId>com.lmrj</groupId>-->
+        <!--<artifactId>lmrj-common-oss</artifactId>-->
+        <!--<version>1.0.5.RELEASE</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.lmrj</groupId>
@@ -84,9 +84,9 @@
             <version>1.0.5.RELEASE</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.lmrj</groupId>-->
-            <!--<artifactId>lmrj-common-sms</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+        <!--<groupId>com.lmrj</groupId>-->
+        <!--<artifactId>lmrj-common-sms</artifactId>-->
+        <!--<version>1.0.5.RELEASE</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.lmrj</groupId>
@@ -160,6 +160,16 @@
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>${commons-fileupload.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.0.2.RELEASE</version>
+            <scope>compile</scope>
         </dependency>
 
 
