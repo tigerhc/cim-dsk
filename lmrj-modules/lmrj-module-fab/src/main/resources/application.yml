@@ -47,17 +47,17 @@ spring:
 
   #DATABASE CONFIG
   datasource:
-#    driver-class-name: com.mysql.jdbc.Driver
-#    username: root
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
 #    password: root123
 #    url: jdbc:mysql://localhost:3316/lmrj_vue?useUnicode=true&characterEncoding=UTF-8
-#    password: Pp123!@#
-#    url: jdbc:mysql://116.196.70.56:3316/lmrjvue?useUnicode=true&characterEncoding=UTF-8
+    password: Pp123!@#
+    url: jdbc:mysql://116.196.70.56:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
 
-    driver-class-name: oracle.jdbc.driver.OracleDriver
-    username: LMCIM
-    password: LMCIM
-    url: jdbc:oracle:thin:@116.196.70.56:1521/orcl
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    username: LMCIM
+#    password: LMCIM
+#    url: jdbc:oracle:thin:@116.196.70.56:1521/orcl
 
     type: com.alibaba.druid.pool.DruidDataSource   #这里是配置druid连接池，以下都是druid的配置信息
     filters: stat,wall,slf4j

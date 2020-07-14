@@ -74,9 +74,9 @@
             <version>1.0.5.RELEASE</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.lmrj</groupId>-->
-            <!--<artifactId>lmrj-common-oss</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+        <!--<groupId>com.lmrj</groupId>-->
+        <!--<artifactId>lmrj-common-oss</artifactId>-->
+        <!--<version>1.0.5.RELEASE</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.lmrj</groupId>
@@ -84,9 +84,9 @@
             <version>1.0.5.RELEASE</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.lmrj</groupId>-->
-            <!--<artifactId>lmrj-common-sms</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+        <!--<groupId>com.lmrj</groupId>-->
+        <!--<artifactId>lmrj-common-sms</artifactId>-->
+        <!--<version>1.0.5.RELEASE</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.lmrj</groupId>
@@ -169,7 +169,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-
 
     </dependencies>
     <build>
