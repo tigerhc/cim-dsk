@@ -1,6 +1,7 @@
 package com.lmrj.fab;
 
 import com.spring4all.swagger.EnableSwagger2Doc;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,6 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2Doc
 @EnableSwagger2
+@MapperScan("com.lmrj.fab.**.mapper")
 @ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.common.oss","com.lmrj.common.sms","com.lmrj.web","com.lmrj.fab"})
 @SpringBootApplication
 public class FabBootApplication {

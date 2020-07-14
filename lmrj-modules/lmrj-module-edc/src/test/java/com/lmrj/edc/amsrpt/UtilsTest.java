@@ -31,7 +31,8 @@ public class UtilsTest {
         for (EdcAmsRecord edcAmsRecord:edcAmsRecordList) {
             map.put("edcAmsRecord", edcAmsRecord);
             String msg = JsonUtil.toJsonString(map);
-            rabbitTemplate.convertAndSend("test_a", msg);
+            System.out.println(edcAmsRecord);
+//            rabbitTemplate.convertAndSend("test_a", msg);
         }
 
     }
