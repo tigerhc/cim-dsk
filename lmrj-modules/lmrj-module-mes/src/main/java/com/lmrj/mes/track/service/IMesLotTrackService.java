@@ -19,7 +19,7 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesResult trackin4DSK(String eqpId, String productionName, String productionNo, String orderNo, String lotNo, String recipeCode, String opId);
     MesResult findRecipeName(String eqpId, String opId);
     MesResult findTemp(String eqpId, String opId);
-    MesResult findParam(String eqpId, String param, String opId);
+    MesResult findParam(String eqpId, String param, String opId,String lotNo, String productionName);
 
     MesResult trackout4DSK(String eqpId, String productionName, String productionNo, String orderNo, String lotNo, String yield, String recipeCode, String opId);
     //MesResult trackIn(String eqpId, String lotNo, String recipeCode, String opId);

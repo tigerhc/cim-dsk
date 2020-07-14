@@ -92,6 +92,9 @@ public class FabEquipment extends BaseDataEntity {
 	@Excel(name = "线别", orderNum = "15")
 	@TableField(value = "line_no")
 	private String lineNo;
+	@Excel(name = "参数", orderNum = "15")
+	@TableField(value = "eqp_param")
+	private String eqpParam;
 	/**位置号*/
 	@Excel(name = "位置号", orderNum = "16")
 	@TableField(value = "location")
