@@ -121,11 +121,11 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/findParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId,  @RequestParam(required = false) String lotNo ,@RequestParam(required = false) String productionName, HttpServletRequest request, HttpServletResponse response) {
         log.info("findTemp :  {}", opId);
         try{
             //String eqpId ="SIM-DM1";
-            MesResult result = mesLotTrackService.findParam(eqpId, param, opId);
+            MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionName);
             if ("Y".equals(result.flag)) {
                 return result.getContent().toString();
             } else {
@@ -178,9 +178,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1];
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-            String lotNo = lotNos[lotNos.length-1].substring(0, 5);
-            String orderNo = lotNos[0].substring(0, 8);
-            String productionNo = lotNos[lotNos.length-1].substring(5, 12); //5002915
+
+            String  productionNo  = lotNos[0].substring(0, 7); //5002915
+            String  lotNo = lotNos[0].substring(7, 12); //0702D
+            String  orderNo= lotNos[1]; //37368342
             MesResult result = mesLotTrackService.trackout4DSK(eqpId, productionName, productionNo, orderNo, lotNo, yield, "", opId);
             if ("Y".equals(result.flag)) {
                 return "Y";

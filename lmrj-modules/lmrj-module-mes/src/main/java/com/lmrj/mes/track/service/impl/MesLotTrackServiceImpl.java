@@ -1,6 +1,7 @@
 package com.lmrj.mes.track.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
@@ -12,6 +13,7 @@ import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -124,9 +129,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findParam(String eqpId, String param, String opId) {
+    public MesResult findParam(String eqpId, String param, String opId,String lotNo, String productionName) {
         MesResult result = MesResult.ok("default");
-        String weight ="";
+        String value ="";
         Map<String, String> map = Maps.newHashMap();
         map.put("EQP_ID", eqpId);
         map.put("METHOD", "FIND_PARAM");
@@ -136,7 +141,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);
                 if ("Y".equals(result.flag)) {
-                    weight = (String) result.getContent();
+                    value = (String) result.getContent();
                 }
             }else{
                 return MesResult.error(eqpId+" not reply");
@@ -149,11 +154,66 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             //}else if("10400,10401".equals(param)){
             //    weight = "111.3,222.3";
             //}
-        }else{
-            weight = "TEMPTEST";
+        }else if("SIM-DM".equals(eqpId)){
+            if("10300".equals(param)) {
+                value = findDmKongdong(eqpId,  param,  opId, lotNo,  productionName);
+                if(value.startsWith("ERROR: ")){
+                    return MesResult.error(value);
+                }
+            }else{
+                return MesResult.error(eqpId+" not reply");
+            }
+
+        } else{
+            value = "TEMPTEST";
         }
-        result.setContent(weight);
+        result.setContent(value);
         return result;
+    }
+
+    public String findDmKongdong(String eqpId, String param, String opId,String lotNo, String productionName){
+        String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\SIM\\SIM6812M(E)D";
+        if(StringUtil.isNotBlank(productionName)){
+            kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\SIM\\"+productionName;
+        }
+
+        //String kongdongDir = "G:\\ボイド率";
+        List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir),new String[]{"bmp"}, false);
+        Collections.sort(kongdongFiles, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                if(o2.lastModified() > o1.lastModified()){
+                    return 1;
+                }else{
+                    return -1;
+                }
+            }
+        });
+        List<File> lotNoFile = Lists.newArrayList();
+        for (File kongdongFile : kongdongFiles) {
+            if(kongdongFile.getName().contains(lotNo)){
+                lotNoFile.add(kongdongFile);
+                if(lotNoFile.size() == 7){
+                    break;
+                }
+            }
+        }
+        if(lotNoFile.size() == 0){
+            return "ERROR: not found file for "+lotNo;
+        }
+        if(lotNoFile.size() != 7){
+            return "ERROR:  file quantity need 7,but found "+lotNoFile.size()+" for "+lotNo;
+        }
+        String[] kongdongVal = new String[7];
+        for (File file : lotNoFile) {
+            String[] fileNames = file.getName().split("-");
+            String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
+            String index = fileNames[fileNames.length-1].replace(".bmp", "");
+            kongdongVal[Integer.parseInt(index)-1] = value;
+
+        }
+        String kongdongStr =  StringUtil.join(kongdongVal, ",");
+        return kongdongStr;
     }
 
     // TODO: 2020/7/3 锁表超时后,报错,此时锁的动作还在吗?

@@ -20,6 +20,7 @@
        t.protocol_name,
        t.fab,
        t.line_no,
+       t.eqp_param,
        t.location,
        t.remarks,
        t.create_by,
