@@ -77,6 +77,18 @@ public class EdcSecsLogHandler {
             fabEquipmentStatusService.increaseYield(eqpId, 12);
             // TODO: 2020/7/8 写入 edc_dsk_log_production
         }
+        String eventParams = evtRecord.getEventParams();
+        if(eventParams != null){
+            String[] params = eventParams.split(",");
+            if(params.length == 3){
+                int shotcount = Integer.parseInt(params[0])+Integer.parseInt(params[1])+Integer.parseInt(params[2]);
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(evtRecord.getEqpId());
+                String maxShotCountStr = fabEquipment.getEqpParam().split(",")[0];
+                if( shotcount > Integer.parseInt(maxShotCountStr)){
+                    //转发alarm至MQ
+                }
+            }
+        }
 
     }
 

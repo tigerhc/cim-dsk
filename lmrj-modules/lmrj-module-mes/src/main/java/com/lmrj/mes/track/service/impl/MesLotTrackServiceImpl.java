@@ -178,8 +178,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
 
         //String kongdongDir = "G:\\ボイド率";
-        String[] extensions = {"bmp"};
-        List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir),extensions, false);
+        List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir),new String[]{"bmp"}, false);
         Collections.sort(kongdongFiles, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
