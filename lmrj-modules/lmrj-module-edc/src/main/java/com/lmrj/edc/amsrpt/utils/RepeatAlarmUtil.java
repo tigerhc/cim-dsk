@@ -16,16 +16,16 @@ import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.impl.EqpApiService;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author hsg
@@ -38,6 +38,8 @@ public class RepeatAlarmUtil {
     private RedisTemplate redisTemplate;
     @Autowired
     private IFabLogService fabLogService;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
     @Autowired
     private IEdcAmsRptRecordService edcAmsRptRecordService;
     @Autowired
@@ -65,25 +67,16 @@ public class RepeatAlarmUtil {
         }
     }
 
-    //生成edcAmsRecordList测试用
-    public List<EdcAmsRecord> getEdcAmsRecordList() throws Exception {
-        List<EdcAmsRecord> edcAmsRecordList = new ArrayList<>();
-        for(int i = 0; i < 100; i++){
-            EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
-            edcAmsRecord.setId(i + "");
-            edcAmsRecord.setEqpId("SIM-DM3");
-            edcAmsRecord.setAlarmCode("War22002002");
-            edcAmsRecord.setAlarmName("固晶部 BDH00-2002  吸嘴计数已达到设定。");
-            edcAmsRecord.setLotNo("0514E");
-            edcAmsRecord.setLotYield(0);
-            edcAmsRecord.setAlarmSwitch("1");
-            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2020-05-20 15:37:19");
-            edcAmsRecord.setStartDate(date);
-            edcAmsRecord.setEndDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2020-06-20 15:37:19"));
-            edcAmsRecord.setCreateDate(date);
-            edcAmsRecordList.add(edcAmsRecord);
+    //将报警信息放入消息队列
+    public void putEdcAmsRecordInMq(List<EdcAmsRecord> edcAmsRecordList){
+        for (EdcAmsRecord edcAmsRecord:edcAmsRecordList) {
+            Map<String, String> map = new HashMap<>();
+            map.put("alarm", JsonUtil.toJsonString(edcAmsRecord));
+            String msg = JsonUtil.toJsonString(map);
+            System.out.println(msg);
+            Object test = rabbitTemplate.convertSendAndReceive("C2S.Q.ALARMRPT.DATA", msg);
+            System.out.println(test.toString());
         }
-        return edcAmsRecordList;
     }
 
     public void repeatAlarm(EdcAmsRecord edcAmsRecord){

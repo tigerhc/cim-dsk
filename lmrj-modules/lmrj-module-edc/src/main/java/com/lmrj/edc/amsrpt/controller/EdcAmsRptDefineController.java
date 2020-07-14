@@ -5,16 +5,15 @@ import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
 import com.lmrj.edc.amsrpt.service.IEdcAmsRptDefineService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +41,18 @@ public class EdcAmsRptDefineController extends BaseCRUDController<EdcAmsRptDefin
 
     @Autowired
     private IEdcAmsRptDefineService edcAmsRptDefineService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @RequestMapping(value = "initDefine", method = { RequestMethod.GET, RequestMethod.POST })
+    @ResponseBody
+    public Response initstatus() {
+        List<EdcAmsRptDefine> amsRptDefineList = edcAmsRptDefineService.selectList(new EntityWrapper<>());
+        for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
+            redisTemplate.opsForList().rightPush("amsRptDefineList", amsRptDefine);
+        }
+        return Response.ok("初始化成功");
+    }
 
 
     //@Autowired

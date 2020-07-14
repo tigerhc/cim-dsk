@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.core.email.service.IEmailSendService;
+import com.lmrj.core.entity.MesResult;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
@@ -13,6 +14,7 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogRecipeService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -73,6 +75,8 @@ public class EdcDskLogHandler {
     IMesLotTrackService mesLotTrackService;
     @Autowired
     private IEmailSendService emailSendService;
+    @Autowired
+    RepeatAlarmUtil repeatAlarmUtil;
 
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
             "Pick up press level", "取晶位置下压量",
@@ -237,11 +241,23 @@ public class EdcDskLogHandler {
         }
         if(edcAmsRecordList.size() != 0){
             edcAmsRecordService.insertBatch(edcAmsRecordList);
+            repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
         if(StringUtil.isNotBlank(status)){
             fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
         }
         //edcDskLogOperation.setCreateDate(new Date());
+    }
+
+    @RabbitHandler
+    @RabbitListener(queues= {"C2S.Q.ALARMRPT.DATA"})
+    public String repeatAlarm(String msg) {
+        repeatAlarmUtil.queryAlarmDefine();
+        Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
+        EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
+        System.out.println(edcAmsRecord);
+        repeatAlarmUtil.repeatAlarm(edcAmsRecord);
+        return JsonUtil.toJsonString(MesResult.ok("ok"));
     }
 
     @RabbitHandler

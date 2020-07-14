@@ -100,12 +100,8 @@ public class OvnEdcHandler {
     @RabbitHandler
     @RabbitListener(queues= {"test_a"})
     public String test(String msg) {
-        MesResult mesResult = new MesResult();
-        repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
-        EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
-        System.out.println(edcAmsRecord);
-        repeatAlarmUtil.repeatAlarm(edcAmsRecord);
+        System.out.println((String) msgMap.get("alarm"));
         return JsonUtil.toJsonString(MesResult.ok("ok"));
     }
 

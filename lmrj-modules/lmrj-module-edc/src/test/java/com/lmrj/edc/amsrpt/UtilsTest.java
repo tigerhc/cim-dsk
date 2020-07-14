@@ -29,19 +29,8 @@ public class UtilsTest {
 
     @Test
     public void putMQMsg(){
-        EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
-        edcAmsRecord.setEqpId("SIM-DM3");
-        edcAmsRecord.setAlarmCode("War22002002");
-        edcAmsRecord.setAlarmName("固晶部 BDH00-2002  吸嘴计数已达到设定。");
-        edcAmsRecord.setLotNo("0514E");
-        edcAmsRecord.setLotYield(0);
-        edcAmsRecord.setAlarmSwitch("1");
-        Date date = new Date();
-        edcAmsRecord.setStartDate(date);
-        edcAmsRecord.setEndDate(date);
-        edcAmsRecord.setCreateDate(date);
         Map<String, String> map = new HashMap<>();
-        map.put("alarm", JsonUtil.toJsonString(edcAmsRecord));
+        map.put("alarm", "成功");
         String msg = JsonUtil.toJsonString(map);
         System.out.println(msg);
         Object test = rabbitTemplate.convertSendAndReceive("test_a", msg);
