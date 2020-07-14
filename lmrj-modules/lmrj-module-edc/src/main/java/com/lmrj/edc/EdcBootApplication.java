@@ -1,7 +1,6 @@
 package com.lmrj.edc;
 
 import com.spring4all.swagger.EnableSwagger2Doc;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,8 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2Doc
 @EnableSwagger2
-@MapperScan("com.lmrj.edc.**.mapper")
-@ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.common.oss","com.lmrj.common.sms", "com.lmrj.cim","com.lmrj.fab","com.lmrj.sys","com.lmrj.edc","com.lmrj.rms","com.lmrj.oven", "com.lmrj.common.rabbitmq","com.lmrj.dsk","com.lmrj.oven","com.lmrj.mes","com.lmrj.aps","com.lmrj.ms"})
+@ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.core","com.lmrj.common.oss","com.lmrj.common.sms", "com.lmrj.cim","com.lmrj.fab","com.lmrj.sys","com.lmrj.edc","com.lmrj.rms","com.lmrj.oven", "com.lmrj.common.rabbitmq","com.lmrj.dsk","com.lmrj.oven","com.lmrj.mes","com.lmrj.aps","com.lmrj.ms"})
 @SpringBootApplication
 public class EdcBootApplication {
     public static void main(String[] args) throws Exception {
