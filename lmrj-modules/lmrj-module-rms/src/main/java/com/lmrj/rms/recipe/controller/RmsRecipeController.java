@@ -113,7 +113,6 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
             System.out.println(e.getMessage());
             response = Response.error(999998,e.getMessage());
         }
-        rmsRecipeLogService.downloadLog(rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0));
         return response;
     }
 

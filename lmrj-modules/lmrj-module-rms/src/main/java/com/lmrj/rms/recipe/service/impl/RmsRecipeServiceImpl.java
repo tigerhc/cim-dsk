@@ -6,6 +6,7 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
@@ -48,6 +49,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private IFabEquipmentService fabEquipmentService;
     @Autowired
     private AmqpTemplate rabbitTemplate;
+    @Autowired
+    private IRmsRecipeLogService rmsRecipeLogService;
 
     @Override
     public RmsRecipe selectById(Serializable id){
@@ -270,7 +273,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 //            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
 //            log.error("Exception:", e);
 //        }
-        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+//        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
         //判断返回值flag是否正确
 //        if ("Y".equals(mesResult.getFlag())) {
 //            //String content = mesResult.getContent().toString();
@@ -295,6 +298,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 //            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
 //            log.info("迁移文件结果:{};", copyFlag);
 //        }
+        rmsRecipeLogService.downloadLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
         return true;
     }
 

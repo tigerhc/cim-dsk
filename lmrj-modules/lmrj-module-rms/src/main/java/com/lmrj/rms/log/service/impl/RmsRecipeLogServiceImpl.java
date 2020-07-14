@@ -25,9 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class RmsRecipeLogServiceImpl  extends CommonServiceImpl<RmsRecipeLogMapper,RmsRecipeLog> implements  IRmsRecipeLogService {
 
     @Override
-    public void downloadLog(RmsRecipe recipe) {
+    public void downloadLog(RmsRecipe recipe, String eventCode, String eqpId) {
         RmsRecipeLog recipeLog = new RmsRecipeLog();
-        recipeLog.setEqpId(recipe.getEqpId());
+        recipeLog.setEventCode(eventCode);
+        recipeLog.setEqpId(eqpId);
         recipeLog.setEqpModelId(recipe.getEqpModelId());
         recipeLog.setEqpModelName(recipe.getEqpModelName());
         recipeLog.setRecipeCode(recipe.getRecipeCode());

@@ -17,5 +17,5 @@ import com.lmrj.rms.recipe.entity.RmsRecipe;
 */
 public interface IRmsRecipeLogService extends ICommonService<RmsRecipeLog> {
 
-    void downloadLog(RmsRecipe recipe);
+    void downloadLog(RmsRecipe recipe, String eventCode, String eqpId);
 }
