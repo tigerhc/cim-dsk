@@ -97,7 +97,7 @@ public class OvnEdcHandler {
     }
 
     @RabbitHandler
-//    @RabbitListener(queues= {"test_a"})
+    @RabbitListener(queues= {"test_a"})
     public void test(byte[] message) throws Exception {
         String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息"+msg);
