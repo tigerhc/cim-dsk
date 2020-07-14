@@ -4,6 +4,20 @@ aps:
   dir: D:\1项目\大连三垦\2需求分设\APS\
 #spring
 spring:
+  rabbitmq:
+    addresses: 116.196.70.56:5672
+    username: admin
+    password: admin123456
+    template:
+      receive-timeout: 10000
+      reply-timeout: 40000
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000
+        default-requeue-rejected: false
   resources:
     static-locations: file:${oss.local.upload-file-path}
   session:

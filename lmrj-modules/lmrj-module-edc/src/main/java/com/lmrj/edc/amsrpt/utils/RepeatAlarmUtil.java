@@ -55,9 +55,13 @@ public class RepeatAlarmUtil {
 
     public void queryAlarmDefine(){
         //先查询alarm配置保存在redis中
-        List<EdcAmsRptDefine> amsRptDefineList = edcAmsRptDefineService.selectList(new EntityWrapper<>());
-        for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
-            redisTemplate.opsForList().rightPush("amsRptDefineList", amsRptDefine);
+        if (redisTemplate.opsForList().size("amsRptDefineList") > 0){
+            return;
+        }else {
+            List<EdcAmsRptDefine> amsRptDefineList = edcAmsRptDefineService.selectList(new EntityWrapper<>());
+            for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
+                redisTemplate.opsForList().rightPush("amsRptDefineList", amsRptDefine);
+            }
         }
     }
 
