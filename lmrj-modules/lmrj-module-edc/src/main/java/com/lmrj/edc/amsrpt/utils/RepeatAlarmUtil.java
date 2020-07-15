@@ -75,7 +75,7 @@ public class RepeatAlarmUtil {
             String msg = JsonUtil.toJsonString(map);
             System.out.println(msg);
             Object test = rabbitTemplate.convertSendAndReceive("C2S.Q.ALARMRPT.DATA", msg);
-            System.out.println(test.toString());
+            System.out.println(test);
         }
     }
 

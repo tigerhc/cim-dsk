@@ -98,7 +98,7 @@ public class OvnEdcHandler {
     }
 
     @RabbitHandler
-    @RabbitListener(queues= {"test_a"})
+//    @RabbitListener(queues= {"test_a"})
     public String test(String msg) {
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         System.out.println((String) msgMap.get("alarm"));
