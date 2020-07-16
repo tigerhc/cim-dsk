@@ -41,9 +41,18 @@ import java.util.Map;
 public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYieldMapper, ApsPlanPdtYield> implements IApsPlanPdtYieldService {
     @Autowired
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
+    @Autowired
+    IApsPlanPdtYieldService iApsPlanPdtYieldService;
 
     @Value("${aps.dir}")
     public String dir;
+
+    @Override
+    public  List<ApsPlanPdtYield> selectAps(){
+        List<ApsPlanPdtYield> apsPlanPdtYields=  baseMapper.selectAps();
+        return apsPlanPdtYields;
+    }
+
 
     @Override
     public ApsPlanPdtYield selectById(Serializable id) {
@@ -223,7 +232,7 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
         }
         System.out.println(apsPlanPdtYieldDetailList.size());
         //apsPlanPdtYieldService.deleteByPeriod(period);
-        //apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
+        //apsPlanPdtYieldService.insert(apsPlanPdtYieldList);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
 

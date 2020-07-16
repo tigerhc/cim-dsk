@@ -4,6 +4,7 @@ import com.lmrj.ms.record.entity.MsMeasureRecord;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -25,4 +26,7 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
  List<Map> findDetailBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
  List<Map> findDetailBytimeAndPro(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
  List<MsMeasureRecord> findRecordByRecordId(@Param("recordId") String recordId);
+@Select("select * from ms_measure_record")
+ List<MsMeasureRecord> findAll();
+
 }
