@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.gzst.gov.cn
@@ -28,6 +29,10 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
    * @return
       */
   Integer updateActiveFlag(@Param("id") String id, @Param("activeFlag") String activeFlag);
-  List<String> eqpIdlist();
+  List<String> findEqpIdList();
+  List<Map> findEqpMap();
+  //List<String> eqpIdMsList();
+  List<Map> findEqpMsMap();
+
 
 }

@@ -2,7 +2,6 @@ package com.lmrj.fab.eqp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.DateResponse;
@@ -32,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,21 +74,33 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      * @param request
      * @param response
      * @return
+     * Queryable queryable,
+     * QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
+     *         List<FabEquipment>  eqps = fabEquipmentService.listWithNoPage(queryable);
      */
     @RequestMapping(value = "/eqpIdlist", method = { RequestMethod.GET, RequestMethod.POST })
-    public void eqpIdlist(Model model, HttpServletRequest request,
+    public void eqpIdList(Model model, @RequestParam(required = false) String param, HttpServletRequest request,
                           HttpServletResponse response) {
-        List<String> eqpids = fabEquipmentService.eqpIdlist();
-        List<Map> list = Lists.newArrayList();
-        for (String eqpid : eqpids) {
-            Map map = Maps.newHashMap();
-            map.put("id", eqpid);
-            list.add(map);
+        if("MS".equals(param)){
+            eqpIdMsList2(model, request, response);
+            return;
         }
+        List<Map> list = fabEquipmentService.findEqpMap();
         DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
+
+    @RequestMapping(value = "/eqpIdMsList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void eqpIdMsList2(Model model, HttpServletRequest request,
+                            HttpServletResponse response) {
+        List<Map> eqpids = fabEquipmentService.findEqpMsMap();
+        DateResponse listjson = new DateResponse(eqpids);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+
 
     /**
      * 在返回数据之前编辑数据

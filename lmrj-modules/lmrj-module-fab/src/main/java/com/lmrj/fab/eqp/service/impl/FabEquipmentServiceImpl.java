@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -41,7 +42,18 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
     }
 
     @Override
-    public List<String> eqpIdlist() {
-        return baseMapper.eqpIdlist();
+    public List<String> findEqpIdList() {
+        return baseMapper.findEqpIdList();
     }
+
+    @Override
+    public List<Map> findEqpMap() {
+        return baseMapper.findEqpMap();
+    }
+
+    @Override
+    public List<Map> findEqpMsMap() {
+        return baseMapper.findEqpMsMap();
+    }
+
 }

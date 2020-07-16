@@ -34,9 +34,33 @@
 		update FAB_EQUIPMENT set ACTIVE_FLAG = #{activeFlag} where id = #{id}
 	</update>
 
-       <select id="eqpIdlist" resultType="string">
-              select eqp_id from fab_equipment where del_flag = '0' and active_flag='1'
-               order by sort_code, step_id
-       </select>
+    <select id="findEqpIdList" resultType="string">
+        select eqp_id from fab_equipment
+        where del_flag = '0'
+          and active_flag = '1'
+        order by sort_code, step_id
+    </select>
+    <select id="findEqpMap" resultType="map">
+        select eqp_id id, eqp_name name  from fab_equipment
+        where del_flag = '0'
+          and active_flag = '1'
+        order by sort_code, step_id
+    </select>
+
+    <!--<select id="eqpIdMsList" resultType="string">-->
+        <!--select eqp_id from fab_equipment-->
+        <!--where del_flag = '0'-->
+          <!--and active_flag = '1'-->
+          <!--and model_id in (select eqp_model_id from ms_eqp_param)-->
+        <!--order by sort_code, step_id-->
+    <!--</select>-->
+
+    <select id="findEqpMsMap" resultType="map">
+        select eqp_id id, eqp_name name from fab_equipment
+        where del_flag = '0'
+          and active_flag = '1'
+          and model_id in (select eqp_model_id from ms_eqp_param)
+        order by sort_code, step_id
+    </select>
 
 </mapper>
