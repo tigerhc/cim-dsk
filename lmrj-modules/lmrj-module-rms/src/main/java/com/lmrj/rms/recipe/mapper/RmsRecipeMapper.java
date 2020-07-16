@@ -24,4 +24,5 @@ public interface RmsRecipeMapper extends BaseMapper<RmsRecipe> {
  RmsRecipe findLastByRecipeCode(@Param("id") String id, @Param("recipeCode") String recipeCode, @Param("eqpModelId") String eqpModelId);
  String findMaxVersionNo(@Param("recipeCode") String recipeCode, @Param("eqpId") String eqpId, @Param("eqpModelId") String eqpModelId, @Param("versionType") String versionType);
  List<String> recipeCodeList();
+ List<RmsRecipe> recipePermitList(@Param("roleIdList") List<String> roleIdList);
 }

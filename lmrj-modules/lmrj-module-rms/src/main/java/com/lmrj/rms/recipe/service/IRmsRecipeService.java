@@ -24,4 +24,5 @@ public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     boolean upgrade(RmsRecipe rmsRecipe);
     RmsRecipe selectByIdAndCompareParam(String id);
     List<String> recipeCodeList();
+    List<RmsRecipe> recipePermitList();
 }

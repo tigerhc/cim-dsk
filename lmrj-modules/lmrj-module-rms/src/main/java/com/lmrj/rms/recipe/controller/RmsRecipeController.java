@@ -266,4 +266,18 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         ServletUtils.printJson(response, content);
     }
 
+    /**
+     * 获取审批配方列表
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/recipePermitList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void recipePermitList(HttpServletRequest request,
+                               HttpServletResponse response) {
+        List<RmsRecipe> rmsRecipes = rmsRecipeService.recipePermitList();
+        String content = JSON.toJSONString(new DateResponse(rmsRecipes));
+        ServletUtils.printJson(response, content);
+    }
+
 }
