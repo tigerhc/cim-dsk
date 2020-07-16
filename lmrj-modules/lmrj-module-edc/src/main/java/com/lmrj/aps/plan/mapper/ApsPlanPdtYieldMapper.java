@@ -1,8 +1,12 @@
 package com.lmrj.aps.plan.mapper;
 
-import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import org.apache.ibatis.annotations.*;
+import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultType;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 

@@ -2,20 +2,15 @@ package com.lmrj.ms.record.controller;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
-import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
-import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
-import com.lmrj.common.query.data.Page;
 import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
-import com.lmrj.common.query.utils.QueryableConvertUtils;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
@@ -29,7 +24,12 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -158,8 +158,10 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             map.put("data",records);
             list.add(map);
             List<MsMeasureRecordDetail> details= new LinkedList<>();
-            for (MsMeasureRecordDetail msMeasureRecordDetail: records.get(0).getDetail()) {
-                details.add(msMeasureRecordDetail);
+            if(records.size() != 0){
+                for (MsMeasureRecordDetail msMeasureRecordDetail: records.get(0).getDetail()) {
+                    details.add(msMeasureRecordDetail);
+                }
             }
             Map<String, Object> detailMap = new HashMap<>();
             detailMap.put("title",new ExportParams(title, title, ExcelType.XSSF));

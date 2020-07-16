@@ -43,7 +43,6 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
     @Autowired
     IApsPlanPdtYieldService iApsPlanPdtYieldService;
-
     @Value("${aps.dir}")
     public String dir;
 
@@ -52,7 +51,6 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
         List<ApsPlanPdtYield> apsPlanPdtYields=  baseMapper.selectAps();
         return apsPlanPdtYields;
     }
-
 
     @Override
     public ApsPlanPdtYield selectById(Serializable id) {

@@ -38,7 +38,7 @@ public class ProductionBackUpTask {
         calstart.add(Calendar.DAY_OF_MONTH, -40);
         Calendar calEnd = Calendar.getInstance();
         calEnd.add(Calendar.DAY_OF_MONTH, -3);
-        List<String> eqpIdlist = fabEquipmentService.eqpIdlist();
+        List<String> eqpIdlist = fabEquipmentService.findEqpIdList();
         for (String eqpId : eqpIdlist) {
             log.info("开始备份"+ eqpId + "设备的数据");
             while (true){

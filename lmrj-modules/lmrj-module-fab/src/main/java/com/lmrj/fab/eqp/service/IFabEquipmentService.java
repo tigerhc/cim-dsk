@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * All rights Reserved, Designed By www.gzst.gov.cn
@@ -21,6 +22,8 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     void activeEqp(String id, String flag);
 
     FabEquipment findEqpByCode(String eqpId);
-
-    public List<String> eqpIdlist();
+    List<String> findEqpIdList();
+    List<Map> findEqpMap();
+    //List<String> findEqpIdMsList();
+    List<Map> findEqpMsMap();
 }

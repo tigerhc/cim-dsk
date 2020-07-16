@@ -1,7 +1,7 @@
 package com.lmrj.ms.record.mapper;
 
-import com.lmrj.ms.record.entity.MsMeasureRecord;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.ms.record.entity.MsMeasureRecord;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

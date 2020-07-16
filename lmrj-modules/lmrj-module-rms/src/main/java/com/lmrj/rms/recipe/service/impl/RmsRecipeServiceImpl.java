@@ -2,11 +2,15 @@ package com.lmrj.rms.recipe.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.core.sys.entity.User;
+import com.lmrj.core.sys.entity.UserRole;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
+import com.lmrj.rms.permit.utils.ShiroExt;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
@@ -18,6 +22,8 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import com.lmrj.core.entity.MesResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.realm.UserDatabaseRealm;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,6 +93,19 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     @Override
     public List<String> recipeCodeList() {
         return baseMapper.recipeCodeList();
+    }
+
+    @Override
+    public List<RmsRecipe> recipePermitList() {
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String id = ShiroExt.getPrincipalProperty(principal, "id");
+        User user = UserUtil.getUser(id);
+        List<UserRole> userRoles = UserUtil.getUserRoleListByUser(user);
+        List<String> roleIdList = new ArrayList<>();
+        for (UserRole userRole:userRoles) {
+            roleIdList.add(userRole.getRoleId());
+        }
+        return baseMapper.recipePermitList(roleIdList);
     }
 
     @Override

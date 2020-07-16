@@ -98,6 +98,21 @@ public class UserUtil {
         }
         return roleList;
     }
+
+    /**
+     * 获取指定用户的角色列表
+     *
+     * @return
+     */
+    public static List<UserRole> getUserRoleListByUser(User user) {
+        List<UserRole> roleList = (List<UserRole>) CacheUtils.get(CACHE_USER_ROLE_LIST_);
+        if (roleList == null || roleList.size() == 0) {
+            roleList = userRoleService.selectList(new EntityWrapper<UserRole>(UserRole.class).eq("userId", user.getId()));
+            // 不加入缓存
+            CacheUtils.put(CACHE_USER_ROLE_LIST_,roleList);
+        }
+        return roleList;
+    }
     /**
      * 获取角色列表
      *
