@@ -22,4 +22,6 @@ public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord>
     List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
     List<Map> findDetailBytimeAndPro(String eqpId, String beginTime, String endTime, String productionNo);
     List<MsMeasureRecord> findRecordByRecordId(String recordId);
+
+    List<MsMeasureRecord> findAll();
 }

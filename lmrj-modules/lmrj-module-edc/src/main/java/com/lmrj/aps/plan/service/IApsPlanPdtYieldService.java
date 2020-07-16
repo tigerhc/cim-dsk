@@ -3,6 +3,8 @@ package com.lmrj.aps.plan.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -17,4 +19,5 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 public interface IApsPlanPdtYieldService extends ICommonService<ApsPlanPdtYield> {
     void deleteByPeriod(String period);
     void readNewApsPlan();
+    List<ApsPlanPdtYield> selectAps();
 }

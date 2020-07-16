@@ -97,13 +97,13 @@ public class OvnEdcHandler {
         fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM","", "");
     }
 
-    @RabbitHandler
+    //@RabbitHandler
 //    @RabbitListener(queues= {"test_a"})
-    public String test(String msg) {
-        Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
-        System.out.println((String) msgMap.get("alarm"));
-        return JsonUtil.toJsonString(MesResult.ok("ok"));
-    }
+//    public String test(String msg) {
+//        Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
+//        System.out.println((String) msgMap.get("alarm"));
+//        return JsonUtil.toJsonString(MesResult.ok("ok"));
+//    }
 
     @RabbitHandler
     @RabbitListener(queues= {"C2S.Q.CURE.PARAM"})
