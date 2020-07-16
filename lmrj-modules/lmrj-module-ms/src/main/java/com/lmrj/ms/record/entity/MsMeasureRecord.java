@@ -36,8 +36,12 @@ public class MsMeasureRecord extends BaseDataEntity {
     private String lotNo;
     /**机种*/
     @TableField(value = "production_no")
-    @Excel(name = "产品", orderNum = "3", width = 40)
+    @Excel(name = "品番", orderNum = "3", width = 40)
     private String productionNo;
+    /**机种*/
+    @TableField(value = "production_name")
+    @Excel(name = "品番名", orderNum = "10", width = 40)
+    private String productionName;
     /**晶圆ID*/
     @TableField(value = "wafer_id")
     @Excel(name = "晶圆ID", orderNum = "5", width = 20)
