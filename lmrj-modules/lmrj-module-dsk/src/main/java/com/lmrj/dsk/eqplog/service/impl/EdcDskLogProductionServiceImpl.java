@@ -1,5 +1,6 @@
 package com.lmrj.dsk.eqplog.service.impl;
 
+import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -71,10 +73,22 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
         List<String> deleteList = new LinkedList<>();
         List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId,startTime, endTime);
+        Map<String, Boolean> map = Maps.newHashMap();
         for (int i = 0;i < yields.size(); i++){
-            if(yields.get(i).getDayYield() == 1 || yields.get(i).getLotYield() == 1){
+            if(yields.get(i).getDayYield() == 1 ){
+                String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
+                if(map.get(key+"day") != true){
+                    map.put(key+"day", true);
+                    continue;
+                }
+            }else if(yields.get(i).getLotYield() == 1){
+                String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
+                if(map.get(key+"lot") != true){
+                    map.put(key+"lot", true);
+                    continue;
+                }
                 continue;
-            }else {
+            } else {
                 if (i == yields.size()-1){
                     break;
                 }else {
@@ -98,6 +112,5 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     public Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo) {
         return baseMapper.findNewYieldByLot(eqpId, productionNo,lotNo);
     }
-
 
 }
