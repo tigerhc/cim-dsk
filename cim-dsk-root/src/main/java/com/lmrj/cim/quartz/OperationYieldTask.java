@@ -27,7 +27,7 @@ public class OperationYieldTask {
      */
     @Scheduled(cron = "0 09 * * * ?")
     public void dskaps() {
-        log.error("OperationYieldTask定时任务开始执行");
+        log.info("OperationYieldTask定时任务开始执行");
         //2天前
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, -2);
@@ -42,7 +42,7 @@ public class OperationYieldTask {
                 edcDskLogOperationService.updateById(edcDskLogOperation);
             }
         });
-        log.error("OperationYieldTask定时任务开始执行结束");
+        log.info("OperationYieldTask定时任务开始执行结束");
     }
 
 }

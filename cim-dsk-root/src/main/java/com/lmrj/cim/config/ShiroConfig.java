@@ -1,11 +1,11 @@
 package com.lmrj.cim.config;
 
-import com.lmrj.common.security.shiro.filter.ShiroFilterFactoryBean;
-import com.lmrj.cim.shiro.factory.StatelessSubjectFactory;
-import com.lmrj.cim.shiro.realm.UserRealm;
 import com.lmrj.cim.config.autoconfigure.ShiroConfigProperties;
 import com.lmrj.cim.shiro.filter.authc.Oauth2Filter;
 import com.lmrj.cim.shiro.realm.Oauth2Realm;
+import com.lmrj.cim.shiro.realm.UserRealm;
+import com.lmrj.common.security.shiro.filter.ShiroFilterFactoryBean;
+import com.lmrj.common.security.shiro.web.StatelessSubjectFactory;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -20,6 +20,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.DelegatingFilterProxy;
+
 import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
