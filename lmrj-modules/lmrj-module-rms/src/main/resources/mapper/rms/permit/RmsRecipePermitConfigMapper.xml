@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rms.permit.mapper.RmsRecipePermitConfigMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.submit_level,
+       t.submitter_role_id,
+       t.submitter_role_code,
+       t.submitter_role_name,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>
