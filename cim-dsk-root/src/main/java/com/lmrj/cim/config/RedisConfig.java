@@ -67,8 +67,8 @@ RedisTemplate redisTemplate;
    private void initDomainRedisTemplate(RedisTemplate<String,Object> redisTemplate, RedisConnectionFactory factory) {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
+        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.setConnectionFactory(factory);
     }
     /**
