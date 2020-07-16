@@ -182,4 +182,44 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             return Response.error(999998, "导出失败");
         }
     }
+
+    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
+        String title = "量测信息详情";
+        String title1 = "量测信息";
+        Response res = Response.ok("导出成功");
+
+        try {
+            List<Map<String, Object>> list = new LinkedList<>();
+            List<MsMeasureRecord> records = msMeasureRecordService.findRecordByRecordId(recordId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("title",new ExportParams(title1, title1, ExcelType.XSSF));
+            map.put("entity",MsMeasureRecord.class);
+            map.put("data",records);
+            list.add(map);
+            List<MsMeasureRecordDetail> details= new LinkedList<>();
+            if(records.size() != 0){
+                for (MsMeasureRecordDetail msMeasureRecordDetail: records.get(0).getDetail()) {
+                    details.add(msMeasureRecordDetail);
+                }
+            }
+            Map<String, Object> detailMap = new HashMap<>();
+            detailMap.put("title",new ExportParams(title, title, ExcelType.XSSF));
+            detailMap.put("entity",MsMeasureRecordDetail.class);
+            detailMap.put("data",details);
+            list.add(detailMap);
+            Workbook book = ExcelExportUtil.exportExcel(list,ExcelType.XSSF);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+    }
 }
