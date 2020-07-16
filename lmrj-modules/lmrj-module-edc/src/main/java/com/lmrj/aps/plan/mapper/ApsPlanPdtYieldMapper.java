@@ -2,9 +2,9 @@ package com.lmrj.aps.plan.mapper;
 
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import org.apache.ibatis.annotations.*;
-
-import java.util.List;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
