@@ -1,18 +1,18 @@
 package com.lmrj.cim.modules.sso.controller;
 
-import com.lmrj.common.utils.IpUtils;
-import com.lmrj.util.lang.StringUtil;
-import com.lmrj.core.sys.entity.User;
-import com.lmrj.core.sys.service.IUserService;
-import com.lmrj.cim.shiro.filter.authc.UsernamePasswordToken;
-import com.lmrj.cim.shiro.realm.UserRealm;
-import com.lmrj.cim.utils.LoginLogUtils;
-import com.lmrj.cim.utils.UserUtils;
 import com.lmrj.cim.common.response.ResponseError;
 import com.lmrj.cim.config.autoconfigure.ShiroConfigProperties;
 import com.lmrj.cim.modules.sso.service.IOAuthService;
+import com.lmrj.cim.shiro.realm.UserRealm;
 import com.lmrj.cim.utils.JWTHelper;
+import com.lmrj.cim.utils.LoginLogUtils;
 import com.lmrj.cim.utils.ResponseUtils;
+import com.lmrj.cim.utils.UserUtils;
+import com.lmrj.common.security.shiro.authc.UsernamePasswordToken;
+import com.lmrj.common.utils.IpUtils;
+import com.lmrj.core.sys.entity.User;
+import com.lmrj.core.sys.service.IUserService;
+import com.lmrj.util.lang.StringUtil;
 import org.apache.oltu.oauth2.as.issuer.MD5Generator;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuerImpl;

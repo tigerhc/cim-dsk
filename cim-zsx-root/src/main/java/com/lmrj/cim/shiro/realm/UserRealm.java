@@ -1,14 +1,12 @@
 package com.lmrj.cim.shiro.realm;
 
-import java.io.Serializable;
-import java.util.Date;
-
+import com.alibaba.fastjson.annotation.JSONField;
+import com.lmrj.cim.utils.UserUtils;
 import com.lmrj.common.utils.AddressUtils;
 import com.lmrj.common.utils.IpUtils;
 import com.lmrj.common.utils.ServletUtils;
+import com.lmrj.core.sys.entity.User;
 import com.lmrj.core.sys.service.IUserService;
-import com.lmrj.cim.shiro.filter.authc.UsernamePasswordToken;
-import com.alibaba.fastjson.annotation.JSONField;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -16,14 +14,16 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import com.lmrj.core.sys.entity.User;
-import com.lmrj.cim.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * http://blog.csdn.net/babys/article/details/50151407
