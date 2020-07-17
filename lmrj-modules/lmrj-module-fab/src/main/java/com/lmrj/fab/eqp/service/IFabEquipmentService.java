@@ -22,6 +22,7 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     void activeEqp(String id, String flag);
 
     FabEquipment findEqpByCode(String eqpId);
+    List<FabEquipment> findEqpByLine(String lineNo);
     List<String> findEqpIdList();
     List<Map> findEqpMap();
     //List<String> findEqpIdMsList();

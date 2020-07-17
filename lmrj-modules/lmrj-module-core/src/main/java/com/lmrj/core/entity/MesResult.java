@@ -7,17 +7,25 @@ public class MesResult {
     private static  final String OK_CODE = "Y";
     private static  final String ERROR_CODE = "N";
 
-    public String flag;
-    public String msg;
-    public Object content;
+    private String flag;
+    private String msg;
+    private Object content;
 
     public MesResult() {
         flag = "Y";
         msg = "";
     }
 
+    public static MesResult ok(){
+        return new MesResult();
+    }
+
     public static MesResult ok(String msg){
         return init(OK_CODE, msg, null);
+    }
+
+    public static MesResult ok(Object content){
+        return init(OK_CODE, "", content);
     }
 
     public static MesResult error(String msg){
