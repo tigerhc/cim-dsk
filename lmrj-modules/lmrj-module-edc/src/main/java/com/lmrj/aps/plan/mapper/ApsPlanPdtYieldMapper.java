@@ -33,8 +33,15 @@ public interface ApsPlanPdtYieldMapper extends BaseMapper<ApsPlanPdtYield> {
     List<ApsPlanPdtYield> selectAps(@Param("beginTime")String beginTime, @Param("endTime")String endTime);
 */
 
-    @Select(" select  production_name,production_no,plan_date  from aps_plan_pdt_yield_detail ")
+    /**
+     *
+     * @return
+     */
+    @Select(" select  production_name,production_no,plan_date  from aps_plan_pdt_yield ")
     @ResultType(com.lmrj.aps.plan.entity.ApsPlanPdtYield.class)
     List<ApsPlanPdtYield> selectAps();
+
+    @Select(" select  production_name  from aps_plan_pdt_yield where production_no=#{proNo} limit 1")
+    String findProName(@Param("proNo") String proNo);
 
 }

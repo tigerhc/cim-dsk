@@ -1,5 +1,6 @@
 package com.lmrj.ms.handler;
 
+import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
 import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
 import com.lmrj.ms.record.service.IMsMeasureRecordService;
@@ -9,7 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.sql.Wrapper;
+import java.util.ArrayList;
 
 @Service
 @Slf4j
@@ -17,6 +23,11 @@ public class EdcMeasureHandler {
 
     @Autowired
     IMsMeasureRecordService msMeasureRecordService;
+    @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
+    IApsPlanPdtYieldService apsPlanPdtYieldService;
+
 
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MEASURE.DATA"})
@@ -26,6 +37,14 @@ public class EdcMeasureHandler {
         if(msMeasureRecord == null){
             return;
         }
+
+        String name=apsPlanPdtYieldService.findProName(msMeasureRecord.getProductionNo());
+        msMeasureRecord.setProductionName(name);
+        //  msMeasureRecordService.updateById(msMeasureRecord);
+      //  ArrayList<MsMeasureRecord> mm=new ArrayList<>();
+
+      //  mm.add(msMeasureRecord);
+
 
         String recordId = StringUtil.randomTimeUUID("MS");
         msMeasureRecord.setRecordId(recordId);
@@ -40,6 +59,28 @@ public class EdcMeasureHandler {
             }
         }
 
+       // msMeasureRecordService.updateBatchById(mm);
+
+
         msMeasureRecordService.insert(msMeasureRecord);
     }
+
+    @RabbitHandler
+    @RabbitListener(queues = {"zx_test"})
+    public void updateMs(String msg){
+        MsMeasureRecord msMeasureRecord = JsonUtil.from(msg, MsMeasureRecord.class);
+        System.out.println("123:"+msMeasureRecord);
+        System.out.println("456"+msMeasureRecord.getProductionNo());
+     String name=apsPlanPdtYieldService.findProName(msMeasureRecord.getProductionNo());
+        System.out.println(name);
+        msMeasureRecord.setProductionName(name);
+        msMeasureRecord.setId("fff02229cabb43438090456cf0bfc343");
+
+      //  msMeasureRecordService.updateById(msMeasureRecord);
+        ArrayList<MsMeasureRecord> mm=new ArrayList<>();
+        mm.add(msMeasureRecord);
+        msMeasureRecordService.updateBatchById(mm);
+
+    }
+
 }

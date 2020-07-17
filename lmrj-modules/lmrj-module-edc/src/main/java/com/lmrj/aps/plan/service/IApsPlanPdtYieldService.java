@@ -2,6 +2,7 @@ package com.lmrj.aps.plan.service;
 
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +20,10 @@ import java.util.List;
 public interface IApsPlanPdtYieldService extends ICommonService<ApsPlanPdtYield> {
     void deleteByPeriod(String period);
     void readNewApsPlan();
+
     List<ApsPlanPdtYield> selectAps();
+
+    String findProName(String proNo);
+
+
 }
