@@ -1,7 +1,9 @@
 package com.lmrj.rms.permit.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
@@ -47,6 +49,8 @@ public class RmsRecipePermit extends BaseDataEntity {
     private String submitDesc;
     /**时间*/
     @TableField(value = "submit_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date submitDate;
 
 }

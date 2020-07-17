@@ -47,7 +47,11 @@ public class RmsRecipePermitConfigController extends BaseCRUDController<RmsRecip
     @RequestMapping(value = "/getPermitConfig", method = { RequestMethod.GET, RequestMethod.POST })
     public void findById(@RequestParam("approveStep") String submit_level, HttpServletRequest request,
                          HttpServletResponse response) {
-        RmsRecipePermitConfig recipePermitConfig = rmsRecipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level",Integer.parseInt(submit_level))).get(0);
+        List<RmsRecipePermitConfig> recipePermitConfigList = rmsRecipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", Integer.parseInt(submit_level)));
+        RmsRecipePermitConfig recipePermitConfig = null;
+        if (recipePermitConfigList.size() > 0){
+            recipePermitConfig = recipePermitConfigList.get(0);
+        }
         Response res;
         if(recipePermitConfig == null){
             res = Response.error("未查询到数据");

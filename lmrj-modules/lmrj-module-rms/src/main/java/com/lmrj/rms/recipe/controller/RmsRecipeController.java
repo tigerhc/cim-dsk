@@ -283,13 +283,17 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     @RequestMapping(value = "/{id}/find", method = { RequestMethod.GET, RequestMethod.POST })
     public void findById(Model model, @PathVariable("id") String id, HttpServletRequest request,
                      HttpServletResponse response) {
-        RmsRecipe rmsRecipe = rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("id",id)).get(0);
+        List<RmsRecipe> recipeList = rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("id", id));
+        RmsRecipe rmsRecipe = null;
+        if (recipeList.size() > 0){
+            rmsRecipe = recipeList.get(0);
+        }
         List<RmsRecipeBody> recipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>().eq("recipe_id", id));
-        rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
         Response res;
         if(rmsRecipe == null){
             res = Response.error("未查询到数据");
         }else{
+            rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
             afterFind(rmsRecipe); //二次处理
             res = DateResponse.ok(rmsRecipe);
         }
