@@ -23,7 +23,7 @@ public class MesTrackServiceTest {
     public static void main(String[] args) {
         String msg = "{\"flag\":\"Y\",\"msg\":\"银浆号不存在\",\"content\":null}";
         MesResult result = JsonUtil.from(msg, MesResult.class);
-        if("Y".equals(result.flag)){
+        if("Y".equals(result.getFlag())){
             Map<String, String> content = Maps.newHashMap();
             content.put("RECIPE_NAME", "111");
             result.setContent(content);
