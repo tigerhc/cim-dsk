@@ -42,6 +42,11 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
     }
 
     @Override
+    public List<FabEquipment> findEqpByLine(String lineNo) {
+        return baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo));
+    }
+
+    @Override
     public List<String> findEqpIdList() {
         return baseMapper.findEqpIdList();
     }

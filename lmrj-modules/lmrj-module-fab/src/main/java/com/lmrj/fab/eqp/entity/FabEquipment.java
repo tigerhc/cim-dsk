@@ -99,6 +99,15 @@ public class FabEquipment extends BaseDataEntity {
 	@Excel(name = "位置号", orderNum = "16")
 	@TableField(value = "location")
 	private String location;
+	/**节拍 毫秒*/
+	@Excel(name = "节拍", orderNum = "17")
+	@TableField(value = "take_time")
+	private int takeTime;
+	/**客户端*/
+	@Excel(name = "客户端", orderNum = "18")
+	@TableField(value = "client_flag")
+	private String clientFlag;
+
 	@TableField(value = "sort_code")
 	private Integer sortCode;
 

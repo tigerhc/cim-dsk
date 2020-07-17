@@ -61,10 +61,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     //50029150702D 37368342             037368342ED   J.SIM6812M(E)D-URA F2971
     @RequestMapping(value = "/dsktrackin/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    public String dskTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("dsktrackin :  {}", trackinfo);
-        try{
-            if(trackinfo.length()< 30){
+        try {
+            if (trackinfo.length() < 30) {
                 return "trackinfo too short";
             }
             String[] trackinfos = trackinfo.split("\\.");
@@ -73,17 +73,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
 
-            String  productionNo  = lotNos[0].substring(0, 7); //5002915
-            String  lotNo = lotNos[0].substring(7, 12); //0702D
-            String  orderNo= lotNos[1]; //37368342
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
             //String eqpId ="SIM-DM1";
-            MesResult result = mesLotTrackService.trackin4DSK(eqpId, productionName, productionNo, orderNo, lotNo, "", opId);
-            if ("Y".equals(result.flag)) {
+            MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
+            if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
-                return result.msg;
+                return result.getMsg();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
@@ -91,15 +91,15 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/findRecipeName/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findRecipeName(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("findRecipeName :  {}", opId);
-        try{
+        try {
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findRecipeName(eqpId, opId);
-            if ("Y".equals(result.flag)) {
+            if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
-                return result.msg;
+                return result.getMsg();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
@@ -107,40 +107,40 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/findTemp/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findTemp(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("findTemp :  {}", opId);
-        try{
+        try {
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findTemp(eqpId, opId);
-            if ("Y".equals(result.flag)) {
+            if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
-                return result.msg;
+                return result.getMsg();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
 
     @RequestMapping(value = "/findParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId,  @RequestParam(required = false) String lotNo ,@RequestParam(required = false) String productionName, HttpServletRequest request, HttpServletResponse response) {
+    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId, @RequestParam(required = false) String lotNo, @RequestParam(required = false) String productionName, HttpServletRequest request, HttpServletResponse response) {
         log.info("findTemp :  {}", opId);
-        try{
+        try {
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionName);
-            if ("Y".equals(result.flag)) {
+            if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
-                return result.msg;
+                return result.getMsg();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
 
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String dskTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
-        try{
-            if(trackinfo.length()< 30){
+    public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            if (trackinfo.length() < 30) {
                 return "trackinfo too short";
             }
             String[] trackinfos = trackinfo.split("\\.");
@@ -148,29 +148,29 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1];
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-            String lotNo = lotNos[lotNos.length-1].substring(0, 5);
+            String lotNo = lotNos[lotNos.length - 1].substring(0, 5);
             String orderNo = lotNos[0].substring(0, 8);
-            String productionNo = lotNos[lotNos.length-1].substring(5, 12); //5002915
+            String productionNo = lotNos[lotNos.length - 1].substring(5, 12); //5002915
             //String eqpId ="SIM-DM1";
-            MesResult result = mesLotTrackService.trackin4DSK(eqpId, productionName, productionNo, orderNo, lotNo, "", opId);
-            if ("Y".equals(result.flag)) {
+            MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
+            if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
-                return result.msg;
+                return result.getMsg();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
 
-    @RequestMapping(value = "/dsktrackout/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/dsktrackout/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dmTrackout(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
-        if(trackinfo.length()< 30){
+        if (trackinfo.length() < 30) {
             return "trackinfo too short";
         }
-        try{
-            if(trackinfo.length()< 30){
+        try {
+            if (trackinfo.length() < 30) {
                 return "trackinfo too short";
             }
             String[] trackinfos = trackinfo.split("\\.");
@@ -179,17 +179,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
 
-            String  productionNo  = lotNos[0].substring(0, 7); //5002915
-            String  lotNo = lotNos[0].substring(7, 12); //0702D
-            String  orderNo= lotNos[1]; //37368342
-            MesResult result = mesLotTrackService.trackout4DSK(eqpId, productionName, productionNo, orderNo, lotNo, yield, "", opId);
-            if ("Y".equals(result.flag)) {
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
+            MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
+            if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
-                return result.msg;
+                return result.getMsg();
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return e.getMessage();
         }
     }
@@ -213,7 +213,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if (!StringUtil.isEmpty(delFlag)) {
                 entityWrapper.eq("del_flag", delFlag);
             }
-            Page pageBean = commonService.selectPage(PageRequest.getPage(),entityWrapper);
+            Page pageBean = commonService.selectPage(PageRequest.getPage(), entityWrapper);
             String title = "过账记录";
             Workbook book = ExcelExportUtil.exportExcel(new ExportParams(
                     title, title, ExcelType.XSSF), MesLotTrack.class, pageBean.getRecords());
@@ -221,12 +221,12 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             book.write(bos);
             byte[] bytes = bos.toByteArray();
             String bytesRes = StringUtil.bytesToHexString2(bytes);
-            title = title+ "-" + DateUtil.getDateTime();
-            response.put("bytes",bytesRes);
-            response.put("title",title);
+            title = title + "-" + DateUtil.getDateTime();
+            response.put("bytes", bytesRes);
+            response.put("title", title);
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.error(999998,"导出失败");
+            return Response.error(999998, "导出失败");
         }
         return response;
     }

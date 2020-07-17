@@ -7,20 +7,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* All rights Reserved, Designed By www.lmrj.com
-*
-* @version V1.0
-* @package com.lmrj.fab.1.service
-* @title: fab_equipment_status服务接口
-* @description: fab_equipment_status服务接口
-* @author: zhangweijiang
-* @date: 2019-06-18 20:41:20
-* @copyright: 2019 www.lmrj.com Inc. All rights reserved.
-*/
+ * All rights Reserved, Designed By www.lmrj.com
+ *
+ * @version V1.0
+ * @package com.lmrj.fab.1.service
+ * @title: fab_equipment_status服务接口
+ * @description: fab_equipment_status服务接口
+ * @author: zhangweijiang
+ * @date: 2019-06-18 20:41:20
+ * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
+ */
 public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentStatus> {
 
     int updateStatus(String eqpID, String status, String lotNo, String recipeCode);
+
     int updateYield(String eqpID, String status, String lotNo, String recipeCode, int lotYield, int dayYield);
+
     int increaseYield(String eqpID, int increasedYield);
 
     int updateLot(String eqpID, String lotId);
@@ -32,5 +34,6 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
     List<Map> selectEqpStatusChart();
 
     List<Map> selectYield(String lineNo);
+
     FabEquipmentStatus findByEqpId(String eqpId);
 }

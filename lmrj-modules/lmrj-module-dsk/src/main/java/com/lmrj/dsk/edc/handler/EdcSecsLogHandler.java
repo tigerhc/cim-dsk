@@ -59,29 +59,30 @@ public class EdcSecsLogHandler {
         EdcEvtRecord edcEvtRecord = JsonUtil.from(msg, EdcEvtRecord.class);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(edcEvtRecord.getEqpId());
         String modelId = "";
-        if(fabEquipment != null){
+        if (fabEquipment != null) {
             modelId = fabEquipment.getModelId();
 
             EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
-            if(edcEvtDefine != null){
+            if (edcEvtDefine != null) {
                 edcEvtRecord.setEventDesc(edcEvtDefine.getEventName());
             }
         }
-        // TODO: 2020/7/14 后期针对trm产量事件,可不存储 
+        // TODO: 2020/7/14 后期针对trm产量事件,可不存储
         edcEvtRecordService.insert(edcEvtRecord);
         //Mold单独处理
-        if("TRM".equals(fabEquipment.getStepCode())){
+        if ("TRM".equals(fabEquipment.getStepCode())) {
             handleMoldYield(edcEvtRecord, fabEquipment);
         }
 
     }
+
     //处理Mold产量特殊事件
     //通过track in获取设备开始shotcount数
-    public void handleMoldYield(EdcEvtRecord evtRecord, FabEquipment fabEquipment){
+    public void handleMoldYield(EdcEvtRecord evtRecord, FabEquipment fabEquipment) {
         String eqpId = evtRecord.getEqpId();
-        String[] ceids = {"11201","11202", "11203"};
+        String[] ceids = {"11201", "11202", "11203"};
         String ceid = evtRecord.getEventId();
-        if(ArrayUtil.contains(ceids,ceid)){
+        if (ArrayUtil.contains(ceids, ceid)) {
             fabEquipmentStatusService.increaseYield(eqpId, 12);
             FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
             // TODO: 2020/7/8 写入 edc_dsk_log_production
@@ -103,12 +104,12 @@ public class EdcSecsLogHandler {
             edcDskLogProductionService.insert(productionLog);
 
             String eventParams = evtRecord.getEventParams();
-            if(eventParams != null){
+            if (eventParams != null) {
                 String[] params = eventParams.split(",");
-                if(params.length == 3){
-                    int shotcount = Integer.parseInt(params[0])+Integer.parseInt(params[1])+Integer.parseInt(params[2]);
+                if (params.length == 3) {
+                    int shotcount = Integer.parseInt(params[0]) + Integer.parseInt(params[1]) + Integer.parseInt(params[2]);
                     String maxShotCountStr = fabEquipment.getEqpParam().split(",")[0];
-                    if( shotcount > Integer.parseInt(maxShotCountStr)){
+                    if (shotcount > Integer.parseInt(maxShotCountStr)) {
                         //转发alarm至MQ
                     }
                 }

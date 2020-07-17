@@ -16,11 +16,13 @@ import com.lmrj.mes.track.entity.MesLotTrack;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
-    MesResult trackin4DSK(String eqpId, String productionName, String productionNo, String orderNo, String lotNo, String recipeCode, String opId);
-    MesResult findRecipeName(String eqpId, String opId);
-    MesResult findTemp(String eqpId, String opId);
-    MesResult findParam(String eqpId, String param, String opId,String lotNo, String productionName);
+    MesResult trackin(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId);
 
-    MesResult trackout4DSK(String eqpId, String productionName, String productionNo, String orderNo, String lotNo, String yield, String recipeCode, String opId);
-    //MesResult trackIn(String eqpId, String lotNo, String recipeCode, String opId);
+    MesResult trackout(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId);
+
+    MesResult findRecipeName(String eqpId, String opId);
+
+    MesResult findTemp(String eqpId, String opId);
+
+    MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionName);
 }
