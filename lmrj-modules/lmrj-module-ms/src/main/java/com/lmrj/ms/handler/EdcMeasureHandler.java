@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 @Slf4j
@@ -22,10 +19,7 @@ public class EdcMeasureHandler {
     @Autowired
     IMsMeasureRecordService msMeasureRecordService;
     @Autowired
-    RedisTemplate redisTemplate;
-    @Autowired
     IApsPlanPdtYieldService apsPlanPdtYieldService;
-
 
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MEASURE.DATA"})
@@ -36,14 +30,8 @@ public class EdcMeasureHandler {
             return;
         }
 
-        String name=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
-        msMeasureRecord.setProductionName(name);
-        //  msMeasureRecordService.updateById(msMeasureRecord);
-      //  ArrayList<MsMeasureRecord> mm=new ArrayList<>();
-
-      //  mm.add(msMeasureRecord);
-
-
+        String productionName=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
+        msMeasureRecord.setProductionName(productionName);
         String recordId = StringUtil.randomTimeUUID("MS");
         msMeasureRecord.setRecordId(recordId);
         msMeasureRecord.setApproveResult("Y");
@@ -56,29 +44,7 @@ public class EdcMeasureHandler {
                 break;
             }
         }
-
-       // msMeasureRecordService.updateBatchById(mm);
-
-
         msMeasureRecordService.insert(msMeasureRecord);
-    }
-
-    @RabbitHandler
-    @RabbitListener(queues = {"zx_test"})
-    public void updateMs(String msg){
-        MsMeasureRecord msMeasureRecord = JsonUtil.from(msg, MsMeasureRecord.class);
-        System.out.println("123:"+msMeasureRecord);
-        System.out.println("456"+msMeasureRecord.getProductionNo());
-     String name=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
-        System.out.println(name);
-        msMeasureRecord.setProductionName(name);
-        msMeasureRecord.setId("fff02229cabb43438090456cf0bfc343");
-
-      //  msMeasureRecordService.updateById(msMeasureRecord);
-        ArrayList<MsMeasureRecord> mm=new ArrayList<>();
-        mm.add(msMeasureRecord);
-        msMeasureRecordService.updateBatchById(mm);
-
     }
 
 }
