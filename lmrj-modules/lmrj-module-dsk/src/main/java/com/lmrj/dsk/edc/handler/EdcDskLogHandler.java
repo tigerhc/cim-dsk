@@ -138,9 +138,10 @@ public class EdcDskLogHandler {
             mesLotTrackService.insert(mesLotTrack);
         }
 
-        if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
-            fabEquipmentStatusService.updateYield(eqpId,"", lotNo, recipeCode, lotYield, dayYield);
-        }
+        //产量不准,改为自己运算后更新
+        //if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
+        //    fabEquipmentStatusService.updateYield(eqpId,"", lotNo, recipeCode, lotYield, dayYield);
+        //}
     }
 
     @RabbitHandler
