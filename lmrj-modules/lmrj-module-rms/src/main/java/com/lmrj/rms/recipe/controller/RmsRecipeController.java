@@ -16,6 +16,7 @@ import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
+import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
 import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -57,8 +58,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     @Autowired
     private IRmsRecipeService rmsRecipeService;
     @Autowired
-    private IRmsRecipeLogService rmsRecipeLogService;
-
+    private IRmsRecipeBodyService rmsRecipeBodyService;
     /**
      * 保存数据之前,处理细表
      *
@@ -278,6 +278,23 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         List<RmsRecipe> rmsRecipes = rmsRecipeService.recipePermitList();
         String content = JSON.toJSONString(new DateResponse(rmsRecipes));
         ServletUtils.printJson(response, content);
+    }
+
+    @RequestMapping(value = "/{id}/find", method = { RequestMethod.GET, RequestMethod.POST })
+    public void findById(Model model, @PathVariable("id") String id, HttpServletRequest request,
+                     HttpServletResponse response) {
+        RmsRecipe rmsRecipe = rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("id",id)).get(0);
+        List<RmsRecipeBody> recipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>().eq("recipe_id", id));
+        rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
+        Response res;
+        if(rmsRecipe == null){
+            res = Response.error("未查询到数据");
+        }else{
+            afterFind(rmsRecipe); //二次处理
+            res = DateResponse.ok(rmsRecipe);
+        }
+        String content = JSON.toJSONString(res);
+        ServletUtils.printJson(response,content);
     }
 
 }

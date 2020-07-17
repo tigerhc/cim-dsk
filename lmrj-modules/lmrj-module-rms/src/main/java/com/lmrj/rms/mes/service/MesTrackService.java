@@ -90,7 +90,7 @@ public class MesTrackService {
         }
         // TODO: 2019/6/23 打印返回结果
         MesResult result = JsonUtil.from(msg, MesResult.class);
-        if("Y".equals(result.flag)){
+        if("Y".equals(result.getFlag())){
             //Map<String, String> content = Maps.newHashMap();
             //content.put("RECIPE_NAME", recipeCode);
             //result.setContent(content);

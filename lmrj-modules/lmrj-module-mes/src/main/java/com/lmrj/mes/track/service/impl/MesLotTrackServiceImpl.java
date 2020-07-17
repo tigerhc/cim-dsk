@@ -226,6 +226,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         MesResult result = MesResult.ok();
         saveTrackLog(eqpId, "TRACKIN", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        // TODO: 2020/7/17 待删除
+        if("SIM-DM1".equals(eqpId)){
+            eqpId = "SIM-DM";
+        }
         if (fabEquipment != null) {
             result = doTrackIn(fabEquipment, productionNo, productionName, orderNo, lotNo, recipeCode, opId, 0);
         } else {
@@ -322,7 +326,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         this.insertOrUpdate(mesLotTrack);
 
         //发送至EAP客户端 Map
-        if("Y".equals(fabEquipment.getClientFlag())){
+        if("1".equals(fabEquipment.getClientFlag())){
             Map<String, String> map = Maps.newHashMap();
             map.put("METHOD", "TRACKIN");
             map.put("LOT_NO", lotNo);
