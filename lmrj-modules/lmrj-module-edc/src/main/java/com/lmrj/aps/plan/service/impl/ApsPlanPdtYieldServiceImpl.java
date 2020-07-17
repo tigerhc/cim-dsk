@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +23,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -48,8 +45,6 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
     @Autowired
     RedisTemplate redisTemplate;
 
-
-
     @Value("${aps.dir}")
     public String dir;
 
@@ -61,15 +56,14 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
     }
 
     @Override
-    public String findProName(String proNo) {
-       String proName=(String) redisTemplate.opsForValue().get(proNo);
-        if(Objects.isNull(proName)) {
-            String ap= baseMapper.findProName(proNo);
-            redisTemplate.opsForValue().set(proNo,proName);
-               return ap;
-      }
+    public String findProductionName(String proNo) {
+        String proName = (String) redisTemplate.opsForValue().get(proNo);
+        if (StringUtil.isBlank(proName)) {
+            proName = baseMapper.findProName(proNo);
+            redisTemplate.opsForValue().set(proNo, proName);
             return proName;
-
+        }
+        return proName;
     }
 
     @Override

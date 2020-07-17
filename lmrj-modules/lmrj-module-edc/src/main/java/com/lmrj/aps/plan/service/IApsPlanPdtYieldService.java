@@ -2,7 +2,6 @@ package com.lmrj.aps.plan.service;
 
 import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public interface IApsPlanPdtYieldService extends ICommonService<ApsPlanPdtYield>
 
     List<ApsPlanPdtYield> selectAps();
 
-    String findProName(String proNo);
+    String findProductionName(String proNo);
 
 
 }

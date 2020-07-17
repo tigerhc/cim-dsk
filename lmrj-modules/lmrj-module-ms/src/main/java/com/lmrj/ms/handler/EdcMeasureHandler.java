@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.sql.Wrapper;
 import java.util.ArrayList;
 
 @Service
@@ -38,7 +36,7 @@ public class EdcMeasureHandler {
             return;
         }
 
-        String name=apsPlanPdtYieldService.findProName(msMeasureRecord.getProductionNo());
+        String name=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
         msMeasureRecord.setProductionName(name);
         //  msMeasureRecordService.updateById(msMeasureRecord);
       //  ArrayList<MsMeasureRecord> mm=new ArrayList<>();
@@ -71,7 +69,7 @@ public class EdcMeasureHandler {
         MsMeasureRecord msMeasureRecord = JsonUtil.from(msg, MsMeasureRecord.class);
         System.out.println("123:"+msMeasureRecord);
         System.out.println("456"+msMeasureRecord.getProductionNo());
-     String name=apsPlanPdtYieldService.findProName(msMeasureRecord.getProductionNo());
+     String name=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
         System.out.println(name);
         msMeasureRecord.setProductionName(name);
         msMeasureRecord.setId("fff02229cabb43438090456cf0bfc343");
