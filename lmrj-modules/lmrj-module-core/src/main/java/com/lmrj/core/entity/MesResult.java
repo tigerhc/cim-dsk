@@ -28,6 +28,9 @@ public class MesResult {
         return init(OK_CODE, "", content);
     }
 
+    public static MesResult ok(String msg, Object content){
+        return init(OK_CODE, msg, content);
+    }
     public static MesResult error(String msg){
         return init(ERROR_CODE, msg, null);
     }
@@ -42,6 +45,9 @@ public class MesResult {
 
     public String getFlag() {
         return flag;
+    }
+    public boolean isOk() {
+        return OK_CODE.equals(this.flag);
     }
 
     public void setFlag(String flag) {

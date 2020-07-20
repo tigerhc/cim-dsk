@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @EnableSwagger2Doc
 @EnableSwagger2
-@ComponentScan({"com.lmrj.common.quartz.config","com.lmrj.common.oss","com.lmrj.core","com.lmrj.common.sms","com.lmrj.edc","com.lmrj.dsk","com.lmrj.fab"})
+@ComponentScan({"com.lmrj.core", "com.lmrj.common", "com.lmrj.edc", "com.lmrj.dsk", "com.lmrj.fab"})
 @SpringBootApplication
 public class DskBootApplication {
     public static void main(String[] args) throws Exception {

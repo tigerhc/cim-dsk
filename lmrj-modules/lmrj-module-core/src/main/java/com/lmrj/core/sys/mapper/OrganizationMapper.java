@@ -1,4 +1,4 @@
-package com.lmrj.cim.modules.sys.mapper;
+package com.lmrj.core.sys.mapper;
 
 import com.lmrj.common.mybatis.mvc.mapper.BaseTreeMapper;
 import com.lmrj.core.sys.entity.Organization;

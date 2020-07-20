@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.cim.modules.sys.mapper.OrganizationMapper">
+<mapper namespace="com.lmrj.core.sys.mapper.OrganizationMapper">
 
 	<!-- 查询父模块 -->
 	<resultMap id="parentResult" type="com.lmrj.core.sys.entity.Organization">
