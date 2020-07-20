@@ -88,7 +88,7 @@ public class FileReadtest {
         log.info("nfsdfsfsfsfslllll");
         }
         else{
-            log.info(iEdcDskLogProductionService.findLotNo("2020-03-02 11:43:50.000000","2020-03-02 11:44:05.000000"));
+            log.info(iEdcDskLogProductionService.findLotNo1("2020-03-02 11:43:50.000000","2020-03-02 11:44:05.000000"));
         }
     }
     @Test

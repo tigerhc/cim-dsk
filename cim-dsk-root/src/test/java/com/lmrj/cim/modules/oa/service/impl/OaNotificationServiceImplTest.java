@@ -1,9 +1,9 @@
 package com.lmrj.cim.modules.oa.service.impl;
 
-import com.lmrj.fab.eqp.entity.FabEquipment;
-import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
 import com.lmrj.cim.CimBootApplication;
 import com.lmrj.cim.modules.oa.entity.OaNotification;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,5 +39,4 @@ public class OaNotificationServiceImplTest {
         log.info("info=============");
         log.debug("debug=============");
     }
-
 }

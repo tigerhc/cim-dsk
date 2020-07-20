@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Objects;
+
 @SpringBootTest(classes = DskBootApplication.class)
 @RunWith(SpringRunner.class)
 public class DashboardServiceImplTest {
@@ -15,7 +17,10 @@ public class DashboardServiceImplTest {
     IDashboardService dashboardServiceImpl;
     @Test
     public void findEqpStatusByFabId() {
-        dashboardServiceImpl.findEqpStatusByFabId("DSK");
+         dashboardServiceImpl.findEqpStatusByFabId("DSK");
+        if(Objects.isNull(dashboardServiceImpl.findEqpStatusByFabId("DSK"))){
+            System.out.println("空");
+        }
     }
 
     @Test
