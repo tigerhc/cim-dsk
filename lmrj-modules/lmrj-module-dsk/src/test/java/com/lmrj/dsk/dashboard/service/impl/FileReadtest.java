@@ -1,24 +1,28 @@
 package com.lmrj.dsk.dashboard.service.impl;
 
+import com.lmrj.dsk.DskBootApplication;
+import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 //@EnableScheduling
 //@Component
 @Slf4j
 //获取目录下所有文件
-//@SpringBootTest(classes = DskBootApplication.class)
-//@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DskBootApplication.class)
+@RunWith(SpringRunner.class)
 public class FileReadtest {
 
     public List<File> getFileList(String strPath) throws Exception {
@@ -26,8 +30,8 @@ public class FileReadtest {
         List<File> filenewList = Lists.newArrayList();
         for (File file : fileList) {
             if (!file.getName().endsWith("gxj.csv")) {
-                new FileReadtest().fileBackUp(file, "D:\\testdata\\back_up");
-                log.info(file.getName() + "备份结束");
+                /*new FileReadtest().fileBackUp(file, "D:\\testdata\\back_up");
+                log.info(file.getName() + "备份结束");*/
                 String dest1 = "";
                 filenewList.add(file);
             }
@@ -36,36 +40,6 @@ public class FileReadtest {
             //FileUtil.move()
             //FileUtil.copy();
         return filenewList;
-    }
-
-    //文件首次获取时进行备份
-    public void fileBackUp(File file, String dest) throws IOException {
-       /* //创建目的地文件夹
-        File destfile = new File(dest);
-        if(!destfile.exists()){
-            destfile.mkdir();
-        }*/
-        //用字节输入输出流复制文件
-        FileInputStream fis = new FileInputStream(file);
-        //创建新的文件，保存复制内容。
-        File dfile = new File(dest + "\\" + file.getName());
-        if (!dfile.exists()) {
-            dfile.createNewFile();
-        }
-        FileOutputStream fos = new FileOutputStream(dfile);
-        // 读写数据
-        // 定义数组
-        byte[] b = new byte[1024];
-        // 定义长度
-        int len;
-        // 循环读取
-        while ((len = fis.read(b)) != -1) {
-            // 写出数据
-            fos.write(b, 0, len);
-        }
-        //关闭资源
-        fos.close();
-        fis.close();
     }
 
     //修改文件批次
@@ -89,6 +63,8 @@ public class FileReadtest {
             }
             newlines.add(str);
         }
+        //备份原文件
+        FileUtil.copy("D:\\testdata\\"+testfile.getName(),"D:\\testdata\\back_up\\"+testfile.getName(),false);
         //修改文件内容后，对文件名进行变更标记
         FileUtil.writeLines(newFile, newlines);
         log.info("批次修改成功");
@@ -104,6 +80,17 @@ public class FileReadtest {
         }
     }
 
+    @Autowired
+    EdcDskLogProductionServiceImpl iEdcDskLogProductionService;
+    @Test
+    public void findLotNo(){
+        if(Objects.isNull(iEdcDskLogProductionService)){
+        log.info("nfsdfsfsfsfslllll");
+        }
+        else{
+            log.info(iEdcDskLogProductionService.findLotNo("2020-03-02 11:43:50.000000","2020-03-02 11:44:05.000000"));
+        }
+    }
     @Test
     /*@Scheduled(cron = "0/10 * * * * ?")*/
     public  void testParse() throws Exception {

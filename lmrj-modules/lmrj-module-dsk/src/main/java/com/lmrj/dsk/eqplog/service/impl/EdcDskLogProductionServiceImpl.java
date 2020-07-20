@@ -113,4 +113,8 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         return baseMapper.findNewYieldByLot(eqpId, productionNo,lotNo);
     }
 
+    @Override
+    public String findLotNo(String startTime, String endTime){
+        return baseMapper.findLotNo(startTime,endTime);
+    }
 }
