@@ -5,6 +5,7 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -26,4 +27,16 @@ public interface ApsPlanPdtYieldDetailMapper extends BaseMapper<ApsPlanPdtYieldD
 
     @Delete("delete from aps_plan_pdt_yield_detail where plan_date like concat(#{period}, '%')")
     void deleteByPeriod(@Param("period") String period);
+
+
+
+    @Select("SELECT sum(plan_qty) FROM aps_plan_pdt_yield_detail " +
+            "WHERE production_no=#{productionNo} AND lot_no  like  concat(#{lotNo}, '%')")
+    int findDayPlan(@Param("productionNo") String productionNo, @Param("lotNo")  String lotNo);
+
+    @Select("SELECT sum(plan_qty) FROM aps_plan_pdt_yield_detail " +
+            "WHERE production_no=#{productionNo} AND plan_date=#{planDate}")
+    int findCurrentDayPlan(@Param("productionNo") String productionNo, @Param("planDate")  String planDate);
+
+
 }
