@@ -88,15 +88,11 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
         Collections.sort(fileList, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
-                String name1[]=o1.getName().split("_");
-                String name2[]=o2.getName().split("_");
-                Double time1=Double.parseDouble(name1[3]);
-                Double time2=Double.parseDouble(name2[3]);
-                if (time1<time2)
-                    return -1;
-                if (time1>time2)
+                if (o2.lastModified() > o1.lastModified()) {
                     return 1;
-                return o1.getName().compareTo(o2.getName());
+                } else {
+                    return -1;
+                }
             }
         });
         log.info("文件排序结束");
@@ -111,12 +107,16 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
     }
     //内容修改 更改文件中批次
     public void fixfile(List<File> fileList) throws Exception {
-        for (int i=0;i<fileList.size()-1;i++){
+        log.info(" 开始解析");
+        for (int i=0;i<=fileList.size()-1;i++){
             File nowFile = fileList.get(i);
-            List<String> lines = FileUtil.readLines(nowFile,"UTF-8");
+            log.info("当前文件名：    "+nowFile.getName());
+            List<String> lines = FileUtil.readLines(nowFile,"GB2312");
             String data[]=lines.get(1).split(",");
             String eqpId=data[0];
+            log.info("eqpId:       "+eqpId);
             String startTime=data[4];
+            log.info("startTime:       "+startTime);
             EdcDskLogProduction edcDskLogProduction=this.findLotNo(startTime,eqpId);
             //如果数据库中没有满足条件的数据则不执行
             if(!Objects.isNull(edcDskLogProduction)){
@@ -126,32 +126,18 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                     String pattern="yyyy-MM-dd HH:mm:ss";
                     String data1[] = lines.get(j).split(",");
                     if(j==lines.size()-1){
-                        log.info("当前行数据开始时间：       "+data1[4]);
-                        log.info("当前行数据结束时间：       "+data1[5]);
-                        log.info("当前行数据批次    ：       "+data1[14]);
                         //判断当前行工作时间段在不在数据库时间段内                  最后一行开始时间                                                                                   最后一行结束时间
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data1[5]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
-                                log.info("文件当前第"+j+1+"行，数据批次错误，进行修正");
-                                Arrays.fill(data, 14, 15, edcDskLogProduction.getLotNo());
-                                log.info("修正结束");
-                            }else{
-                                log.info("文件当前第"+j+1+"行，数据批次正确");
+                                Arrays.fill(data1, 14, 15, edcDskLogProduction.getLotNo());
                             }
                         }
                     }else{
-                        log.info("当前行数据开始时间：       "+data1[4]);
-                        log.info("当前行数据结束时间：       "+data1[5]);
-                        log.info("当前行数据批次    ：       "+data1[14]);
                         String data2[] = lines.get(j+1).split(",");
                         //判断当前行工作时间段在不在数据库时间段内                  当前行开始时间                                                                                   下一行开始时间
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data2[4]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
-                                log.info("文件当前第"+j+1+"行，数据批次错误，进行修正");
-                                Arrays.fill(data, 14, 15, edcDskLogProduction.getLotNo());
-                                log.info("修正结束");
-                            }else{
-                                log.info("文件当前第"+j+1+"行，数据批次正确");
+                                Arrays.fill(data1, 14, 15, edcDskLogProduction.getLotNo());
                             }
                         }
                     }
