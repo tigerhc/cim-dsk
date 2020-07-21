@@ -126,25 +126,32 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                     String pattern="yyyy-MM-dd HH:mm:ss";
                     String data1[] = lines.get(j).split(",");
                     if(j==lines.size()-1){
-
+                        log.info("当前行数据开始时间：       "+data1[4]);
+                        log.info("当前行数据结束时间：       "+data1[5]);
+                        log.info("当前行数据批次    ：       "+data1[14]);
                         //判断当前行工作时间段在不在数据库时间段内                  最后一行开始时间                                                                                   最后一行结束时间
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data1[5]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
-                                log.info("文件当前数据批次错误，进行修正");
+                                log.info("文件当前第"+j+1+"行，数据批次错误，进行修正");
                                 Arrays.fill(data, 14, 15, edcDskLogProduction.getLotNo());
+                                log.info("修正结束");
                             }else{
-                                log.info("文件当前数据批次正确");
+                                log.info("文件当前第"+j+1+"行，数据批次正确");
                             }
                         }
                     }else{
+                        log.info("当前行数据开始时间：       "+data1[4]);
+                        log.info("当前行数据结束时间：       "+data1[5]);
+                        log.info("当前行数据批次    ：       "+data1[14]);
                         String data2[] = lines.get(j+1).split(",");
                         //判断当前行工作时间段在不在数据库时间段内                  当前行开始时间                                                                                   下一行开始时间
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data2[4]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
-                                log.info("文件当前数据批次错误，进行修正");
+                                log.info("文件当前第"+j+1+"行，数据批次错误，进行修正");
                                 Arrays.fill(data, 14, 15, edcDskLogProduction.getLotNo());
+                                log.info("修正结束");
                             }else{
-                                log.info("文件当前数据批次正确");
+                                log.info("文件当前第"+j+1+"行，数据批次正确");
                             }
                         }
                     }
@@ -162,7 +169,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                 FileUtil.move(filePath+"\\"+nowFile.getName(),"E:\\fileback_up"+"\\"+nowFile.getName(),false);
                 //生成修改后的新文件
                 File newFile = new File(filePath +"\\"+ nowFile.getName());
-                log.info("修正结束");
+
                 FileUtil.writeLines(newFile, newlines);
                 //新文件名称尾部加"-R"
                 this.changename(newFile);
