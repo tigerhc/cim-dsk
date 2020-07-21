@@ -85,7 +85,9 @@ public class ApsPlanPdtYieldController extends BaseCRUDController<ApsPlanPdtYiel
         //}
 
         List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("lot_no", fabEquipmentStatus.getLotNo()).eq("production_no", fabEquipmentStatus.getProductionNo()));
-        int yieldQty = yieldList.get(0).getPlanQty();
+        //int yieldQty = yieldList.get(0).getPlanQty();
+        //改为当日目标产量
+        int yieldQty = apsPlanPdtYieldDetailService.findCurrentDayPlan(fabEquipmentStatus.getProductionNo());
         List<RptLotYield> lotYieldDaylList = Lists.newArrayList();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
