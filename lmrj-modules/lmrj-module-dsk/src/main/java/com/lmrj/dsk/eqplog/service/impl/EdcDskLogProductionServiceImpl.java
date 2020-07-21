@@ -114,8 +114,8 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }
 
     @Override
-    public EdcDskLogProduction findLotNo(String startTime,String eqpid){
-        return baseMapper.findLotNo(startTime,eqpid);
+    public EdcDskLogProduction findLotNo(String startTime,String eqpId){
+        return baseMapper.findLotNo(startTime,eqpId);
     }
     @Override
     public  String findLotNo1(String startTime,String endTime){

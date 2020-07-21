@@ -2,19 +2,19 @@ package com.lmrj.dsk.dashboard.service.impl;
 
 import com.lmrj.dsk.DskBootApplication;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
-import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 //@EnableScheduling
 //@Component
@@ -22,8 +22,8 @@ import java.util.List;
 @SpringBootTest(classes = DskBootApplication.class)
 @RunWith(SpringRunner.class)
 public class FileAnalysistest {
-    //按照文件名里
-    //获取文件 按照文件名上的时间排序
+    public String filePath="E:\\FTP\\EQUIPMENT\\SIM\\2020\\PRINTER\\SIM-PRINTER1\\07";
+    //获取文件
     public List<File> getFileList(String strPath) throws Exception {
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(strPath), new String[]{"csv"}, false);
         List<File> filenewList = Lists.newArrayList();
@@ -38,14 +38,13 @@ public class FileAnalysistest {
     }
     //LotNo查询
     @Autowired
-    EdcDskLogProductionServiceImpl iEdcDskLogProductionService;
+    IEdcDskLogProductionService edcDskLogProductionService;
     public EdcDskLogProduction findLotNo(String eqpid,String time){
-        EdcDskLogProduction edcDskLogProduction=iEdcDskLogProductionService.findLotNo(time,eqpid);
+        EdcDskLogProduction edcDskLogProduction=edcDskLogProductionService.findLotNo(time,eqpid);
         log.info("LotNo:"+edcDskLogProduction.getLotNo());
         log.info("startTime:"+edcDskLogProduction.getStartTime());
         log.info("endTime:"+edcDskLogProduction.getEndTime());
         return edcDskLogProduction;
-
     }
 
     //文件排序
@@ -64,21 +63,65 @@ public class FileAnalysistest {
                 return o1.getName().compareTo(o2.getName());
             }
         });
+        log.info("文件排序结束");
     }
 
-    public  void test()  throws Exception{
-        FileAnalysistest fileAnalysistest = new FileAnalysistest();
-        List<File> fileList = fileAnalysistest.getFileList("E:\\FTP\\EQUIPMENT\\SIM\\2020\\PRINTER\\SIM-PRINTER1\\07");
-        fileAnalysistest.orderBytime(fileList);
+    //内容修改 更改文件中批次
+    public void fixfile(List<File> fileList) throws Exception {
+        FileAnalysistest fileAnalysistest=new FileAnalysistest();
         for (int i=0;i<fileList.size()-1;i++){
-            List<String> lines = FileUtil.readLines(fileList.get(i),"UTF-8");
+            File nowFile = fileList.get(i);
+            List<String> lines = FileUtil.readLines(nowFile,"UTF-8");
             String data[]=lines.get(1).split(",");
             String eqpid=data[0];
-            String time=data[4];
-            EdcDskLogProduction edcDskLogProduction=fileAnalysistest.findLotNo(time,eqpid);
-
+            String starttime=data[4];
+            EdcDskLogProduction edcDskLogProduction=fileAnalysistest.findLotNo(starttime,eqpid);
+            //如果数据库中没有满足条件的数据则不执行
+            if(!Objects.isNull(edcDskLogProduction)){
+                List<String> newlines = new ArrayList<>();
+                newlines.add(lines.get(0));
+                for (int j = 1; j < lines.size(); j++) {
+                    String data1[] = lines.get(j).split(",");
+                    String pattern="yyyy-MM-dd HH:mm:ss SSS";
+                    //判断当前行工作时间段在不在数据库时间段内
+                    if(edcDskLogProduction.getStartTime().before(new SimpleDateFormat(pattern).parse(data1[4])) && edcDskLogProduction.getEndTime().after(new SimpleDateFormat(pattern).parse(data1[5]))){
+                        if(!data1[14].equals(edcDskLogProduction.getLotNo())){
+                            Arrays.fill(data, 14, 15, edcDskLogProduction.getLotNo());
+                        }
+                    }
+                    String str = "";
+                    for (int l = 0; l < data.length; l++) {
+                        String str1 = data[l];
+                        if (l == 0) {
+                            str = str + str1;
+                        }
+                        str = str + "," + str1;
+                    }
+                    newlines.add(str);
+                }
+                //备份
+                FileUtil.move(filePath+"\\"+nowFile.getName(),"E:\\fileback_up"+"\\"+nowFile.getName(),false);
+                //生成修改后的新文件
+                File newFile = new File(filePath +"\\"+ nowFile.getName());
+                FileUtil.writeLines(newFile, newlines);
+                //新文件名称尾部加"-R"
+                fileAnalysistest.changename(newFile);
+            }
+        }
+    }
+    //修改文件名称 在名称尾部加"-R"
+    public void changename(File newFile) {
+        String fileName = newFile.getName();
+        fileName = fileName.substring(0, fileName.length() -4);
+        if (newFile.renameTo(new File( filePath+"\\"+ fileName + "-R.csv"))) {
+            log.info("文件名修改成功");
         }
     }
 
-
+    @Test
+    public  void test()  throws Exception{
+        List<File> fileList = this.getFileList(filePath);
+        this.orderBytime(fileList);
+        this.fixfile(fileList);
+    }
 }
