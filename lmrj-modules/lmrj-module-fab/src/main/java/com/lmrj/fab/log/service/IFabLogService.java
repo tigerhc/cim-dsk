@@ -16,5 +16,6 @@ import com.lmrj.fab.log.entity.FabLog;
 */
 public interface IFabLogService extends ICommonService<FabLog> {
 
-    void log(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId);
+    void info(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId);
+    void error(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId);
 }

@@ -58,6 +58,8 @@ public class FabLog extends AbstractEntity {
     /**存储发起mq传输的业务主表id，以便日志连续统一*/
     @TableField(value = "origin_id")
     private String originId;
+    @TableField(value = "ip")
+    private String ip;
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     protected String createBy; // 创建者
     @TableField(exist = false)

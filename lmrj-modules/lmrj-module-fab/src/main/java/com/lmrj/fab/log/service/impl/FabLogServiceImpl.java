@@ -7,14 +7,14 @@ import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -36,7 +36,16 @@ public class FabLogServiceImpl extends CommonServiceImpl<FabLogMapper, FabLog> i
     private AmqpTemplate rabbitTemplate;
 
     @Override
-    public void log(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId) {
+    public void info(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId) {
+        saveLog( eqpId, "Y", eventId,  eventName,  eventDesc,  lotNo,  userId);
+    }
+
+    @Override
+    public void error(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId) {
+        saveLog( eqpId, "N", eventId,  eventName,  eventDesc,  lotNo,  userId);
+    }
+
+    private void saveLog(String eqpId, String eventStatus, String eventId, String eventName, String eventDesc, String lotNo, String userId){
         FabLog fabLog = new FabLog();
         fabLog.setEqpId(eqpId);
         if (StringUtil.isBlank(eventId)) {
@@ -50,10 +59,23 @@ public class FabLogServiceImpl extends CommonServiceImpl<FabLogMapper, FabLog> i
         fabLog.setEventDesc(eventDesc);
         fabLog.setLotNo(lotNo);
         fabLog.setCreateBy(userId);
+        fabLog.setEventDesc(eventStatus);
         String msg = JsonUtil.toJsonString(fabLog);
         rabbitTemplate.convertAndSend("C2S.Q.FAB_LOG_D", msg);
     }
 
-    //InetAddress address = InetAddress.getLocalHost();//获取的是本地的IP地址
-    //        msgMap.put("IP",address.getHostAddress());
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.FAB_LOG_D"}, concurrency="1")
+    public void insertLogByMQ(String msg) {
+        FabLog fabLog = JsonUtil.from(msg, FabLog.class);
+        try {
+            InetAddress address = InetAddress.getLocalHost(); //获取的是本地的IP地址
+            fabLog.setIp(address.getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        this.insert(fabLog);
+    }
+
+
 }
