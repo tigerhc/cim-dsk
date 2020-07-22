@@ -25,4 +25,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesResult findTemp(String eqpId, String opId);
 
     MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionName);
+    public MesLotTrack findLotNo(String startTime,String eqpId);
+
 }
