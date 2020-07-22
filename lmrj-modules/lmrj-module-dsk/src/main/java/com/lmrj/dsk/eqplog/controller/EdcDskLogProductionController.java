@@ -149,8 +149,9 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                         String str1 = data1[l];
                         if (l == 0) {
                             str = str + str1;
+                        }else{
+                            str = str + "," + str1;
                         }
-                        str = str + "," + str1;
                     }
                     newlines.add(str);
                 }
@@ -182,7 +183,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
         }
         return  filePath+"\\"+fileName + "-R.csv";
     }
-    /*@Scheduled(cron = "0/10 * * * * ?")*/
+    /*@Scheduled(cron = "0 30 8 * * ? ")*/
     public  void FileAnalysistest()  throws Exception{
         List<File> fileList = this.getFileList(filePath);
         this.orderBytime(fileList);
