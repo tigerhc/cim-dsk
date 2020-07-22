@@ -16,7 +16,6 @@ import com.lmrj.fab.log.entity.FabLog;
 */
 public interface IFabLogService extends ICommonService<FabLog> {
 
-    //公共打日志方法
-    void save(String eventId, String userId,String deviceCode,String eventName,String eventDesc,String lotId);
-
+    void info(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId);
+    void error(String eqpId, String eventId, String eventName, String eventDesc, String lotNo, String userId);
 }

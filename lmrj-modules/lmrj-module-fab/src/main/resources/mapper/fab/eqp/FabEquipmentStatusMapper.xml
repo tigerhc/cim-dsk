@@ -58,10 +58,10 @@
         <if test="recipeCode != null and recipeCode != ''">
             , recipe_code = #{recipeCode}
         </if>
-        <if test="lotYield != null and lotYield != ''">
+        <if test="lotYield != -1">
             , lot_yield = #{lotYield}
         </if>
-        <if test="dayYield != null and dayYield != ''">
+        <if test="dayYield != -1">
             , day_yield = #{dayYield}
         </if>
         where EQP_ID = #{eqpID}

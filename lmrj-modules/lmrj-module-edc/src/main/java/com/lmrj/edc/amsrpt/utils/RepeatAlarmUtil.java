@@ -3,7 +3,6 @@ package com.lmrj.edc.amsrpt.utils;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
-import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import com.lmrj.edc.amsrpt.entity.EdcAmsRptDefine;
 import com.lmrj.edc.amsrpt.entity.EdcAmsRptRecord;
 import com.lmrj.edc.amsrpt.entity.EdcAmsRptRecordDtl;
@@ -23,9 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author hsg
@@ -80,7 +80,7 @@ public class RepeatAlarmUtil {
     }
 
     public void repeatAlarm(EdcAmsRecord edcAmsRecord){
-        log.info("start 检查报警信息");
+        log.info("start 检查报警信息{} : {}", edcAmsRecord.getEqpId(), edcAmsRecord.getAlarmCode());
         //先看是不是配置过的alarm
         List<EdcAmsRptDefine> amsRptDefineList = redisTemplate.opsForList().range("amsRptDefineList", 0, -1);
         for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
