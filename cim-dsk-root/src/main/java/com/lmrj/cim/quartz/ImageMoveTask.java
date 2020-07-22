@@ -25,7 +25,7 @@ public class ImageMoveTask {
     String path1 = "Z:\\IT化データ（一課）\\X線データ\\データ処理\\ボイド率";*/
 
 
-    @Scheduled(cron = "0 15 16 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     public void compressAndMoveImage() throws IOException {
         log.info("执行图片转化");
         Calendar now = Calendar.getInstance();
