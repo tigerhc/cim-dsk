@@ -16,19 +16,25 @@ import java.util.List;
 
 @Slf4j
 @Component
+
 public class ImageMoveTask {
 
     String path = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率";
     String path1 = "D:\\DSK1\\IT化データ（一課）\\X線データ\\データ処理\\ボイド率";
+/*  String path = "Z:\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率";
+    String path1 = "Z:\\IT化データ（一課）\\X線データ\\データ処理\\ボイド率";*/
 
-    @Scheduled(cron = "0 45 14 * * ?")
+
+    @Scheduled(cron = "0 15 16 * * ?")
     public void compressAndMoveImage() throws IOException {
+        log.info("执行图片转化");
         Calendar now = Calendar.getInstance();
         List<File> fileList =
                 (List<File>) FileUtil.listFiles(new File(path), new String[]{"bmp"}, true);
+        fileList.forEach(System.out::println);
         for (File file : fileList) {
-
-            if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 1) { //先改为1天
+            if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 0.5) { //先改为1天
+                log.info(file.getName());
                 log.info("开始处理图片"+file.getAbsolutePath());
                 String line = file.getParentFile().getParentFile().getName();
                 String productionName = file.getParentFile().getName();
@@ -47,5 +53,10 @@ public class ImageMoveTask {
             }
         }
     }
+
+    public static void main(String[] args)throws  Exception {
+        new ImageMoveTask().compressAndMoveImage();
+    }
+
 
 }
