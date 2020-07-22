@@ -106,6 +106,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
         //记录每次循环的文件的名称及批次
         String lastlotNo=null;
         String lastfileName=null;
+        int x = 0;
         log.info(" 开始解析");
         for (int i=0;i<=fileList.size()-1;i++){
             if(!Objects.isNull(lastlotNo)){
@@ -116,6 +117,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
             log.info("当前文件名：    "+nowFile.getName());
             List<String> lines = FileUtil.readLines(nowFile,"GBK");
             String data[]=lines.get(1).split(",");
+
             String eqpId=data[0];
             String startTime=data[4];
             EdcDskLogProduction edcDskLogProduction=this.findLotNo(startTime,eqpId);
@@ -148,10 +150,13 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                     for (int l = 0; l < data1.length; l++) {
                         String str1 = data1[l];
                         if (l == 0) {
-                            str = str + str1;
+                            str = str1;
+                        }else if(edcDskLogProduction.getLotNo().equals(lastlotNo) && l == 7){
+                            str = str + "," + (Integer.parseInt(str1)+x);
                         }else{
                             str = str + "," + str1;
                         }
+                        log.info(str);
                     }
                     newlines.add(str);
                 }
@@ -168,6 +173,9 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                     //在给文件改名时记录当前文件数据的批次和文件名，与下一文件批次对比
                     lastfileName=this.changename(newFile);
                     lastlotNo=edcDskLogProduction.getLotNo();
+                    //取出当前文件最后一行批量内连番
+                    String data2[]=lines.get(lines.size()-1).split(",");
+                    x=Integer.parseInt(data2[7]);
                 }
             }else {
                 log.info("数据库查询无数据");
