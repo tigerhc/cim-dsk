@@ -37,7 +37,7 @@ public class ApsPlanPdtYieldDetailServiceImpl extends CommonServiceImpl<ApsPlanP
     }
 
     /**
-     * 获取产品批次的当天产量
+     * 获取产品批次的目标产量
      * @param productionNo
      * @param lotNo
      * @return
