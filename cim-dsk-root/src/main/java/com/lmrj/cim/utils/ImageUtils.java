@@ -33,6 +33,8 @@ public class ImageUtils {
                         new FileOutputStream(path + "\\" + now.get(Calendar.YEAR) + "\\" + (now.get(Calendar.MONTH) + 1) + "\\" + file.getName().replace("bmp", "jpg"));
                 JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
                 encoder.encode(tag);
+                file.delete();
+
             }
         }
     }
