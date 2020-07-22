@@ -16,4 +16,6 @@ import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 */
 public interface IRmsRecipeBodyService extends ICommonService<RmsRecipeBody> {
     int copyParaFromExist(String recipeIdNew, String recipeIdOld);
+    int copyMinValue(String recipeIdNew, String recipeIdOld);
+    int copyMaxValue(String recipeIdNew, String recipeIdOld);
 }

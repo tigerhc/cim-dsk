@@ -19,4 +19,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface RmsRecipeBodyMapper extends BaseMapper<RmsRecipeBody> {
     int copy(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
+    int copyMinValue(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
+    int copyMaxValue(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
 }

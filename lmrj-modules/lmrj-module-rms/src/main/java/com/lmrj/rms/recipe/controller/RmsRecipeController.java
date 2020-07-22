@@ -212,7 +212,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      */
     @RequestMapping(value = "copySetValue", method = {RequestMethod.GET, RequestMethod.POST})
     public Response copySetValue(@RequestParam String recipeIdNew, @RequestParam String recipeIdOld, HttpServletRequest request, HttpServletResponse response) {
-        Response res = Response.ok("提交规格最小值拷贝成功");
+        Response res = Response.ok("提交规格设定值拷贝成功");
         return res;
     }
 
@@ -227,6 +227,10 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     @RequestMapping(value = "copyMinValue", method = {RequestMethod.GET, RequestMethod.POST})
     public Response copyMinValue(@RequestParam String recipeIdNew, @RequestParam String recipeIdOld, HttpServletRequest request, HttpServletResponse response) {
         Response res = Response.ok("提交规格最小值拷贝成功");
+        Integer copyMinValue = rmsRecipeService.copyMinValue(recipeIdNew, recipeIdOld);
+        if (copyMinValue == 0){
+            res = Response.ok("提交规格最小值不需要拷贝");
+        }
         return res;
     }
 
@@ -240,7 +244,11 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      */
     @RequestMapping(value = "copyMaxValue", method = {RequestMethod.GET, RequestMethod.POST})
     public Response copyMaxValue(@RequestParam String recipeIdNew, @RequestParam String recipeIdOld, HttpServletRequest request, HttpServletResponse response) {
-        Response res = Response.ok("提交规格最小值拷贝成功");
+        Response res = Response.ok("提交规格最大值拷贝成功");
+        Integer copyMaxValue = rmsRecipeService.copyMaxValue(recipeIdNew, recipeIdOld);
+        if (copyMaxValue == 0){
+            res = Response.ok("提交规格最大值不需要拷贝");
+        }
         return res;
     }
 

@@ -27,4 +27,14 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     public int copyParaFromExist(String recipeIdNew, String recipeIdOld) {
         return baseMapper.copy(recipeIdNew, recipeIdOld);
     }
+
+    @Override
+    public int copyMinValue(String recipeIdNew, String recipeIdOld) {
+        return baseMapper.copyMinValue(recipeIdNew, recipeIdOld);
+    }
+
+    @Override
+    public int copyMaxValue(String recipeIdNew, String recipeIdOld) {
+        return baseMapper.copyMaxValue(recipeIdNew, recipeIdOld);
+    }
 }

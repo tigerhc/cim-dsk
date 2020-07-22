@@ -59,7 +59,7 @@
         <include refid="Base_Column_List" />
         ,t.approve_step, t.approve_result
         from rms_recipe t, rms_recipe_permit_config p
-        where t.del_flag = '0' and t.approve_step = p.submit_level and p.submitter_role_id in
+        where t.del_flag = '0' and t.status = '1' and t.approve_step = p.submit_level and p.submitter_role_id in
         <foreach collection="roleIdList" index="index" item="roleId" open="(" separator="," close=")">
             #{roleId}
         </foreach>
