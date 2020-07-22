@@ -59,7 +59,13 @@ public class FabLogServiceImpl extends CommonServiceImpl<FabLogMapper, FabLog> i
         fabLog.setEventDesc(eventDesc);
         fabLog.setLotNo(lotNo);
         fabLog.setCreateBy(userId);
-        fabLog.setEventDesc(eventStatus);
+        fabLog.setEventStatus(eventStatus);
+        try {
+            InetAddress address = InetAddress.getLocalHost(); //获取的是本地的IP地址
+            fabLog.setIp(address.getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         String msg = JsonUtil.toJsonString(fabLog);
         rabbitTemplate.convertAndSend("C2S.Q.FAB_LOG_D", msg);
     }
@@ -68,12 +74,6 @@ public class FabLogServiceImpl extends CommonServiceImpl<FabLogMapper, FabLog> i
     @RabbitListener(queues = {"C2S.Q.FAB_LOG_D"}, concurrency="1")
     public void insertLogByMQ(String msg) {
         FabLog fabLog = JsonUtil.from(msg, FabLog.class);
-        try {
-            InetAddress address = InetAddress.getLocalHost(); //获取的是本地的IP地址
-            fabLog.setIp(address.getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
         this.insert(fabLog);
     }
 

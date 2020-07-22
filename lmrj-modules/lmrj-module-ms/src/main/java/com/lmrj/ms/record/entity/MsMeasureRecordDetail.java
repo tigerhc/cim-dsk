@@ -28,7 +28,6 @@ public class MsMeasureRecordDetail extends BaseDataEntity {
     private String msRecordId;
     /**采样序号*/
     @TableField(value = "sample_no")
-    @Excel(name = "采样序号", orderNum = "10", width = 20)
     private Integer sampleNo;
     /**量测项目编码*/
     @TableField(value = "item_code")

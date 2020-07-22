@@ -15,6 +15,7 @@ import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.impl.EqpApiService;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -81,6 +82,8 @@ public class RepeatAlarmUtil {
 
     public void repeatAlarm(EdcAmsRecord edcAmsRecord){
         log.info("start 检查报警信息{} : {}", edcAmsRecord.getEqpId(), edcAmsRecord.getAlarmCode());
+        String eventId = StringUtil.randomTimeUUID("AL");
+        fabLogService.info(edcAmsRecord.getEqpId(),eventId,"repeatAlarm","检查报警信息",edcAmsRecord.getLotNo(),"");
         //先看是不是配置过的alarm
         List<EdcAmsRptDefine> amsRptDefineList = redisTemplate.opsForList().range("amsRptDefineList", 0, -1);
         for (EdcAmsRptDefine amsRptDefine:amsRptDefineList) {
@@ -97,6 +100,8 @@ public class RepeatAlarmUtil {
     }
 
     private void resolveRepeatAlarm(EdcAmsRptDefine amsRptDefine ,EdcAmsRecord edcAmsRecord){
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info(edcAmsRecord.getEqpId(),eventId,"resolveRepeatAlarm","判断是否触发重复报警",edcAmsRecord.getLotNo(),"");
         String key = edcAmsRecord.getEqpId() + edcAmsRecord.getAlarmCode();
         redisTemplate.opsForList().rightPush(key, edcAmsRecord);
         if (redisTemplate.opsForList().size(key) >= amsRptDefine.getRepeatNum()){
@@ -104,6 +109,7 @@ public class RepeatAlarmUtil {
             EdcAmsRecord firstAlarm = (EdcAmsRecord)redisTemplate.opsForList().index(key, 0);
             EdcAmsRecord lastAlarm = (EdcAmsRecord)redisTemplate.opsForList().index(key, redisTemplate.opsForList().size(key)-1);
             if (lastAlarm.getCreateDate().getTime() - firstAlarm.getCreateDate().getTime() < amsRptDefine.getRepeatCycle() * 60 * 1000){
+                fabLogService.info(edcAmsRecord.getEqpId(),eventId,"","触发重复报警",edcAmsRecord.getLotNo(),"");
                 //如果集合中第一个报警和最后一个报警之间的间隔时间小于配置的报警时间
                 //锁住设备
                 eqptService.lockEqpt("1", edcAmsRecord.getEqpId(),"ALARM_LOCK");
@@ -148,5 +154,6 @@ public class RepeatAlarmUtil {
                 redisTemplate.opsForList().leftPop(key);
             }
         }
+        fabLogService.info(edcAmsRecord.getEqpId(),eventId,"resolveRepeatAlarm","判断结束",edcAmsRecord.getLotNo(),"");
     }
 }
