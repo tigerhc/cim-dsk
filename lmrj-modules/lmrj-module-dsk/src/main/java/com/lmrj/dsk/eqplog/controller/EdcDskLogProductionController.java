@@ -73,11 +73,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
     IEdcDskLogProductionService edcDskLogProductionService;
     public EdcDskLogProduction findLotNo(String starTime, String eqpId){
         EdcDskLogProduction edcDskLogProduction=edcDskLogProductionService.findLotNo(starTime,eqpId);
-        if(!Objects.isNull(edcDskLogProduction)){
-            log.info("LotNo:"+edcDskLogProduction.getLotNo());
-            log.info("startTime:"+edcDskLogProduction.getStartTime());
-            log.info("endTime:"+edcDskLogProduction.getEndTime());
-        }else if(Objects.isNull(edcDskLogProductionService.findLotNo(starTime,eqpId))){
+        if(Objects.isNull(edcDskLogProductionService.findLotNo(starTime,eqpId))){
            log.info("edcDskLogProductionService.findLotNo(time,eqpid)为空");
         }
         return edcDskLogProduction;
@@ -107,16 +103,21 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
     }
     //内容修改 更改文件中批次
     public void fixfile(List<File> fileList) throws Exception {
+        //记录每次循环的文件的名称及批次
+        String lastlotNo=null;
+        String lastfileName=null;
         log.info(" 开始解析");
         for (int i=0;i<=fileList.size()-1;i++){
+            if(!Objects.isNull(lastlotNo)){
+                log.info("上一文件lotNo:              "+lastlotNo);
+                log.info("上一文件fileName:           "+lastfileName);
+            }
             File nowFile = fileList.get(i);
             log.info("当前文件名：    "+nowFile.getName());
-            List<String> lines = FileUtil.readLines(nowFile,"GB2312");
+            List<String> lines = FileUtil.readLines(nowFile,"GBK");
             String data[]=lines.get(1).split(",");
             String eqpId=data[0];
-            log.info("eqpId:       "+eqpId);
             String startTime=data[4];
-            log.info("startTime:       "+startTime);
             EdcDskLogProduction edcDskLogProduction=this.findLotNo(startTime,eqpId);
             //如果数据库中没有满足条件的数据则不执行
             if(!Objects.isNull(edcDskLogProduction)){
@@ -130,6 +131,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data1[5]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
                                 Arrays.fill(data1, 14, 15, edcDskLogProduction.getLotNo());
+                                log.info("当前行解析完成");
                             }
                         }
                     }else{
@@ -138,6 +140,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                         if(this.chanangeDate(edcDskLogProduction.getStartTime()).before(new SimpleDateFormat(pattern).parse(data1[4])) && this.chanangeDate(edcDskLogProduction.getEndTime()).after(new SimpleDateFormat(pattern).parse(data2[4]))){
                             if(!data1[14].equals(edcDskLogProduction.getLotNo())){
                                 Arrays.fill(data1, 14, 15, edcDskLogProduction.getLotNo());
+                                log.info("当前行解析完成");
                             }
                         }
                     }
@@ -153,24 +156,31 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                 }
                 //备份
                 FileUtil.move(filePath+"\\"+nowFile.getName(),"E:\\fileback_up"+"\\"+nowFile.getName(),false);
-                //生成修改后的新文件
-                File newFile = new File(filePath +"\\"+ nowFile.getName());
-
-                FileUtil.writeLines(newFile, newlines);
-                //新文件名称尾部加"-R"
-                this.changename(newFile);
+                //生成修改后的新文件并改名
+                if(edcDskLogProduction.getLotNo().equals(lastlotNo)){
+                    log.info("该批次文件已存在，续写至已创建文件");
+                    newlines.remove(0);
+                    FileUtil.writeLines(new File(lastfileName),"GBK",newlines,true);
+                }else{
+                    File newFile = new File(filePath +"\\"+ nowFile.getName());
+                    FileUtil.writeLines(newFile,"GBK",newlines);
+                    //在给文件改名时记录当前文件数据的批次和文件名，与下一文件批次对比
+                    lastfileName=this.changename(newFile);
+                    lastlotNo=edcDskLogProduction.getLotNo();
+                }
             }else {
                 log.info("数据库查询无数据");
             }
         }
     }
     //修改文件名称 在名称尾部加"-R"
-    public void changename(File newFile) {
+    public String changename(File newFile) {
         String fileName = newFile.getName();
         fileName = fileName.substring(0, fileName.length() -4);
         if (newFile.renameTo(new File( filePath+"\\"+ fileName + "-R.csv"))) {
             log.info("文件名修改成功");
         }
+        return  filePath+"\\"+fileName + "-R.csv";
     }
     /*@Scheduled(cron = "0/10 * * * * ?")*/
     public  void FileAnalysistest()  throws Exception{
