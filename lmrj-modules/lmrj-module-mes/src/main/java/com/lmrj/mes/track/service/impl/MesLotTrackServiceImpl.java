@@ -384,4 +384,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrackLogService.insert(mesLotTrackLog);
     }
 
+    @Override
+    public MesLotTrack findLotNo(String startTime,String eqpId){
+        return baseMapper.findLotNo(startTime,eqpId);
+    }
 }
