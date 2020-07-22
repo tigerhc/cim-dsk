@@ -45,9 +45,9 @@ public class RmsRecipePermitConfigController extends BaseCRUDController<RmsRecip
     private IRmsRecipePermitConfigService rmsRecipePermitConfigService;
 
     @RequestMapping(value = "/getPermitConfig", method = { RequestMethod.GET, RequestMethod.POST })
-    public void findById(@RequestParam("approveStep") String submit_level, HttpServletRequest request,
+    public void getPermitConfig(@RequestParam("approveStep") String submitLevel, HttpServletRequest request,
                          HttpServletResponse response) {
-        List<RmsRecipePermitConfig> recipePermitConfigList = rmsRecipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", Integer.parseInt(submit_level)));
+        List<RmsRecipePermitConfig> recipePermitConfigList = rmsRecipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", Integer.parseInt(submitLevel)));
         RmsRecipePermitConfig recipePermitConfig = null;
         if (recipePermitConfigList.size() > 0){
             recipePermitConfig = recipePermitConfigList.get(0);
@@ -61,6 +61,27 @@ public class RmsRecipePermitConfigController extends BaseCRUDController<RmsRecip
         }
         String content = JSON.toJSONString(res);
         ServletUtils.printJson(response,content);
+    }
+
+    @RequestMapping(value = "/getPermitConfigList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void getPermitConfigList(HttpServletRequest request,
+                                HttpServletResponse response) {
+        List<RmsRecipePermitConfig> recipePermitConfigList = rmsRecipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>());
+        DateResponse listjson = new DateResponse(recipePermitConfigList);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+    @RequestMapping(value = "/updatePermitConfig", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response updatePermitConfig(@RequestParam("roleName") String submitterRoleName, @RequestParam("submitLevel") String submitLevel,
+                                   HttpServletRequest request, HttpServletResponse response) {
+        Response res = Response.ok("修改成功");
+        Integer i = rmsRecipePermitConfigService.updateRoleNameBySubmitLevel(submitterRoleName, submitLevel);
+        if(i > 0){
+            return res;
+        }else{
+            return Response.error(999998,"导出失败");
+        }
     }
 
 }
