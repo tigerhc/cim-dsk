@@ -1,13 +1,19 @@
 package com.lmrj.fab.log.controller;
 
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.log.entity.FabLog;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -28,5 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiresPathPermission("fab:fablog")
 @LogAspectj(title = "fab_log")
 public class FabLogController extends BaseCRUDController<FabLog> {
+
+    @Override
+    @GetMapping("export")
+    //@LogAspectj(logType = LogType.EXPORT)
+//    @RequiresMethodPermissions("export")
+    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+        return doExport("工厂日志", queryable,  propertyPreFilterable,  request,  response);
+    }
 
 }

@@ -91,6 +91,16 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
+    public Integer copyMinValue(String recipeIdNew, String recipeIdOld) {
+        return rmsRecipeBodyService.copyMinValue(recipeIdNew, recipeIdOld);
+    }
+
+    @Override
+    public Integer copyMaxValue(String recipeIdNew, String recipeIdOld) {
+        return rmsRecipeBodyService.copyMaxValue(recipeIdNew, recipeIdOld);
+    }
+
+    @Override
     public List<String> recipeCodeList() {
         return baseMapper.recipeCodeList();
     }
@@ -106,6 +116,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             roleIdList.add(userRole.getRoleId());
         }
         return baseMapper.recipePermitList(roleIdList);
+    }
+
+    @Override
+    public boolean editStatus(String id, String status) {
+        RmsRecipe rmsRecipe = baseMapper.selectById(id);
+        rmsRecipe.setStatus(status);
+        baseMapper.updateById(rmsRecipe);
+        return true;
     }
 
     @Override

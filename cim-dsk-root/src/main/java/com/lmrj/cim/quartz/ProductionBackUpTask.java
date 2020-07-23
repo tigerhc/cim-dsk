@@ -31,7 +31,7 @@ public class ProductionBackUpTask {
     //@Scheduled(cron = "0 10 * * * ?")
     @Scheduled(cron = "0 0 1 * * ?")
     public void backupPdt() {
-        log.error("backupPdt定时任务开始执行");
+        log.info("ProductionBackUpTask定时任务开始执行");
         //7天前
         Calendar calstart= Calendar.getInstance();
         //calstart.add(Calendar.DAY_OF_MONTH, -9);
@@ -44,6 +44,7 @@ public class ProductionBackUpTask {
             while (true){
                 try{
                     List<EdcDskLogProductionHis> backUpYield = edcDskLogProductionService.findBackUpYield(eqpId,calstart.getTime(), calEnd.getTime());
+                    log.info("ProductionBackUpTask 备份行数: {}", backUpYield.size());
                     if (backUpYield.size()==0){
                         break;
                     }
@@ -56,6 +57,6 @@ public class ProductionBackUpTask {
             log.info(eqpId + "设备的数据备份完成");
         }
         // TODO: 2020/6/8
-        log.error("backupPdt定时任务开始执行结束");
+        log.info("ProductionBackUpTask定时任务开始执行结束");
     }
 }

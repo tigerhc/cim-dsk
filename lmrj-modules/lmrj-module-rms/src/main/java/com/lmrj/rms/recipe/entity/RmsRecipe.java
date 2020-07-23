@@ -60,7 +60,7 @@ public class RmsRecipe extends BaseDataEntity {
     @TableField(value = "version_no")
     @Excel(name = "程序版本号", orderNum = "1", width = 20)
     private Integer versionNo;
-    /**状态 0、创建（不可用）Y、生效（可用）N、停用（不可用）*/
+    /**状态 0、创建（不可用）1、审批（不可用）2、无效（不可用）Y、启用（可用）N、停用（不可用）*/
     @TableField(value = "status")
     private String status;
     /**golden是否生效标记*/

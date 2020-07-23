@@ -55,6 +55,20 @@
         from RMS_RECIPE_BODY where recipe_id=#{recipeIdOld}
     </insert>
 
+    <update id="copyMinValue">
+        update rms_recipe_body a left join rms_recipe_body b
+        on a.para_code = b.para_code
+        set a.min_value = b.min_value
+        where a.recipe_id = #{recipeIdNew} and b.recipe_id = #{recipeIdOld} and b.min_value != null
+    </update>
+
+    <update id="copyMaxValue">
+        update rms_recipe_body a left join rms_recipe_body b
+        on a.para_code = b.para_code
+        set a.max_value = b.max_value
+        where a.recipe_id = #{recipeIdNew} and b.recipe_id = #{recipeIdOld} and b.max_value != null
+    </update>
+
     <!--<if test="dbName == 'oracle'">'%'||#{id}||'%'</if>-->
     <!--<if test="dbName == 'mssql'">'%'+#{id}+'%'</if>-->
     <!--<if test="dbName == 'mysql'">concat('%',#{id},'%')</if>-->
