@@ -1,5 +1,6 @@
 package com.lmrj.rms.recipe.service.impl;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.cim.utils.UserUtil;
@@ -10,6 +11,8 @@ import com.lmrj.core.sys.entity.UserRole;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
+import com.lmrj.rms.permit.entity.RmsRecipePermit;
+import com.lmrj.rms.permit.service.IRmsRecipePermitService;
 import com.lmrj.rms.permit.utils.ShiroExt;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
@@ -57,6 +60,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private AmqpTemplate rabbitTemplate;
     @Autowired
     private IRmsRecipeLogService rmsRecipeLogService;
+    @Autowired
+    private IRmsRecipePermitService rmsRecipePermitService;
 
     @Override
     public RmsRecipe selectById(Serializable id){
@@ -116,6 +121,22 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             roleIdList.add(userRole.getRoleId());
         }
         return baseMapper.recipePermitList(roleIdList);
+    }
+
+    @Override
+    public List<RmsRecipe> getRecipePermitList() {
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String id = ShiroExt.getPrincipalProperty(principal, "id");
+        User user = UserUtil.getUser(id);
+        List<UserRole> userRoles = UserUtil.getUserRoleListByUser(user);
+        List<String> recipeIds = new ArrayList<>();
+        for (UserRole userRole:userRoles) {
+            List<RmsRecipePermit> list = rmsRecipePermitService.selectList(new EntityWrapper<RmsRecipePermit>().eq("submitter_id", userRole.getRoleId()));
+            if (list.size() > 0){
+                recipeIds.add(list.get(0).getRecipeId());
+            }
+        }
+        return baseMapper.selectBatchIds(recipeIds);
     }
 
     @Override

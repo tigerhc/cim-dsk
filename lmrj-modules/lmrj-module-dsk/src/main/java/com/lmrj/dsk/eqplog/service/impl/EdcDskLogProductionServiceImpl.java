@@ -77,19 +77,27 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
         List<String> deleteList = new LinkedList<>();
         List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId,startTime, endTime);
-        Map<String, Boolean> map = Maps.newHashMap();
+        Map<String, Boolean> map = Maps.newHashMap(); // 存在两条数据,查看是否出现过
         for (int i = 0;i < yields.size(); i++){
             if(yields.get(i).getDayYield() == 1 ){
                 String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"day") != true){
+                if(map.get(key+"day") == null){
                     map.put(key+"day", true);
-                    continue;
+                }else{
+                    //已经有一条数据日产量为1,则删除一条
+                    deleteList.add(yields.get(i).getId());
+                    EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
+                    hisList.add(edcDskLogProductionHis);
                 }
+                continue;
             }else if(yields.get(i).getLotYield() == 1){
                 String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"lot") != true){
+                if(map.get(key+"lot") == null ){
                     map.put(key+"lot", true);
-                    continue;
+                }else{
+                    deleteList.add(yields.get(i).getId());
+                    EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
+                    hisList.add(edcDskLogProductionHis);
                 }
                 continue;
             } else {
@@ -162,5 +170,5 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         File newFile = new File(filepath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }
-    
+
 }

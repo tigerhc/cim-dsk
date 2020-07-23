@@ -28,6 +28,9 @@ public class EdcConfigFileCsv extends BaseDataEntity {
     /**设备型号*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    /**文件类型*/
+    @TableField(value = "file_type")
+    private String fileType;
     /**本字段存储模板中的id,作为参数系统中的唯一标识。在创建时设置与本表id同。*/
     @TableField(value = "col_code")
     private String colCode;
@@ -64,5 +67,5 @@ public class EdcConfigFileCsv extends BaseDataEntity {
     /**排序号*/
     @TableField(value = "sort_no")
     private Integer sortNo;
-	
+
 }

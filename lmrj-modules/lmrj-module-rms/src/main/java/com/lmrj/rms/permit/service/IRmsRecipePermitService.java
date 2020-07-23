@@ -18,5 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface IRmsRecipePermitService extends ICommonService<RmsRecipePermit> {
 
     void recipePermit(String approveStep, String roleName, String recipeId,String submitResult, String submitDesc) throws Exception;
+    void permit(String roleName, String recipeId, String submitResult, String submitDesc);
+    void addPermitList(String recipeId, String versionType);
 
 }

@@ -12,6 +12,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.rms.permit.entity.RmsRecipePermit;
 import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 import com.lmrj.rms.permit.service.IRmsRecipePermitService;
+import com.lmrj.rms.recipe.entity.RmsRecipe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -66,6 +67,30 @@ public class RmsRecipePermitController extends BaseCRUDController<RmsRecipePermi
             res = Response.error(999998,e.getMessage());
         }
         return res;
+    }
+
+    @RequestMapping(value = "/recipePermit", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response recipePermit(@RequestParam("roleName") String roleName,@RequestParam("id") String recipeId,
+                                 @RequestParam("submitResult") String submitResult,@RequestParam("submitDesc") String submitDesc,
+                                 HttpServletRequest request) {
+        Response res = Response.ok("审批成功");
+        try {
+            rmsRecipePermitService.permit(roleName,recipeId,submitResult,submitDesc);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            res = Response.error(999998,e.getMessage());
+        }
+        return res;
+    }
+
+    /**
+     * 先添加审批记录
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/addPermitList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void addPermitList(@RequestParam("recipeId") String recipeId, @RequestParam("versionType") String versionType,HttpServletRequest request) {
+        rmsRecipePermitService.addPermitList(recipeId,versionType);
     }
 
 }
