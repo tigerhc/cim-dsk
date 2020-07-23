@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EdcConfigFileCsvServiceImpl extends CommonServiceImpl<EdcConfigFileCsvMapper, EdcConfigFileCsv> implements IEdcConfigFileCsvService {
 
     @Override
-    public String findTitle(String eqpId) {
-        return baseMapper.findTitle(eqpId);
+    public String findTitle(String eqpId,String fileType) {
+        return baseMapper.findTitle(eqpId,fileType);
     }
 }

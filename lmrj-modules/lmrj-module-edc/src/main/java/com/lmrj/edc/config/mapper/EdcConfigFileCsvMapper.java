@@ -22,7 +22,7 @@ public interface EdcConfigFileCsvMapper extends BaseMapper<EdcConfigFileCsv> {
 
 
 
- @Select("select GROUP_CONCAT(col_name) from edc_config_file_csv where eqp_model_id=(select model_id from fab_equipment where eqp_id = #{eqpId} ) and del_flag = '0'\n" +
+ @Select("select GROUP_CONCAT(col_name) from edc_config_file_csv where eqp_model_id=(select model_id from fab_equipment where eqp_id = #{eqpId} ) and file_type = #{fileType} and del_flag = '0'\n" +
          " order by sort_no")
- String findTitle(@Param("eqpId") String eqpId);
+ String findTitle(@Param("eqpId") String eqpId,String fielType);
 }

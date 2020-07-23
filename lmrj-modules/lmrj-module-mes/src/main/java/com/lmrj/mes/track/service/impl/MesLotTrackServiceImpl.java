@@ -393,5 +393,5 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public MesLotTrack findNextStartTime(String endTime,String eqpId){
         return baseMapper.findNextStartTime(endTime,eqpId);
     }
-    
+
 }
