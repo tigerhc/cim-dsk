@@ -19,11 +19,9 @@ import org.apache.ibatis.annotations.Select;
  */
 @Mapper
 public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
-
  @Select("select lot_no,start_time,end_time from mes_lot_track where start_time <= #{startTime}  and end_time>= #{startTime} and end_time is not null and eqp_id = #{eqpId} limit 1 ")
  MesLotTrack findLotNo(@Param("startTime") String startTime, @Param("eqpId") String eqpId);
-
- @Select("select lot_no from edc_dsk_log_production where start_time  between #{startTime} and #{endTime} ")
- String findLotNo1(@Param("startTime") String startTime, @Param("endTime") String endTime);
+ @Select("select start_time from mes_lot_track where start_time >= #{endTime}  and eqp_id = #{eqpId} order by start_time  limit 1 ")
+ MesLotTrack findNextStartTime(@Param("endTime") String endTime, @Param("eqpId") String eqpId);
 
 }
