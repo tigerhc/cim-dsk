@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.config.mapper.EdcConfigFileCsvMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.eqp_model_id,
+       t.eqp_model_name,
+       t.col_code,
+       t.col_name,
+       t.col_short_name,
+       t.para_unit,
+       t.default_value,
+       t.limit_min,
+       t.limit_max,
+       t.limit_type,
+       t.monitor_flag,
+       t.col_level,
+       t.col_data_type,
+       t.sort_no,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>
