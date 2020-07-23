@@ -58,12 +58,23 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
         baseMapper.insert(recipePermit);
         if ("1".equals(submitResult)){
             //审批通过，修改配方审批结果，并将审批状态加1,如果审批状态为3则将审批状态改为0
-            if ("3".equals(approveStep)){
-                recipe.setApproveStep("0");
-            } else {
-                int i = Integer.parseInt(approveStep);
-                i++;
-                recipe.setApproveStep(i + "");
+            if ("EQP".equals(recipe.getVersionType())){
+                if ("2".equals(approveStep)){
+                    recipe.setApproveStep("0");
+                } else {
+                    int i = Integer.parseInt(approveStep);
+                    i++;
+                    recipe.setApproveStep(i + "");
+                }
+            }
+            if ("GOLD".equals(recipe.getVersionType())){
+                if ("3".equals(approveStep)){
+                    recipe.setApproveStep("0");
+                } else {
+                    int i = Integer.parseInt(approveStep);
+                    i++;
+                    recipe.setApproveStep(i + "");
+                }
             }
             recipe.setApproveResult(submitResult);
             recipeService.updateById(recipe);
