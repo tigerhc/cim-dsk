@@ -1,19 +1,19 @@
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+package com.lmrj.cim.quartz;
+
+import com.lmrj.cim.CimBootApplication;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
-
-@RunWith(Arquillian.class)
+@SpringBootTest(classes = CimBootApplication.class)
+@RunWith(SpringRunner.class)
 public class ProductionYieldReCalTaskTest {
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-                .addClass(com.lmrj.cim.quartz.ProductionYieldReCalTask.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    @Autowired
+    ProductionYieldReCalTask productionYieldReCalTask;
+    @Test
+    public void fileAnalysistest() throws Exception{
+        productionYieldReCalTask.fileAnalysistest();
     }
-
 }
