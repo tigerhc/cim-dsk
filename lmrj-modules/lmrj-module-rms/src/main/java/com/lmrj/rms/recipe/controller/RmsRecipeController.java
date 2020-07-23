@@ -288,6 +288,20 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         ServletUtils.printJson(response, content);
     }
 
+    /**
+     * 获取审批配方列表
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/getRecipePermitList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void getRecipePermitList(HttpServletRequest request,
+                                 HttpServletResponse response) {
+        List<RmsRecipe> rmsRecipes = rmsRecipeService.getRecipePermitList();
+        String content = JSON.toJSONString(new DateResponse(rmsRecipes));
+        ServletUtils.printJson(response, content);
+    }
+
     @RequestMapping(value = "/{id}/find", method = { RequestMethod.GET, RequestMethod.POST })
     public void findById(Model model, @PathVariable("id") String id, HttpServletRequest request,
                      HttpServletResponse response) {

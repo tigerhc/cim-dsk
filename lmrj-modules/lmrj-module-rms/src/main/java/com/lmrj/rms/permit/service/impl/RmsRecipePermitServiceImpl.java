@@ -14,6 +14,7 @@ import org.springframework.data.annotation.AccessType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -82,6 +83,80 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
             //审批不通过，修改配方审批结果
             recipe.setApproveResult(submitResult);
             recipeService.updateById(recipe);
+        }
+    }
+
+    @Override
+    public void permit(String roleName, String recipeId, String submitResult, String submitDesc) {
+        List<RmsRecipePermit> rmsRecipePermits = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result"));
+        RmsRecipePermit recipePermit = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result").eq("submitter_role", roleName)).get(0);
+        RmsRecipe recipe = recipeService.selectById(recipeId);
+        recipe.setApproveResult(submitResult);
+        int approveStep = Integer.parseInt(recipe.getApproveStep());
+        approveStep++;
+        if ("1".equals(submitResult)){
+            //审批通过,修改审批信息，修改配方审批等级
+            recipePermit.setSubmitResult(submitResult);
+            recipePermit.setSubmitDesc(submitDesc);
+            recipePermit.setSubmitDate(new Date());
+            baseMapper.updateById(recipePermit);
+            if (rmsRecipePermits.size() > 1) {
+                //大于1说明不是最后一级审批
+                recipe.setApproveStep(approveStep + "");
+                recipeService.updateById(recipe);
+            }else if(rmsRecipePermits.size() == 1){
+                recipe.setApproveStep("0");
+                recipeService.updateById(recipe);
+            }
+        }else{
+            //审批不通过，修改审批记录，修改配方状态，删除后续审批记录
+            recipePermit.setSubmitResult(submitResult);
+            recipePermit.setSubmitDesc(submitDesc);
+            recipePermit.setSubmitDate(new Date());
+            baseMapper.updateById(recipePermit);
+            recipe.setApproveStep("1");
+            recipe.setStatus("2");
+            recipeService.updateById(recipe);
+            List<String> ids = new ArrayList<>();
+            for (RmsRecipePermit rmsRecipePermit:rmsRecipePermits) {
+                if (!rmsRecipePermit.getId().equals(recipePermit.getId())){
+                    ids.add(rmsRecipePermit.getId());
+                }
+            }
+            if (ids.size() > 0){
+                baseMapper.deleteBatchIds(ids);
+            }
+        }
+    }
+
+
+    @Override
+    public void addPermitList(String recipeId, String versionType) {
+        RmsRecipe recipe = recipeService.selectById(recipeId);
+        Integer approveStep = Integer.parseInt(recipe.getApproveStep());
+        if ("EQP".equals(versionType)){
+            for (int i = approveStep; i<=2; i++){
+                RmsRecipePermit recipePermit = new RmsRecipePermit();
+                RmsRecipePermitConfig recipePermitConfig = recipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", i + "")).get(0);
+                recipePermit.setRecipeId(recipeId);
+                recipePermit.setRecipeCode(recipe.getRecipeCode());
+                recipePermit.setWiRecipeId(recipeId);
+                recipePermit.setSubmitterId(recipePermitConfig.getSubmitterRoleId());
+                recipePermit.setSubmitterRole(recipePermitConfig.getSubmitterRoleName());
+                baseMapper.insert(recipePermit);
+            }
+        }
+        if ("GOLD".equals(versionType)){
+            for (int i = approveStep; i<=3; i++){
+                RmsRecipePermit recipePermit = new RmsRecipePermit();
+                RmsRecipePermitConfig recipePermitConfig = recipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", i + "")).get(0);
+                recipePermit.setRecipeId(recipeId);
+                recipePermit.setRecipeCode(recipe.getRecipeCode());
+                recipePermit.setWiRecipeId(recipeId);
+                recipePermit.setSubmitterId(recipePermitConfig.getSubmitterRoleId());
+                recipePermit.setSubmitterRole(recipePermitConfig.getSubmitterRoleName());
+                baseMapper.insert(recipePermit);
+            }
         }
     }
 }
