@@ -18,6 +18,6 @@ import java.util.List;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcConfigFileCsvService extends ICommonService<EdcConfigFileCsv> {
-    String findTitle(String eqpId);
     List<FabEquipmentModel> getEqpModelMessage();
+    String findTitle(String eqpId,String fileType);
 }

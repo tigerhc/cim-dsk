@@ -6,7 +6,9 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.util.file.FileUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +31,9 @@ import java.util.*;
 @Transactional
 @Service("edcDskLogProductionService")
 public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLogProductionMapper,EdcDskLogProduction> implements  IEdcDskLogProductionService {
-
+    public String fileType="PRODUCTION";
+    @Autowired
+    EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
     //@Override
     //public boolean insert(EdcDskLogProduction edcDskLogProduction) {
     //    // 保存主表
@@ -73,19 +77,27 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
         List<String> deleteList = new LinkedList<>();
         List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId,startTime, endTime);
-        Map<String, Boolean> map = Maps.newHashMap();
+        Map<String, Boolean> map = Maps.newHashMap(); // 存在两条数据,查看是否出现过
         for (int i = 0;i < yields.size(); i++){
             if(yields.get(i).getDayYield() == 1 ){
                 String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"day") != true){
+                if(map.get(key+"day") == null){
                     map.put(key+"day", true);
-                    continue;
+                }else{
+                    //已经有一条数据日产量为1,则删除一条
+                    deleteList.add(yields.get(i).getId());
+                    EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
+                    hisList.add(edcDskLogProductionHis);
                 }
+                continue;
             }else if(yields.get(i).getLotYield() == 1){
                 String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"lot") != true){
+                if(map.get(key+"lot") == null ){
                     map.put(key+"lot", true);
-                    continue;
+                }else{
+                    deleteList.add(yields.get(i).getId());
+                    EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
+                    hisList.add(edcDskLogProductionHis);
                 }
                 continue;
             } else {
@@ -132,7 +144,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         EdcDskLogProduction pro;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-        lines.add(FileUtil.csvBom+"设备No,程序名称,作业开始时间,作业结束时间,DayYield,LotYield,作业指示书批量,Duration,创建时间");
+        lines.add(FileUtil.csvBom+edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
         for (int i = 0; i < prolist.size(); i++) {
             pro=prolist.get(i);
             if(i==0){
@@ -158,5 +170,5 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         File newFile = new File(filepath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }
-    
+
 }

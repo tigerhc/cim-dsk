@@ -34,8 +34,8 @@ public class EdcConfigFileCsvServiceImpl extends CommonServiceImpl<EdcConfigFile
     private IFabEquipmentModelService fabEquipmentModelService;
 
     @Override
-    public String findTitle(String eqpId) {
-        return baseMapper.findTitle(eqpId);
+    public String findTitle(String eqpId,String fileType) {
+        return baseMapper.findTitle(eqpId,fileType);
     }
 
     @Override
