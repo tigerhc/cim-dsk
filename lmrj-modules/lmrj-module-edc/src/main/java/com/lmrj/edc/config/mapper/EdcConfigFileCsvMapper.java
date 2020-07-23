@@ -1,10 +1,12 @@
 package com.lmrj.edc.config.mapper;
 
-import com.lmrj.edc.config.entity.EdcConfigFileCsv;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.edc.config.entity.EdcConfigFileCsv;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +19,10 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcConfigFileCsvMapper extends BaseMapper<EdcConfigFileCsv> {
-    
+
+
+
+ @Select("select GROUP_CONCAT(col_name) from edc_config_file_csv where eqp_model_id=(select model_id from fab_equipment where eqp_id = #{eqpId} ) and del_flag = '0'\n" +
+         " order by sort_no")
+ String findTitle(@Param("eqpId") String eqpId);
 }

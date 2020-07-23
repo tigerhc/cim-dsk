@@ -15,5 +15,5 @@ import com.lmrj.edc.config.entity.EdcConfigFileCsv;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcConfigFileCsvService extends ICommonService<EdcConfigFileCsv> {
-
+    String findTitle(String eqpId);
 }
