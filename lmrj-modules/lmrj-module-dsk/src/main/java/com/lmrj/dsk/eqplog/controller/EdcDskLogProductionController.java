@@ -166,7 +166,7 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
                 if(edcDskLogProduction.getLotNo().equals(lastlotNo)){
                     log.info("该批次文件已存在，续写至已创建文件");
                     newlines.remove(0);
-                    FileUtil.writeLines(new File(lastfileName),"GBK",newlines,true);
+                    FileUtil.writeLines(new File(lastfileName),"UTF-8",newlines,true);
                 }else{
                     File newFile = new File(filePath +"\\"+ nowFile.getName());
                     FileUtil.writeLines(newFile,"GBK",newlines);

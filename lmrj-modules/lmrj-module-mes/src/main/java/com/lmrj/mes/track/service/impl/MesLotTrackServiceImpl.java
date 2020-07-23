@@ -56,7 +56,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IFabEquipmentService fabEquipmentService;
     @Autowired
     IFabEquipmentStatusService fabEquipmentStatusService;
-
+    @Autowired
+    IMesLotTrackService iMesLotTrackService;
     /**
      * 按照eqp和line获取recipe
      * 当前line写死
@@ -382,6 +383,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrackLog.setCreateBy(opId);
         mesLotTrackLog.setEventCode(eventCode);
         mesLotTrackLogService.insert(mesLotTrackLog);
+    }
+    @Override
+    public MesLotTrack findLotNo(String startTime,String eqpId){
+        return baseMapper.findLotNo(startTime,eqpId);
+    }
+
+    @Override
+    public MesLotTrack findNextStartTime(String endTime,String eqpId){
+        return baseMapper.findNextStartTime(endTime,eqpId);
     }
 
 }
