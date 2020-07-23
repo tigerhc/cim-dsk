@@ -37,4 +37,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
  @Select("select lot_no from edc_dsk_log_production where start_time  between #{startTime} and #{endTime} ")
  String findLotNo1(@Param("startTime") String startTime, @Param("endTime") String endTime);
+
+ @Select("select * from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time  order by start_time ")
+ List<EdcDskLogProduction> findProductionlog( @Param("startTime") String startTime, @Param("endTime") String endTime);
 }

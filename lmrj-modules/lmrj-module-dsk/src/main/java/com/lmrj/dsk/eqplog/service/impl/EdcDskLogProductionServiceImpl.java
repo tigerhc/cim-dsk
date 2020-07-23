@@ -6,13 +6,13 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.util.file.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -121,4 +121,42 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     public  String findLotNo1(String startTime,String endTime){
         return baseMapper.findLotNo1(startTime,endTime);
     }
+
+    @Override
+    public List<EdcDskLogProduction> findProductionlog(String startTime, String endTime) {
+        return baseMapper.findProductionlog(startTime,endTime);
+    }
+    public void printProductionlog(List<EdcDskLogProduction> prolist,String filepath) throws Exception{
+        List<String> lines = new ArrayList<>();
+        String filename=null;
+        EdcDskLogProduction pro;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+        lines.add(FileUtil.csvBom+"设备No,程序名称,作业开始时间,作业结束时间,DayYield,LotYield,作业指示书批量,Duration,创建时间");
+        for (int i = 0; i < prolist.size(); i++) {
+            pro=prolist.get(i);
+            if(i==0){
+                String CreateTimeString=formatter.format(pro.getCreateDate());
+                filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+CreateTimeString+"_Productionlog.csv";
+            }
+            String startTimeString = formatter1.format(pro.getStartTime());
+            String endTimeString=formatter1.format(pro.getEndTime());
+            String CreateTimeString=formatter1.format(pro.getCreateDate());
+            String line=pro.getEqpId()+","+pro.getEqpModelName()+","+startTimeString+","+endTimeString+","+pro.getDayYield()+
+                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration()+","+CreateTimeString;
+            if(i>0&&!pro.getLotNo().equals(prolist.get(i-1).getLotNo())){
+                File newFile = new File(filepath + "\\" + filename);
+                FileUtil.writeLines(newFile, "UTF-8", lines);
+                for (int j = 0; j < i ; j++) {
+                    prolist.remove(0);
+                }
+                printProductionlog(prolist,filepath);
+                return;
+            }
+            lines.add(line);
+        }
+        File newFile = new File(filepath + "\\" + filename);
+        FileUtil.writeLines(newFile, "UTF-8", lines);
+    }
+    
 }
