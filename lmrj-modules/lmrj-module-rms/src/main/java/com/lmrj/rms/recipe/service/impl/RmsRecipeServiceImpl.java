@@ -119,6 +119,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
+    public boolean editStatus(String id, String status) {
+        RmsRecipe rmsRecipe = baseMapper.selectById(id);
+        rmsRecipe.setStatus(status);
+        baseMapper.updateById(rmsRecipe);
+        return true;
+    }
+
+    @Override
     public boolean insert(RmsRecipe rmsRecipe) {
         // 保存主表
         super.insert(rmsRecipe);

@@ -309,4 +309,10 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         ServletUtils.printJson(response,content);
     }
 
+    @PutMapping("/status/{id}/{status}")
+    public Response editStatus(@PathVariable String id, @PathVariable String status) {
+        rmsRecipeService.editStatus(id, status);
+        return Response.ok("修改成功");
+    }
+
 }

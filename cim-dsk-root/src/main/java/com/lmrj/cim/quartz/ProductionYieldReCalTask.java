@@ -78,28 +78,92 @@ public class ProductionYieldReCalTask {
         //备份
         FileUtil.move(filePath + "\\" + file.getName(), "E:\\fileback_up" + "\\" + file.getName(), false);
     }
+    public String findRepeatFile(String lotNo){
+        //反查是否有该批次文件已被创建
+        List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
+        for(File readFile:fileList){
+            String filename=readFile.getName();
+            if(filename.contains("-R") && filename.contains(lotNo)){
+                return filename;
+            }
+        }
+        return null;
+    }
+    public String changename(String fileName,String lotNo){
+        String name[]= fileName.split("_");
+        String newfilename = fileName;
+        if(!name[2].equals(lotNo)){
+            newfilename=null;
+            Arrays.fill(name, 2, 3, lotNo);
+            for (int i = 0; i <name.length ; i++) {
+                if(i==0){
+                    newfilename=name[i];
+                }else{
+                    newfilename=newfilename+"_"+name[i];
+                }
+            }
+        }
+        return newfilename.replace(".csv", "-R.csv");
+    }
+
+    public void fancha(String filename,String lotno,List<String> newlines) throws Exception{
+        //反查已读文件
+        String repeatFileName=findRepeatFile(lotno);
+        if(repeatFileName==null){
+            log.info("正常创建");
+            String filename1=changename(filename,lotno);
+            File newFile = new File(filePath + "\\" + filename1);
+            FileUtil.writeLines(newFile, "UTF-8", newlines);
+        }else{
+            log.info("续写");
+            //该批次文件已存在，续写至该文件
+            newlines.remove(0);
+            FileUtil.writeLines(new File(filePath + "\\" +repeatFileName),"UTF-8",newlines,true);
+        }
+    }
+
+    public String fixone(String str,int size){
+        String str1[]=str.split(",");
+        log.info(str);
+        log.info(str1[7]);
+        Arrays.fill(str1, 7, 8, String.valueOf(size));
+        log.info(str1[7]);
+        String str2 = "";
+        for (int l = 0; l < str1.length; l++) {
+            if (l == 0) {
+                str2 = str1[l];
+            } else {
+                str2 = str2 + "," + str1[l];
+            }
+        }
+        log.info(str2);
+        return str2;
+    }
 
     public void fixLine(File file, String title, List<String> lines) throws Exception {
-        String data[] = lines.get(1).split(",");
+        String data[] = lines.get(0).split(",");
         String eqpId = data[0];
         String startTime = data[4];
-        MesLotTrack edcDskLogProduction = mesLotTrackService.findLotNo(startTime, eqpId);
-        if (edcDskLogProduction == null) {
+        MesLotTrack mesLotTrack = mesLotTrackService.findLotNo(startTime, eqpId);
+        if (mesLotTrack == null) {
             log.info("edcDskLogProductionService.findLotNo(time,eqpid)为空");
             log.info("数据库查询无数据");
             //如果数据库中没有满足条件的数据则不执行
             return;
         }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+        String endDateString = formatter.format(mesLotTrack.getEndTime());
+        MesLotTrack mesLotTrack1=mesLotTrackService.findNextStartTime(endDateString,eqpId);
         List<String> newlines = new ArrayList<>();
-        newlines.add(title);
-
+        newlines.add(FileUtil.csvBom+title);
         for (int j = 0; j < lines.size(); j++) {
             String data1[] = lines.get(j).split(",");
-            Date lineDate = DateUtil.parseDate(data1[4], "yyyy-MM-dd HH:mm:ss"); //当前行开始时间
+            Date endDate = DateUtil.parseDate(data1[5]);
+            Date starDate = DateUtil.parseDate(data1[4]); //当前行开始时间
             //判断当前行工作时间段在不在数据库时间段内
-            if (lineDate.getTime() > edcDskLogProduction.getStartTime().getTime() && lineDate.getTime() < edcDskLogProduction.getEndTime().getTime()) {
-                if (!data1[14].equals(edcDskLogProduction.getLotNo())) {
-                    Arrays.fill(data1, 14, 15, edcDskLogProduction.getLotNo());
+            if (starDate.getTime() > mesLotTrack.getStartTime().getTime() && endDate.getTime() < mesLotTrack1.getStartTime().getTime()) {
+                if (!data1[14].equals(mesLotTrack.getLotNo())) {
+                    Arrays.fill(data1, 14, 15, mesLotTrack.getLotNo());
                     log.info("当前行解析完成");
                 }
                 String str = "";
@@ -111,19 +175,21 @@ public class ProductionYieldReCalTask {
                         str = str + "," + str1;
                     }
                 }
-                newlines.add(str);
-
-            } else {
+                newlines.add(fixone(str,newlines.size()));
+            } else{
+                //如果
                 // TODO: 2020/7/22 写入新文件 
-                // TODO: 2020/7/22 文件名字需要重新修改,批次可能会变 
-                File newFile = new File(filePath + "\\" + file.getName().replace(".csv", "-R.csv"));
-                FileUtil.writeLines(newFile, "GBK", newlines);
+                // TODO: 2020/7/22 文件名字需要重新修改,批次可能会变
+                fancha(file.getName(),mesLotTrack.getLotNo(),newlines);
                 // TODO: 2020/7/22 另起一个批次
-                for (int jj = 0; jj < j - 1; jj++) { //todo 注意
-                    lines.remove(jj);
+                for (int o = 0; o < j ; o++) { //todo 注意
+                    lines.remove(0);
                 }
                 fixLine(file, title, lines);
+                return;
             }
         }
+        //反查已读文件
+        fancha(file.getName(),mesLotTrack.getLotNo(),newlines);
     }
 }
