@@ -50,6 +50,8 @@ public class FabEquipmentModel extends BaseDataEntity {
     /**图片路径*/
     @TableField(value = "icon_path")
 	private String iconPath;
+    @TableField(exist = false)
+    private String fileType;
 
 
 }

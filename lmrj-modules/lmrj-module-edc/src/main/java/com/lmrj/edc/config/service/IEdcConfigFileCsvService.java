@@ -2,6 +2,9 @@ package com.lmrj.edc.config.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.config.entity.EdcConfigFileCsv;
+import com.lmrj.fab.eqp.entity.FabEquipmentModel;
+
+import java.util.List;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -16,4 +19,5 @@ import com.lmrj.edc.config.entity.EdcConfigFileCsv;
 */
 public interface IEdcConfigFileCsvService extends ICommonService<EdcConfigFileCsv> {
     String findTitle(String eqpId);
+    List<FabEquipmentModel> getEqpModelMessage();
 }

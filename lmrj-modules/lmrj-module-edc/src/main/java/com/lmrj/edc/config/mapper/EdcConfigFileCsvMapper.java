@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -20,7 +22,8 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface EdcConfigFileCsvMapper extends BaseMapper<EdcConfigFileCsv> {
 
-
+ @Select("select file_type from edc_config_file_csv where eqp_model_id = #{eqpModelId} group by file_type")
+List<String> getFileType(@Param("eqpModelId") String eqpModelId);
 
  @Select("select GROUP_CONCAT(col_name) from edc_config_file_csv where eqp_model_id=(select model_id from fab_equipment where eqp_id = #{eqpId} ) and del_flag = '0'\n" +
          " order by sort_no")
