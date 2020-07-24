@@ -144,17 +144,17 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
      * @param endTime
      * @return
      */
-    @Override
     public void exportProductionCsv(Date startTime, Date endTime) {
-        List<EdcDskLogProduction> prolist =  baseMapper.findProductionlog(startTime,endTime);
+        EdcDskLogProduction edcDskLogProduction=baseMapper.findLotNo(startTime,endTime);
+        List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(edcDskLogProduction.getLotNo(),edcDskLogProduction.getEqpId(),edcDskLogProduction.getProductionNo());
         try {
-            this.printProductionlog(prolist);
+            this.printProlog(prolist);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void printProductionlog(List<EdcDskLogProduction> prolist) throws Exception{
+    /*public void printProductionlog(List<EdcDskLogProduction> prolist) throws Exception{
         List<String> lines = new ArrayList<>();
         String filename=null;
         EdcDskLogProduction pro;
@@ -180,6 +180,38 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
                 printProductionlog(prolist);
                 return;
             }
+            lines.add(line);
+        }
+        File newFile = new File(filePath + "\\" + filename);
+        FileUtil.writeLines(newFile, "UTF-8", lines);
+    }*/
+
+    @Override
+    public EdcDskLogProduction findLotNo(Date startTime,Date endTime){
+        return baseMapper.findLotNo(startTime,endTime);
+    }
+    @Override
+    public List<EdcDskLogProduction> findDataBylotNo (String lotNo, String eqpId, String productionNo) {
+        return baseMapper.findDataBylotNo(lotNo,eqpId,productionNo);
+    }
+
+    public void printProlog(List<EdcDskLogProduction> prolist) throws Exception{
+        List<String> lines = new ArrayList<>();
+        String filename=null;
+        EdcDskLogProduction pro;
+        String pattern1 = "yyyyMMddHHmmssSSS";
+        String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
+        lines.add(FileUtil.csvBom+edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
+        for (int i = 0; i < prolist.size(); i++) {
+            pro=prolist.get(i);
+            if(i==0){
+                String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
+                filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+ createTimeString +"_Productionlog.csv";
+            }
+            String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
+            String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
+            String line=pro.getEqpId()+","+pro.getEqpModelName()+","+startTimeString+","+endTimeString+","+pro.getDayYield()+
+                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration();
             lines.add(line);
         }
         File newFile = new File(filePath + "\\" + filename);
