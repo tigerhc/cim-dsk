@@ -25,5 +25,5 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
 
     Integer findNewYieldByLot(String eqpId,String productionNo, String lotNo);
 
-    List<EdcDskLogProduction> findProductionlog(String startTime, String endTime);
+    void exportProductionCsv(Date startTime, Date endTime);
 }

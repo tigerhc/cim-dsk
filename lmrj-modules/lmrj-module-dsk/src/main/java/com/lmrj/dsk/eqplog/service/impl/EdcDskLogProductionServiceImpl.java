@@ -7,14 +7,18 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -32,6 +36,7 @@ import java.util.*;
 @Service("edcDskLogProductionService")
 public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLogProductionMapper,EdcDskLogProduction> implements  IEdcDskLogProductionService {
     public String fileType="PRODUCTION";
+    public String filePath = "E:\\ProTest";
     @Autowired
     EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
     //@Override
@@ -72,6 +77,13 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
 
     }
 
+    /**
+     *
+     * @param eqpId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     @Override
     public List<EdcDskLogProductionHis> findBackUpYield(String eqpId,Date startTime, Date endTime) {
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
@@ -126,40 +138,51 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }
 
 
+    /**
+     * 导出production csv文件
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     @Override
-    public List<EdcDskLogProduction> findProductionlog(String startTime, String endTime) {
-        return baseMapper.findProductionlog(startTime,endTime);
+    public void exportProductionCsv(Date startTime, Date endTime) {
+        List<EdcDskLogProduction> prolist =  baseMapper.findProductionlog(startTime,endTime);
+        try {
+            this.printProductionlog(prolist);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    public void printProductionlog(List<EdcDskLogProduction> prolist,String filepath) throws Exception{
+
+    public void printProductionlog(List<EdcDskLogProduction> prolist) throws Exception{
         List<String> lines = new ArrayList<>();
         String filename=null;
         EdcDskLogProduction pro;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+        String pattern1 = "yyyyMMddHHmmssSSS";
+        String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
         lines.add(FileUtil.csvBom+edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
         for (int i = 0; i < prolist.size(); i++) {
             pro=prolist.get(i);
             if(i==0){
-                String CreateTimeString=formatter.format(pro.getCreateDate());
-                filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+CreateTimeString+"_Productionlog.csv";
+                String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
+                filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+ createTimeString +"_Productionlog.csv";
             }
-            String startTimeString = formatter1.format(pro.getStartTime());
-            String endTimeString=formatter1.format(pro.getEndTime());
-            String CreateTimeString=formatter1.format(pro.getCreateDate());
+            String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
+            String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
             String line=pro.getEqpId()+","+pro.getEqpModelName()+","+startTimeString+","+endTimeString+","+pro.getDayYield()+
-                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration()+","+CreateTimeString;
+                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration();
             if(i>0&&!pro.getLotNo().equals(prolist.get(i-1).getLotNo())){
-                File newFile = new File(filepath + "\\" + filename);
+                File newFile = new File(filePath + "\\" + filename);
                 FileUtil.writeLines(newFile, "UTF-8", lines);
                 for (int j = 0; j < i ; j++) {
                     prolist.remove(0);
                 }
-                printProductionlog(prolist,filepath);
+                printProductionlog(prolist);
                 return;
             }
             lines.add(line);
         }
-        File newFile = new File(filepath + "\\" + filename);
+        File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }
 

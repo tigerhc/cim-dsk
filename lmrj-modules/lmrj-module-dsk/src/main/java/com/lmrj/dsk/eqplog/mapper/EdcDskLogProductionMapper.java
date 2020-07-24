@@ -33,5 +33,5 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
  Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
 
  @Select("select * from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time  order by start_time ")
- List<EdcDskLogProduction> findProductionlog( @Param("startTime") String startTime, @Param("endTime") String endTime);
+ List<EdcDskLogProduction> findProductionlog( @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

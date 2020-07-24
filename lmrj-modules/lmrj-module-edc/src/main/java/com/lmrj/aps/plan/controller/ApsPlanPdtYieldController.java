@@ -104,6 +104,7 @@ public class ApsPlanPdtYieldController extends BaseCRUDController<ApsPlanPdtYiel
                 lotYieldAll += lotYield;
             }
         }
+        //改为日产量, 从towa上获取
 
         List<Map> mapList= Lists.newArrayList();
         Map map=new HashMap();
