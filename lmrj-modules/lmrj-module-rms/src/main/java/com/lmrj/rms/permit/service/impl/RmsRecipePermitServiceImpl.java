@@ -106,6 +106,7 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                 recipeService.updateById(recipe);
             }else if(rmsRecipePermits.size() == 1){
                 recipe.setApproveStep("0");
+                recipe.setStatus("Y");
                 recipeService.updateById(recipe);
             }
         }else{
