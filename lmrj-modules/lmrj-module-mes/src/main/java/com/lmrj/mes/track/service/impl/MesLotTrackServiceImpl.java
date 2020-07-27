@@ -24,12 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -437,12 +432,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             }
         }
     }
-
-    /*public void deleteWip(Date startTime){
+    //更新wip表中数据 将已完成数据删除
+    public void deleteWip(Date startTime){
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startTime);
         calendar.add(Calendar.DAY_OF_MONTH, -2);
         Date endTime=calendar.getTime();
-
-    }*/
+        baseMapper.deleteWip(startTime,endTime);
+    }
 }
