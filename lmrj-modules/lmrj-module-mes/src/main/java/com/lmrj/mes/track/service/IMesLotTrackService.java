@@ -33,7 +33,7 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     MesLotTrack findNextStartTime(String endTime,String eqpId);
 
-    List<MesLotTrack> findIncompleteLotNo();
+    List<MesLotTrack> findIncompleteLotNo(Date startTime,Date endTime);
 
     MesLotTrack finddata(String eqpId,String productionNo);
 

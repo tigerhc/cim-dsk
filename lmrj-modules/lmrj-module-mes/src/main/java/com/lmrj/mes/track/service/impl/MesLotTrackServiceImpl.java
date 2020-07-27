@@ -53,6 +53,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IFabEquipmentStatusService fabEquipmentStatusService;
     @Autowired
     IMesLotTrackService iMesLotTrackService;
+
     /**
      * 按照eqp和line获取recipe
      * 当前line写死
@@ -223,7 +224,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         saveTrackLog(eqpId, "TRACKIN", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         // TODO: 2020/7/17 待删除
-        if("SIM-DM1".equals(eqpId)){
+        if ("SIM-DM1".equals(eqpId)) {
             eqpId = "SIM-DM";
         }
         if (fabEquipment != null) {
@@ -268,7 +269,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if (!"Y".equals(result.getFlag())) {
                 return result; //失败提前退出
             }
-            takeTime = takeTime+fabEquipment.getTakeTime();
+            takeTime = takeTime + fabEquipment.getTakeTime();
         }
         return result;
     }
@@ -309,7 +310,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (mesLotTrackList.size() > 0) {
             mesLotTrack = mesLotTrackList.get(0);
         } else {
-            Calendar cal = Calendar.getInstance(); Calendar.getInstance();
+            Calendar cal = Calendar.getInstance();
+            Calendar.getInstance();
             cal.add(Calendar.MILLISECOND, takeTime);
             mesLotTrack.setStartTime(cal.getTime());
         }
@@ -322,7 +324,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         this.insertOrUpdate(mesLotTrack);
 
         //发送至EAP客户端 Map
-        if("1".equals(fabEquipment.getClientFlag())){
+        if ("1".equals(fabEquipment.getClientFlag())) {
             Map<String, String> map = Maps.newHashMap();
             map.put("METHOD", "TRACKIN");
             map.put("LOT_NO", lotNo);
@@ -331,7 +333,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             map.put("PRODUCTION_NO", productionNo);
             map.put("PRODUCTION_NAME", productionName);
             map.put("OPID", opId);
-            map.put("TAKE_TIME", takeTime+"");
+            map.put("TAKE_TIME", takeTime + "");
 
             String bc = fabEquipment.getBcCode();
             if (true) {
@@ -379,65 +381,40 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrackLog.setEventCode(eventCode);
         mesLotTrackLogService.insert(mesLotTrackLog);
     }
+
     @Override
-    public MesLotTrack findLotNo(String startTime,String eqpId){
-        return baseMapper.findLotNo(startTime,eqpId);
+    public MesLotTrack findLotNo(String startTime, String eqpId) {
+        return baseMapper.findLotNo(startTime, eqpId);
     }
 
     @Override
-    public MesLotTrack findNextStartTime(String endTime,String eqpId){
-        return baseMapper.findNextStartTime(endTime,eqpId);
+    public MesLotTrack findNextStartTime(String endTime, String eqpId) {
+        return baseMapper.findNextStartTime(endTime, eqpId);
     }
 
     @Override
-    public MesLotTrack finddata(String eqpId,String productionNo){
-        return baseMapper.finddata(eqpId,productionNo);
+    public MesLotTrack finddata(String eqpId, String productionNo) {
+        return baseMapper.finddata(eqpId, productionNo);
     }
 
     @Override
-    public Boolean updateWip(Integer lotYield,Integer lotYieldEqp,String eqpId,String productionNo){
-        return baseMapper.updateWip(lotYield,lotYieldEqp,eqpId,productionNo);
+    public Boolean updateWip(Integer lotYield, Integer lotYieldEqp, String eqpId, String productionNo) {
+        return baseMapper.updateWip(lotYield, lotYieldEqp, eqpId, productionNo);
     }
 
     @Override
-    public Boolean insterWip(String id,String eqpId,String lotNo,String productionName,String productionNo,String orderNo,Integer lotYield,Integer lotYieldEqp,Date startTime,Date endTime,String remarks,String createBy,Date createDate){
-        return baseMapper.insterWip(id,eqpId,lotNo,productionName,productionNo,orderNo,lotYield,lotYieldEqp,startTime,endTime,remarks,createBy,createDate);
+    public Boolean insterWip(String id, String eqpId, String lotNo, String productionName, String productionNo, String orderNo, Integer lotYield, Integer lotYieldEqp, Date startTime, Date endTime, String remarks, String createBy, Date createDate) {
+        return baseMapper.insterWip(id, eqpId, lotNo, productionName, productionNo, orderNo, lotYield, lotYieldEqp, startTime, endTime, remarks, createBy, createDate);
     }
 
     @Override
-    public  List<MesLotTrack> findIncompleteLotNo(){
-        return baseMapper.findIncompleteLotNo();
+    public List<MesLotTrack> findIncompleteLotNo(Date startTime,Date endTime) {
+        return baseMapper.findIncompleteLotNo(startTime,endTime);
     }
 
     @Override
-    public Boolean deleteWip(Date startTime,Date endTime){
-        return baseMapper.deleteWip(startTime,endTime);
+    public Boolean deleteWip(Date startTime, Date endTime) {
+        return baseMapper.deleteWip(startTime, endTime);
     }
 
-    //往mes_lot_wip表中导入数据
-    public void buildWipData(){
-        List<MesLotTrack> mesList = baseMapper.findIncompleteLotNo();
-        for (MesLotTrack mes:
-                mesList) {
-            if(finddata(mes.getEqpId(),mes.getProductionNo())==null){
-                //向表中新建数据
-                if(insterWip(mes.getId(),mes.getEqpId(),mes.getLotNo(),mes.getProductionName(),mes.getProductionNo(),mes.getOrderNo(),mes.getLotYield(),mes.getLotYieldEqp(),mes.getStartTime(),mes.getEndTime(),mes.getRemarks(),mes.getCreateBy(),mes.getCreateDate())){
-                    log.info("mes_lot_wip表数据插入成功 批次："+mes.getEqpId());
-                }
-            }else {
-                //更新数据
-                if(updateWip(mes.getLotYield(),mes.getLotYieldEqp(),mes.getLotNo(),mes.getProductionNo())){
-                    log.info("mes_lot_wip表数据更新成功 批次："+mes.getEqpId());
-                }
-            }
-        }
-    }
-    //更新wip表中数据 将已完成数据删除
-    public void deleteWip(Date startTime){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startTime);
-        calendar.add(Calendar.DAY_OF_MONTH, -2);
-        Date endTime=calendar.getTime();
-        baseMapper.deleteWip(startTime,endTime);
-    }
 }
