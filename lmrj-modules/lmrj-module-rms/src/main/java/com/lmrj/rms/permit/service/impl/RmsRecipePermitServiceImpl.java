@@ -2,6 +2,7 @@ package com.lmrj.rms.permit.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
 import com.lmrj.rms.permit.service.IRmsRecipePermitService;
@@ -38,6 +39,8 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
     private IRmsRecipeService recipeService;
     @Autowired
     private IRmsRecipePermitConfigService recipePermitConfigService;
+    @Autowired
+    private IRmsRecipeLogService rmsRecipeLogService;
 
     @Override
     public void recipePermit(String approveStep, String roleName, String recipeId, String submitResult, String submitDesc) throws Exception{
@@ -91,6 +94,7 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
         List<RmsRecipePermit> rmsRecipePermits = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result"));
         RmsRecipePermit recipePermit = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result").eq("submitter_role", roleName)).get(0);
         RmsRecipe recipe = recipeService.selectById(recipeId);
+        rmsRecipeLogService.addLog(recipe,"permit",recipe.getEqpId());
         recipe.setApproveResult(submitResult);
         int approveStep = Integer.parseInt(recipe.getApproveStep());
         approveStep++;

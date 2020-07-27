@@ -265,8 +265,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         if (fabEquipment == null){
             throw new Exception("该设备不存在");
         }
-        String fileName = "SIM6812-DI2";
-        String filePath = "C:/Users/daoda/Desktop/"+ fileName +".csv";
+        String fileName = "SIM6822-FRD-1_TJZC";
+        String filePath = "D:/cim-dsk/"+ fileName +".csv";
 //        InputStream inputStream = new FileInputStream("C:/Users/daoda/Desktop/"+ fileName +".csv");
 //        Workbook workbook = new XSSFWorkbook(inputStream);
 //        List<String[]> excelData = ExcelUtil.getExcelData(workbook);
@@ -356,7 +356,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 //            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
 //            log.info("迁移文件结果:{};", copyFlag);
 //        }
-        rmsRecipeLogService.downloadLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
+        rmsRecipeLogService.addLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
         return true;
     }
 
