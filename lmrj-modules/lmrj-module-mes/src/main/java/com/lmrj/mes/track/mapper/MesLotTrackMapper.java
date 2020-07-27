@@ -26,11 +26,11 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
  @Select("select start_time from mes_lot_track where start_time >= #{endTime}  and eqp_id = #{eqpId} order by start_time  limit 1 ")
  MesLotTrack findNextStartTime(@Param("endTime") String endTime, @Param("eqpId") String eqpId);
 
- @Select("select * from mes_lot_track where  (PRODUCTION_NO, LOT_NO, start_time ) in (\n" +
+/* @Select("select * from mes_lot_track where  (PRODUCTION_NO, LOT_NO, start_time ) in (\n" +
          "SELECT PRODUCTION_NO, LOT_NO ,  max(start_time) FROM mes_lot_track WHERE  ( PRODUCTION_NO, LOT_NO )  NOT IN (\n" +
          "select DISTINCT PRODUCTION_NO, LOT_NO from mes_lot_track where eqp_id LIKE '%TRM%' AND END_TIME IS NOT NULL and create_date between #{startTime} and #{endTime})\n" +
          "and create_date between #{startTime} and #{endTime} \n" +
-         "group by PRODUCTION_NO,LOT_NO)")
+         "group by PRODUCTION_NO,LOT_NO)")*/
  List<MesLotTrack> findIncompleteLotNo(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
 
  @Insert("Insert into mes_lot_wip(id,eqp_id,lot_no,production_name,production_no,order_no,lot_yield,lot_yield_eqp,start_time,end_time,remarks,create_by,create_date,update_by,update_date,del_flag) values(" +
