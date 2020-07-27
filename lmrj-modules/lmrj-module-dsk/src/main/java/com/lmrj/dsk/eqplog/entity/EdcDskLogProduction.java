@@ -42,6 +42,10 @@ public class EdcDskLogProduction extends AbstractEntity {
     /**设备类型名称*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    /**十行往后的数据*/
+    @TableField(value = "param_value")
+    @Excel(name = "设备数据",orderNum = "1", width = 40 )
+    private String paramValue;
     /**设备名*/
     @TableField(value = "eqp_no")
     private String eqpNo;

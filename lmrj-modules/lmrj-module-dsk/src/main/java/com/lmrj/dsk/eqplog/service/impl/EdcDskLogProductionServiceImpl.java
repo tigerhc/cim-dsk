@@ -9,16 +9,13 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -34,6 +31,7 @@ import java.util.Map;
 */
 @Transactional
 @Service("edcDskLogProductionService")
+@Slf4j
 public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLogProductionMapper,EdcDskLogProduction> implements  IEdcDskLogProductionService {
     public String fileType="PRODUCTION";
     public String filePath = "E:\\ProTest";
@@ -146,11 +144,15 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
      */
     public void exportProductionCsv(Date startTime, Date endTime) {
         EdcDskLogProduction edcDskLogProduction=baseMapper.findLotNo(startTime,endTime);
-        List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(edcDskLogProduction.getLotNo(),edcDskLogProduction.getEqpId(),edcDskLogProduction.getProductionNo());
-        try {
-            this.printProlog(prolist);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(!Objects.isNull(edcDskLogProduction)){
+            List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(edcDskLogProduction.getLotNo(),edcDskLogProduction.getEqpId(),edcDskLogProduction.getProductionNo());
+            try {
+                this.printProlog(prolist);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            log.info("当前时间段无数据");
         }
     }
 
@@ -211,7 +213,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
             String line=pro.getEqpId()+","+pro.getEqpModelName()+","+startTimeString+","+endTimeString+","+pro.getDayYield()+
-                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration();
+                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration()+","+pro.getParamValue();
             lines.add(line);
         }
         File newFile = new File(filePath + "\\" + filename);

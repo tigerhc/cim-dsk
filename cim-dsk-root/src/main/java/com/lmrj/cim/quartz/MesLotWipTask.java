@@ -14,7 +14,7 @@ import java.util.Date;
 public class MesLotWipTask {
     @Autowired
     private MesLotTrackHandler mesLotTrackHandler;
-    @Scheduled(cron = "0 56 17 * * ?")
+    @Scheduled(cron = "0 13 18 * * ?")
     public void WipTask(){
         Date startTime = new Date();
         Calendar calendar = Calendar.getInstance();
