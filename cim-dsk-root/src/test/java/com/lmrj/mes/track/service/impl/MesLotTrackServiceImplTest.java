@@ -1,19 +1,20 @@
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+package com.lmrj.mes.track.service.impl;
+
+import com.lmrj.cim.CimBootApplication;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.*;
-
-@RunWith(Arquillian.class)
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+@Slf4j
+@SpringBootTest(classes = CimBootApplication.class)
+@RunWith(SpringRunner.class)
 public class MesLotTrackServiceImplTest {
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-                .addClass(com.lmrj.mes.track.service.impl.MesLotTrackServiceImpl.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+    @Autowired
+    MesLotTrackServiceImpl mesLotTrackService;
+    @Test
+    public void buildWipData(){
+        mesLotTrackService.buildWipData();
     }
-
 }

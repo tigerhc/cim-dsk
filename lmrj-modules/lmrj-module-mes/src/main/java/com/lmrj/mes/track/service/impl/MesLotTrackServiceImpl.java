@@ -394,4 +394,55 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return baseMapper.findNextStartTime(endTime,eqpId);
     }
 
+    @Override
+    public MesLotTrack finddata(String eqpId,String productionNo){
+        return baseMapper.finddata(eqpId,productionNo);
+    }
+
+    @Override
+    public Boolean updateWip(Integer lotYield,Integer lotYieldEqp,String eqpId,String productionNo){
+        return baseMapper.updateWip(lotYield,lotYieldEqp,eqpId,productionNo);
+    }
+
+    @Override
+    public Boolean insterWip(String id,String eqpId,String lotNo,String productionName,String productionNo,String orderNo,Integer lotYield,Integer lotYieldEqp,Date startTime,Date endTime,String remarks,String createBy,Date createDate){
+        return baseMapper.insterWip(id,eqpId,lotNo,productionName,productionNo,orderNo,lotYield,lotYieldEqp,startTime,endTime,remarks,createBy,createDate);
+    }
+
+    @Override
+    public  List<MesLotTrack> findIncompleteLotNo(){
+        return baseMapper.findIncompleteLotNo();
+    }
+
+    @Override
+    public Boolean deleteWip(Date startTime,Date endTime){
+        return baseMapper.deleteWip(startTime,endTime);
+    }
+
+    //往mes_lot_wip表中导入数据
+    public void buildWipData(){
+        List<MesLotTrack> mesList = baseMapper.findIncompleteLotNo();
+        for (MesLotTrack mes:
+                mesList) {
+            if(finddata(mes.getEqpId(),mes.getProductionNo())==null){
+                //向表中新建数据
+                if(insterWip(mes.getId(),mes.getEqpId(),mes.getLotNo(),mes.getProductionName(),mes.getProductionNo(),mes.getOrderNo(),mes.getLotYield(),mes.getLotYieldEqp(),mes.getStartTime(),mes.getEndTime(),mes.getRemarks(),mes.getCreateBy(),mes.getCreateDate())){
+                    log.info("mes_lot_wip表数据插入成功 批次："+mes.getEqpId());
+                }
+            }else {
+                //更新数据
+                if(updateWip(mes.getLotYield(),mes.getLotYieldEqp(),mes.getLotNo(),mes.getProductionNo())){
+                    log.info("mes_lot_wip表数据更新成功 批次："+mes.getEqpId());
+                }
+            }
+        }
+    }
+
+    /*public void deleteWip(Date startTime){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startTime);
+        calendar.add(Calendar.DAY_OF_MONTH, -2);
+        Date endTime=calendar.getTime();
+
+    }*/
 }

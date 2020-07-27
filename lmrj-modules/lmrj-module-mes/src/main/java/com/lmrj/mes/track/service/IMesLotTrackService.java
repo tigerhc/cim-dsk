@@ -4,6 +4,9 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.mes.track.entity.MesLotTrack;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -29,4 +32,15 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesLotTrack findLotNo(String startTime,String eqpId);
 
     MesLotTrack findNextStartTime(String endTime,String eqpId);
+
+    List<MesLotTrack> findIncompleteLotNo();
+
+    MesLotTrack finddata(String eqpId,String productionNo);
+
+    Boolean updateWip(Integer lotYield,Integer lotYieldEqp,String eqpId,String productionNo);
+
+    Boolean insterWip(String id, String eqpId, String lotNo, String productionName, String productionNo, String orderNo, Integer lotYield, Integer lotYieldEqp, Date startTime, Date endTime, String remarks, String createBy, Date create_date);
+
+    Boolean deleteWip(Date startTime,Date endTime);
+
 }
