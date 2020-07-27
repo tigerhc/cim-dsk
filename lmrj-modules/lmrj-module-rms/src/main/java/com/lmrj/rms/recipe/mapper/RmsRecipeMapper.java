@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,5 +25,5 @@ public interface RmsRecipeMapper extends BaseMapper<RmsRecipe> {
  RmsRecipe findLastByRecipeCode(@Param("id") String id, @Param("recipeCode") String recipeCode, @Param("eqpModelId") String eqpModelId);
  String findMaxVersionNo(@Param("recipeCode") String recipeCode, @Param("eqpId") String eqpId, @Param("eqpModelId") String eqpModelId, @Param("versionType") String versionType);
  List<String> recipeCodeList();
- List<RmsRecipe> recipePermitList(@Param("roleIdList") List<String> roleIdList);
+ List<RmsRecipe> recipePermitList(@Param("roleIdList") List<String> roleIdList, @Param("eqpId") String eqpId, @Param("recipeCode") String recipeCode, @Param("start") Date start, @Param("end") Date end, @Param("versionType") String versionType);
 }

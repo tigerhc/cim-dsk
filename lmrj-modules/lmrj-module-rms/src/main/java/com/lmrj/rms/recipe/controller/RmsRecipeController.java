@@ -281,9 +281,11 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      * @return
      */
     @RequestMapping(value = "/recipePermitList", method = { RequestMethod.GET, RequestMethod.POST })
-    public void recipePermitList(HttpServletRequest request,
-                               HttpServletResponse response) {
-        List<RmsRecipe> rmsRecipes = rmsRecipeService.recipePermitList();
+    public void recipePermitList(@RequestParam("eqpId") String eqpId,
+                                 @RequestParam("recipeCode") String recipeCode, @RequestParam("startDate") String startDate,
+                                 @RequestParam("endDate") String endDate,@RequestParam("versionType") String versionType,
+                                 HttpServletRequest request, HttpServletResponse response) {
+        List<RmsRecipe> rmsRecipes = rmsRecipeService.recipePermitList(eqpId,recipeCode,startDate,endDate,versionType);
         String content = JSON.toJSONString(new DateResponse(rmsRecipes));
         ServletUtils.printJson(response, content);
     }

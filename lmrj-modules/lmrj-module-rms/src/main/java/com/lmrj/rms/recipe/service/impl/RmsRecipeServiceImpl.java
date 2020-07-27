@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -111,7 +113,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public List<RmsRecipe> recipePermitList() {
+    public List<RmsRecipe> recipePermitList(String eqpId,String recipeCode,String startDate,String endDate,String versionType) {
         Object principal = SecurityUtils.getSubject().getPrincipal();
         String id = ShiroExt.getPrincipalProperty(principal, "id");
         User user = UserUtil.getUser(id);
@@ -120,7 +122,19 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         for (UserRole userRole:userRoles) {
             roleIdList.add(userRole.getRoleId());
         }
-        return baseMapper.recipePermitList(roleIdList);
+        Date start = null;
+        Date end = null;
+        try {
+            if (startDate !=null && !"".equals(startDate)) {
+                start = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startDate + " 00:00:00");
+            }
+            if (endDate != null && !"".equals(endDate)){
+                end = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endDate + " 23:59:59");
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return baseMapper.recipePermitList(roleIdList, eqpId,recipeCode, start, end, versionType);
     }
 
     @Override

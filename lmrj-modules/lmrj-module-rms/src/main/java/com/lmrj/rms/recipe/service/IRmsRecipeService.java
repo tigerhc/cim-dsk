@@ -26,7 +26,7 @@ public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     Integer copyMinValue(String recipeIdNew, String recipeIdOld);
     Integer copyMaxValue(String recipeIdNew, String recipeIdOld);
     List<String> recipeCodeList();
-    List<RmsRecipe> recipePermitList();
+    List<RmsRecipe> recipePermitList(String eqpId,String recipeCode,String startDate,String endDate,String versionType);
     List<RmsRecipe> getRecipePermitList();
     boolean editStatus(String id, String status);
 }
