@@ -10,6 +10,8 @@ import com.lmrj.rms.permit.entity.RmsRecipePermit;
 import com.lmrj.rms.permit.mapper.RmsRecipePermitMapper;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
+import com.lmrj.util.file.FtpUtil;
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.AccessType;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,9 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
     @Autowired
     private IRmsRecipeLogService rmsRecipeLogService;
 
+    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+
+    //老版遗弃
     @Override
     public void recipePermit(String approveStep, String roleName, String recipeId, String submitResult, String submitDesc) throws Exception{
         RmsRecipePermit recipePermit = new RmsRecipePermit();
@@ -89,6 +94,7 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
         }
     }
 
+    //新版再用
     @Override
     public void permit(String roleName, String recipeId, String submitResult, String submitDesc) {
         List<RmsRecipePermit> rmsRecipePermits = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result"));
@@ -109,8 +115,32 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                 recipe.setApproveStep(approveStep + "");
                 recipeService.updateById(recipe);
             }else if(rmsRecipePermits.size() == 1){
+                //修改文件路径,复制文件
+                String filePath = null;
+                if ("EQP".equals(recipe.getVersionType())){
+                    filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/EQP/" + recipe.getEqpId() + "/" + recipe.getRecipeCode();
+                    //复制recipe到his文件夹
+                    FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath + "/HIS",recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                    //删除原来不带版本号的recipe
+                    FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode());
+                    //复制为最新版本
+                    FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath,recipe.getRecipeCode());
+                    //删除草稿版
+                    FtpUtil.deleteFile(FTP94,"/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode() + "/" + recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                } else if ("GOLD".equals(recipe.getVersionType())){
+                    filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeCode();
+                    //复制recipe到his文件夹
+                    FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath + "/HIS",recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                    //删除原来不带版本号的recipe
+                    FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode());
+                    //复制为最新版本
+                    FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath,recipe.getRecipeCode());
+                    //删除草稿版
+                    FtpUtil.deleteFile(FTP94,"/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode() + "/" + recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                }
                 recipe.setApproveStep("0");
                 recipe.setStatus("Y");
+                recipe.setRecipeFilePath(filePath + "/HIS");
                 recipeService.updateById(recipe);
             }
         }else{

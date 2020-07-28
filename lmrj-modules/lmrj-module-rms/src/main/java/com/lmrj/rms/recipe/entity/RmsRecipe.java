@@ -63,6 +63,9 @@ public class RmsRecipe extends BaseDataEntity {
     /**状态 0、创建（不可用）1、审批（不可用）2、无效（不可用）Y、启用（可用）N、停用（不可用）*/
     @TableField(value = "status")
     private String status;
+    /**文件路径*/
+    @TableField(value = "recipe_file_path")
+    private String recipeFilePath;
     /**golden是否生效标记*/
     @TableField(value = "gold_active_flag")
     private String goldActiveFlag;
