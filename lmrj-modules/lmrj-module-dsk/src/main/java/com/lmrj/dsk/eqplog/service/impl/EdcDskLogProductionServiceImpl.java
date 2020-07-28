@@ -196,8 +196,12 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     public List<EdcDskLogProduction> findDataBylotNo (String lotNo, String eqpId, String productionNo) {
         return baseMapper.findDataBylotNo(lotNo,eqpId,productionNo);
     }
-
+    @Override
+    public EdcDskLogProduction findeqpNoInfab(String eqpId){
+        return baseMapper.findeqpNoInfab(eqpId);
+    }
     public void printProlog(List<EdcDskLogProduction> prolist) throws Exception{
+        EdcDskLogProduction pro0= findeqpNoInfab(prolist.get(0).getEqpId());
         List<String> lines = new ArrayList<>();
         String filename=null;
         EdcDskLogProduction pro;
@@ -212,12 +216,11 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
-            String line=pro.getEqpId()+","+pro.getEqpModelName()+","+startTimeString+","+endTimeString+","+pro.getDayYield()+
-                    ","+pro.getLotYield()+","+pro.getLotNo()+","+pro.getDuration()+","+pro.getParamValue();
+            String line=pro.getEqpId()+","+pro.getEqpNo()+","+pro0.getEqpNo()+","+pro.getRecipeCode()+","+startTimeString+","+endTimeString+","+pro.getLotYield()+","+pro.getDayYield()+","+
+                    pro.getDuration()+","+","+","+","+","+pro.getOrderNo()+","+pro.getLotNo()+","+pro.getProductionNo()+","+pro.getParamValue();
             lines.add(line);
         }
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }
-
 }

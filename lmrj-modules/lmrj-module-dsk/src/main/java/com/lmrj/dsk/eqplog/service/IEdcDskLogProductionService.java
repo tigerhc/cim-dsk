@@ -32,4 +32,6 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
     EdcDskLogProduction findLotNo(Date startTime,Date endTime);
 
     List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo);
+
+    EdcDskLogProduction findeqpNoInfab(String eqpId);
 }
