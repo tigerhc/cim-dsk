@@ -123,13 +123,13 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                     filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeCode();
                 }
                 //复制recipe到his文件夹
-                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath + "/HIS",recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt",filePath + "/HIS",recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt");
                 //删除原来不带版本号的recipe
-                FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode());
+                FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode() + ".txt");
                 //复制为最新版本
-                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo(),filePath,recipe.getRecipeCode());
+                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt",filePath,recipe.getRecipeCode() + ".txt");
                 //删除草稿版
-                FtpUtil.deleteFile(FTP94,"/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode() + "/" + recipe.getRecipeCode() + "_V" + recipe.getVersionNo());
+                FtpUtil.deleteFile(FTP94,"/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode() + "/" + recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt");
                 recipe.setApproveStep("0");
                 recipe.setStatus("Y");
                 recipe.setRecipeFilePath(filePath + "/HIS");
