@@ -9,6 +9,7 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -143,13 +144,16 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
      * @return
      */
     public void exportProductionCsv(Date startTime, Date endTime) {
-        EdcDskLogProduction edcDskLogProduction=baseMapper.findLotNo(startTime,endTime);
-        if(!Objects.isNull(edcDskLogProduction)){
-            List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(edcDskLogProduction.getLotNo(),edcDskLogProduction.getEqpId(),edcDskLogProduction.getProductionNo());
-            try {
-                this.printProlog(prolist);
-            } catch (Exception e) {
-                e.printStackTrace();
+        List<EdcDskLogProduction> lotNoList=baseMapper.findLotNo(startTime,endTime);
+        if(!StringUtil.isBlank(lotNoList.get(0).getLotNo())){
+            for (EdcDskLogProduction pro:
+                    lotNoList) {
+                List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(pro.getLotNo(),pro.getEqpId(),pro.getProductionNo());
+                try {
+                    this.printProlog(prolist);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }else{
             log.info("当前时间段无数据");
@@ -189,7 +193,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }*/
 
     @Override
-    public EdcDskLogProduction findLotNo(Date startTime,Date endTime){
+    public List<EdcDskLogProduction> findLotNo(Date startTime,Date endTime){
         return baseMapper.findLotNo(startTime,endTime);
     }
     @Override
@@ -197,11 +201,11 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         return baseMapper.findDataBylotNo(lotNo,eqpId,productionNo);
     }
     @Override
-    public EdcDskLogProduction findeqpNoInfab(String eqpId){
+    public String findeqpNoInfab(String eqpId){
         return baseMapper.findeqpNoInfab(eqpId);
     }
     public void printProlog(List<EdcDskLogProduction> prolist) throws Exception{
-        EdcDskLogProduction pro0= findeqpNoInfab(prolist.get(0).getEqpId());
+        String eqpNo= findeqpNoInfab(prolist.get(0).getEqpId());
         List<String> lines = new ArrayList<>();
         String filename=null;
         EdcDskLogProduction pro;
@@ -216,11 +220,21 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
-            String line=pro.getEqpId()+","+pro.getEqpNo()+","+pro0.getEqpNo()+","+pro.getRecipeCode()+","+startTimeString+","+endTimeString+","+pro.getLotYield()+","+pro.getDayYield()+","+
+            String line=pro.getEqpId()+","+pro.getEqpNo()+","+eqpNo+","+pro.getRecipeCode()+","+startTimeString+","+endTimeString+","+pro.getLotYield()+","+pro.getDayYield()+","+
                     pro.getDuration()+","+","+","+","+","+pro.getOrderNo()+","+pro.getLotNo()+","+pro.getProductionNo()+","+pro.getParamValue();
             lines.add(line);
         }
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
+        List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
+        for (File file : fileList) {
+            if (file.getName().contains("Productionlog.csv")) {
+                if(file.getName().split("_")[1].equals(filename.split("_")[1]) &&
+                        file.getName().split("_")[2].equals(filename.split("_")[2]) &&
+                        !file.getName().split("_")[3].equals(filename.split("_")[3])){
+                    FileUtil.move(filePath + "\\"+file.getName(),"E:\\fileback_up\\"+file.getName(),false);
+                }
+            }
+        }
     }
 }
