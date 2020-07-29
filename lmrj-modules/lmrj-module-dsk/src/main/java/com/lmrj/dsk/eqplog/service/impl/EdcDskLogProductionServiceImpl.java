@@ -7,6 +7,8 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -40,6 +38,8 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     public String fileType="PRODUCTION";
     @Autowired
     EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
+    @Autowired
+    FabEquipmentServiceImpl fabEquipmentService;
     //@Override
     //public boolean insert(EdcDskLogProduction edcDskLogProduction) {
     //    // 保存主表
@@ -219,17 +219,10 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
             if(i==0){
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
                 filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+ createTimeString +"_Productionlog.csv";
-                String officeName=null;
-                if(pro.getEqpId().contains("PRINTER")){
-                    officeName = "PRINTER";
-                }else if(pro.getEqpId().contains("DM")){
-                    officeName = "DM";
-                }else if(pro.getEqpId().contains("REFLOW")){
-                    officeName = "REFLOW";
-                }
+                FabEquipment fabEquipment=fabEquipmentService.findEqpByCode(pro.getEqpId());
                 //拼写文件存储路径及备份路径
-                filePath = "/EQUIPMENT/SIM/" + DateUtil.getYear()+ officeName + pro.getEqpId() + "/" + DateUtil.getMonth();
-                fileBackUpPath="/EQUIPMENT/SIM/" + DateUtil.getYear()+ officeName + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = "/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath="/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
                 filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
                 fileBackUpPath=new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
             }

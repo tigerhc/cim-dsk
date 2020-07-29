@@ -3,7 +3,6 @@ package com.lmrj.cim.quartz;
 import com.lmrj.mes.track.handler.MesLotTrackHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -14,7 +13,7 @@ import java.util.Date;
 public class MesLotWipTask {
     @Autowired
     private MesLotTrackHandler mesLotTrackHandler;
-    @Scheduled(cron = "0 13 18 * * ?")
+    /*@Scheduled(cron = "0 13 18 * * ?")*/
     public void WipTask(){
         Date startTime = new Date();
         Calendar calendar = Calendar.getInstance();
