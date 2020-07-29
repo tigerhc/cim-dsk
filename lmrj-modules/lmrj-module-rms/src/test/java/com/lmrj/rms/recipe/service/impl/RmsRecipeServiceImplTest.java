@@ -21,7 +21,7 @@ public class RmsRecipeServiceImplTest {
     @Test
     public void findLastByName() throws Exception {
         RmsRecipe rmsRecipe = rmsRecipeServiceImpl.selectById("be247412263c43cf9414288488be6122");
-        RmsRecipe rmsRecipeLast = rmsRecipeServiceImpl.findLastByRecipeCode(rmsRecipe);
+        RmsRecipe rmsRecipeLast = rmsRecipeServiceImpl.findLastByRecipeCode(rmsRecipe,"GOLD");
     }
 
     @Test

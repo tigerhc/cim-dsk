@@ -116,23 +116,40 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                 recipeService.updateById(recipe);
             }else if(rmsRecipePermits.size() == 1){
                 //修改文件路径,复制文件
+                String DRAFTPath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode();
                 String filePath = null;
                 if ("EQP".equals(recipe.getVersionType())){
+                    //获取备份文件目标路径
                     filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/EQP/" + recipe.getEqpId() + "/" + recipe.getRecipeCode();
+                    //找到之前激活的EQP版本修改为停用
+                    RmsRecipe eqp = recipeService.findLastByRecipeCode(recipe, "EQP");
+                    eqp.setStatus("N");
+                    recipeService.updateById(eqp);
                 } else if ("GOLD".equals(recipe.getVersionType())){
+                    //获取备份文件目标路径
                     filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeCode();
+                    //找到之前激活的GOLD版本修改为停用
+                    RmsRecipe gold = recipeService.findLastByRecipeCode(recipe, "GOLD");
+                    gold.setStatus("N");
+                    recipeService.updateById(gold);
                 }
-                //复制recipe到his文件夹
-                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt",filePath + "/HIS",recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt");
-                //删除原来不带版本号的recipe
-                FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode() + ".txt");
-                //复制为最新版本
-                FtpUtil.copyFile(FTP94,recipe.getRecipeFilePath(),recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt",filePath,recipe.getRecipeCode() + ".txt");
-                //删除草稿版
-                FtpUtil.deleteFile(FTP94,"/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeCode() + "/" + recipe.getRecipeCode() + "_V" + recipe.getVersionNo() + ".txt");
+                String recipeFilePath = recipe.getRecipeFilePath();
+                if (recipeFilePath != null && !"".equals(recipeFilePath)) {
+                    String[] strings = recipeFilePath.split("/");
+                    String fileName = strings[strings.length - 1];
+                    String fileSuffix = fileName.split("\\.")[1];
+                    //复制recipe到his文件夹
+                    FtpUtil.copyFile(FTP94,DRAFTPath,fileName,filePath + "/HIS",fileName);
+                    //删除原来不带版本号的recipe
+                    FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeCode() + "." + fileSuffix);
+                    //复制为最新版本
+                    FtpUtil.copyFile(FTP94,DRAFTPath,fileName,filePath,filePath + "/" + recipe.getRecipeCode() + "." + fileSuffix);
+                    //删除草稿版
+                    FtpUtil.deleteFile(FTP94,recipeFilePath);
+                    recipe.setRecipeFilePath(filePath + "/HIS/" + fileName);
+                }
                 recipe.setApproveStep("0");
                 recipe.setStatus("Y");
-                recipe.setRecipeFilePath(filePath + "/HIS");
                 recipeService.updateById(recipe);
             }
         }else{

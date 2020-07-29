@@ -383,7 +383,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     @Override
     public RmsRecipe findLastByRecipeCode(String id){
         RmsRecipe rmsRecipe = selectById(id);
-        return findLastByRecipeCode(rmsRecipe);
+        return findLastByRecipeCode(rmsRecipe, "GOLD");
     }
 
     /**
@@ -393,8 +393,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @return
      */
     @Override
-    public RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe){
-        RmsRecipe rmsRecipeLast =  baseMapper.findLastByRecipeCode(rmsRecipe.getId(), rmsRecipe.getRecipeCode(), rmsRecipe.getEqpModelId());
+    public RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe, String versionType){
+        RmsRecipe rmsRecipeLast =  baseMapper.findLastByRecipeCode(rmsRecipe.getId(), rmsRecipe.getRecipeCode(), rmsRecipe.getEqpModelId(), versionType);
         if(rmsRecipeLast==null){
             return null;
         }

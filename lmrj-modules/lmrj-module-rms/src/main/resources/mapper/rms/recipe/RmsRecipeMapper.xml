@@ -29,7 +29,7 @@
         <include refid="Base_Column_List" />
         from rms_recipe t
         where recipe_code = #{recipeCode} and  eqp_model_id  = #{eqpModelId}
-        and id != #{id} and STATUS = 'Y' and VERSION_TYPE='GOLD'
+        and id != #{id} and STATUS = 'Y' and VERSION_TYPE=#{versionType}
     </select>
 
     <select id="findMaxVersionNo" resultType="string">

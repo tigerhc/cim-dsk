@@ -19,7 +19,7 @@ import java.util.List;
 public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     boolean uploadRecipe(String eqpId, String recipeName) throws Exception;
     boolean downloadRecipe(String eqpId, String recipeName) throws Exception;
-    RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe);
+    RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe, String versionType);
     RmsRecipe findLastByRecipeCode(String id);
     boolean upgrade(RmsRecipe rmsRecipe);
     RmsRecipe selectByIdAndCompareParam(String id);

@@ -22,7 +22,7 @@ import java.util.List;
 @Mapper
 public interface RmsRecipeMapper extends BaseMapper<RmsRecipe> {
 
- RmsRecipe findLastByRecipeCode(@Param("id") String id, @Param("recipeCode") String recipeCode, @Param("eqpModelId") String eqpModelId);
+ RmsRecipe findLastByRecipeCode(@Param("id") String id, @Param("recipeCode") String recipeCode, @Param("eqpModelId") String eqpModelId, @Param("versionType") String versionType);
  String findMaxVersionNo(@Param("recipeCode") String recipeCode, @Param("eqpId") String eqpId, @Param("eqpModelId") String eqpModelId, @Param("versionType") String versionType);
  List<String> recipeCodeList();
  List<RmsRecipe> recipePermitList(@Param("roleIdList") List<String> roleIdList, @Param("eqpId") String eqpId, @Param("recipeCode") String recipeCode, @Param("start") Date start, @Param("end") Date end, @Param("versionType") String versionType);
