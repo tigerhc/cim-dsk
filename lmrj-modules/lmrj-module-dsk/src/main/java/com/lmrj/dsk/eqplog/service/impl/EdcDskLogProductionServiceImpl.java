@@ -9,14 +9,17 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
-import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -144,19 +147,17 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
      * @return
      */
     public void exportProductionCsv(Date startTime, Date endTime) {
-        List<EdcDskLogProduction> lotNoList=baseMapper.findLotNo(startTime,endTime);
-        if(!StringUtil.isBlank(lotNoList.get(0).getLotNo())){
-            for (EdcDskLogProduction pro:
-                    lotNoList) {
-                List<EdcDskLogProduction> prolist =  baseMapper.findDataBylotNo(pro.getLotNo(),pro.getEqpId(),pro.getProductionNo());
-                try {
-                    this.printProlog(prolist);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }else{
+        List<EdcDskLogProduction> lotNoList = baseMapper.findLotNo(startTime, endTime);
+        if (lotNoList.size() == 0) {
             log.info("当前时间段无数据");
+        }
+        for (EdcDskLogProduction pro : lotNoList) {
+            List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            try {
+                this.printProlog(prolist);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
