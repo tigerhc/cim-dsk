@@ -41,9 +41,9 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
 
  @Select("select DISTINCT lot_no ,eqp_id, production_no from edc_dsk_log_production where start_time between #{startTime} and #{endTime}")
- EdcDskLogProduction findLotNo(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+ List<EdcDskLogProduction> findLotNo(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
  @Select("select * from edc_dsk_log_production where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time ")
  List<EdcDskLogProduction> findDataBylotNo(@Param("lotNo") String lotNo,@Param("eqpId") String eqpId,@Param("productionNo") String productionNo);
  @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
- EdcDskLogProduction findeqpNoInfab(@Param("eqpId") String eqpId);
+ String findeqpNoInfab(@Param("eqpId") String eqpId);
 }

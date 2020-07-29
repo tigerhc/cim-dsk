@@ -17,5 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcDskLogOperationMapper extends BaseMapper<EdcDskLogOperation> {
-    
+
 }
