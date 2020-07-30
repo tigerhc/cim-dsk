@@ -6,14 +6,13 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYield;
 import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.util.ExcelUtil;
 import com.lmrj.util.lang.StringUtil;
-import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
 public class ExcelUtilTest {
 
-    @Test
+    //@Test
     public void readExcel() {
         String dir  ="D:\\1项目\\大连三垦\\2需求分设\\APS\\";
         //ApsPlanPdtYield apsPlanPdtYield = new ApsPlanPdtYield();

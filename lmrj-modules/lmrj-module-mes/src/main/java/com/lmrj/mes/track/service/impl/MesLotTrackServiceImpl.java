@@ -411,10 +411,18 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public List<MesLotTrack> findIncompleteLotNo(Date startTime,Date endTime) {
         return baseMapper.findIncompleteLotNo(startTime,endTime);
     }
+    @Override
+    public  String selectEndData(String lotNo,String productionNo){
+        return  baseMapper.selectEndData(lotNo,productionNo);
+    }
+    @Override
+    public Boolean deleteEndData(String lotNo,String productionNo){
+        return  baseMapper.deleteEndData(lotNo,productionNo);
+    }
 
     @Override
-    public Boolean deleteWip(Date startTime, Date endTime) {
-        return baseMapper.deleteWip(startTime, endTime);
+    public List<MesLotTrack> selectWip(){
+        return  baseMapper.selectWip();
     }
 
 }

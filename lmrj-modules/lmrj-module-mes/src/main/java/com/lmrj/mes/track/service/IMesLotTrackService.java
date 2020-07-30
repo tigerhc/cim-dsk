@@ -41,6 +41,9 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     Boolean insterWip(String id, String eqpId, String lotNo, String productionName, String productionNo, String orderNo, Integer lotYield, Integer lotYieldEqp, Date startTime, Date endTime, String remarks, String createBy, Date create_date);
 
-    Boolean deleteWip(Date startTime,Date endTime);
+    String selectEndData(String lotNo,String productionNo);
 
+    Boolean deleteEndData(String lotNo,String productionNo);
+
+    List<MesLotTrack> selectWip();
 }

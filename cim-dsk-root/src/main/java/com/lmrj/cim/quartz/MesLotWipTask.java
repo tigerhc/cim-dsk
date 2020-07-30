@@ -1,28 +1,51 @@
 package com.lmrj.cim.quartz;
 
-import com.lmrj.mes.track.handler.MesLotTrackHandler;
+import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
 public class MesLotWipTask {
+
     @Autowired
-    private MesLotTrackHandler mesLotTrackHandler;
-    /*@Scheduled(cron = "0 13 18 * * ?")*/
-    public void WipTask(){
-        Date startTime = new Date();
+    IMesLotTrackService iMesLotTrackService;
+    //往mes_lot_wip表中导入数据
+    //@Scheduled(cron = "0 10 0 * * ?")
+    public void buildWipData() {
+        Date endTime = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startTime);
-        calendar.add(Calendar.DAY_OF_MONTH, -3);
-        Date endTime = calendar.getTime();
-        // 删除创建时间在当前时间到两天前范围内 已完成的数据记录
-        mesLotTrackHandler.deleteWip(startTime,endTime);
-        // 查询创建时间在当前时间到两天前范围内的数据导入wip表
-        mesLotTrackHandler.buildWipData(startTime,endTime);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date startTime = calendar.getTime();
+        List<MesLotTrack> mesList = iMesLotTrackService.findIncompleteLotNo(startTime,endTime);
+        for (MesLotTrack mes:
+                mesList) {
+            if (iMesLotTrackService.finddata(mes.getEqpId(), mes.getProductionNo()) == null) {
+                //向表中新建数据
+                if (iMesLotTrackService.insterWip(mes.getId(), mes.getEqpId(), mes.getLotNo(), mes.getProductionName(), mes.getProductionNo(), mes.getOrderNo(), mes.getLotYield(), mes.getLotYieldEqp(), mes.getStartTime(), mes.getEndTime(), mes.getRemarks(), mes.getCreateBy(), mes.getCreateDate())) {
+                    log.info("mes_lot_wip表数据插入成功 批次：" + mes.getEqpId());
+                }
+                continue;
+            } else {
+                //更新数据
+                if (iMesLotTrackService.updateWip(mes.getLotYield(), mes.getLotYieldEqp(), mes.getLotNo(), mes.getProductionNo())) {
+                    log.info("mes_lot_wip表数据更新成功 批次：" + mes.getEqpId());
+                }
+            }
+        }
+        //更新wip表中数据 将已完成数据删除
+        List<MesLotTrack> wipList=iMesLotTrackService.selectWip();
+        for (MesLotTrack mesLotTrack:
+                wipList) {
+            if(iMesLotTrackService.selectEndData(mesLotTrack.getLotNo(),mesLotTrack.getProductionNo())!= null){
+                iMesLotTrackService.deleteById(mesLotTrack);
+            }
+        }
     }
 }

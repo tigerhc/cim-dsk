@@ -44,6 +44,12 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
  @Update("update mes_lot_wip set lot_yield=#{lotYield},lot_yield_eqp=#{lotYieldEqp}  where eqp_id = #{eqpId} and production_no = #{productionNo}")
  Boolean updateWip(@Param("lotYield") Integer lotYield, @Param("lotYieldEqp") Integer lotYieldEqp, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
 
- @Delete("DELETE FROM mes_lot_wip where production_no  in (select DISTINCT PRODUCTION_NO from mes_lot_track where eqp_id LIKE '%SIM%' AND END_TIME IS NOT NULL and create_date between #{startTime} and #{endTime})")
- Boolean deleteWip(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+ @Select("select DISTINCT PRODUCTION_NO from mes_lot_track where eqp_id LIKE '%SIM-TRM%' AND END_TIME IS NOT NULL and lot_no = #{lotNo} and production_no = #{productionNo}")
+ String selectEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
+
+ @Delete("delete from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
+ Boolean deleteEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
+
+ @Select("select * from mes_lot_wip")
+ List<MesLotTrack> selectWip();
 }

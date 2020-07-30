@@ -14,6 +14,6 @@ public class MesLotWipTaskTest {
     MesLotWipTask mesLotWipTask;
     @Test
     public void wipTask() {
-        mesLotWipTask.WipTask();
+        mesLotWipTask.buildWipData();
     }
 }
