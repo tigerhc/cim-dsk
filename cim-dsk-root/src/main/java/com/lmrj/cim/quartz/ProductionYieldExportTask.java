@@ -3,7 +3,6 @@ package com.lmrj.cim.quartz;
 import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -17,7 +16,7 @@ public class ProductionYieldExportTask {
 
     public String filePath = "E:\\FTP\\EQUIPMENT\\SIM\\2020\\PRINTER\\SIM-PRINTER1\\07";
 
-    @Scheduled(cron = "0 50 23 * * ?")
+    //@Scheduled(cron = "0 50 23 * * ?")
     public void doExportProductionCsv() throws Exception {
         log.info("开始导出production csv文件");
         Date endTime = new Date();

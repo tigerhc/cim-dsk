@@ -221,8 +221,8 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
                 filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+ createTimeString +"_Productionlog.csv";
                 FabEquipment fabEquipment=fabEquipmentService.findEqpByCode(pro.getEqpId());
                 //拼写文件存储路径及备份路径
-                filePath = "/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth();
-                fileBackUpPath="/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath="E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getOfficeName()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
                 filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
                 fileBackUpPath=new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
             }
