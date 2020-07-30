@@ -15,7 +15,7 @@ public class ProductionYieldExportTask {
     @Autowired
     EdcDskLogProductionServiceImpl edcDskLogProductionService;
 
-    @Scheduled(cron = "0 04 11 * * ?")
+    @Scheduled(cron = "0 30 23 * * ?")
     public void doExportProductionCsv() throws Exception {
         log.info("开始导出production csv文件");
         Date endTime = new Date();

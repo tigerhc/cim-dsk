@@ -213,7 +213,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
         String filePath=null;
         String fileBackUpPath=null;
-        lines.add(edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
+        lines.add(FileUtil.csvBom+edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
         for (int i = 0; i < prolist.size(); i++) {
             pro=prolist.get(i);
             if(i==0){
@@ -235,7 +235,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         //创建文件路径
         FileUtil.mkDir(fileBackUpPath);
         File newFile = new File(filePath + "\\" + filename);
-        FileUtil.writeLines(newFile, "GBK", lines);
+        FileUtil.writeLines(newFile, "UTF-8", lines);
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {
             if (file.getName().contains("Productionlog.csv")) {
