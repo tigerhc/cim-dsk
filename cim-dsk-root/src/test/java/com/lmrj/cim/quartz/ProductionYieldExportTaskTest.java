@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 @SpringBootTest(classes = CimBootApplication.class)
 @RunWith(SpringRunner.class)
@@ -24,11 +24,15 @@ public class ProductionYieldExportTaskTest {
     //@Scheduled(cron = "0 45 14 * * ?")
     public void doExportProductionCsv() throws Exception {
         log.info("开始导出production csv文件");
-        String stime="2019-12-29 11:35:34";
+        /*String stime="2019-12-29 11:35:34";
         String etime="2020-04-16 11:58:10";
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startTime =format.parse(stime);
-        Date endTime =format.parse(etime);
+        Date endTime =format.parse(etime);*/
+        Date endTime = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date startTime = calendar.getTime();
         edcDskLogProductionService.exportProductionCsv(startTime,endTime);
         log.info("开始导出production csv文件");
     }
