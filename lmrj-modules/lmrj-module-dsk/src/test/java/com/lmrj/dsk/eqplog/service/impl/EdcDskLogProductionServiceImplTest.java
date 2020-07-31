@@ -22,8 +22,9 @@ public class EdcDskLogProductionServiceImplTest {
     @Test
     public void exportProductionCsv() throws Exception{
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
-        Date startTime = simpleDateFormat.parse("2019-12-29 11:35:34");
-        Date endTime = simpleDateFormat.parse("2020-04-16 11:58:10");
+        Date startTime = simpleDateFormat.parse("2020-07-31 13:55:36");
+        Date endTime = simpleDateFormat.parse("2020-07-31 14:04:33");
+        edcDskLogProductionService.updateProductionData(startTime,endTime);
         edcDskLogProductionService.exportProductionCsv(startTime,endTime);
     }
 }

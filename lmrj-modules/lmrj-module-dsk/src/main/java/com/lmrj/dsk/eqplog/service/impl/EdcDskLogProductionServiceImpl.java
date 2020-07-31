@@ -9,6 +9,7 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
+import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,41 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
 
     }
 
+    @Override
+    public List<MesLotTrack> findCorrectData(Date startTime, Date endTime) {
+        return baseMapper.findCorrectData(startTime, endTime);
+    }
+
+    @Override
+    public Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo) {
+        return baseMapper.findNewYieldByLot(eqpId, productionNo, lotNo);
+    }
+
+    @Override
+    public Boolean fixlotYieId(Integer lotYieId, String id) {
+        return baseMapper.fixlotYieId(lotYieId, id);
+    }
+
+    @Override
+    public List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime) {
+        return baseMapper.findLotNo(startTime, endTime);
+    }
+
+    @Override
+    public List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo) {
+        return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
+    }
+
+    @Override
+    public String findeqpNoInfab(String eqpId) {
+        return baseMapper.findeqpNoInfab(eqpId);
+    }
+
+    @Override
+    public List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId) {
+        return baseMapper.findProByTime(startTime, endTime, eqpId);
+    }
+
     /**
      * @param eqpId
      * @param startTime
@@ -133,14 +169,42 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         return hisList;
     }
 
-    @Override
-    public Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo) {
-        return baseMapper.findNewYieldByLot(eqpId, productionNo, lotNo);
+    //修改品番和批次
+    public void updateProductionData(Date startTime, Date endTime) {
+        List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
+        List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
+        for (MesLotTrack mesLotTrack : mesLotTrackList) {
+            List<EdcDskLogProduction> lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
+                if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
+                    edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
+                    edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                    wrongDataList.add(edcDskLogProduction);
+                }
+            }
+        }
+        if (!wrongDataList.isEmpty()) {
+            this.updateBatchById(wrongDataList);
+        } else {
+            log.info("数据品番和批次正确");
+        }
     }
 
-    @Override
-    public Boolean fixlotYieId(Integer lotYieId, String id) {
-        return baseMapper.fixlotYieId(lotYieId, id);
+    //修改批量内连番
+    public void updateProductionLotYieId(List<EdcDskLogProduction> edcDskLogProductionList) {
+        List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
+        for (int i = 0; i < edcDskLogProductionList.size(); i++) {
+            EdcDskLogProduction edcDskLogProduction = edcDskLogProductionList.get(i);
+            if (edcDskLogProduction.getLotYield() != (i + 1)) {
+                edcDskLogProduction.setLotYield(i + 1);
+                wrongDataList.add(edcDskLogProduction);
+            }
+        }
+        if (!wrongDataList.isEmpty()) {
+            this.updateBatchById(wrongDataList);
+        } else {
+            log.info("数据批量内连番正确");
+        }
     }
 
     /**
@@ -163,25 +227,14 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         for (EdcDskLogProduction pro : lotNoList) {
             //根据批次、品番和设备号查找所有记录
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
-            //判断批量内连番是否正确
-            if (prolist.get(0).getLotYield() == 1 && prolist.get(prolist.size() - 1).getLotYield() == prolist.size()) {
-                try {
-                    //导出文件 一个批次生成一个文件
-                    this.printProlog(prolist);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                for (int i = 0; i < prolist.size(); i++) {
-                    if (!baseMapper.fixlotYieId(i + 1, prolist.get(i).getId())) {
-                        log.info("lotYieId修正失败" + (i + 1) + "------" + prolist.get(i).getLotYield());
-                    } else {
-                        log.info("lotYieId修正成功" + (i + 1) + "------" + prolist.get(i).getLotYield());
-                    }
-                }
-                //递归执行文件导出
-                printProductionCsv(lotNoList);
-                return;
+            //修改批次内连番
+            updateProductionLotYieId(prolist);
+            List<EdcDskLogProduction> newprolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            try {
+                //导出文件 一个批次生成一个文件
+                this.printProlog(newprolist);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -217,21 +270,6 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }*/
-
-    @Override
-    public List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime) {
-        return baseMapper.findLotNo(startTime, endTime);
-    }
-
-    @Override
-    public List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo) {
-        return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
-    }
-
-    @Override
-    public String findeqpNoInfab(String eqpId) {
-        return baseMapper.findeqpNoInfab(eqpId);
-    }
 
     public void printProlog(List<EdcDskLogProduction> prolist) throws Exception {
         String eqpNo = findeqpNoInfab(prolist.get(0).getEqpId());
