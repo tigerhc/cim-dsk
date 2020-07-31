@@ -151,6 +151,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
      * @return
      */
     public void exportProductionCsv(Date startTime, Date endTime) {
+        //获取一天之内的批次、品番和设备号
         List<EdcDskLogProduction> lotNoList = baseMapper.findLotNo(startTime, endTime);
         if (lotNoList.size() == 0) {
             log.info("当前时间段无数据");
@@ -160,9 +161,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
 
     public void printProductionCsv(List<EdcDskLogProduction> lotNoList) {
         for (EdcDskLogProduction pro : lotNoList) {
+            //根据批次、品番和设备号查找所有记录
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            //判断批量内连番是否正确
             if (prolist.get(0).getLotYield() == 1 && prolist.get(prolist.size() - 1).getLotYield() == prolist.size()) {
                 try {
+                    //导出文件 一个批次生成一个文件
                     this.printProlog(prolist);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -175,6 +179,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                         log.info("lotYieId修正成功" + (i + 1) + "------" + prolist.get(i).getLotYield());
                     }
                 }
+                //递归执行文件导出
                 printProductionCsv(lotNoList);
                 return;
             }
@@ -237,14 +242,15 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
         String filePath = null;
         String fileBackUpPath = null;
+        //获取表格title添加到lines中
         lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
         for (int i = 0; i < prolist.size(); i++) {
             pro = prolist.get(i);
+            //拼写文件存储路径及备份路径
             if (i == 0) {
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
                 filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "_Productionlog.csv";
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
-                //拼写文件存储路径及备份路径
                 filePath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
                 fileBackUpPath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
                 filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
@@ -252,6 +258,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             String endTimeString = DateUtil.formatDate(pro.getEndTime(), pattern2);
+            //拼写当前行字符串
             String line = pro.getEqpId() + "," + pro.getEqpNo() + "," + eqpNo + "," + pro.getRecipeCode() + "," + startTimeString + "," + endTimeString + "," + pro.getDayYield() + "," + pro.getLotYield() + "," +
                     pro.getDuration() + "," + "," + "," + "," + "," + pro.getOrderNo() + "," + pro.getLotNo() + "," + pro.getProductionNo() + "," + pro.getParamValue();
             lines.add(line);
@@ -260,9 +267,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         FileUtil.mkDir(fileBackUpPath);
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
+        //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {
             if (file.getName().contains("Productionlog.csv")) {
+                //eqpId lotNo
                 if (file.getName().split("_")[1].equals(filename.split("_")[1]) &&
                         file.getName().split("_")[2].equals(filename.split("_")[2]) &&
                         !file.getName().split("_")[3].equals(filename.split("_")[3])) {
