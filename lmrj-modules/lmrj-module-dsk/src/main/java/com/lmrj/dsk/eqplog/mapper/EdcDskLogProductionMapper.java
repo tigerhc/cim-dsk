@@ -5,6 +5,7 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -23,27 +24,30 @@ import java.util.List;
 @Mapper
 public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProduction> {
 
- @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and start_time  >= #{startTime} limit 1")
- EdcDskLogProduction findNextYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
+    @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and start_time  >= #{startTime} limit 1")
+    EdcDskLogProduction findNextYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
 
- @Select("select * from edc_dsk_log_production where eqp_id = #{eqpId} and start_time  between #{startTime} and #{endTime}  order by start_time limit 1000")
- List<EdcDskLogProduction> findYields(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Select("select * from edc_dsk_log_production where eqp_id = #{eqpId} and start_time  between #{startTime} and #{endTime}  order by start_time limit 1000")
+    List<EdcDskLogProduction> findYields(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
- @Select("select max(lot_yield) lot_yield  from edc_dsk_log_production where eqp_id=#{eqpId} and production_no=#{productionNo} and lot_no=#{lotNo}")
- Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
+    @Select("select max(lot_yield) lot_yield  from edc_dsk_log_production where eqp_id=#{eqpId} and production_no=#{productionNo} and lot_no=#{lotNo}")
+    Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
 
- @Select("select * from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time  order by start_time ")
- List<EdcDskLogProduction> findProductionlog( @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Select("select * from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time  order by start_time ")
+    List<EdcDskLogProduction> findProductionlog(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
- @Select("select * from edc_dsk_log_production where lot_no in (select DISTINCT lot_no from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time) order by start_time")
- List<EdcDskLogProduction> findProductionlog1( @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Select("select * from edc_dsk_log_production where lot_no in (select DISTINCT lot_no from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time) order by start_time")
+    List<EdcDskLogProduction> findProductionlog1(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select DISTINCT lot_no ,eqp_id, production_no from edc_dsk_log_production where start_time between #{startTime} and #{endTime}")
+    List<EdcDskLogProduction> findLotNo(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select * from edc_dsk_log_production where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time ")
+    List<EdcDskLogProduction> findDataBylotNo(@Param("lotNo") String lotNo, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
 
- @Select("select DISTINCT lot_no ,eqp_id, production_no from edc_dsk_log_production where start_time between #{startTime} and #{endTime}")
- List<EdcDskLogProduction> findLotNo(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
- @Select("select * from edc_dsk_log_production where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time ")
- List<EdcDskLogProduction> findDataBylotNo(@Param("lotNo") String lotNo,@Param("eqpId") String eqpId,@Param("productionNo") String productionNo);
- @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
- String findeqpNoInfab(@Param("eqpId") String eqpId);
+    @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
+    String findeqpNoInfab(@Param("eqpId") String eqpId);
+
+    @Update("update edc_dsk_log_production set lot_yield=#{lotYieId} where id=#{id}")
+    Boolean fixlotYieId(@Param("lotYieId") Integer lotYieId, @Param("id") String id);
 }

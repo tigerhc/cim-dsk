@@ -16,6 +16,7 @@ public class MesLotWipTask {
 
     @Autowired
     IMesLotTrackService iMesLotTrackService;
+
     //往mes_lot_wip表中导入数据
     //@Scheduled(cron = "0 10 0 * * ?")
     public void buildWipData() {
@@ -23,8 +24,8 @@ public class MesLotWipTask {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         Date startTime = calendar.getTime();
-        List<MesLotTrack> mesList = iMesLotTrackService.findIncompleteLotNo(startTime,endTime);
-        for (MesLotTrack mes:
+        List<MesLotTrack> mesList = iMesLotTrackService.findIncompleteLotNo(startTime, endTime);
+        for (MesLotTrack mes :
                 mesList) {
             if (iMesLotTrackService.finddata(mes.getEqpId(), mes.getProductionNo()) == null) {
                 //向表中新建数据
@@ -40,10 +41,10 @@ public class MesLotWipTask {
             }
         }
         //更新wip表中数据 将已完成数据删除
-        List<MesLotTrack> wipList=iMesLotTrackService.selectWip();
-        for (MesLotTrack mesLotTrack:
+        List<MesLotTrack> wipList = iMesLotTrackService.selectWip();
+        for (MesLotTrack mesLotTrack :
                 wipList) {
-            if(iMesLotTrackService.selectEndData(mesLotTrack.getLotNo(),mesLotTrack.getProductionNo())!= null){
+            if (iMesLotTrackService.selectEndData(mesLotTrack.getLotNo(), mesLotTrack.getProductionNo()) != null) {
                 iMesLotTrackService.deleteById(mesLotTrack);
             }
         }

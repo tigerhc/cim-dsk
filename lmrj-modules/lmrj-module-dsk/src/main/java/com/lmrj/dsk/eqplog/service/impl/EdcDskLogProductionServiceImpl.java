@@ -21,21 +21,21 @@ import java.util.*;
 
 
 /**
-* All rights Reserved, Designed By www.lmrj.com
-*
-* @version V1.0
-* @package com.lmrj.dsk.eqplog.service.impl
-* @title: edc_dsk_log_production服务实现
-* @description: edc_dsk_log_production服务实现
-* @author: 张伟江
-* @date: 2020-04-14 10:10:00
-* @copyright: 2018 www.lmrj.com Inc. All rights reserved.
-*/
+ * All rights Reserved, Designed By www.lmrj.com
+ *
+ * @version V1.0
+ * @package com.lmrj.dsk.eqplog.service.impl
+ * @title: edc_dsk_log_production服务实现
+ * @description: edc_dsk_log_production服务实现
+ * @author: 张伟江
+ * @date: 2020-04-14 10:10:00
+ * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
+ */
 @Transactional
 @Service("edcDskLogProductionService")
 @Slf4j
-public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLogProductionMapper,EdcDskLogProduction> implements  IEdcDskLogProductionService {
-    public String fileType="PRODUCTION";
+public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogProductionMapper, EdcDskLogProduction> implements IEdcDskLogProductionService {
+    public String fileType = "PRODUCTION";
     @Autowired
     EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
     @Autowired
@@ -65,7 +65,8 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         //delete from edc_dsk_log_production where lot_no = '0505B1' and eqp_id='SIM-PRINTER1'  and (id != '11' or id != '2')
         return true;
     }
-  //获取当前产量
+
+    //获取当前产量
     public boolean clearMiddleProductionLog2() {
         return true;
     }
@@ -79,47 +80,46 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }
 
     /**
-     *
      * @param eqpId
      * @param startTime
      * @param endTime
      * @return
      */
     @Override
-    public List<EdcDskLogProductionHis> findBackUpYield(String eqpId,Date startTime, Date endTime) {
+    public List<EdcDskLogProductionHis> findBackUpYield(String eqpId, Date startTime, Date endTime) {
         List<EdcDskLogProductionHis> hisList = new LinkedList<>();
         List<String> deleteList = new LinkedList<>();
-        List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId,startTime, endTime);
+        List<EdcDskLogProduction> yields = baseMapper.findYields(eqpId, startTime, endTime);
         Map<String, Boolean> map = Maps.newHashMap(); // 存在两条数据,查看是否出现过
-        for (int i = 0;i < yields.size(); i++){
-            if(yields.get(i).getDayYield() == 1 ){
-                String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"day") == null){
-                    map.put(key+"day", true);
-                }else{
+        for (int i = 0; i < yields.size(); i++) {
+            if (yields.get(i).getDayYield() == 1) {
+                String key = yields.get(i).getEqpId() + yields.get(i).getProductionNo() + yields.get(i).getLotNo();
+                if (map.get(key + "day") == null) {
+                    map.put(key + "day", true);
+                } else {
                     //已经有一条数据日产量为1,则删除一条
                     deleteList.add(yields.get(i).getId());
                     EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
                     hisList.add(edcDskLogProductionHis);
                 }
                 continue;
-            }else if(yields.get(i).getLotYield() == 1){
-                String key = yields.get(i).getEqpId()+yields.get(i).getProductionNo()+yields.get(i).getLotNo();
-                if(map.get(key+"lot") == null ){
-                    map.put(key+"lot", true);
-                }else{
+            } else if (yields.get(i).getLotYield() == 1) {
+                String key = yields.get(i).getEqpId() + yields.get(i).getProductionNo() + yields.get(i).getLotNo();
+                if (map.get(key + "lot") == null) {
+                    map.put(key + "lot", true);
+                } else {
                     deleteList.add(yields.get(i).getId());
                     EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
                     hisList.add(edcDskLogProductionHis);
                 }
                 continue;
             } else {
-                if (i == yields.size()-1){
+                if (i == yields.size() - 1) {
                     break;
-                }else {
-                    if (yields.get(i + 1).getDayYield() == 1 || yields.get(i + 1).getLotYield() == 1){
+                } else {
+                    if (yields.get(i + 1).getDayYield() == 1 || yields.get(i + 1).getLotYield() == 1) {
                         continue;
-                    }else {
+                    } else {
                         deleteList.add(yields.get(i).getId());
                         EdcDskLogProductionHis edcDskLogProductionHis = new EdcDskLogProductionHis(yields.get(i));
                         hisList.add(edcDskLogProductionHis);
@@ -127,7 +127,7 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
                 }
             }
         }
-        if(deleteList.size() != 0 ){
+        if (deleteList.size() != 0) {
             super.deleteBatchIds(deleteList);
         }
         return hisList;
@@ -135,12 +135,17 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
 
     @Override
     public Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo) {
-        return baseMapper.findNewYieldByLot(eqpId, productionNo,lotNo);
+        return baseMapper.findNewYieldByLot(eqpId, productionNo, lotNo);
     }
 
+    @Override
+    public Boolean fixlotYieId(Integer lotYieId, String id) {
+        return baseMapper.fixlotYieId(lotYieId, id);
+    }
 
     /**
      * 导出production csv文件
+     *
      * @param startTime
      * @param endTime
      * @return
@@ -150,12 +155,28 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         if (lotNoList.size() == 0) {
             log.info("当前时间段无数据");
         }
+        printProductionCsv(lotNoList);
+    }
+
+    public void printProductionCsv(List<EdcDskLogProduction> lotNoList) {
         for (EdcDskLogProduction pro : lotNoList) {
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
-            try {
-                this.printProlog(prolist);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (prolist.get(0).getLotYield() == 1 && prolist.get(prolist.size() - 1).getLotYield() == prolist.size()) {
+                try {
+                    this.printProlog(prolist);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                for (int i = 0; i < prolist.size(); i++) {
+                    if (!baseMapper.fixlotYieId(i + 1, prolist.get(i).getId())) {
+                        log.info("lotYieId修正失败" + (i + 1) + "------" + prolist.get(i).getLotYield());
+                    } else {
+                        log.info("lotYieId修正成功" + (i + 1) + "------" + prolist.get(i).getLotYield());
+                    }
+                }
+                printProductionCsv(lotNoList);
+                return;
             }
         }
     }
@@ -193,43 +214,46 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
     }*/
 
     @Override
-    public List<EdcDskLogProduction> findLotNo(Date startTime,Date endTime){
-        return baseMapper.findLotNo(startTime,endTime);
+    public List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime) {
+        return baseMapper.findLotNo(startTime, endTime);
     }
+
     @Override
-    public List<EdcDskLogProduction> findDataBylotNo (String lotNo, String eqpId, String productionNo) {
-        return baseMapper.findDataBylotNo(lotNo,eqpId,productionNo);
+    public List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo) {
+        return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
     }
+
     @Override
-    public String findeqpNoInfab(String eqpId){
+    public String findeqpNoInfab(String eqpId) {
         return baseMapper.findeqpNoInfab(eqpId);
     }
-    public void printProlog(List<EdcDskLogProduction> prolist) throws Exception{
-        String eqpNo= findeqpNoInfab(prolist.get(0).getEqpId());
+
+    public void printProlog(List<EdcDskLogProduction> prolist) throws Exception {
+        String eqpNo = findeqpNoInfab(prolist.get(0).getEqpId());
         List<String> lines = new ArrayList<>();
-        String filename=null;
+        String filename = null;
         EdcDskLogProduction pro;
         String pattern1 = "yyyyMMddHHmmssSSS";
         String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
-        String filePath=null;
-        String fileBackUpPath=null;
-        lines.add(FileUtil.csvBom+edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(),fileType));
+        String filePath = null;
+        String fileBackUpPath = null;
+        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
         for (int i = 0; i < prolist.size(); i++) {
-            pro=prolist.get(i);
-            if(i==0){
+            pro = prolist.get(i);
+            if (i == 0) {
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
-                filename="DSK_"+pro.getEqpId()+"_"+pro.getLotNo()+"_"+ createTimeString +"_Productionlog.csv";
-                FabEquipment fabEquipment=fabEquipmentService.findEqpByCode(pro.getEqpId());
+                filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "_Productionlog.csv";
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
                 //拼写文件存储路径及备份路径
-                filePath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth();
-                fileBackUpPath="E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode()+"/"+ pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
                 filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
-                fileBackUpPath=new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
+                fileBackUpPath = new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
-            String endTimeString=DateUtil.formatDate(pro.getEndTime(), pattern2);
-            String line=pro.getEqpId()+","+pro.getEqpNo()+","+eqpNo+","+pro.getRecipeCode()+","+startTimeString+","+endTimeString+","+pro.getLotYield()+","+pro.getDayYield()+","+
-                    pro.getDuration()+","+","+","+","+","+pro.getOrderNo()+","+pro.getLotNo()+","+pro.getProductionNo()+","+pro.getParamValue();
+            String endTimeString = DateUtil.formatDate(pro.getEndTime(), pattern2);
+            String line = pro.getEqpId() + "," + pro.getEqpNo() + "," + eqpNo + "," + pro.getRecipeCode() + "," + startTimeString + "," + endTimeString + "," + pro.getDayYield() + "," + pro.getLotYield() + "," +
+                    pro.getDuration() + "," + "," + "," + "," + "," + pro.getOrderNo() + "," + pro.getLotNo() + "," + pro.getProductionNo() + "," + pro.getParamValue();
             lines.add(line);
         }
         //创建文件路径
@@ -239,10 +263,10 @@ public class EdcDskLogProductionServiceImpl  extends CommonServiceImpl<EdcDskLog
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {
             if (file.getName().contains("Productionlog.csv")) {
-                if(file.getName().split("_")[1].equals(filename.split("_")[1]) &&
+                if (file.getName().split("_")[1].equals(filename.split("_")[1]) &&
                         file.getName().split("_")[2].equals(filename.split("_")[2]) &&
-                        !file.getName().split("_")[3].equals(filename.split("_")[3])){
-                    FileUtil.move(filePath + "\\"+file.getName(),fileBackUpPath+"\\"+file.getName(),false);
+                        !file.getName().split("_")[3].equals(filename.split("_")[3])) {
+                    FileUtil.move(filePath + "\\" + file.getName(), fileBackUpPath + "\\" + file.getName(), false);
                 }
             }
         }

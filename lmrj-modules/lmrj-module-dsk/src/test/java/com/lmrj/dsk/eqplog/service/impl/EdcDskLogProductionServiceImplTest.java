@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
@@ -20,11 +20,10 @@ public class EdcDskLogProductionServiceImplTest {
     EdcDskLogProductionServiceImpl edcDskLogProductionService;
 
     @Test
-    public void exportProductionCsv() {
-        Date startTime = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        Date endTime = calendar.getTime();
+    public void exportProductionCsv() throws Exception{
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
+        Date startTime = simpleDateFormat.parse("2019-12-29 11:35:34");
+        Date endTime = simpleDateFormat.parse("2020-04-16 11:58:10");
         edcDskLogProductionService.exportProductionCsv(startTime,endTime);
     }
 }
