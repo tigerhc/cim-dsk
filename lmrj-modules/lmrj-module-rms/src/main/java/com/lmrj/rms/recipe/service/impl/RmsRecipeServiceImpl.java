@@ -10,6 +10,8 @@ import com.lmrj.core.sys.entity.User;
 import com.lmrj.core.sys.entity.UserRole;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.rms.config.entity.RmsRecipeDownloadConfig;
+import com.lmrj.rms.config.service.IRmsRecipeDownloadConfigService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.permit.entity.RmsRecipePermit;
 import com.lmrj.rms.permit.service.IRmsRecipePermitService;
@@ -64,6 +66,10 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private IRmsRecipeLogService rmsRecipeLogService;
     @Autowired
     private IRmsRecipePermitService rmsRecipePermitService;
+    @Autowired
+    private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
+
+    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
 
     @Override
     public RmsRecipe selectById(Serializable id){
@@ -324,17 +330,22 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @return
      */
     public boolean download(String eqpId, String recipeName) throws Exception{
-        Map<String, String> map = Maps.newHashMap();
-        map.put("METHOD", "DOWN LOAD_RECIPE");
-        map.put("RECIPE_NAME", recipeName);
-        map.put("EQP_ID", eqpId);
-        map.put("USER_ID", "admin");
-        String msgg = JsonUtil.toJsonString(map);
-        System.out.println(msgg);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null){
             throw new Exception("该设备不存在");
         }
+        String versionType = getDownloadVersionType(eqpId, recipeName);
+        if (versionType == null) {
+            throw new Exception("下载失败，未找到指定配方，请检查配置或先上传配方");
+        }
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "DOWN LOAD_RECIPE");
+        map.put("RECIPE_NAME", recipeName);
+        map.put("EQP_ID", eqpId);
+        map.put("VERSION_TYPE", versionType);
+        map.put("USER_ID", "admin");
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
         Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
@@ -372,6 +383,72 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 //        }
         rmsRecipeLogService.addLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
         return true;
+    }
+
+    public String getDownloadVersionType(String eqpId, String recipeName) {
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
+        RmsRecipeDownloadConfig recipeDownloadConfig = null;
+        if (downloadConfigs.size() > 0){
+            recipeDownloadConfig = downloadConfigs.get(0);
+
+        }
+        if (recipeDownloadConfig == null){
+            return null;
+        }
+        String level1 = recipeDownloadConfig.getLevel1();
+        if (level1 == null || "".equals(level1)) {
+            return null;
+        } else {
+            boolean flag1 = checkFileExist(level1, fabEquipment, eqpId, recipeName);
+            if (flag1){
+                return level1;
+            }
+            String level2 = recipeDownloadConfig.getLevel2();
+            if (level2 == null || "".equals(level2)){
+                return null;
+            } else {
+                boolean flag2 = checkFileExist(level2, fabEquipment, eqpId, recipeName);
+                if (flag2){
+                    return level2;
+                }
+                String level3 = recipeDownloadConfig.getLevel3();
+                if (level3 == null || "".equals(level3)){
+                    return null;
+                } else {
+                    boolean flag3 = checkFileExist(level3, fabEquipment, eqpId, recipeName);
+                    if (flag3){
+                        return level3;
+                    }
+                    return null;
+                }
+            }
+        }
+    }
+
+    public boolean checkFileExist(String level, FabEquipment fabEquipment, String eqpId, String recipeName) {
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name", recipeName));
+        if (rmsRecipes.size() < 1){
+            return false;
+        }
+        RmsRecipe rmsRecipe = rmsRecipes.get(0);
+        String recipeFilePath = rmsRecipe.getRecipeFilePath();
+        if (recipeFilePath == null || "".equals(recipeFilePath)) {
+            return false;
+        }
+        String[] strings = recipeFilePath.split("/");
+        String fileName = strings[strings.length - 1];
+        String fileSuffix = fileName.split("\\.")[1];
+        String filePath = null;
+        if ("GOLD".equals(level)){
+            filePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/GOLD/" + recipeName;
+            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
+            return flag;
+        } else {
+            filePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/" + level + "/" + eqpId + "/" + recipeName;
+            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
+            return flag;
+        }
     }
 
     /**

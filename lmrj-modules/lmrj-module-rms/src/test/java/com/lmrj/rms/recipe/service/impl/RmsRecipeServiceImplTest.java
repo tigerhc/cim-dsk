@@ -36,4 +36,12 @@ public class RmsRecipeServiceImplTest {
         System.out.println(flag);
     }
 
+    @Test
+    public void checkFileExist() {
+        String eqpId = "SIM-DM1";
+        String recipeName = "TEST";
+        String versionType = rmsRecipeServiceImpl.getDownloadVersionType(eqpId, recipeName);
+        System.out.println(versionType);
+    }
+
 }
