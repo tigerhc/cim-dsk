@@ -280,6 +280,33 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return true;
     }
 
+    //从FTP服务器下载配方文件到本地
+    public boolean downloadFromFTP(String eqpId, String recipeName){
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name", recipeName));
+        if (rmsRecipes.size() < 1){
+            return false;
+        }
+        RmsRecipe rmsRecipe = rmsRecipes.get(0);
+        String recipeFilePath = rmsRecipe.getRecipeFilePath();
+        if (recipeFilePath == null || "".equals(recipeFilePath)) {
+            return false;
+        }
+        String[] strings = recipeFilePath.split("/");
+        String fileName = strings[strings.length - 1];
+        String fileSuffix = fileName.split("\\.")[1];
+        String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "DRAFT" + eqpId + "/" + recipeName;
+        String localPath = "D:/ftpTest/recipe/shanghai/mold" + fabEquipment.getModelName() + "DRAFT" + eqpId + "/" + recipeName;
+        //TODO 首次上传时无法去数据库查文件后缀
+        boolean flag = false;
+        try {
+            flag = FtpUtil.downloadFile(FTP94, remotePath, fileName + "." + fileSuffix, localPath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
     public boolean analysisFile(String eqpId, String recipeName) throws Exception {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null){
