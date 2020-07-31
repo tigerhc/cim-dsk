@@ -36,8 +36,6 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
 
     String findeqpNoInfab(String eqpId);
 
-    Boolean fixlotYieId(Integer lotYieId, String id);
-
     List<MesLotTrack> findCorrectData(Date startTime, Date endTime);
 
     List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId);

@@ -91,11 +91,6 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public Boolean fixlotYieId(Integer lotYieId, String id) {
-        return baseMapper.fixlotYieId(lotYieId, id);
-    }
-
-    @Override
     public List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime) {
         return baseMapper.findLotNo(startTime, endTime);
     }

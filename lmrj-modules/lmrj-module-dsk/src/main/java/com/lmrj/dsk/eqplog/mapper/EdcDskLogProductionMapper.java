@@ -6,7 +6,6 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -42,9 +41,6 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
     @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
     String findeqpNoInfab(@Param("eqpId") String eqpId);
-
-    @Update("update edc_dsk_log_production set lot_yield=#{lotYieId} where id=#{id}")
-    Boolean fixlotYieId(@Param("lotYieId") Integer lotYieId, @Param("id") String id);
 
     @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime}")
     List<MesLotTrack> findCorrectData(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
