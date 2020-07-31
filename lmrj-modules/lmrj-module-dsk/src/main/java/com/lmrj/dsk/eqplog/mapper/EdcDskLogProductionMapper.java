@@ -2,10 +2,10 @@ package com.lmrj.dsk.eqplog.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.mes.track.entity.MesLotTrack;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -33,12 +33,6 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
     @Select("select max(lot_yield) lot_yield  from edc_dsk_log_production where eqp_id=#{eqpId} and production_no=#{productionNo} and lot_no=#{lotNo}")
     Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
 
-    @Select("select * from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time  order by start_time ")
-    List<EdcDskLogProduction> findProductionlog(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-
-    @Select("select * from edc_dsk_log_production where lot_no in (select DISTINCT lot_no from edc_dsk_log_production where start_time <= #{startTime} and #{endTime} >= start_time) order by start_time")
-    List<EdcDskLogProduction> findProductionlog1(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-
     @Select("select DISTINCT lot_no ,eqp_id, production_no from edc_dsk_log_production where start_time between #{startTime} and #{endTime}")
     List<EdcDskLogProduction> findLotNo(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
@@ -48,6 +42,9 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
     @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
     String findeqpNoInfab(@Param("eqpId") String eqpId);
 
-    @Update("update edc_dsk_log_production set lot_yield=#{lotYieId} where id=#{id}")
-    Boolean fixlotYieId(@Param("lotYieId") Integer lotYieId, @Param("id") String id);
+    @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime}")
+    List<MesLotTrack> findCorrectData(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    @Select("select * from edc_dsk_log_production where start_time between #{startTime} and #{endTime} and eqp_id= #{eqpId} order by start_time")
+    List<EdcDskLogProduction> findProByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
 }
