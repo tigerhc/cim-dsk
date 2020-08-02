@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.map.tray.mapper.MapTrayChipMoveMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.chip_id,
+       t.eqp_id,
+       t.production_no,
+       t.lot_no,
+       t.from_tray_id,
+       t.from_x,
+       t.from_y,
+       t.to_tray_id,
+       t.to_x,
+       t.to_y,
+       t.to_z,
+       t.judge_result,
+       t.start_time,
+       t.create_date
+	</sql>
+</mapper>

@@ -21,6 +21,7 @@
         <module>lmrj-module-dsk</module>
         <module>lmrj-module-mes</module>
         <module>lmrj-module-ms</module>
+        <module>lmrj-module-map</module>
     </modules>
 
 

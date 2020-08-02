@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.map.tray.mapper.MapTrayConfigMapper" >
+
+	<sql id="Base_Column_List" >
+       t.id,
+       t.tray_id,
+       t.tray_row,
+       t.tray_col,
+       t.tray_desc,
+       t.status,
+       t.start_time,
+       t.freeze_time,
+       t.sort_code,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+</mapper>
