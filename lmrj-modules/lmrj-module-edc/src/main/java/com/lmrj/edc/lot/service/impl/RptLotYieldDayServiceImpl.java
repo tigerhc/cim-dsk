@@ -39,23 +39,26 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
 
     @Override
     public  List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime){
-        return baseMapper.findDayYeild(startTime,endTime);
+        return baseMapper.findDayYeild(startTime,endTime,baseMapper.findEqpId());
     }
     @Override
     public String findProductionName(String productionNo){
         return baseMapper.findProductionName(productionNo);
     }
     @Override
-    public Integer findLotYield(String lotNo){
-        return baseMapper.findLotYield(lotNo);
+    public Integer findLotYield(String lotNo,Date startTime,Date endTime){
+        return baseMapper.findLotYield(lotNo,startTime,endTime,baseMapper.findEqpId());
     }
-
+    @Override
+    public String findEqpId(){
+        return baseMapper.findEqpId();
+    }
     public void updateDayYield(Date startTime, Date endTime){
         Date date=new Date();
-        List<RptLotYieldDay> rptLotYieldDayList=baseMapper.findDayYeild(startTime,endTime);
+        List<RptLotYieldDay> rptLotYieldDayList=baseMapper.findDayYeild(startTime,endTime,baseMapper.findEqpId());
         for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
             lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));
-            lotYieldDay.setLotYield(baseMapper.findLotYield(lotYieldDay.getLotNo()));
+            lotYieldDay.setLotYield(baseMapper.findLotYield(lotYieldDay.getLotNo(),startTime,endTime,baseMapper.findEqpId()));
             SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
             lotYieldDay.setPeriodDate(sim.format(date));
             this.insert(lotYieldDay);

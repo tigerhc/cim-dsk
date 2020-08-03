@@ -25,5 +25,7 @@ public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
 
     String findProductionName(String productionNo);
 
-    Integer findLotYield(String lotNo);
+    Integer findLotYield(String lotNo,Date startTime,Date endTime);
+
+    String findEqpId();
 }
