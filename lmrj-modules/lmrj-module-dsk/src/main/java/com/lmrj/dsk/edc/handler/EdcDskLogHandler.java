@@ -244,6 +244,14 @@ public class EdcDskLogHandler {
             edcAmsRecordService.insertBatch(edcAmsRecordList);
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
+        // TODO: 2020/8/3 改为发送mq消息处理
+        //String processState = svs[0].toString();
+        //EdcEqpState edcEqpState = new EdcEqpState();
+        //edcEqpState.setEqpId(eqpId);
+        //edcEqpState.setStartTime(now);
+        //edcEqpState.setState(stateMap.get(processState));
+        //String stateJson = JsonUtil.toJsonString(edcEqpState);
+        //rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
         if(StringUtil.isNotBlank(status)){
             fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
         }

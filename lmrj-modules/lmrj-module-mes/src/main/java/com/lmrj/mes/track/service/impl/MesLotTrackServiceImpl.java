@@ -362,7 +362,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             return MesResult.error("please track in first");
         }
         MesLotTrack mesLotTrack = mesLotTrackList.get(0);
-        mesLotTrack.setEndTime(new Date());
+        MesLotTrack postTrack = baseMapper.findLastTrack(eqpId, lotNo, mesLotTrack.getStartTime());
+        if(postTrack == null){
+            mesLotTrack.setEndTime(new Date());
+        }else{
+            mesLotTrack.setEndTime(postTrack.getStartTime());
+        }
         mesLotTrack.setLotYield(Integer.parseInt(yield));
         mesLotTrack.setUpdateBy(opId);
         this.insertOrUpdate(mesLotTrack);

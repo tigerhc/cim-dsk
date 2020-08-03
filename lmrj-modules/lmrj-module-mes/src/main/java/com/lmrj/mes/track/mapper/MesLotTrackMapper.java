@@ -52,4 +52,9 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
 
     @Select("select * from mes_lot_wip")
     List<MesLotTrack> selectWip();
+
+    @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no != #{lotNo} and start_time > #{startTime} order by start_time limit 1")
+    MesLotTrack findLastTrack(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime);
+
+
 }
