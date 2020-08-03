@@ -7,10 +7,13 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
 import com.lmrj.edc.lot.mapper.RptLotYieldDayMapper;
 import com.lmrj.edc.lot.service.IRptLotYieldDayService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +31,36 @@ import java.util.Map;
 */
 @Transactional
 @Service("rptLotYieldDayService")
+@Slf4j
 public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDayMapper,RptLotYieldDay> implements  IRptLotYieldDayService {
 
     @Autowired
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
+
+    @Override
+    public  List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime){
+        return baseMapper.findDayYeild(startTime,endTime);
+    }
+    @Override
+    public String findProductionName(String productionNo){
+        return baseMapper.findProductionName(productionNo);
+    }
+    @Override
+    public Integer findLotYield(String lotNo){
+        return baseMapper.findLotYield(lotNo);
+    }
+
+    public void updateDayYield(Date startTime, Date endTime){
+        Date date=new Date();
+        List<RptLotYieldDay> rptLotYieldDayList=baseMapper.findDayYeild(startTime,endTime);
+        for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
+            lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));
+            lotYieldDay.setLotYield(baseMapper.findLotYield(lotYieldDay.getLotNo()));
+            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
+            lotYieldDay.setPeriodDate(sim.format(date));
+            this.insert(lotYieldDay);
+        }
+    }
 
     @Override
     public List<Map> pdtChart(String beginTime, String endTime, String line) {

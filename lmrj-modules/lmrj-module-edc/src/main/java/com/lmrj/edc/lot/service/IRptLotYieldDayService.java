@@ -3,6 +3,7 @@ package com.lmrj.edc.lot.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,4 +20,10 @@ import java.util.Map;
  */
 public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
     List<Map> pdtChart(String beginTime, String endTime, String line);
+
+    List<RptLotYieldDay> findDayYeild(Date startTime,Date endTime);
+
+    String findProductionName(String productionNo);
+
+    Integer findLotYield(String lotNo);
 }
