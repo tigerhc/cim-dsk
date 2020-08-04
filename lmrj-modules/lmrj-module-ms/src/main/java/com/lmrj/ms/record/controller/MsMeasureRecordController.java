@@ -3,6 +3,7 @@ package com.lmrj.ms.record.controller;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.alibaba.fastjson.JSON;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.PageResponse;
@@ -34,11 +35,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -87,7 +86,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
 
     @RequestMapping(value = "/clientsave", method = { RequestMethod.GET, RequestMethod.POST })
     public Response insert( HttpServletRequest request,
-                                  HttpServletResponse response){
+                            HttpServletResponse response){
         Response res= new DateResponse();
         try {
             String record = request.getReader().readLine();
@@ -124,7 +123,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
 
     @RequestMapping(value = "/rptmsrecordbytime/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
     public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,@RequestParam String productionNo,
-                                      HttpServletRequest request, HttpServletResponse response){
+                                  HttpServletRequest request, HttpServletResponse response){
         List<Map> maps =  msMeasureRecordService.findDetailBytimeAndPro(beginTime,endTime,eqpId, productionNo);
         String content = JSON.toJSONStringWithDateFormat(DateResponse.ok(maps), JSON.DEFFAULT_DATE_FORMAT);
         ServletUtils.printJson(response, content);
@@ -132,7 +131,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
 
     @RequestMapping(value = "/rptmsrecordbytime2/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
     public void rptMsRecordByTime2(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
-                                  HttpServletRequest request, HttpServletResponse response){
+                                   HttpServletRequest request, HttpServletResponse response){
         List<Map> maps =  msMeasureRecordService.findDetailBytime(beginTime,endTime,eqpId);
         String content = JSON.toJSONStringWithDateFormat(maps, JSON.DEFFAULT_DATE_FORMAT);
         ServletUtils.printJson(response, content);
@@ -146,8 +145,8 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         return doExport("量测配置信息", queryable,  propertyPreFilterable,  request,  response);
     }
 
-    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
+    //    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response OldExportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
         String title = "量测信息详情";
         String title1 = "量测信息";
         Response res = Response.ok("导出成功");
@@ -179,6 +178,53 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             title = title + "-" + DateUtil.getDateTime();
             res.put("bytes", bytesRes);
             res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+    }
+
+
+    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
+        String title = "量测信息详情";
+        String title1 = "量测信息";
+        Response res = Response.ok("导出成功");
+
+        try {
+            List<MsMeasureRecord> records = msMeasureRecordService.findRecordByRecordId(recordId);
+            List<Map<String, String>> dataList = new ArrayList<>();
+            Map<String, String> data = null;
+            List<ExcelExportEntity> keyList= new LinkedList<>();
+            if(records.size() != 0){
+                for (MsMeasureRecordDetail msMeasureRecordDetail: records.get(0).getDetail()) {
+                    data = new HashMap<>();
+                    String itemName = msMeasureRecordDetail.getItemName();
+                    String itemValue = msMeasureRecordDetail.getItemValue();
+                    String[] items = itemName.split(",");
+                    String[] values = itemValue.split(",");
+                    for (int i = 0; i < values.length; i++) {
+                        ExcelExportEntity key = new ExcelExportEntity(items[i], items[i]);
+                        if (!keyList.contains(key)){
+                            keyList.add(key);
+                        }
+                        data.put(items[i],values[i]);
+                    }
+                    dataList.add(data);
+                }
+            }
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测详细信息","量测详细信息"),keyList,dataList);
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            book.write(bos);
+//            byte[] bytes = bos.toByteArray();
+//            String bytesRes = StringUtil.bytesToHexString2(bytes);
+//            title = title + "-" + DateUtil.getDateTime();
+//            res.put("bytes", bytesRes);
+//            res.put("title", title);
             return res;
         } catch (Exception var16) {
             var16.printStackTrace();

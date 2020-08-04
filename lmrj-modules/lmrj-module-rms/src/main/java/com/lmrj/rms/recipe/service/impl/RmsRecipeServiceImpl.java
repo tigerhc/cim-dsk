@@ -1,11 +1,11 @@
 package com.lmrj.rms.recipe.service.impl;
 
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.core.entity.MesResult;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.core.sys.entity.UserRole;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -25,32 +25,35 @@ import com.lmrj.rms.recipe.utils.FileUtil;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
-import com.lmrj.core.entity.MesResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.realm.UserDatabaseRealm;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
-* All rights Reserved, Designed By www.lmrj.com
-*
-* @version V1.0
-* @package com.lmrj.rms.recipe.service.impl
-* @title: rms_recipe服务实现
-* @description: rms_recipe服务实现
-* @author: zhangweijiang
-* @date: 2019-06-15 01:58:00
-* @copyright: 2018 www.lmrj.com Inc. All rights reserved.
-*/
+ * All rights Reserved, Designed By www.lmrj.com
+ *
+ * @version V1.0
+ * @package com.lmrj.rms.recipe.service.impl
+ * @title: rms_recipe服务实现
+ * @description: rms_recipe服务实现
+ * @author: zhangweijiang
+ * @date: 2019-06-15 01:58:00
+ * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
+ */
 @Transactional
 @Service("rmsRecipeService")
 @Slf4j
@@ -219,8 +222,9 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
     @Override
     public boolean uploadRecipe(String eqpId, String recipeName) throws Exception{
-//        return uploadOvenRecipe(eqpId, recipeName);
-        return analysisFile(eqpId, recipeName);
+        return uploadOvenRecipe(eqpId, recipeName);
+//        return analysisFile(eqpId, recipeName);
+//        return downloadFromFTP(eqpId,recipeName);
     }
 
     /**
@@ -253,67 +257,70 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             log.error("Exception:", e);
         }
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        boolean flag = false;
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
-            //String content = mesResult.getContent().toString();
-            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();
-            List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
-            for (String key : contentMap.keySet()) {
-                log.debug("key= " + key + " and value= " + contentMap.get(key));
-                RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
-                rmsRecipeBody.setParaCode(key);
-                rmsRecipeBody.setSetValue(contentMap.get(key));
-                rmsRecipeBodyDtlList.add(rmsRecipeBody);
+            Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
+            RmsRecipe rmsRecipe = (RmsRecipe)contentMap.get("rmsRecipe");
+            if (rmsRecipe == null){
+                String fileName = (String)contentMap.get("fileName");
+                flag = downloadFromFTP(eqpId,recipeName,fileName);
+            } else {
+                this.insert(rmsRecipe);
+                for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
+                    rmsRecipeBodyService.insert(recipeBody);
+                }
+                flag = true;
             }
-            RmsRecipe rmsRecipe = new RmsRecipe();
-            rmsRecipe.setRecipeCode(recipeName);
-            rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
-            rmsRecipe.setEqpId(eqpId);
-            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
-            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-            this.insert(rmsRecipe);
-            //提前备份文件
-            String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
-            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
-            log.info("迁移文件结果:{};", copyFlag);
-        }
-        return true;
-    }
-
-    //从FTP服务器下载配方文件到本地
-    public boolean downloadFromFTP(String eqpId, String recipeName){
-        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name", recipeName));
-        if (rmsRecipes.size() < 1){
-            return false;
-        }
-        RmsRecipe rmsRecipe = rmsRecipes.get(0);
-        String recipeFilePath = rmsRecipe.getRecipeFilePath();
-        if (recipeFilePath == null || "".equals(recipeFilePath)) {
-            return false;
-        }
-        String[] strings = recipeFilePath.split("/");
-        String fileName = strings[strings.length - 1];
-        String fileSuffix = fileName.split("\\.")[1];
-        String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "DRAFT" + eqpId + "/" + recipeName;
-        String localPath = "D:/ftpTest/recipe/shanghai/mold" + fabEquipment.getModelName() + "DRAFT" + eqpId + "/" + recipeName;
-        //TODO 首次上传时无法去数据库查文件后缀
-        boolean flag = false;
-        try {
-            flag = FtpUtil.downloadFile(FTP94, remotePath, fileName + "." + fileSuffix, localPath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //String content = mesResult.getContent().toString();
+//            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();
+//            List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
+//            for (String key : contentMap.keySet()) {
+//                log.debug("key= " + key + " and value= " + contentMap.get(key));
+//                RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
+//                rmsRecipeBody.setParaCode(key);
+//                rmsRecipeBody.setSetValue(contentMap.get(key));
+//                rmsRecipeBodyDtlList.add(rmsRecipeBody);
+//            }
+//            RmsRecipe rmsRecipe = new RmsRecipe();
+//            rmsRecipe.setRecipeCode(recipeName);
+//            rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
+//            rmsRecipe.setEqpId(eqpId);
+//            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+//            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+//            this.insert(rmsRecipe);
+//            //提前备份文件
+//            String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
+//            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
+//            log.info("迁移文件结果:{};", copyFlag);
         }
         return flag;
     }
 
-    public boolean analysisFile(String eqpId, String recipeName) throws Exception {
+    //从FTP服务器下载配方文件到本地
+    public boolean downloadFromFTP(String eqpId, String recipeName, String fileName) throws Exception {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null){
             throw new Exception("该设备不存在");
         }
-        String fileName = "SIM6822-FRD-1_TJZC";
-        String filePath = "D:/cim-dsk/"+ fileName +".csv";
+        String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
+        String localPath = "D:/ftpTest/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
+        boolean flag = false;
+        try {
+            flag = FtpUtil.downloadFile(FTP94, remotePath, fileName, localPath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (flag) {
+            String filePath = localPath + "/" + fileName;
+            flag = analysisFile(fabEquipment, recipeName, filePath);
+        }
+        return flag;
+    }
+
+    public boolean analysisFile(FabEquipment fabEquipment, String recipeName, String filePath) throws Exception {
+//        String fileName = "SIM6822-FRD-1_TJZC";
+//        String filePath = "D:/cim-dsk/"+ fileName +".csv";
 //        InputStream inputStream = new FileInputStream("C:/Users/daoda/Desktop/"+ fileName +".csv");
 //        Workbook workbook = new XSSFWorkbook(inputStream);
 //        List<String[]> excelData = ExcelUtil.getExcelData(workbook);
@@ -338,7 +345,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         RmsRecipe rmsRecipe = new RmsRecipe();
         rmsRecipe.setRecipeCode(recipeName);
         rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
-        rmsRecipe.setEqpId(eqpId);
+        rmsRecipe.setEqpId(fabEquipment.getEqpId());
         rmsRecipe.setEqpModelId(fabEquipment.getModelId());
         rmsRecipe.setEqpModelName(fabEquipment.getModelName());
         this.insert(rmsRecipe);
@@ -376,15 +383,19 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
         Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
-        String msg = (String) test;
-//        try {
-//            msg = new String(message, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
-//            log.error("Exception:", e);
-//        }
-//        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        byte[] message = (byte[]) test;
+        String msg = null;
+        try {
+            msg = new String(message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
+            log.error("Exception:", e);
+        }
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
         //判断返回值flag是否正确
+        if (!"Y".equals(mesResult.getFlag())){
+            return false;
+        }
 //        if ("Y".equals(mesResult.getFlag())) {
 //            //String content = mesResult.getContent().toString();
 //            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();

@@ -2,32 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lmrj.edc.lot.mapper.RptLotYieldMapper" >
 
-	<sql id="Base_Column_List" >
-       t.id,
-       t.lot_no,
-       t.eqp_id,
-       t.production_no,
-       t.production_name,
-       t.order_no,
-       t.lot_yield,
-       t.lot_yield_eqp,
-       t.step_id,
-       t.step_code,
-       t.start_time,
-       t.end_time,
-       t.remarks,
-       t.create_by,
-       t.create_date,
-       t.update_by,
-       t.update_date,
-       t.del_flag
-	</sql>
+       <sql id="Base_Column_List" >
+              t.id,
+              t.lot_no,
+              t.eqp_id,
+              t.production_no,
+              t.production_name,
+              t.order_no,
+              t.lot_yield,
+              t.lot_yield_eqp,
+              t.step_id,
+              t.step_code,
+              t.start_time,
+              t.end_time,
+              t.remarks,
+              t.create_by,
+              t.create_date,
+              t.update_by,
+              t.update_date,
+              t.del_flag
+       </sql>
 
-    <select id="findLotYield" resultType="java.util.Map">
-           select production_name, order_no, lot_no ,step_id  ,
-                  case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
-           from rpt_lot_yield
-           group by production_name, order_no, lot_no ,step_id
-    </select>
+       <select id="findLotYield" resultType="java.util.Map">
+              select production_name, order_no, lot_no ,step_id  ,step_code ,
+                     case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
+              from rpt_lot_yield
+              group by production_name, order_no, lot_no ,step_id,step_code
+       </select>
 
 </mapper>

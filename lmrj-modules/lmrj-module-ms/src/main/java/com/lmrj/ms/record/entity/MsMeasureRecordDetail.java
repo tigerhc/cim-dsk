@@ -1,6 +1,5 @@
 package com.lmrj.ms.record.entity;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
@@ -34,11 +33,11 @@ public class MsMeasureRecordDetail extends BaseDataEntity {
     private String itemCode;
     /**量测项目名称*/
     @TableField(value = "item_name")
-    @Excel(name = "量测项目名称", orderNum = "10", width = 40)
+//    @Excel(name = "量测项目名称", orderNum = "10", width = 40)
     private String itemName;
     /**量测项目值*/
     @TableField(value = "item_value")
-    @Excel(name = "量测项目值", orderNum = "10", width = 40)
+//    @Excel(name = "量测项目值", orderNum = "10", width = 40)
     private String itemValue;
     /**判定结果,若超出范围,则N*/
     @TableField(value = "item_result")
