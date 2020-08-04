@@ -165,7 +165,20 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 return MesResult.error(eqpId + " not reply");
             }
 
-        } else {
+        } else if(eqpId.contains("SIM-TRM")){
+            map.put("PARAM", param);
+            map.put("LOTNO", lotNo);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC2", JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    Map paramMap = (Map) result.getContent();
+                    value = StringUtil.join(paramMap.keySet().toArray(), ",");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
+        }else {
             value = "TEMPTEST";
         }
         result.setContent(value);
@@ -259,7 +272,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
      */
     public MesResult trackinLine(String lineNo, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
-        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpByLine(lineNo);
+        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpBySubLine(lineNo);
         if (fabEquipmentList.size() == 0) {
             return MesResult.error("eqp not found");
         }

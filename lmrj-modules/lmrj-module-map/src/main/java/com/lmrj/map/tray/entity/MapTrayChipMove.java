@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -61,5 +63,5 @@ public class MapTrayChipMove extends BaseDataEntity {
     /**开始时间*/
     @TableField(value = "start_time")
     private Date startTime;
-	
+
 }

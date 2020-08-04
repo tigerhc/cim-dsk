@@ -42,8 +42,8 @@ public class RptYieldTask {
             String productionNo = mesLotTrackLog.getProductionNo();
             String productionName = mesLotTrackLog.getProductionName();
             String eqpId = mesLotTrackLog.getEqpId();
-            if ("SIM-DM1".equals(eqpId)) {
-                eqpId = "SIM-REFLOW1";
+            if (!"SIM-REFLOW1".equals(eqpId)) {
+                continue;
             }
             Integer yield = edcDskLogProductionService.findNewYieldByLot(eqpId, productionNo, lotNo);
             if (yield == null) {
