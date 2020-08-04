@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 
 
 /**
@@ -37,8 +38,8 @@ public class EdcEqpStateController extends BaseCRUDController<EdcEqpState> {
     private IEdcEqpStateService edcEqpStateService;
 
     @GetMapping("task")
-    public Response task(String time){
-        int size=edcEqpStateService.syncEqp(time);
+    public Response task(Date startTime,Date endTime){
+        int size=edcEqpStateService.syncEqpSate(startTime,endTime);
          return Response.ok(String.valueOf(size));
     }
 }

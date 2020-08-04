@@ -14,12 +14,15 @@ public class RptYieldDayTaskTest {
     RptYieldDayTask rptYieldDayTask;
     @Autowired
     RptYieldTask rptYieldTask;
+    @Autowired
+    EqpStateTask eqpStateTask;
     @Test
     public void test() throws Exception{
         /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
         Date startTime = simpleDateFormat.parse("2020-07-31 13:55:36");
         Date endTime = simpleDateFormat.parse("2020-07-31 14:04:33");*/
         //rptYieldDayTask.updateDayYield();
-        rptYieldTask.updateYield();
+        //rptYieldTask.updateYield();
+        eqpStateTask.eqpStateDay();
     }
 }

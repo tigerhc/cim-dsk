@@ -22,7 +22,7 @@ public class EqpStateTask {
      * 每隔10分钟一次
      *
      */
-    //@Scheduled(cron = "0 0/10 * * * ?")
+    //@Scheduled(cron = "0 * * * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
         //当天时间
@@ -34,7 +34,6 @@ public class EqpStateTask {
         endTime=cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         Date startTime=cal.getTime();
-
         log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
         edcEqpStateService.syncEqpSate(startTime, endTime);
         edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
