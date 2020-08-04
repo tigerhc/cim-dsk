@@ -29,7 +29,16 @@
               FROM
                   edc_eqp_state t
               WHERE
-              DATE_FORMAT(start_time,'%Y-%m-%d')=#{time}
+                start_time between #{startTime} and #{endTime}
+                order by start_time
 
        </select>
+
+    <select id="calEqpSateDay" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select eqp_id, state, sum(state_times) state_times from edc_eqp_state
+        where start_time between #{startTime} and #{endTime}
+        group by eqp_id, state
+    </select>
+
+
 </mapper>

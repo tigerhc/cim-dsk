@@ -3,6 +3,8 @@ package com.lmrj.edc.state.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.state.entity.EdcEqpState;
 
+import java.util.Date;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -16,5 +18,7 @@ import com.lmrj.edc.state.entity.EdcEqpState;
 */
 public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
 
-    int syncEqp(String time);
+    int syncEqpSate(Date startTime, Date endTime);
+
+    public int calEqpSateDay(String periodDate);
 }

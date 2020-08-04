@@ -1,9 +1,11 @@
 package com.lmrj.edc.state.mapper;
 
-import com.lmrj.edc.state.entity.EdcEqpState;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.edc.state.entity.EdcEqpState;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,5 +22,6 @@ import java.util.List;
 @Mapper
 public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
-     List<EdcEqpState> getAllByTime(String time);
+     List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
  }
