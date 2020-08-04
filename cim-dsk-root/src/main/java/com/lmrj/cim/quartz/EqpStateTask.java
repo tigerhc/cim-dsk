@@ -3,7 +3,6 @@ package com.lmrj.cim.quartz;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +21,7 @@ public class EqpStateTask {
      * 每隔10分钟一次
      *
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    //@Scheduled(cron = "0 0/10 * * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
         //当天时间
