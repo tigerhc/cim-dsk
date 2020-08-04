@@ -4,14 +4,17 @@ import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.core.log.LogAspectj;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
-import com.lmrj.core.log.LogAspectj;
+import com.lmrj.util.calendar.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -37,9 +40,21 @@ public class EdcEqpStateController extends BaseCRUDController<EdcEqpState> {
     @Autowired
     private IEdcEqpStateService edcEqpStateService;
 
-    @GetMapping("task")
-    public Response task(Date startTime,Date endTime){
-        int size=edcEqpStateService.syncEqpSate(startTime,endTime);
-         return Response.ok(String.valueOf(size));
+    @GetMapping("eqpState")
+    public Response eqpState(String periodDate){
+        Date startTime = null;
+        Date endTime = null;
+        try {
+            startTime = DateUtil.parseDate(periodDate+"080000", "yyyyMMddHHmmss");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startTime);
+            cal.add(Calendar.DAY_OF_MONTH,1);
+            endTime = cal.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int size=edcEqpStateService.syncEqpSate(startTime, endTime);
+        return Response.ok(String.valueOf(size));
     }
 }
