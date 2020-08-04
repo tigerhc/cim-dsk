@@ -17,6 +17,7 @@ import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
+import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
@@ -29,6 +30,7 @@ import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,8 @@ public class EdcDskLogHandler {
     private IEmailSendService emailSendService;
     @Autowired
     RepeatAlarmUtil repeatAlarmUtil;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
 
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
             "Pick up press level", "取晶位置下压量",
@@ -236,6 +240,12 @@ public class EdcDskLogHandler {
                     status = "IDLE";
                 }
             }
+            EdcEqpState edcEqpState = new EdcEqpState();
+            edcEqpState.setEqpId(eqpId);
+            edcEqpState.setStartTime(new Date());
+            edcEqpState.setState(status);
+            String stateJson = JsonUtil.toJsonString(edcEqpState);
+            rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
         }
         if(edcEvtRecordList.size() != 0){
             edcEvtRecordService.insertBatch(edcEvtRecordList);
@@ -245,17 +255,9 @@ public class EdcDskLogHandler {
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
         // TODO: 2020/8/3 改为发送mq消息处理
-        //String processState = svs[0].toString();
-        //EdcEqpState edcEqpState = new EdcEqpState();
-        //edcEqpState.setEqpId(eqpId);
-        //edcEqpState.setStartTime(now);
-        //edcEqpState.setState(stateMap.get(processState));
-        //String stateJson = JsonUtil.toJsonString(edcEqpState);
-        //rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
-        if(StringUtil.isNotBlank(status)){
+        /*if(StringUtil.isNotBlank(status)){
             fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
-        }
-        //edcDskLogOperation.setCreateDate(new Date());
+        }*/
     }
 
     @RabbitHandler
