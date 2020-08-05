@@ -229,7 +229,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         Response res = Response.ok("提交规格最小值拷贝成功");
         Integer copyMinValue = rmsRecipeService.copyMinValue(recipeIdNew, recipeIdOld);
         if (copyMinValue == 0){
-            res = Response.ok("提交规格最小值不需要拷贝");
+            res = Response.error("提交规格最小值不需要拷贝");
         }
         return res;
     }
@@ -247,7 +247,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         Response res = Response.ok("提交规格最大值拷贝成功");
         Integer copyMaxValue = rmsRecipeService.copyMaxValue(recipeIdNew, recipeIdOld);
         if (copyMaxValue == 0){
-            res = Response.ok("提交规格最大值不需要拷贝");
+            res = Response.error("提交规格最大值不需要拷贝");
         }
         return res;
     }
@@ -329,6 +329,29 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     public Response editStatus(@PathVariable String id, @PathVariable String status) {
         rmsRecipeService.editStatus(id, status);
         return Response.ok("修改成功");
+    }
+
+    /**
+     * 提交审批
+     * @return
+     */
+    @RequestMapping(value = "updatePermit", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response updatePermit(@RequestParam String id, @RequestParam String versionType, @RequestParam String status,
+                                 HttpServletRequest request, HttpServletResponse response) {
+        Response res = Response.ok("提交成功");
+        RmsRecipe rmsRecipe = rmsRecipeService.selectById(id);
+        rmsRecipe.setStatus(status);
+        rmsRecipe.setVersionType(versionType);
+        rmsRecipe.setApproveResult("");
+        String remarks = request.getParameter("remarks");
+        if (remarks != null && !"".equals(remarks)){
+            rmsRecipe.setRemarks(remarks);
+        }
+        boolean flag = rmsRecipeService.updateById(rmsRecipe);
+        if (!flag){
+            res = Response.error("提交失败");
+        }
+        return res;
     }
 
 }
