@@ -28,5 +28,9 @@ public class OrganizationServiceImpl extends TreeCommonServiceImpl<OrganizationM
 	public List<Organization> findStep(String userId){
 		return baseMapper.findStep(userId);
 	}
+	@Override
+	public List<Organization> findYieldStep(String userId){
+		return baseMapper.findYieldStep(userId);
+	}
 
 }
