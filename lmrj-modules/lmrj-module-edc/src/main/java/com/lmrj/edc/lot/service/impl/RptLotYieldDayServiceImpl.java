@@ -7,6 +7,8 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
 import com.lmrj.edc.lot.mapper.RptLotYieldDayMapper;
 import com.lmrj.edc.lot.service.IRptLotYieldDayService;
+import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ import java.util.Map;
 @Slf4j
 public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDayMapper,RptLotYieldDay> implements  IRptLotYieldDayService {
 
+    @Autowired
+    private IFabLogService fabLogService;
     @Autowired
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
@@ -63,6 +67,8 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
             lotYieldDay.setPeriodDate(sim.format(date));
             this.insert(lotYieldDay);
         }
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info("",eventId,"updateDayYield","更新批次日产量","","");
     }
 
     @Override

@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.lot.entity.RptLotYield;
 import com.lmrj.edc.lot.service.IRptLotYieldService;
+import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +20,8 @@ import java.util.List;
 @Component
 public class RptYieldTask {
 
-
+    @Autowired
+    private IFabLogService fabLogService;
     @Autowired
     private IMesLotTrackLogService mesLotTrackLogService;
     @Autowired
@@ -65,6 +68,8 @@ public class RptYieldTask {
                 }
             }
         }
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info("",eventId,"updateYield","更新批次产量","","");
         log.info("定时任务开始执行结束");
     }
 
