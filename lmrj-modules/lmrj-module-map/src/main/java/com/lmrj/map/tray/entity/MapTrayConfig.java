@@ -46,7 +46,7 @@ public class MapTrayConfig extends BaseDataEntity {
     @TableField(value = "freeze_time")
     private Integer freezeTime;
     /**排序号*/
-    @TableField(value = "sort_code")
-    private Integer sortCode;
+    @TableField(value = "sort_no")
+    private Integer sortNo;
 
 }

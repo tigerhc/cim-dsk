@@ -11,7 +11,7 @@
        t.status,
        t.start_time,
        t.freeze_time,
-       t.sort_code,
+       t.sort_no,
        t.remarks,
        t.create_by,
        t.create_date,

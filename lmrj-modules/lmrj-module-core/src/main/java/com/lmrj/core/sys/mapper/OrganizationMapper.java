@@ -24,7 +24,8 @@ public interface OrganizationMapper extends BaseTreeMapper<Organization> {
 
     @Select("select * from sys_organization where parent_ids like '%a04d30fbb9a545a5a7b3b7e1d6df8e71/%' and org_type='4' and del_flag = '0' order by sort_no")
 	List<Organization> findStep(String userId);
-	@Select("select DISTINCT STEP_CODE name  from (select * from fab_equipment where line_no ='SIM' AND step_yield_flag='1' ORDER BY SORT_CODE ) c")
+	//@Select("select DISTINCT SORT_NO name  from (select STEP_CODE from fab_equipment where line_no ='SIM' AND step_yield_flag='1' ORDER BY SORT_NO ) c")
+	@Select("select distinct STEP_CODE name , max(SORT_NO) sortNo  from fab_equipment WHERE line_no ='SIM' AND step_yield_flag='1' group by STEP_CODE  order by max(SORT_NO) ")
 	List<Organization> findYieldStep(String userId);
 
 

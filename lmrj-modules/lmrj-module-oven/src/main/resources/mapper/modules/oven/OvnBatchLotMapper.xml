@@ -45,7 +45,7 @@
                            and OFFICE_ID = #{officeId}
                        </if>
                   ) and t.del_flag = '0'
-                  order by f.SORT_CODE
+                  order by f.SORT_NO
        </select>
        <select id="selectFabStatusParam" resultType="map" parameterType="java.util.List">
               SELECT

@@ -138,7 +138,7 @@ public class SysProjectController extends BaseCRUDController<SysProject> {
     }
     @GetMapping("projects")
     public void  getCurrentUserProject(){
-        List<SysProject> sysProjectList=sysProjectService.selectList(new EntityWrapper<SysProject>().orderBy("SORT_CODE"));
+        List<SysProject> sysProjectList=sysProjectService.selectList(new EntityWrapper<SysProject>().orderBy("SORT_NO"));
         List<String> projectIds=sysProjectService.filterProject(UserUtils.getUser().getId());
         List<SysProject> projectList=sysProjectList.stream().filter(sysProject -> projectIds.contains(sysProject.getProjectId())).collect(Collectors.toList());
         FastJsonUtils.print(projectList);

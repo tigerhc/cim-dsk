@@ -47,7 +47,7 @@
                      where line_no = #{lineNo}
               )
               group by eqp_id ) tt left join fab_equipment eqp on tt.eqp_id = eqp.eqp_id
-              order by eqp.sort_code
+              order by eqp.sort_no
        </select>
 
        <select id="selectAlarmCountByEqp" resultType="map">

@@ -115,8 +115,8 @@ public class FabEquipment extends BaseDataEntity {
 	@TableField(value = "client_flag")
 	private String clientFlag;
 
-	@TableField(value = "sort_code")
-	private Integer sortCode;
+	@TableField(value = "sort_no")
+	private Integer sortNo;
 
 
 }

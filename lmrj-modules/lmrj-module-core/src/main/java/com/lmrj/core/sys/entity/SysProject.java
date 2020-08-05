@@ -36,7 +36,7 @@ public class SysProject extends BaseDataEntity {
 	private String projectPhotoUrl;
 	@TableField(value = "status")
     private Integer status;
-	@TableField(value = "sort_code")
-	private Integer sortCode;
+	@TableField(value = "sort_no")
+	private Integer sortNo;
 
 }
