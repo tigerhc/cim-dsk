@@ -33,5 +33,3 @@ overlays
 /.settings
 /.classpath
 /.project
-
-/cim-dsk-root/src/main/resources/application.yml
