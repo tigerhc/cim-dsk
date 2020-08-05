@@ -121,8 +121,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/findParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId, @RequestParam(required = false) String lotNo, @RequestParam(required = false) String productionName, HttpServletRequest request, HttpServletResponse response) {
-        log.info("findTemp :  {}", opId);
+    public String findParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId, @RequestParam(required = false) String lotNo,
+                            @RequestParam(required = false) String productionName,
+                            @RequestParam(required = false) String productionNo,
+                            @RequestParam(required = false) String index,
+
+                            HttpServletRequest request, HttpServletResponse response) {
+        log.info("findTemp :  {}, {}, {}, {}", opId,lotNo,  productionNo, index);
         try {
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionName);
