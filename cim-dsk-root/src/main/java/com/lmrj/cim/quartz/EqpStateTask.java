@@ -22,7 +22,7 @@ public class EqpStateTask {
      * 每隔10分钟一次
      *
      */
-    //@Scheduled(cron = "0 * * * * ?")
+    //@Scheduled(cron = "0 45 11 * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
         try{

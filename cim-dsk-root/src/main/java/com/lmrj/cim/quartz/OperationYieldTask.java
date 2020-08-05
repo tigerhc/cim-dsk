@@ -7,7 +7,6 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -25,7 +24,7 @@ public class OperationYieldTask {
     /**
      * 计算产量,写入操操作日志
      */
-    @Scheduled(cron = "0 09 * * * ?")
+    //@Scheduled(cron = "0 09 * * * ?")
     public void dskaps() {
         log.info("OperationYieldTask定时任务开始执行");
         //2天前

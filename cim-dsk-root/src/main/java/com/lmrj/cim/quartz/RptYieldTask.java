@@ -10,7 +10,6 @@ import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -34,7 +33,7 @@ public class RptYieldTask {
      * <p>
      * rpt_lot_yield: 批次产量,当前站点的产量
      */
-    @Scheduled(cron = "0 0/10 * * * ?")
+    //@Scheduled(cron = "0 0/10 * * * ?")
     public void updateYield() {
         log.info("定时任务开始执行");
         Calendar cal = Calendar.getInstance();

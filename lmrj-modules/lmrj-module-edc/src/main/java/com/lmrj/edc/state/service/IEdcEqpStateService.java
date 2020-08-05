@@ -20,5 +20,5 @@ public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
 
     int syncEqpSate(Date startTime, Date endTime);
 
-    public int calEqpSateDay(String periodDate);
+    int calEqpSateDay(String periodDate);
 }

@@ -109,6 +109,7 @@ public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper
             Double idle=0.0;
             Double run=0.0;
             Double down=0.0;
+            Double pm=0.0;
             for(EdcEqpState edcEqpState:list){
                 if("run".equalsIgnoreCase(edcEqpState.getState())){
                     run=run+edcEqpState.getStateTimes();
@@ -118,11 +119,16 @@ public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper
                 }
                 if("idle".equalsIgnoreCase(edcEqpState.getState())){
                     idle=idle+edcEqpState.getStateTimes();
+                }if("pm".equalsIgnoreCase(edcEqpState.getState())){
+                    pm=pm+edcEqpState.getStateTimes();
                 }
             }
-            rptEqpStateDay.setRunTime(run);
-            rptEqpStateDay.setDownTime(down);
-            rptEqpStateDay.setIdleTime(idle);
+            rptEqpStateDay.setRunTime(run/1000);
+            rptEqpStateDay.setDownTime(down/1000);
+            rptEqpStateDay.setIdleTime(idle/1000);
+            rptEqpStateDay.setPmTime(pm);
+            Double other=24*60*60*1000-run-down-idle-pm;
+            rptEqpStateDay.setOtherTime(other/1000);
             rptEqpStateDayList.add(rptEqpStateDay);
         }
         //先删除day表 按照时间删除 在插入
