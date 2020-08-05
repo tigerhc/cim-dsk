@@ -309,7 +309,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
         String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info(filename.split("-")[1],eventId,"printProlog","生成Production文件",filename.split("-")[2],"");
+        fabLogService.info(filename.split("_")[1],eventId,"printProlog","生成Production文件",filename.split("_")[2],"");
         //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {

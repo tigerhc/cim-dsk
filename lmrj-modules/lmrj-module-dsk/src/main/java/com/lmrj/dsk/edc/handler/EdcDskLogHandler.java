@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,15 @@ public class EdcDskLogHandler {
                 });
             }
 
+            if(eqpId.contains("SIM-DM")) {
+                Iterator it = edcDskLogProductionList.iterator();
+                while (it.hasNext()) {
+                    EdcDskLogProduction obj = (EdcDskLogProduction) it.next();
+                    String[] params = obj.getParamValue().split(",");
+                    if (params.length > 2 && !"1".equals(params[1]))
+                        it.remove();
+                }
+            }
             edcDskLogProductionService.insertBatch(edcDskLogProductionList);
         }
         EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
@@ -302,6 +312,5 @@ public class EdcDskLogHandler {
             ovnBatchLotService.insert(ovnBatchLot);
         }
     }
-
 
 }
