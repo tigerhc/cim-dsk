@@ -51,6 +51,12 @@ public class MesLotWip extends BaseDataEntity {
     /**结束时间*/
     @TableField(value = "end_time")
     private Date endTime;
+    /**站点ID*/
+    @TableField(value = "station_id")
+    private String stationId;
+    /**站点CODE*/
+    @TableField(value = "station_code")
+    private String stationCode;
     /**工序ID*/
     @TableField(value = "step_id")
     private String stepId;

@@ -44,7 +44,7 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
     @Delete("delete from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
     Boolean deleteEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
-    @Select("select step_id,step_code from fab_equipment where eqp_id=#{eqpId}")
+    @Select("select station_id, station_code ,step_id,step_code from fab_equipment where eqp_id=#{eqpId}")
     MesLotWip findStep(@Param("eqpId") String eqpId);
 
     List<Map> findLotYield(@Param("officeId") String lineNo);

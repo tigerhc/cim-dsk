@@ -50,9 +50,9 @@
     </select>
 
     <select id="findLotYield" resultType="java.util.Map">
-              select production_name, order_no, lot_no ,step_id  ,step_code ,
+              select production_name, order_no, lot_no ,station_id step_id  ,station_code step_code ,
                      case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
               from mes_lot_wip
-              group by production_name, order_no, lot_no ,step_id,step_code
+              group by production_name, order_no, lot_no ,station_id,station_code
     </select>
 </mapper>
