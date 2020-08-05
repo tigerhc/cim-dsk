@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.mes.lot.mapper.MesLotWipMapper" >
+<mapper namespace="com.lmrj.mes.lot.mapper.MesLotWipMapper">
 
-	<sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
        t.id,
        t.eqp_id,
        t.lot_no,
@@ -22,4 +22,37 @@
        t.update_date,
        t.del_flag
 	</sql>
+    <select id="findIncompleteLotNo" resultType="com.lmrj.mes.track.entity.MesLotTrack" parameterType="java.util.Date">
+              select
+                    *
+              from
+                    mes_lot_track
+              where
+                    (PRODUCTION_NO, LOT_NO, start_time ) in
+                    (SELECT
+                            PRODUCTION_NO, LOT_NO ,
+                            max(start_time)
+                    FROM
+                            mes_lot_track
+                    WHERE
+                            ( PRODUCTION_NO, LOT_NO )  NOT IN
+                            (select
+                                    DISTINCT
+                                    PRODUCTION_NO,
+                                    LOT_NO
+                            from
+                                    mes_lot_track
+                            where eqp_id LIKE '%STM-TRM%' AND END_TIME IS NOT NULL
+                                   and create_date between #{startTime} and #{endTime}
+                            )
+                    and create_date  between #{startTime} and #{endTime}
+                    group by PRODUCTION_NO,LOT_NO)
+    </select>
+
+    <select id="findLotYield" resultType="java.util.Map">
+              select production_name, order_no, lot_no ,step_id  ,step_code ,
+                     case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
+              from mes_lot_wip
+              group by production_name, order_no, lot_no ,step_id,step_code
+    </select>
 </mapper>

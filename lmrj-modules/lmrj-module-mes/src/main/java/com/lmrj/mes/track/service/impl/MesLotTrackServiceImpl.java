@@ -165,7 +165,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 return MesResult.error(eqpId + " not reply");
             }
 
-        } else if(eqpId.contains("SIM-TRM")){
+        } else if (eqpId.contains("SIM-TRM")) {
             map.put("PARAM", param);
             map.put("LOTNO", lotNo);
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC2", JsonUtil.toJsonString(map));
@@ -178,7 +178,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
-        }else {
+        } else {
             value = "TEMPTEST";
         }
         result.setContent(value);
@@ -376,9 +376,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         MesLotTrack mesLotTrack = mesLotTrackList.get(0);
         MesLotTrack postTrack = baseMapper.findLastTrack(eqpId, lotNo, mesLotTrack.getStartTime());
-        if(postTrack == null){
+        if (postTrack == null) {
             mesLotTrack.setEndTime(new Date());
-        }else{
+        } else {
             mesLotTrack.setEndTime(postTrack.getStartTime());
         }
         mesLotTrack.setLotYield(Integer.parseInt(yield));
@@ -410,37 +410,5 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return baseMapper.findNextStartTime(endTime, eqpId);
     }
 
-    @Override
-    public MesLotTrack finddata(String lotNo, String productionNo) {
-        return baseMapper.finddata(lotNo, productionNo);
-    }
-
-    @Override
-    public Boolean updateWip(Integer lotYield, Integer lotYieldEqp, String eqpId, String productionNo) {
-        return baseMapper.updateWip(lotYield, lotYieldEqp, eqpId, productionNo);
-    }
-
-    @Override
-    public Boolean insterWip(String id, String eqpId, String lotNo, String productionName, String productionNo, String orderNo, Integer lotYield, Integer lotYieldEqp, Date startTime, Date endTime, String remarks, String createBy, Date createDate) {
-        return baseMapper.insterWip(id, eqpId, lotNo, productionName, productionNo, orderNo, lotYield, lotYieldEqp, startTime, endTime, remarks, createBy, createDate);
-    }
-
-    @Override
-    public List<MesLotTrack> findIncompleteLotNo(Date startTime,Date endTime) {
-        return baseMapper.findIncompleteLotNo(startTime,endTime);
-    }
-    @Override
-    public  String selectEndData(String lotNo,String productionNo){
-        return  baseMapper.selectEndData(lotNo,productionNo);
-    }
-    @Override
-    public Boolean deleteEndData(String lotNo,String productionNo){
-        return  baseMapper.deleteEndData(lotNo,productionNo);
-    }
-
-    @Override
-    public List<MesLotTrack> selectWip(){
-        return  baseMapper.selectWip();
-    }
 
 }

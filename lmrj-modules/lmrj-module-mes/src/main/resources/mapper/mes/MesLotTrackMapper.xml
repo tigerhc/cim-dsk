@@ -22,30 +22,4 @@
        <!--<select id="findlotYield">-->
 
        <!--</select>-->
-      <select id="findIncompleteLotNo" resultType="com.lmrj.mes.track.entity.MesLotTrack" parameterType="java.util.Date">
-              select
-                    *
-              from
-                    mes_lot_track
-              where
-                    (PRODUCTION_NO, LOT_NO, start_time ) in
-                    (SELECT
-                            PRODUCTION_NO, LOT_NO ,
-                            max(start_time)
-                    FROM
-                            mes_lot_track
-                    WHERE
-                            ( PRODUCTION_NO, LOT_NO )  NOT IN
-                            (select
-                                    DISTINCT
-                                    PRODUCTION_NO,
-                                    LOT_NO
-                            from
-                                    mes_lot_track
-                            where eqp_id LIKE '%STM-TRM%' AND END_TIME IS NOT NULL
-                                   and create_date between #{startTime} and #{endTime}
-                            )
-                    and create_date  between #{startTime} and #{endTime}
-                    group by PRODUCTION_NO,LOT_NO)
-       </select>
 </mapper>
