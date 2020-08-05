@@ -9,7 +9,9 @@ import com.lmrj.edc.state.entity.RptEqpStateDay;
 import com.lmrj.edc.state.mapper.EdcEqpStateMapper;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.edc.state.service.IRptEqpStateDayService;
+import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +39,9 @@ import java.util.*;
 public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper,EdcEqpState> implements  IEdcEqpStateService {
 
     @Autowired
+    private IFabLogService fabLogService;
+    @Autowired
     private EdcEqpStateMapper edcEqpStateMapper;
-
     @Autowired
     private IRptEqpStateDayService rptEqpStateDayService;
 
@@ -65,6 +68,8 @@ public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper
         }else {
             if(this.updateBatchById(neweqpStateList)){
                 log.info("edc_eqp_state更新成功");
+                String eventId = StringUtil.randomTimeUUID("RPT");
+                fabLogService.info("",eventId,"edc_eqp_state更新","数据更新成功","","");
             }
         }
         return eqpStateList.size();
@@ -101,7 +106,7 @@ public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper
             RptEqpStateDay rptEqpStateDay=new RptEqpStateDay();
             rptEqpStateDay.setEqpId(list.get(0).getEqpId());
             rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));
-            Double idel=0.0;
+            Double idle=0.0;
             Double run=0.0;
             Double down=0.0;
             for(EdcEqpState edcEqpState:list){
@@ -111,18 +116,21 @@ public class EdcEqpStateServiceImpl  extends CommonServiceImpl<EdcEqpStateMapper
                 if("down".equalsIgnoreCase(edcEqpState.getState())){
                     down=down+edcEqpState.getStateTimes();
                 }
-                if("idel".equalsIgnoreCase(edcEqpState.getState())){
-                    idel=idel+edcEqpState.getStateTimes();
+                if("idle".equalsIgnoreCase(edcEqpState.getState())){
+                    idle=idle+edcEqpState.getStateTimes();
                 }
             }
             rptEqpStateDay.setRunTime(run);
             rptEqpStateDay.setDownTime(down);
-            rptEqpStateDay.setIdleTime(idel);
+            rptEqpStateDay.setIdleTime(idle);
             rptEqpStateDayList.add(rptEqpStateDay);
         }
         //先删除day表 按照时间删除 在插入
-        rptEqpStateDayService.delete(new EntityWrapper<RptEqpStateDay>().eq("period_date",periodDate));
-        rptEqpStateDayService.insertBatch(rptEqpStateDayList);
+        if(rptEqpStateDayService.delete(new EntityWrapper<RptEqpStateDay>().eq("period_date",periodDate))
+            && rptEqpStateDayService.insertBatch(rptEqpStateDayList)){
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("",eventId,"OEE计算更新","数据更新成功","","");
+        };
         return rptEqpStateDayList.size();
     }
 }

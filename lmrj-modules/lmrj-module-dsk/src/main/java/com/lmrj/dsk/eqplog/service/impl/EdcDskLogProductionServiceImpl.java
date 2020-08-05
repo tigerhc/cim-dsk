@@ -9,9 +9,11 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
+import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,8 @@ import java.util.*;
 @Slf4j
 public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogProductionMapper, EdcDskLogProduction> implements IEdcDskLogProductionService {
     public String fileType = "PRODUCTION";
+    @Autowired
+    private IFabLogService fabLogService;
     @Autowired
     EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
     @Autowired
@@ -180,6 +184,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         }
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("",eventId,"updateProductionData","修改品番和批次","","");
         } else {
             log.info("数据品番和批次正确");
         }
@@ -197,6 +203,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         }
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("",eventId,"updateProductionLotYieId","修改批量内连番","","");
         } else {
             log.info("数据批量内连番正确");
         }
@@ -300,6 +308,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         FileUtil.mkDir(fileBackUpPath);
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info(filename.split("-")[1],eventId,"printProlog","生成Production文件",filename.split("-")[2],"");
         //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {
