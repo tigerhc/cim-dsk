@@ -38,8 +38,8 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     Boolean insterWip(@Param("id") String id, @Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("productionName") String productionName, @Param("productionNo") String productionNo, @Param("orderNo") String orderNo, @Param("lotYield") Integer lotYield
             , @Param("lotYieldEqp") Integer lotYieldEqp, @Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("remarks") String remarks, @Param("createBy") String createBy, @Param("createDate") Date createDate);
 
-    @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and production_no = #{productionNo}")
-    MesLotTrack finddata(@Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
+    @Select("select * from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
+    MesLotTrack finddata(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
     @Update("update mes_lot_wip set lot_yield=#{lotYield},lot_yield_eqp=#{lotYieldEqp},update_date=now() where eqp_id = #{eqpId} and production_no = #{productionNo}")
     Boolean updateWip(@Param("lotYield") Integer lotYield, @Param("lotYieldEqp") Integer lotYieldEqp, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);

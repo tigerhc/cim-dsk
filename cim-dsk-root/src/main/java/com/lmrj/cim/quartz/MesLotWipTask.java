@@ -27,7 +27,7 @@ public class MesLotWipTask {
         List<MesLotTrack> mesList = iMesLotTrackService.findIncompleteLotNo(startTime, endTime);
         for (MesLotTrack mes :
                 mesList) {
-            if (iMesLotTrackService.finddata(mes.getEqpId(), mes.getProductionNo()) == null) {
+            if (iMesLotTrackService.finddata(mes.getLotNo(), mes.getProductionNo()) == null) {
                 //向表中新建数据
                 if (iMesLotTrackService.insterWip(mes.getId(), mes.getEqpId(), mes.getLotNo(), mes.getProductionName(), mes.getProductionNo(), mes.getOrderNo(), mes.getLotYield(), mes.getLotYieldEqp(), mes.getStartTime(), mes.getEndTime(), mes.getRemarks(), mes.getCreateBy(), mes.getCreateDate())) {
                     log.info("mes_lot_wip表数据插入成功 批次：" + mes.getEqpId());
@@ -42,10 +42,9 @@ public class MesLotWipTask {
         }
         //更新wip表中数据 将已完成数据删除
         List<MesLotTrack> wipList = iMesLotTrackService.selectWip();
-        for (MesLotTrack mesLotTrack :
-                wipList) {
+        for (MesLotTrack mesLotTrack : wipList) {
             if (iMesLotTrackService.selectEndData(mesLotTrack.getLotNo(), mesLotTrack.getProductionNo()) != null) {
-                iMesLotTrackService.deleteById(mesLotTrack);
+                iMesLotTrackService.deleteEndData(mesLotTrack.getLotNo(), mesLotTrack.getProductionNo());
             }
         }
     }

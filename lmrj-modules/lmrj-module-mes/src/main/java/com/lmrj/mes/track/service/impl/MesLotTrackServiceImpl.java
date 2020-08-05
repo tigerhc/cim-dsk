@@ -411,8 +411,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public MesLotTrack finddata(String eqpId, String productionNo) {
-        return baseMapper.finddata(eqpId, productionNo);
+    public MesLotTrack finddata(String lotNo, String productionNo) {
+        return baseMapper.finddata(lotNo, productionNo);
     }
 
     @Override
