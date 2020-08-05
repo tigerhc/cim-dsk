@@ -17,14 +17,19 @@ public class ProductionYieldExportTask {
     //@Scheduled(cron = "0 30 23 * * ?")
     public void doExportProductionCsv() throws Exception {
         log.info("开始导出production csv文件");
-        Date endTime = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        Date startTime = calendar.getTime();
-        //更正表中批次品番
-        edcDskLogProductionService.updateProductionData(startTime, endTime);
-        //导出数据生成文件
-        edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+        try{
+            Date endTime = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            Date startTime = calendar.getTime();
+            //更正表中批次品番
+            edcDskLogProductionService.updateProductionData(startTime, endTime);
+            //导出数据生成文件
+            edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+        }catch (Exception e){
+            log.error("ProductionYieldExportTask; ", e);
+        }
+
         log.info("开始导出production csv文件");
     }
 

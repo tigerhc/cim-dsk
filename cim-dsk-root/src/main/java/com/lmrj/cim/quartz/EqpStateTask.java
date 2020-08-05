@@ -25,18 +25,23 @@ public class EqpStateTask {
     //@Scheduled(cron = "0 * * * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
-        //当天时间
-        Date endTime=new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY,8);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        endTime=cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        Date startTime=cal.getTime();
-        log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-        edcEqpStateService.syncEqpSate(startTime, endTime);
-        edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
+        try{
+            //当天时间
+            Date endTime=new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY,8);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            endTime=cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH,-1);
+            Date startTime=cal.getTime();
+            log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+            edcEqpStateService.syncEqpSate(startTime, endTime);
+            edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
+        }catch (Exception e){
+            log.error("EqpStateTask; ", e);
+        }
+
         log.info("EqpStateTask定时任务结束执行");
     }
 
