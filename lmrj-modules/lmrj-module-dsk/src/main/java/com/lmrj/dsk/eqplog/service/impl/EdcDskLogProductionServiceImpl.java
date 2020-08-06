@@ -179,6 +179,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                    edcDskLogProduction.setEqpNo(findeqpNoInfab(edcDskLogProduction.getEqpId()));
                     wrongDataList.add(edcDskLogProduction);
                 }
             }
@@ -294,7 +295,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             //拼写文件存储路径及备份路径
             if (i == 0) {
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
-                filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "_Productionlog.csv";
+                filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "!!!!!!_Productionlog.csv";
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
                 filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
                 fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
