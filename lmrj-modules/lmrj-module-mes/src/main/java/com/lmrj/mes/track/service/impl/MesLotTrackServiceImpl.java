@@ -24,7 +24,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -172,8 +177,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);
                 if ("Y".equals(result.getFlag())) {
-                    Map paramMap = (Map) result.getContent();
-                    value = StringUtil.join(paramMap.keySet().toArray(), ",");
+                    Map<String, String> paramMap = (Map) result.getContent();
+                    List<String> vals = Lists.newArrayList();
+                    for (String s : param.split(",")) {
+                        vals.add(paramMap.get(s));
+                    }
+                    value = StringUtil.join(vals.toArray(), ",");
                 }
             } else {
                 return MesResult.error(eqpId + " not reply");
@@ -301,7 +310,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
     public MesResult trackoutLine(String lineNo, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
-        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpByLine(lineNo);
+        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpBySubLine(lineNo);
         if (fabEquipmentList.size() == 0) {
             return MesResult.error("eqp not found");
         }
@@ -411,4 +420,18 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
 
+    //public static void main(String[] args) {
+    //    Map<String , Object> map = Maps.newHashMap();
+    //    map.put("1", "2");
+    //    map.put("2", "3");
+    //    List list = Lists.newArrayList();
+    //    list.add("222");
+    //    list.add("333");
+    //    map.put("3", list);
+    //    String value = JsonUtil.toJsonString(map);
+    //    System.out.println(JsonUtil.toJsonString(map));
+    //    Map map2 = JsonUtil.from(value, new TypeReference<Map<String , Object>>(){});
+    //    Map map3 =  JsonUtil.from(value, Map.class);
+    //    System.out.println(map2);
+    //}
 }
