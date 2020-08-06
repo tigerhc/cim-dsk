@@ -283,7 +283,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         List<String> lines = new ArrayList<>();
         String filename = null;
         EdcDskLogProduction pro;
-        String pattern1 = "yyyyMMddHHmmssSSS";
+        String pattern1 = "yyyyMMddHHmm999";
         String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
         String filePath = null;
         String fileBackUpPath = null;
@@ -295,7 +295,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             //拼写文件存储路径及备份路径
             if (i == 0) {
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
-                filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "!!!!!!_Productionlog.csv";
+                filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "_Productionlog.csv";
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
                 filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
                 fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
