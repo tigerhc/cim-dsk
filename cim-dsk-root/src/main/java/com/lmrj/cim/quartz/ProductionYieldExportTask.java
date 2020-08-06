@@ -27,12 +27,13 @@ public class ProductionYieldExportTask {
             //导出数据生成文件
             if(updateFlag){
                 edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+                log.info("开始导出production csv文件");
+            }else{
+                log.info("production csv文件正确 无需导出");
             }
         }catch (Exception e){
             log.error("ProductionYieldExportTask; ", e);
         }
-
-        log.info("开始导出production csv文件");
     }
 
 }
