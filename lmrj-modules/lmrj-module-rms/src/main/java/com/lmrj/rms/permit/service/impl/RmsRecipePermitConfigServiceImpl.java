@@ -4,6 +4,8 @@ import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.sys.entity.User;
+import com.lmrj.core.sys.entity.UserRole;
+import com.lmrj.core.sys.service.IUserRoleService;
 import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
 import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 import com.lmrj.rms.permit.mapper.RmsRecipePermitConfigMapper;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +37,8 @@ public class RmsRecipePermitConfigServiceImpl  extends CommonServiceImpl<RmsReci
 
     @Autowired
     private IRmsRecipePermitConfigService rmsRecipePermitConfigService;
+    @Autowired
+    private IUserRoleService userRoleService;
 
     @Override
     public Integer updateRoleNameBySubmitLevel(String submitterRoleName, String submitLevel) {
@@ -48,5 +53,24 @@ public class RmsRecipePermitConfigServiceImpl  extends CommonServiceImpl<RmsReci
         recipePermitConfig.setUpdateByName(id);
         recipePermitConfig.setCreateDate(new Date());
         return baseMapper.updateAllColumnById(recipePermitConfig);
+    }
+
+    @Override
+    public String[] getEmail(String submitLevel) {
+        List<RmsRecipePermitConfig> recipePermitConfigList = baseMapper.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", Integer.parseInt(submitLevel)));
+        RmsRecipePermitConfig recipePermitConfig = null;
+        if (recipePermitConfigList.size() > 0){
+            recipePermitConfig = recipePermitConfigList.get(0);
+        }
+        String submitterRoleId = recipePermitConfig.getSubmitterRoleId();
+        List<UserRole> userRoles = userRoleService.selectList(new EntityWrapper<UserRole>().eq("role_id", submitterRoleId));
+        if (userRoles.size() > 0){
+            String[] email = new String[userRoles.size()];
+            for (int i = 0; i < userRoles.size(); i++){
+                email[i] = UserUtil.getUser(userRoles.get(i).getUserId()).getEmail();
+            }
+            return email;
+        }
+        return null;
     }
 }

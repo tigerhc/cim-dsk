@@ -13,7 +13,9 @@ import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
+import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
+import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
@@ -59,6 +61,11 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     private IRmsRecipeService rmsRecipeService;
     @Autowired
     private IRmsRecipeBodyService rmsRecipeBodyService;
+    @Autowired
+    private IEmailSendService emailSendService;
+    @Autowired
+    private IRmsRecipePermitConfigService rmsRecipePermitConfigService;
+
     /**
      * 保存数据之前,处理细表
      *
@@ -347,6 +354,14 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         if (remarks != null && !"".equals(remarks)){
             rmsRecipe.setRemarks(remarks);
         }
+        //发送邮件
+        String[] email = rmsRecipePermitConfigService.getEmail(rmsRecipe.getApproveStep());
+        Map<String, Object> datas = Maps.newHashMap();
+        datas.put("RECIPE_CODE", rmsRecipe.getRecipeCode());
+        datas.put("EQP_ID", rmsRecipe.getEqpId());
+        datas.put("PERMIT_LEVEL", rmsRecipe.getApproveStep());
+        datas.put("VERSION_TYPE", rmsRecipe.getVersionType());
+        emailSendService.send(email,"RECIPE_PERMIT",datas);
         boolean flag = rmsRecipeService.updateById(rmsRecipe);
         if (!flag){
             res = Response.error("提交失败");

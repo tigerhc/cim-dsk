@@ -1,7 +1,9 @@
 package com.lmrj.rms.permit.service.impl;
 
+import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -43,6 +46,10 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
     private IRmsRecipePermitConfigService recipePermitConfigService;
     @Autowired
     private IRmsRecipeLogService rmsRecipeLogService;
+    @Autowired
+    private IEmailSendService emailSendService;
+    @Autowired
+    private IRmsRecipePermitConfigService rmsRecipePermitConfigService;
 
     public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
 
@@ -113,6 +120,14 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
             if (rmsRecipePermits.size() > 1) {
                 //大于1说明不是最后一级审批
                 recipe.setApproveStep(approveStep + "");
+                //发送邮件
+                String[] email = rmsRecipePermitConfigService.getEmail(recipe.getApproveStep());
+                Map<String, Object> datas = Maps.newHashMap();
+                datas.put("RECIPE_CODE", recipe.getRecipeCode());
+                datas.put("EQP_ID", recipe.getEqpId());
+                datas.put("PERMIT_LEVEL", recipe.getApproveStep());
+                datas.put("VERSION_TYPE", recipe.getVersionType());
+                emailSendService.send(email,"RECIPE_PERMIT",datas);
                 recipeService.updateById(recipe);
             }else if(rmsRecipePermits.size() == 1){
                 //修改文件路径,复制文件

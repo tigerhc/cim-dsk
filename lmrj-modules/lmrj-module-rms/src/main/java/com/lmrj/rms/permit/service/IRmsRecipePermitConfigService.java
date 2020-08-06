@@ -17,4 +17,6 @@ import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 public interface IRmsRecipePermitConfigService extends ICommonService<RmsRecipePermitConfig> {
 
     Integer updateRoleNameBySubmitLevel(String submitterRoleName, String submitLevel);
+
+    String[] getEmail(String submitLevel);
 }
