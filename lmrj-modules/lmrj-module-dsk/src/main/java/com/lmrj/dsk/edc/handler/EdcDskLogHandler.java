@@ -93,9 +93,8 @@ public class EdcDskLogHandler {
             "2nd plunge up height", "第2段突上量"
     };
     // TODO: 2020/7/8 改为可配置
-    String[] emails = {"hanzy@ms5.sanken-ele.co.jp","suchang@ms5.sanken-ele.co.jp",
-            "zhangwj@lmrj.com","403396835@qq.com"};
-
+    String[] emails = {"hanzy@ms5.sanken-ele.co.jp", "suchang@ms5.sanken-ele.co.jp",
+            "zhangwj@lmrj.com", "403396835@qq.com"};
 
 
     //{"eqpId":"OVEN-F-01","eventId":"ON","eventParams":null,"startDate":"2019-11-12 19:31:33 416"}
@@ -104,12 +103,12 @@ public class EdcDskLogHandler {
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         System.out.println("接收到的消息" + msg);
-        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
-
-        if(edcDskLogProductionList != null && edcDskLogProductionList.size()>0){
+        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
+        });
+        if (edcDskLogProductionList != null && edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
-            if(StringUtil.isNotBlank(eqpId)){
+            if (StringUtil.isNotBlank(eqpId)) {
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
                 edcDskLogProductionList.forEach(edcDskLogProduction -> {
                     edcDskLogProduction.setEqpNo(fabEquipment.getEqpNo());
@@ -119,7 +118,7 @@ public class EdcDskLogHandler {
                 });
             }
 
-            if(eqpId.contains("SIM-DM")) {
+            if (eqpId.contains("SIM-DM")) {
                 Iterator it = edcDskLogProductionList.iterator();
                 while (it.hasNext()) {
                     EdcDskLogProduction obj = (EdcDskLogProduction) it.next();
@@ -130,17 +129,17 @@ public class EdcDskLogHandler {
             }
             edcDskLogProductionService.insertBatch(edcDskLogProductionList);
         }
-        EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
+        EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size() - 1);
         int lotYield = lastProduction.getLotYield();
         int dayYield = lastProduction.getDayYield();
-        String lotNo =  lastProduction.getLotNo();
-        String eqpId =  lastProduction.getEqpId();
-        String recipeCode =  lastProduction.getRecipeCode();
-        String productionNo =  lastProduction.getProductionNo();
-        String orderNo =  lastProduction.getOrderNo();
+        String lotNo = lastProduction.getLotNo();
+        String eqpId = lastProduction.getEqpId();
+        String recipeCode = lastProduction.getRecipeCode();
+        String productionNo = lastProduction.getProductionNo();
+        String orderNo = lastProduction.getOrderNo();
 
-        boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp="+lotYield , new EntityWrapper().eq("eqp_id", eqpId).eq("lot_no", lotNo));
-        if(!updateFlag){
+        boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp=" + lotYield, new EntityWrapper().eq("eqp_id", eqpId).eq("lot_no", lotNo));
+        if (!updateFlag) {
             MesLotTrack mesLotTrack = new MesLotTrack();
             mesLotTrack.setEqpId(eqpId);
             mesLotTrack.setProductionNo(productionNo);
@@ -165,15 +164,16 @@ public class EdcDskLogHandler {
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
-        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
+        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {
+        });
 
-        if(edcDskLogOperationlist == null ||  edcDskLogOperationlist.size() == 0){
+        if (edcDskLogOperationlist == null || edcDskLogOperationlist.size() == 0) {
             return;
         }
 
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
-        if(StringUtil.isNotBlank(eqpId)){
+        if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
                 edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
@@ -198,9 +198,9 @@ public class EdcDskLogHandler {
         List<EdcEvtRecord> edcEvtRecordList = Lists.newArrayList();
         List<EdcAmsRecord> edcAmsRecordList = Lists.newArrayList();
         String status = "";
-        for(EdcDskLogOperation edcDskLogOperation: edcDskLogOperationlist){
+        for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
-            if("2".equals(eventId)){
+            if ("2".equals(eventId)) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
                 String alarmCode = edcDskLogOperation.getAlarmCode();
@@ -211,30 +211,30 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
                 edcAmsRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcAmsRecordList.add(edcAmsRecord);
-                if("War04002004".equals(alarmCode)|| "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode) ){
+                if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
 
-                }else{
+                } else {
                     status = "ALARM";
                 }
-            }else{
+            } else {
                 EdcEvtRecord edcEvtRecord = new EdcEvtRecord();
                 edcEvtRecord.setEqpId(edcDskLogOperation.getEqpId());
                 edcEvtRecord.setEventId(eventId);
                 String eventDesc = edcDskLogOperation.getEventName();
-                String eventParams =  edcDskLogOperation.getEventDetail();
+                String eventParams = edcDskLogOperation.getEventDetail();
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
-                if("PARAM CHG1".equals(eventDesc)||"PRODUCT SET".equals(eventDesc)){
+                if ("PARAM CHG1".equals(eventDesc) || "PRODUCT SET".equals(eventDesc)) {
                     for (String paramName : paramEditList) {
-                        if(eventParams.contains(paramName)){
+                        if (eventParams.contains(paramName)) {
                             Map<String, Object> datas = Maps.newHashMap();
-                            datas.put("EQP_ID",edcEvtRecord.getEqpId());
-                            datas.put("PARAM_CODE",eventParams);
-                            datas.put("OLD_VAL","");
-                            datas.put("NEW_VAL","");
+                            datas.put("EQP_ID", edcEvtRecord.getEqpId());
+                            datas.put("PARAM_CODE", eventParams);
+                            datas.put("OLD_VAL", "");
+                            datas.put("NEW_VAL", "");
 
-                            emailSendService.send(emails, "PARAM_CHANGE",datas);
+                            emailSendService.send(emails, "PARAM_CHANGE", datas);
                             break;
                         }
                     }
@@ -242,25 +242,25 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventParams(eventParams);
                 edcEvtRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcEvtRecordList.add(edcEvtRecord);
-                if("0".equals(eventId)||"7".equals(eventId)){
+                if ("0".equals(eventId) || "7".equals(eventId)) {
                     status = "DOWN";
-                }else if("1".equals(eventId)||"6".equals(eventId)){
+                } else if ("1".equals(eventId) || "6".equals(eventId)) {
                     status = "RUN";
-                }else if("3".equals(eventId)){
+                } else if ("3".equals(eventId)) {
                     status = "IDLE";
                 }
             }
             EdcEqpState edcEqpState = new EdcEqpState();
-            edcEqpState.setEqpId(eqpId);
-            edcEqpState.setStartTime(new Date());
+            edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
+            edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
             edcEqpState.setState(status);
             String stateJson = JsonUtil.toJsonString(edcEqpState);
             rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
         }
-        if(edcEvtRecordList.size() != 0){
+        if (edcEvtRecordList.size() != 0) {
             edcEvtRecordService.insertBatch(edcEvtRecordList);
         }
-        if(edcAmsRecordList.size() != 0){
+        if (edcAmsRecordList.size() != 0) {
             edcAmsRecordService.insertBatch(edcAmsRecordList);
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
@@ -271,7 +271,7 @@ public class EdcDskLogHandler {
     }
 
     @RabbitHandler
-    @RabbitListener(queues= {"C2S.Q.ALARMRPT.DATA"})
+    @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
         repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
@@ -285,8 +285,9 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.RECIPELOG.DATA"})
     public void parseRecipelog(String msg) {
         log.info("recieved message 开始解析{}recipe文件 : {} " + msg);
-        List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {});
-        if(edcDskLogRecipeList == null ||  edcDskLogRecipeList.size() == 0){
+        List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {
+        });
+        if (edcDskLogRecipeList == null || edcDskLogRecipeList.size() == 0) {
             return;
         }
         //edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
@@ -300,15 +301,15 @@ public class EdcDskLogHandler {
     public void parseTempHlog(String msg) {
         log.info("recieved message 开始解析{}温度曲线文件 : {} " + msg);
         OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
-        if(ovnBatchLot == null){
+        if (ovnBatchLot == null) {
             return;
         }
         String eqpId = ovnBatchLot.getEqpId();
-        if(StringUtil.isNotBlank(eqpId)){
+        if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
-            List<OvnBatchLotParam> OvnBatchLotParamList =  ovnBatchLot.getOvnBatchLotParamList();
-            ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size()-1).getCreateDate());
+            List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+            ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
             ovnBatchLotService.insert(ovnBatchLot);
         }
     }

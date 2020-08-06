@@ -17,31 +17,30 @@ public class EqpStateTask {
     //private IEdcDskLogOperationService edcDskLogOperationService;
     @Autowired
     private IEdcEqpStateService edcEqpStateService;
+
     /**
      * 计算当天的设备OEE数据
      * 每隔10分钟一次
-     *
      */
     //@Scheduled(cron = "0 45 11 * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
-        try{
+        try {
             //当天时间
-            Date endTime=new Date();
+            Date endTime = new Date();
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY,8);
+            cal.set(Calendar.HOUR_OF_DAY, 8);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
-            endTime=cal.getTime();
-            cal.add(Calendar.DAY_OF_MONTH,-1);
-            Date startTime=cal.getTime();
+            endTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date startTime = cal.getTime();
             log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
             edcEqpStateService.syncEqpSate(startTime, endTime);
             edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("EqpStateTask; ", e);
         }
-
         log.info("EqpStateTask定时任务结束执行");
     }
 

@@ -23,9 +23,11 @@ public class ProductionYieldExportTask {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             Date startTime = calendar.getTime();
             //更正表中批次品番
-            edcDskLogProductionService.updateProductionData(startTime, endTime);
+            Boolean updateFlag= edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件
-            edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+            if(updateFlag){
+                edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+            }
         }catch (Exception e){
             log.error("ProductionYieldExportTask; ", e);
         }

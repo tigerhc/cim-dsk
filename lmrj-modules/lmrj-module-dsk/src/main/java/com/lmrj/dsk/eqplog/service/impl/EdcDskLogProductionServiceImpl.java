@@ -169,7 +169,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     //修改品番和批次
-    public void updateProductionData(Date startTime, Date endTime) {
+    public Boolean updateProductionData(Date startTime, Date endTime) {
+        Boolean flag=false;
         List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
@@ -186,9 +187,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("",eventId,"updateProductionData","修改品番和批次","","");
+            flag=true;
         } else {
             log.info("数据品番和批次正确");
         }
+        return flag;
     }
 
     //修改批量内连番

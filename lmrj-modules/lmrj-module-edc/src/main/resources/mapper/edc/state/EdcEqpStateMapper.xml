@@ -39,6 +39,11 @@
         where start_time between #{startTime} and #{endTime}
         group by eqp_id, state
     </select>
-
+    <select id="findLastData" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select * from edc_eqp_state
+        where start_time &lt; #{startTime} and eqp_id=#{eqpId}
+        order by start_time desc
+        limit 1
+    </select>
 
 </mapper>

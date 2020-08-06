@@ -22,6 +22,7 @@ import java.util.List;
 @Mapper
 public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
-     List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
- }
+    EdcEqpState findLastData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
+}
