@@ -179,6 +179,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                    edcDskLogProduction.setEqpNo(findeqpNoInfab(edcDskLogProduction.getEqpId()));
                     wrongDataList.add(edcDskLogProduction);
                 }
             }
@@ -282,7 +283,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         List<String> lines = new ArrayList<>();
         String filename = null;
         EdcDskLogProduction pro;
-        String pattern1 = "yyyyMMddHHmmssSSS";
+        String pattern1 = "yyyyMMddHHmm999";
         String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
         String filePath = null;
         String fileBackUpPath = null;
