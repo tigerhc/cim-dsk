@@ -278,7 +278,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }*/
 
     public void printProlog(List<EdcDskLogProduction> prolist) throws Exception {
-        String eqpNo = findeqpNoInfab(prolist.get(0).getEqpId());
+        String eqpNo = "";
         List<String> lines = new ArrayList<>();
         String filename = null;
         EdcDskLogProduction pro;
@@ -289,21 +289,22 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         //获取表格title添加到lines中
         lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
         for (int i = 0; i < prolist.size(); i++) {
+            eqpNo=findeqpNoInfab(prolist.get(i).getEqpId());
             pro = prolist.get(i);
             //拼写文件存储路径及备份路径
             if (i == 0) {
                 String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
                 filename = "DSK_" + pro.getEqpId() + "_" + pro.getLotNo() + "_" + createTimeString + "_Productionlog.csv";
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
-                filePath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
-                fileBackUpPath = "E:/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
                 filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
                 fileBackUpPath = new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             String endTimeString = DateUtil.formatDate(pro.getEndTime(), pattern2);
             //拼写当前行字符串
-            String line = pro.getEqpId() + "," + pro.getEqpNo() + "," + eqpNo + "," + pro.getRecipeCode() + "," + startTimeString + "," + endTimeString + "," + pro.getDayYield() + "," + pro.getLotYield() + "," +
+            String line = pro.getEqpId() + "," + pro.getEqpModelName() + "," + eqpNo + "," + pro.getRecipeCode() + "," + startTimeString + "," + endTimeString + "," + pro.getDayYield() + "," + pro.getLotYield() + "," +
                     pro.getDuration() + "," + "," + "," + "," + "," + pro.getOrderNo() + "," + pro.getLotNo() + "," + pro.getProductionNo() + "," + pro.getParamValue();
             lines.add(line);
         }
