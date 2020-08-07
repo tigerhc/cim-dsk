@@ -168,9 +168,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         List<MesLotTrack> wrongLotList = new ArrayList<>();
+        //循环MesLotTrack批次
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
             boolean wrongLotFlag = false;
             List<EdcDskLogProduction> lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            //循环比较每个批次时间内数据是否正确
             for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
@@ -180,23 +182,24 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                     wrongLotFlag = true;
                 }
             }
-            if(wrongLotFlag){
+            if (wrongLotFlag) {
+                //存入修改的批次信息 返回
                 wrongLotList.add(mesLotTrack);
             }
-
         }
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("",eventId,"updateProductionData","修复品番和批次数据数量："+wrongDataList.size(),"","");
+            fabLogService.info("", eventId, "updateProductionData", "修复品番和批次数据数量：" + wrongDataList.size(), "", "");
         } else {
             log.info("数据品番和批次正确");
         }
         return wrongLotList;
     }
 
-    //修改批量内连番
+    //修改批量内连番    和track表设备产量
     public void updateProductionLotYieId(List<EdcDskLogProduction> edcDskLogProductionList) {
+        //循环数据   重新计算批量内连番
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         for (int i = 0; i < edcDskLogProductionList.size(); i++) {
             EdcDskLogProduction edcDskLogProduction = edcDskLogProductionList.get(i);
@@ -206,14 +209,27 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }
         }
         if (!wrongDataList.isEmpty()) {
+            //将设备产量数据放入mesLotTrack对象，修改track表设备产量
+            MesLotTrack mesLotTrack = new MesLotTrack();
+            mesLotTrack.setEqpId(edcDskLogProductionList.get(0).getEqpId());
+            mesLotTrack.setLotNo(edcDskLogProductionList.get(0).getLotNo());
+            if(edcDskLogProductionList.get(0).getEqpId()=="SIM-REFLOW1"){
+                mesLotTrack.setLotYieldEqp(wrongDataList.size()*12);
+            }else{
+                mesLotTrack.setLotYieldEqp(wrongDataList.size());
+            }
+            baseMapper.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getLotYieldEqp());
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("",eventId,"updateProductionLotYieId","修正批量内连番数据条数："+wrongDataList.size(),"","");
+            fabLogService.info("", eventId, "updateProductionLotYieId", "修正批量内连番数据条数：" + wrongDataList.size(), "", "");
         } else {
             log.info("数据批量内连番正确");
         }
     }
-
+    @Override
+    public Boolean updateTrackLotYeildEqp(String eqpId,String lotNo,Integer lotYieldEqp){
+        return baseMapper.updateTrackLotYeildEqp(eqpId,lotNo,lotYieldEqp);
+    }
     /**
      * 导出production csv文件
      *
@@ -281,7 +297,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         //获取表格title添加到lines中
         lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
         for (int i = 0; i < prolist.size(); i++) {
-            eqpNo=findeqpNoInfab(prolist.get(i).getEqpId());
+            eqpNo = findeqpNoInfab(prolist.get(i).getEqpId());
             pro = prolist.get(i);
             //拼写文件存储路径及备份路径
             if (i == 0) {
@@ -305,7 +321,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
         String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info(filename.split("_")[1],eventId,"printProlog","生成Production文件",filename.split("_")[2],"");
+        fabLogService.info(filename.split("_")[1], eventId, "printProlog", "生成Production文件", filename.split("_")[2], "");
         //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {

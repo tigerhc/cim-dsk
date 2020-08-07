@@ -32,7 +32,6 @@ public class ProductionYieldExportTask {
             List<MesLotTrack> wrongList = edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件
             if(wrongList.size()>0){
-                System.out.println(wrongList);
                 edcDskLogProductionService.printProductionCsv(wrongList);
                 log.info("开始导出production csv文件");
             }else{
