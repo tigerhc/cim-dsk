@@ -30,8 +30,6 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
 
     /*void exportProductionCsv1(Date startTime, Date endTime);*/
 
-    List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime);
-
     List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo);
 
     String findeqpNoInfab(String eqpId);

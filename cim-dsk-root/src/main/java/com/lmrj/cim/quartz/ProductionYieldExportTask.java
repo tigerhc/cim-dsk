@@ -1,5 +1,6 @@
 package com.lmrj.cim.quartz;
 
+import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -16,7 +18,7 @@ public class ProductionYieldExportTask {
 
     //@Scheduled(cron = "0 30 23 * * ?")
     public void doExportProductionCsv() throws Exception {
-        log.info("开始导出production csv文件");
+        log.info("导出production csv任务执行");
         try{
             Date endTime = new Date();
             Calendar cal = Calendar.getInstance();
@@ -27,10 +29,11 @@ public class ProductionYieldExportTask {
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startTime = cal.getTime();
             //更正表中批次品番
-            Boolean updateFlag= edcDskLogProductionService.updateProductionData(startTime, endTime);
+            List<EdcDskLogProduction> wrongList = edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件
-            if(updateFlag){
-                edcDskLogProductionService.exportProductionCsv(startTime, endTime);
+            if(wrongList.size()>0){
+                System.out.println(wrongList);
+                edcDskLogProductionService.printProductionCsv(wrongList);
                 log.info("开始导出production csv文件");
             }else{
                 log.info("production csv文件正确 无需导出");

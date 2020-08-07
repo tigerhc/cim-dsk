@@ -95,11 +95,6 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public List<EdcDskLogProduction> findLotNo(Date startTime, Date endTime) {
-        return baseMapper.findLotNo(startTime, endTime);
-    }
-
-    @Override
     public List<EdcDskLogProduction> findDataBylotNo(String lotNo, String eqpId, String productionNo) {
         return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
     }
@@ -169,8 +164,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     //修改品番和批次
-    public Boolean updateProductionData(Date startTime, Date endTime) {
-        Boolean flag=false;
+    public List<EdcDskLogProduction> updateProductionData(Date startTime, Date endTime) {
         List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
@@ -187,12 +181,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("",eventId,"updateProductionData","修改品番和批次","","");
-            flag=true;
+            fabLogService.info("",eventId,"updateProductionData","修复品番和批次数据数量："+wrongDataList.size(),"","");
         } else {
             log.info("数据品番和批次正确");
         }
-        return flag;
+        return wrongDataList;
     }
 
     //修改批量内连番
@@ -208,7 +201,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("",eventId,"updateProductionLotYieId","修改批量内连番","","");
+            fabLogService.info("",eventId,"updateProductionLotYieId","修正批量内连番数据条数："+wrongDataList.size(),"","");
         } else {
             log.info("数据批量内连番正确");
         }
@@ -217,21 +210,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     /**
      * 导出production csv文件
      *
-     * @param startTime
-     * @param endTime
-     * @return
+     * @param wrongList
+     * @returns
      */
-    public void exportProductionCsv(Date startTime, Date endTime) {
-        //获取一天之内的批次、品番和设备号
-        List<EdcDskLogProduction> lotNoList = baseMapper.findLotNo(startTime, endTime);
-        if (lotNoList.size() == 0) {
-            log.info("当前时间段无数据");
-        }
-        printProductionCsv(lotNoList);
-    }
-
-    public void printProductionCsv(List<EdcDskLogProduction> lotNoList) {
-        for (EdcDskLogProduction pro : lotNoList) {
+    //打印批次或品番错误的数据的production文件
+    public void printProductionCsv(List<EdcDskLogProduction> wrongList) {
+        for (EdcDskLogProduction pro : wrongList) {
             //根据批次、品番和设备号查找所有记录
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
             //修改批次内连番
