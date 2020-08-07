@@ -1,7 +1,7 @@
 package com.lmrj.cim.quartz;
 
-import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
+import com.lmrj.mes.track.entity.MesLotTrack;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class ProductionYieldExportTask {
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startTime = cal.getTime();
             //更正表中批次品番
-            List<EdcDskLogProduction> wrongList = edcDskLogProductionService.updateProductionData(startTime, endTime);
+            List<MesLotTrack> wrongList = edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件
             if(wrongList.size()>0){
                 System.out.println(wrongList);

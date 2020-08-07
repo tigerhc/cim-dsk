@@ -164,10 +164,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     //修改品番和批次
-    public List<EdcDskLogProduction> updateProductionData(Date startTime, Date endTime) {
+    public List<MesLotTrack> updateProductionData(Date startTime, Date endTime) {
         List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
+        List<MesLotTrack> wrongLotList = new ArrayList<>();
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
+            boolean wrongLotFlag = false;
             List<EdcDskLogProduction> lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
             for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
@@ -175,8 +177,13 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
                     edcDskLogProduction.setEqpNo(findeqpNoInfab(edcDskLogProduction.getEqpId()));
                     wrongDataList.add(edcDskLogProduction);
+                    wrongLotFlag = true;
                 }
             }
+            if(wrongLotFlag){
+                wrongLotList.add(mesLotTrack);
+            }
+
         }
         if (!wrongDataList.isEmpty()) {
             this.updateBatchById(wrongDataList);
@@ -185,7 +192,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         } else {
             log.info("数据品番和批次正确");
         }
-        return wrongDataList;
+        return wrongLotList;
     }
 
     //修改批量内连番
@@ -214,8 +221,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
      * @returns
      */
     //打印批次或品番错误的数据的production文件
-    public void printProductionCsv(List<EdcDskLogProduction> wrongList) {
-        for (EdcDskLogProduction pro : wrongList) {
+    public void printProductionCsv(List<MesLotTrack> wrongList) {
+        for (MesLotTrack pro : wrongList) {
             //根据批次、品番和设备号查找所有记录
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
             //修改批次内连番
