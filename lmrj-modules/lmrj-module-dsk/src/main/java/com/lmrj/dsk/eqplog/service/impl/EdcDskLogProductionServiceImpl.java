@@ -236,10 +236,10 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
             //修改批次内连番
             updateProductionLotYieId(prolist);
-            List<EdcDskLogProduction> newprolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
             try {
                 //导出文件 一个批次生成一个文件
-                this.printProlog(newprolist);
+                this.printProlog(prolist);
             } catch (Exception e) {
                 e.printStackTrace();
             }
