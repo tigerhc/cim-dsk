@@ -134,7 +134,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionName) {
+    public MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionNo, String productionName) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
@@ -143,6 +143,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (eqpId.contains("SIM-WT")) {
             map.put("PARAM", param);
             map.put("LOTNO", lotNo);
+            map.put("PRODUCTIONNO", productionNo);
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC1", JsonUtil.toJsonString(map));
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);

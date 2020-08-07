@@ -130,7 +130,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         log.info("findTemp :  {}, {}, {}, {}", opId,lotNo,  productionNo, index);
         try {
             //String eqpId ="SIM-DM1";
-            MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionName);
+            MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionNo, productionName);
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
