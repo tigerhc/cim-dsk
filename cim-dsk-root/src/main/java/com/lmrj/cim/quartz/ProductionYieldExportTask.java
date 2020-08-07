@@ -19,9 +19,13 @@ public class ProductionYieldExportTask {
         log.info("开始导出production csv文件");
         try{
             Date endTime = new Date();
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
-            Date startTime = calendar.getTime();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 8);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            endTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date startTime = cal.getTime();
             //更正表中批次品番
             Boolean updateFlag= edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件
