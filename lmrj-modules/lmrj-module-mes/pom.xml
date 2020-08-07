@@ -22,6 +22,11 @@
             <artifactId>lmrj-module-fab</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.lmrj</groupId>
+            <artifactId>lmrj-module-edc</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
