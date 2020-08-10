@@ -200,14 +200,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
     public String findDmKongdong(String eqpId, String param, String opId, String lotNo, String productionNo) {
         String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
-        String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\SIM\\SIM6812M(E)D";
-//        J.LC-5546AD(Y)D-APS
-        if (StringUtil.isNotBlank(productionName)) {
-            String line = productionName.split("-")[0].replace("J.","");
-            kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
+        String line = productionName.split("-")[0].replace("J.","");
+        if(line.length()>3){
+            line = line.substring(0,3);
         }
-
-        //String kongdongDir = "G:\\ボイド率";
+        String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
+        log.info(kongdongDir);
         List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir), new String[]{"bmp"}, false);
         Collections.sort(kongdongFiles, new Comparator<File>() {
             @Override
@@ -231,18 +229,29 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (lotNoFile.size() == 0) {
             return "ERROR: not found file for " + lotNo;
         }
-        if (lotNoFile.size() != 7) {
-            return "ERROR:  file quantity need 7,but found " + lotNoFile.size() + " for " + lotNo;
-        }
-        String[] kongdongVal = new String[7];
-        for (File file : lotNoFile) {
-            String[] fileNames = file.getName().split("-");
-            String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
-            String index = fileNames[fileNames.length - 1].replace(".bmp", "");
-            kongdongVal[Integer.parseInt(index) - 1] = value;
+        String kongdongStr="";
+        if ("SIM".equals(line)) {
+            if(lotNoFile.size() == 1){
+                return "ERROR:  file quantity need > 1,but found " + lotNoFile.size() + " for " + lotNo;
+            }
+            String[] kongdongVal = new String[7];
+            for (File file : lotNoFile) {
+                String[] fileNames = file.getName().split("-");
+                String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
+                String index = fileNames[fileNames.length - 1].replace(".bmp", "");
+                kongdongVal[Integer.parseInt(index) - 1] = value;
+            }
+            kongdongStr = StringUtil.join(kongdongVal, ",");
 
         }
-        String kongdongStr = StringUtil.join(kongdongVal, ",");
+        if ("5GI".equals(line) ||"6GI".equals(line)) {
+            log.info("file name: {}", lotNoFile.get(0).getName());
+            if (lotNoFile.size() != 1) {
+                return "ERROR:  file quantity need 1,but found " + lotNoFile.size() + " for " + lotNo;
+            }
+            String[] fileNames = lotNoFile.get(0).getName().split("%");
+            kongdongStr = fileNames[0].split("-")[1].trim();
+        }
         return kongdongStr;
     }
 
