@@ -122,7 +122,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         map2.put("name","当天投入数");
         map2.put("number",lotYieldAll);
         Map map3=new HashMap();
-        map3.put("name","当天达成率");
+        map3.put("name","达成率");
         if(yieldQty==0){
             map3.put("number",100);
         }else{

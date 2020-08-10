@@ -101,9 +101,11 @@ public class EdcSecsLogHandler {
             //productionLog.setOrderNo(columns[columnNo++]);  //作业指示书的订单
             productionLog.setLotNo(equipmentStatus.getLotNo());  //作业指示书的批量
             productionLog.setProductionNo(equipmentStatus.getProductionNo()); //作业指示书的品番
+            String eventParams = evtRecord.getEventParams();
+            productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
 
-            String eventParams = evtRecord.getEventParams();
+
             if (eventParams != null) {
                 String[] params = eventParams.split(",");
                 if (params.length == 3) {
