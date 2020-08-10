@@ -75,7 +75,10 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     public boolean clearMiddleProductionLog2() {
         return true;
     }
-
+    @Override
+    public MesLotTrack selectEndTime(String eqpId,String lotNo){
+        return baseMapper.selectEndTime(eqpId,lotNo);
+    }
 
     @Override
     public EdcDskLogProduction findNextYield(String eqpId, Date startTime) {
@@ -170,8 +173,14 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         List<MesLotTrack> wrongLotList = new ArrayList<>();
         //循环MesLotTrack批次
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
+            MesLotTrack nextLot=baseMapper.selectEndTime(mesLotTrack.getEqpId(),mesLotTrack.getLotNo());
+            List<EdcDskLogProduction> lotNoList =new ArrayList<>();
             boolean wrongLotFlag = false;
-            List<EdcDskLogProduction> lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            if(nextLot!=null){
+                lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), nextLot.getStartTime(), mesLotTrack.getEqpId());
+            }else{
+                lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            }
             //循环比较每个批次时间内数据是否正确
             for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {

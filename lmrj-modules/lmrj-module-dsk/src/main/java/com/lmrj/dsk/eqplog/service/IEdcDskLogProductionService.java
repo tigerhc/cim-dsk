@@ -39,4 +39,6 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
     List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId);
 
     Boolean updateTrackLotYeildEqp(String eqpId,String lotNo,Integer lotYieldEqp);
+
+    MesLotTrack selectEndTime(String eqpId,String lotNo);
 }

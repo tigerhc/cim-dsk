@@ -40,7 +40,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
     @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
     String findeqpNoInfab(@Param("eqpId") String eqpId);
 
-    @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime}")
+    @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime} order by lot_no")
     List<MesLotTrack> findCorrectData(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     @Select("select * from edc_dsk_log_production where start_time between #{startTime} and #{endTime} and eqp_id= #{eqpId} order by start_time")
@@ -48,4 +48,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
     @Update("update mes_lot_track set lot_yield_eqp=#{lotYieldEqp} where eqp_id=#{eqpId} and lot_no=#{lotNo} ")
     Boolean updateTrackLotYeildEqp(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo,@Param("lotYieldEqp") Integer lotYieldEqp);
+
+    @Select("select * from mes_lot_track where eqp_id=#{eqpId} AND lot_no>#{lotNo} ORDER BY lot_no limit 1")
+    MesLotTrack selectEndTime(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo);
 }
