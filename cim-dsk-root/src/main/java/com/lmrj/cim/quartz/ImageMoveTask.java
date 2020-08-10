@@ -33,7 +33,7 @@ public class ImageMoveTask {
                 (List<File>) FileUtil.listFiles(new File(path), new String[]{"bmp"}, true);
         fileList.forEach(System.out::println);
         for (File file : fileList) {
-            if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 1) { //先改为1天
+            if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 7) {
                 log.info(file.getName());
                 log.info("开始处理图片"+file.getAbsolutePath());
                 String line = file.getParentFile().getParentFile().getName();

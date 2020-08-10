@@ -3,6 +3,7 @@ package com.lmrj.mes.track.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -58,6 +59,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IFabEquipmentStatusService fabEquipmentStatusService;
     @Autowired
     IMesLotTrackService iMesLotTrackService;
+    @Autowired
+    IApsPlanPdtYieldService apsPlanPdtYieldService;
 
     /**
      * 按照eqp和line获取recipe
@@ -134,7 +137,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionNo, String productionName) {
+    public MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionNo) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
@@ -163,7 +166,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             //}
         } else if ("SIM-DM".equals(eqpId)) {
             if ("10300".equals(param)) {
-                value = findDmKongdong(eqpId, param, opId, lotNo, productionName);
+                value = findDmKongdong(eqpId, param, opId, lotNo, productionNo);
                 if (value.startsWith("ERROR: ")) {
                     return MesResult.error(value);
                 }
@@ -195,10 +198,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public String findDmKongdong(String eqpId, String param, String opId, String lotNo, String productionName) {
+    public String findDmKongdong(String eqpId, String param, String opId, String lotNo, String productionNo) {
+        String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
         String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\SIM\\SIM6812M(E)D";
+//        J.LC-5546AD(Y)D-APS
         if (StringUtil.isNotBlank(productionName)) {
-            kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\SIM\\" + productionName;
+            String line = productionName.split("-")[0].replace("J.","");
+            kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
         }
 
         //String kongdongDir = "G:\\ボイド率";
