@@ -111,6 +111,10 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     public List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId) {
         return baseMapper.findProByTime(startTime, endTime, eqpId);
     }
+    @Override
+    public MesLotTrack findLotNo(String eqpId,Date startTime,Date endTime){
+        return baseMapper.findLotNo(eqpId,startTime,endTime);
+    }
 
     /**
      * @param eqpId

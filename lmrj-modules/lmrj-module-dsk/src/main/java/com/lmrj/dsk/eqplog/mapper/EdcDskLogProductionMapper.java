@@ -51,4 +51,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
 
     @Select("select * from mes_lot_track where eqp_id=#{eqpId} AND lot_no>#{lotNo} ORDER BY lot_no limit 1")
     MesLotTrack selectEndTime(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo);
+
+    @Select("select * from mes_lot_track where eqp_id=#{eqpId} and start_time<#{startTime} and end_time>#{startTime}")
+    MesLotTrack findLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

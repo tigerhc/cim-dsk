@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,9 @@ import java.util.List;
 @Mapper
 public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
-    List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime,@Param("eqpId") String eqpId);
     List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     EdcEqpState findLastData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
+    @Select("select DISTINCT eqp_id from edc_eqp_state where start_time BETWEEN #{startTime} and #{endTime}")
+    List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

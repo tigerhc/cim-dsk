@@ -41,7 +41,7 @@ public class EdcEqpStateController extends BaseCRUDController<EdcEqpState> {
     private IEdcEqpStateService edcEqpStateService;
 
     @GetMapping("eqpState")
-    public Response eqpState(String periodDate){
+    public Response eqpState(String periodDate,String eqpId){
         Date startTime = null;
         Date endTime = null;
         try {
@@ -54,7 +54,7 @@ public class EdcEqpStateController extends BaseCRUDController<EdcEqpState> {
             e.printStackTrace();
         }
 
-        int size=edcEqpStateService.syncEqpSate(startTime, endTime);
+        int size=edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
         return Response.ok(String.valueOf(size));
     }
 }

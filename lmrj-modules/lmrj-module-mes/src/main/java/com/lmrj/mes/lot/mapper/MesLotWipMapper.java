@@ -48,4 +48,7 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
     MesLotWip findStep(@Param("eqpId") String eqpId);
 
     List<Map> findLotYield(@Param("officeId") String lineNo);
+
+    @Select("select count(*) from edc_dsk_log_production where eqp_id=#{eqpId} and lot_no=#{lotNo} and production_no=#{productionNo}")
+    Integer selectLotYieldEqp();
 }

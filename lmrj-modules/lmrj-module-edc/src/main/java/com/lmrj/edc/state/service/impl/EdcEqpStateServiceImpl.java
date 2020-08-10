@@ -45,6 +45,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     @Autowired
     private IRptEqpStateDayService rptEqpStateDayService;
 
+    @Override
+    public List<String> findEqpId(Date startTime,Date endTime){
+        return baseMapper.findEqpId(startTime,endTime);
+    }
     /**
      * 更新end_time, state_times
      *
@@ -52,13 +56,14 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
      * @param endTime
      * @return
      */
+    //给edc_eqp_state表里的数据添加end_time
     @Override
-    public int syncEqpSate(Date startTime, Date endTime) {
-        List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime);
+    public int syncEqpSate(Date startTime, Date endTime,String eqpId) {
+        List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime,endTime,eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在8点到第一条数据之间新建一条数据
-        if (eqpStateList.get(0).getStartTime().after(startTime)) {
-            EdcEqpState lastData = this.findLastData(startTime, eqpStateList.get(0).getEqpId());
+        if (eqpStateList.get(0).getStartTime()!=(startTime)) {
+            EdcEqpState lastData = this.findLastData(startTime, eqpId);
             EdcEqpState firstData = new EdcEqpState();
             firstData.setStartTime(startTime);
             firstData.setEndTime(eqpStateList.get(0).getStartTime());

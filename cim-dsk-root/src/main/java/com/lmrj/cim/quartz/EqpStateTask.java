@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -36,7 +37,10 @@ public class EqpStateTask {
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startTime = cal.getTime();
             log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-            edcEqpStateService.syncEqpSate(startTime, endTime);
+            List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+            for (String eqpId : eqpIdList) {
+                edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
+            }
             edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
         } catch (Exception e) {
             log.error("EqpStateTask; ", e);

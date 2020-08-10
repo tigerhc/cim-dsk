@@ -61,4 +61,11 @@ public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, Mes
     public MesLotWip finddata(String lotNo, String productionNo) {
         return baseMapper.finddata(lotNo, productionNo);
     }
+
+    public boolean updateLotYieldEqp(MesLotTrack mesLotTrack){
+        boolean flag=false;
+
+
+        return false;
+    }
 }
