@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -99,7 +100,7 @@ public class EdcSecsLogHandler {
             productionLog.setEndTime(new Date());
             productionLog.setEqpModelId(fabEquipment.getModelId());
             productionLog.setEqpModelName(fabEquipment.getModelName());
-            productionLog.setEqpModelName(fabEquipment.getEqpNo());
+            productionLog.setEqpNo(fabEquipment.getEqpNo());
             productionLog.setJudgeResult("y");
             productionLog.setDayYield(equipmentStatus.getDayYield());
             productionLog.setLotYield(equipmentStatus.getLotYield());
@@ -115,7 +116,8 @@ public class EdcSecsLogHandler {
             productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
             MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date(),new Date());
-            mesLotTrack.setLotYieldEqp(equipmentStatus.getLotYield());
+            List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+            mesLotTrack.setLotYieldEqp(proList.size());
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
             if(!updateFlag){
                 mesLotTrack.setStartTime(new Date());
