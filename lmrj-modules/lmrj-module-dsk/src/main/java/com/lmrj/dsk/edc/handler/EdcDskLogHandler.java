@@ -104,6 +104,7 @@ public class EdcDskLogHandler {
         System.out.println("接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
+        List<MesLotTrack> mesList=new LinkedList<>();
         List<EdcDskLogProduction> newProList=new ArrayList<>();
         if (edcDskLogProductionList != null && edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
@@ -114,7 +115,7 @@ public class EdcDskLogHandler {
             //判断数据是否为同一批次
             MesLotTrack mesLotTrack = edcDskLogProductionService.findLotNo(eqpId,edcDskLogProduction0.getStartTime(),edcDskLogProductionLast.getEndTime());
             if(mesLotTrack!=null){
-                //查询批次是否已存在
+                //查询批次是否已存在，获取该批次最新数据
                 List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
                 if(proList.size()>0){
                     i=proList.size()+1;
@@ -125,10 +126,19 @@ public class EdcDskLogHandler {
                     newProList.add(edcDskLogProduction);
                     i++;
                 }
-            }else{
+            }else{//不属于同一个批次
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                     MesLotTrack mesLotTrack1 = edcDskLogProductionService.findLotNo(eqpId,edcDskLogProduction.getStartTime(),edcDskLogProduction.getEndTime());
                     if(mesLotTrack1!=null){
+                        //将这批数据的每个不同的批次对象放入集合
+                        if(mesList.isEmpty()){
+                            mesList.add(mesLotTrack1);
+                        }else{
+                            if(!mesList.contains(mesLotTrack1)){
+                                mesList.add(mesLotTrack1);
+                            }
+                        }
+                        //查询批次是否已存在，获取该批次最新数据
                         List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack1.getLotNo(),mesLotTrack1.getEqpId(),mesLotTrack1.getProductionNo());
                         if(proList.size()>0){
                             edcDskLogProduction.setLotNo(mesLotTrack1.getLotNo());
@@ -164,37 +174,45 @@ public class EdcDskLogHandler {
             }
             edcDskLogProductionService.insertBatch(newProList);
         }
-        EdcDskLogProduction lastProduction = edcDskLogProductionList.get(edcDskLogProductionList.size() - 1);
-        int lotYield = lastProduction.getLotYield();
-        int dayYield = lastProduction.getDayYield();
-        String lotNo = lastProduction.getLotNo();
-        String eqpId = lastProduction.getEqpId();
-        String recipeCode = lastProduction.getRecipeCode();
-        String productionNo = lastProduction.getProductionNo();
-        String orderNo = lastProduction.getOrderNo();
-        boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp=" + lotYield, new EntityWrapper().eq("eqp_id", eqpId).eq("lot_no", lotNo));
-        if (!updateFlag) {
+        if(mesList.isEmpty()){
+            //该批数据为同一批次
+            EdcDskLogProduction lastPro = newProList.get(edcDskLogProductionList.size() - 1);
             MesLotTrack mesLotTrack = new MesLotTrack();
-            mesLotTrack.setEqpId(eqpId);
-            mesLotTrack.setProductionNo(productionNo);
-            mesLotTrack.setOrderNo(orderNo);
-            mesLotTrack.setLotNo(lotNo);
+            mesLotTrack.setEqpId(lastPro.getEqpId());
+            mesLotTrack.setProductionNo(lastPro.getProductionNo());
+            mesLotTrack.setOrderNo(lastPro.getOrderNo());
+            mesLotTrack.setLotNo(lastPro.getLotNo());
             mesLotTrack.setCreateBy("EQP");
-            mesLotTrack.setLotYieldEqp(lotYield);
+            mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
             mesLotTrack.setStartTime(new Date());
-            mesLotTrackService.insert(mesLotTrack);
+            boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp=" + lastPro.getLotYield(), new EntityWrapper().eq("eqp_id", lastPro.getEqpId()).eq("lot_no", lastPro.getLotNo()));
+            if(!updateFlag){
+                mesLotTrackService.insert(mesLotTrack);
+            }
+        }else{
+            //遍历之前存入批次的集合
+            for (MesLotTrack mesLotTrack : mesList) {
+                List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+                EdcDskLogProduction lastPro =proList.get(proList.size()-1);
+                MesLotTrack mesLotTrack1 = new MesLotTrack();
+                mesLotTrack1.setEqpId(lastPro.getEqpId());
+                mesLotTrack1.setProductionNo(lastPro.getProductionNo());
+                mesLotTrack1.setOrderNo(lastPro.getOrderNo());
+                mesLotTrack1.setLotNo(lastPro.getLotNo());
+                mesLotTrack1.setCreateBy("EQP");
+                mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
+                mesLotTrack1.setStartTime(new Date());
+                boolean updateFlag = mesLotTrackService.updateForSet("lot_yield_eqp=" + lastPro.getLotYield(), new EntityWrapper().eq("eqp_id", lastPro.getEqpId()).eq("lot_no", lastPro.getLotNo()));
+                if(!updateFlag){
+                    mesLotTrackService.insert(mesLotTrack1);
+                }
+            }
         }
-
         //产量不准,改为自己运算后更新
         //if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
         //    fabEquipmentStatusService.updateYield(eqpId,"", lotNo, recipeCode, lotYield, dayYield);
         //}
     }
-
-    public void fixDate(int i){
-
-    }
-
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
@@ -208,7 +226,6 @@ public class EdcDskLogHandler {
         if (edcDskLogOperationlist == null || edcDskLogOperationlist.size() == 0) {
             return;
         }
-
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
         if (StringUtil.isNotBlank(eqpId)) {

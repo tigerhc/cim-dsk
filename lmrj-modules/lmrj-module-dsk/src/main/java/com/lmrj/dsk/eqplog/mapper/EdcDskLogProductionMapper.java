@@ -34,7 +34,7 @@ public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProductio
     @Select("select max(lot_yield) lot_yield  from edc_dsk_log_production where eqp_id=#{eqpId} and production_no=#{productionNo} and lot_no=#{lotNo}")
     Integer findNewYieldByLot(String eqpId, String productionNo, String lotNo);
 
-    @Select("select * from edc_dsk_log_production where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time ")
+    @Select("select * from edc_dsk_log_production where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time")
     List<EdcDskLogProduction> findDataBylotNo(@Param("lotNo") String lotNo, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
 
     @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
