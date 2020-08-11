@@ -179,12 +179,12 @@ public class EdcDskLogHandler {
             mesLotTrack1.setEqpId(lastPro.getEqpId());
             mesLotTrack1.setProductionNo(lastPro.getProductionNo());
             mesLotTrack1.setLotNo(lastPro.getLotNo());
+            mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack1);
             if(!updateFlag){
                 mesLotTrack1.setStartTime(new Date());
                 mesLotTrack1.setOrderNo(lastPro.getOrderNo());
                 mesLotTrack1.setCreateBy("EQP");
-                mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
                 mesLotTrackService.insert(mesLotTrack1);
             }
             String eventId = StringUtil.randomTimeUUID("RPT");
@@ -198,12 +198,12 @@ public class EdcDskLogHandler {
                 mesLotTrack1.setEqpId(lastPro.getEqpId());
                 mesLotTrack1.setProductionNo(lastPro.getProductionNo());
                 mesLotTrack1.setLotNo(lastPro.getLotNo());
+                mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
                 boolean updateFlag = mesLotTrackService.updateById(mesLotTrack1);
                 if(!updateFlag){
                     mesLotTrack1.setStartTime(new Date());
                     mesLotTrack1.setOrderNo(lastPro.getOrderNo());
                     mesLotTrack1.setCreateBy("EQP");
-                    mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
                     mesLotTrackService.insert(mesLotTrack1);
                 }
             }
