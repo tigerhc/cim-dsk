@@ -175,17 +175,18 @@ public class EdcDskLogHandler {
         if(mesList.size()==1){
             //该批数据为同一批次
             EdcDskLogProduction lastPro = edcDskLogProductionList.get(edcDskLogProductionList.size() - 1);
-            MesLotTrack mesLotTrack1 = new MesLotTrack();
-            mesLotTrack1.setEqpId(lastPro.getEqpId());
-            mesLotTrack1.setProductionNo(lastPro.getProductionNo());
-            mesLotTrack1.setLotNo(lastPro.getLotNo());
-            mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
-            boolean updateFlag = mesLotTrackService.updateById(mesLotTrack1);
+            MesLotTrack mesLotTrack = mesList.get(0);
+            mesLotTrack.setEqpId(lastPro.getEqpId());
+            mesLotTrack.setProductionNo(lastPro.getProductionNo());
+            mesLotTrack.setLotNo(lastPro.getLotNo());
+            mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
+            boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
+
             if(!updateFlag){
-                mesLotTrack1.setStartTime(new Date());
-                mesLotTrack1.setOrderNo(lastPro.getOrderNo());
-                mesLotTrack1.setCreateBy("EQP");
-                mesLotTrackService.insert(mesLotTrack1);
+                mesLotTrack.setStartTime(new Date());
+                mesLotTrack.setOrderNo(lastPro.getOrderNo());
+                mesLotTrack.setCreateBy("EQP");
+                mesLotTrackService.insert(mesLotTrack);
             }
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "mes_lot_track更新", "本次数据为同一批次，track更新结束", lastPro.getLotNo(), "gxj");
@@ -194,17 +195,17 @@ public class EdcDskLogHandler {
             for (MesLotTrack mesLotTrack : mesList) {
                 List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
                 EdcDskLogProduction lastPro =proList.get(proList.size()-1);
-                MesLotTrack mesLotTrack1 = new MesLotTrack();
-                mesLotTrack1.setEqpId(lastPro.getEqpId());
-                mesLotTrack1.setProductionNo(lastPro.getProductionNo());
-                mesLotTrack1.setLotNo(lastPro.getLotNo());
-                mesLotTrack1.setLotYieldEqp(lastPro.getLotYield());
-                boolean updateFlag = mesLotTrackService.updateById(mesLotTrack1);
+                mesLotTrack.setEqpId(lastPro.getEqpId());
+                mesLotTrack.setProductionNo(lastPro.getProductionNo());
+                mesLotTrack.setLotNo(lastPro.getLotNo());
+                mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
+                boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
+
                 if(!updateFlag){
-                    mesLotTrack1.setStartTime(new Date());
-                    mesLotTrack1.setOrderNo(lastPro.getOrderNo());
-                    mesLotTrack1.setCreateBy("EQP");
-                    mesLotTrackService.insert(mesLotTrack1);
+                    mesLotTrack.setStartTime(new Date());
+                    mesLotTrack.setOrderNo(lastPro.getOrderNo());
+                    mesLotTrack.setCreateBy("EQP");
+                    mesLotTrackService.insert(mesLotTrack);
                 }
             }
             String eventId = StringUtil.randomTimeUUID("RPT");

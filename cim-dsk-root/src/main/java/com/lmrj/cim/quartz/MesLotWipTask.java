@@ -31,7 +31,11 @@ public class MesLotWipTask {
         List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
         for (MesLotTrack mes :
                 mesList) {
-            MesLotWip mesLotWip=iMesLotWipService.findStep(mes.getEqpId());
+            MesLotWip mesLotWip1=iMesLotWipService.findStep(mes.getEqpId());
+            MesLotWip mesLotWip=new MesLotWip();
+            mesLotWip.setStepId(mesLotWip1.getStepId());
+            mesLotWip.setStepCode(mesLotWip1.getStepCode());
+            mesLotWip.setStationCode(mesLotWip1.getStationCode());
             mesLotWip.setEqpId(mes.getEqpId());
             mesLotWip.setLotNo(mes.getLotNo());
             mesLotWip.setStartTime(mes.getStartTime());
@@ -49,6 +53,13 @@ public class MesLotWipTask {
                 }
                 continue;
             } else {
+                mesLotWip=iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
+                mesLotWip.setLotYield(mes.getLotYield());
+                mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
+                mesLotWip.setEqpId(mes.getEqpId());
+                mesLotWip.setStepId(mesLotWip1.getStepId());
+                mesLotWip.setStepCode(mesLotWip1.getStepCode());
+                mesLotWip.setStationCode(mesLotWip1.getStationCode());
                 //更新数据
                 if (iMesLotWipService.updateById(mesLotWip)) {
                     log.info("mes_lot_wip表数据更新成功 批次：" + mesLotWip.getEqpId());
