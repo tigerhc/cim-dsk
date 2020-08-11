@@ -121,6 +121,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return baseMapper.recipeCodeList();
     }
 
+    /**
+     * 审批主页recipe查询
+     * @param eqpId，recipeCode，startDate，endDate，versionType
+     * @return
+     */
     @Override
     public List<RmsRecipe> recipePermitList(String eqpId,String recipeCode,String startDate,String endDate,String versionType) {
         Object principal = SecurityUtils.getSubject().getPrincipal();
@@ -146,6 +151,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return baseMapper.recipePermitList(roleIdList, eqpId,recipeCode, start, end, versionType);
     }
 
+    //废弃
     @Override
     public List<RmsRecipe> getRecipePermitList() {
         Object principal = SecurityUtils.getSubject().getPrincipal();
@@ -261,11 +267,15 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
             Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
+            //获取rmsRecipe参数
             RmsRecipe rmsRecipe = (RmsRecipe)contentMap.get("rmsRecipe");
             if (rmsRecipe == null){
+                //rmsRecipe参数为空说明是未解析的
                 String fileName = (String)contentMap.get("fileName");
+                //去FTP下载文件并进行解析
                 flag = downloadFromFTP(eqpId,recipeName,fileName);
             } else {
+                //解析过的对象直接添加到数据库
                 this.insert(rmsRecipe);
                 for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
                     rmsRecipeBodyService.insert(recipeBody);
@@ -297,27 +307,36 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return flag;
     }
 
-    //从FTP服务器下载配方文件到本地
+    /**
+     * 从FTP服务器下载配方文件到本地
+     * @param eqpId, recipeName, fileName
+     * @return
+     */
     public boolean downloadFromFTP(String eqpId, String recipeName, String fileName) throws Exception {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        if (fabEquipment == null){
-            throw new Exception("该设备不存在");
-        }
         String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
         String localPath = "D:/ftpTest/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
         boolean flag = false;
         try {
+            //下载文件
             flag = FtpUtil.downloadFile(FTP94, remotePath, fileName, localPath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         if (flag) {
+            //如果flag为true说明文件下载成功，找到文件进行解析
             String filePath = localPath + "/" + fileName;
             flag = analysisFile(fabEquipment, recipeName, filePath);
         }
         return flag;
     }
 
+
+    /**
+     * 解析文件
+     * @param fabEquipment, recipeName, filePath
+     * @return
+     */
     public boolean analysisFile(FabEquipment fabEquipment, String recipeName, String filePath) throws Exception {
 //        String fileName = "SIM6822-FRD-1_TJZC";
 //        String filePath = "D:/cim-dsk/"+ fileName +".csv";
@@ -368,6 +387,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         if (fabEquipment == null){
             throw new Exception("该设备不存在");
         }
+        //去下载配置中找到优先下载的版本类型
         String versionType = getDownloadVersionType(eqpId, recipeName);
         if (versionType == null) {
             throw new Exception("下载失败，未找到指定配方，请检查配置或先上传配方");
@@ -423,6 +443,12 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return true;
     }
 
+    /**
+     * 获取下载的版本类型
+     * @param eqpId
+     * @param recipeName
+     * @return
+     */
     public String getDownloadVersionType(String eqpId, String recipeName) {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
@@ -435,9 +461,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             return null;
         }
         String level1 = recipeDownloadConfig.getLevel1();
+        //一级一级进行判断
         if (level1 == null || "".equals(level1)) {
             return null;
         } else {
+            //检查FTP上是否存在此文件
             boolean flag1 = checkFileExist(level1, fabEquipment, eqpId, recipeName);
             if (flag1){
                 return level1;
@@ -464,6 +492,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         }
     }
 
+    /**
+     * 看FTP上次配方文件是否存在
+     * @param level, fabEquipment, eqpId, recipeName
+     * @return
+     */
     public boolean checkFileExist(String level, FabEquipment fabEquipment, String eqpId, String recipeName) {
         List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name", recipeName));
         if (rmsRecipes.size() < 1){
