@@ -426,10 +426,14 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public MesLotTrack findLotNo(String eqpId,Date startTime,Date endTime){
+    public List<MesLotTrack> findLotNo(String eqpId,Date startTime,Date endTime){
         return baseMapper.findLotNo(eqpId,startTime,endTime);
     }
 
+    @Override
+    public MesLotTrack findLotNo1(String eqpId,Date startTime,Date endTime){
+        return baseMapper.findLotNo1(eqpId,startTime,endTime);
+    }
     @Override
     public MesLotTrack findLotNo(String startTime, String eqpId) {
         return baseMapper.findLotNo(startTime, eqpId);

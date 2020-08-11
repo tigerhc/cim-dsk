@@ -97,7 +97,9 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 if(StringUtil.isBlank(edcEqpState.getState())){
                     if (i>1){
                         edcEqpState.setState(eqpStateList.get(i-1).getState());
-                    }
+                    }/*else{
+                        edcEqpState.setState("IDLE");
+                    }*/
                 }
             }
         }

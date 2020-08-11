@@ -40,6 +40,7 @@ public class MesLotWipTask {
             mesLotWip.setOrderNo(mes.getOrderNo());
             mesLotWip.setProductionNo(mes.getProductionNo());
             mesLotWip.setProductionName(mes.getProductionName());
+            mesLotWip.setEndTime(mes.getEndTime());
             if (iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo()) == null) {
                 //向表中新建数据
                 if (iMesLotWipService.insert(mesLotWip)){
