@@ -63,33 +63,43 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在8点到第一条数据之间新建一条数据
         if (eqpStateList.get(0).getStartTime()!=(startTime)) {
-            EdcEqpState lastData = this.findLastData(startTime, eqpId);
             EdcEqpState firstData = new EdcEqpState();
             firstData.setStartTime(startTime);
             firstData.setEndTime(eqpStateList.get(0).getStartTime());
             Double state = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
             firstData.setStateTimes(state);
-            firstData.setState(lastData.getState());
-            firstData.setEqpId(lastData.getEqpId());
+            firstData.setState("IDLE");
+            firstData.setEqpId(eqpId);
             this.insert(firstData);
             log.info("插入记录成功");
         }
-        for (int i = 0; i < eqpStateList.size() - 1; i++) {
+        for (int i = 0; i < eqpStateList.size(); i++) {
             //将最后一条数据的endtime改为当天8点 并计算StateTime
-            if (i == eqpStateList.size() - 2) {
+            if (i == eqpStateList.size() - 1) {
                 EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
                 lastEdcEqpState.setEndTime(endTime);
                 Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
                 lastEdcEqpState.setStateTimes(stateTime1);
                 neweqpStateList.add(lastEdcEqpState);
+                if(StringUtil.isBlank(lastEdcEqpState.getState())){
+                    if (i>1){
+                        lastEdcEqpState.setState(eqpStateList.get(i-1).getState());
+                    }
+                }
+            }else{
+                //给每条数据加endTime和stateTime
+                EdcEqpState edcEqpState = eqpStateList.get(i);
+                EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
+                edcEqpState.setEndTime(nextedcEqpState.getStartTime());
+                Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+                edcEqpState.setStateTimes(stateTime);
+                neweqpStateList.add(edcEqpState);
+                if(StringUtil.isBlank(edcEqpState.getState())){
+                    if (i>1){
+                        edcEqpState.setState(eqpStateList.get(i-1).getState());
+                    }
+                }
             }
-            //给每条数据加endTime和stateTime
-            EdcEqpState edcEqpState = eqpStateList.get(i);
-            EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
-            edcEqpState.setEndTime(nextedcEqpState.getStartTime());
-            Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
-            edcEqpState.setStateTimes(stateTime);
-            neweqpStateList.add(edcEqpState);
         }
         if (CollectionUtils.isEmpty(eqpStateList)) {
             return 0;

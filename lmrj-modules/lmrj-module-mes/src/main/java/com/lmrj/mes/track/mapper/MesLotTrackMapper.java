@@ -5,8 +5,10 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -30,5 +32,15 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no != #{lotNo} and start_time > #{startTime} order by start_time limit 1")
     MesLotTrack findLastTrack(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime);
 
+    @Select("select * from mes_lot_track where eqp_id=#{eqpId} and start_time<#{startTime} and end_time>#{endTime}")
+    MesLotTrack findLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Update("update mes_lot_track set lot_yield_eqp=#{lotYieldEqp} where eqp_id=#{eqpId} and lot_no=#{lotNo} ")
+    Boolean updateTrackLotYeildEqp(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo,@Param("lotYieldEqp") Integer lotYieldEqp);
+
+    @Select("select * from mes_lot_track where eqp_id=#{eqpId} AND lot_no>#{lotNo} ORDER BY lot_no limit 1")
+    MesLotTrack selectEndTime(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo);
+
+    @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime} order by lot_no")
+    List<MesLotTrack> findCorrectData(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

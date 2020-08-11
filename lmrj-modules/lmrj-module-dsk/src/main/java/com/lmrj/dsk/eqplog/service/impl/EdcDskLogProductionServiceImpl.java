@@ -8,9 +8,11 @@ import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -45,6 +47,10 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
     @Autowired
     FabEquipmentServiceImpl fabEquipmentService;
+    @Autowired
+    IMesLotTrackService iMesLotTrackService;
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
     //@Override
     //public boolean insert(EdcDskLogProduction edcDskLogProduction) {
     //    // 保存主表
@@ -75,21 +81,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     public boolean clearMiddleProductionLog2() {
         return true;
     }
-    @Override
-    public MesLotTrack selectEndTime(String eqpId,String lotNo){
-        return baseMapper.selectEndTime(eqpId,lotNo);
-    }
 
     @Override
     public EdcDskLogProduction findNextYield(String eqpId, Date startTime) {
         EdcDskLogProduction edcDskLogProduction = baseMapper.findNextYield(eqpId, startTime);
         return edcDskLogProduction;
 
-    }
-
-    @Override
-    public List<MesLotTrack> findCorrectData(Date startTime, Date endTime) {
-        return baseMapper.findCorrectData(startTime, endTime);
     }
 
     @Override
@@ -102,19 +99,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
     }
 
-    @Override
-    public String findeqpNoInfab(String eqpId) {
-        return baseMapper.findeqpNoInfab(eqpId);
-    }
 
     @Override
     public List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId) {
         return baseMapper.findProByTime(startTime, endTime, eqpId);
     }
-    @Override
-    public MesLotTrack findLotNo(String eqpId,Date startTime,Date endTime){
-        return baseMapper.findLotNo(eqpId,startTime,endTime);
-    }
+
 
     /**
      * @param eqpId
@@ -172,12 +162,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
 
     //修改品番和批次
     public List<MesLotTrack> updateProductionData(Date startTime, Date endTime) {
-        List<MesLotTrack> mesLotTrackList = baseMapper.findCorrectData(startTime, endTime);
+        List<MesLotTrack> mesLotTrackList = iMesLotTrackService.findCorrectData(startTime, endTime);
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         List<MesLotTrack> wrongLotList = new ArrayList<>();
         //循环MesLotTrack批次
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
-            MesLotTrack nextLot=baseMapper.selectEndTime(mesLotTrack.getEqpId(),mesLotTrack.getLotNo());
+            MesLotTrack nextLot=iMesLotTrackService.selectEndTime(mesLotTrack.getEqpId(),mesLotTrack.getLotNo());
             List<EdcDskLogProduction> lotNoList =new ArrayList<>();
             boolean wrongLotFlag = false;
             if(nextLot!=null){
@@ -190,7 +180,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
-                    edcDskLogProduction.setEqpNo(findeqpNoInfab(edcDskLogProduction.getEqpId()));
+                    edcDskLogProduction.setEqpNo(iFabEquipmentService.findeqpNoInfab(edcDskLogProduction.getEqpId()));
                     wrongDataList.add(edcDskLogProduction);
                     wrongLotFlag = true;
                 }
@@ -231,17 +221,13 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }else{
                 mesLotTrack.setLotYieldEqp(wrongDataList.size());
             }
-            baseMapper.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getLotYieldEqp());
+            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getLotYieldEqp());
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "updateProductionLotYieId", "修正批量内连番数据条数：" + wrongDataList.size(), "", "");
         } else {
             log.info("数据批量内连番正确");
         }
-    }
-    @Override
-    public Boolean updateTrackLotYeildEqp(String eqpId,String lotNo,Integer lotYieldEqp){
-        return baseMapper.updateTrackLotYeildEqp(eqpId,lotNo,lotYieldEqp);
     }
     /**
      * 导出production csv文件
@@ -310,7 +296,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         //获取表格title添加到lines中
         lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
         for (int i = 0; i < prolist.size(); i++) {
-            eqpNo = findeqpNoInfab(prolist.get(i).getEqpId());
+            eqpNo = iFabEquipmentService.findeqpNoInfab(prolist.get(i).getEqpId());
             pro = prolist.get(i);
             //拼写文件存储路径及备份路径
             if (i == 0) {

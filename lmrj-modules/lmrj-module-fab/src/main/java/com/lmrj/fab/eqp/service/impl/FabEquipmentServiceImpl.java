@@ -67,4 +67,8 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
         return baseMapper.findEqpMsMap();
     }
 
+    @Override
+    public String findeqpNoInfab(String eqpId){
+        return baseMapper.findeqpNoInfab(eqpId);
+    }
 }

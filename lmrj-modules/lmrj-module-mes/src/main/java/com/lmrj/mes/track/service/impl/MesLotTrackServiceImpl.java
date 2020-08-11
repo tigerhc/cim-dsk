@@ -426,6 +426,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
+    public MesLotTrack findLotNo(String eqpId,Date startTime,Date endTime){
+        return baseMapper.findLotNo(eqpId,startTime,endTime);
+    }
+
+    @Override
     public MesLotTrack findLotNo(String startTime, String eqpId) {
         return baseMapper.findLotNo(startTime, eqpId);
     }
@@ -435,6 +440,18 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return baseMapper.findNextStartTime(endTime, eqpId);
     }
 
+    @Override
+    public Boolean updateTrackLotYeildEqp(String eqpId,String lotNo,Integer lotYieldEqp){
+        return baseMapper.updateTrackLotYeildEqp(eqpId,lotNo,lotYieldEqp);
+    }
+    @Override
+    public MesLotTrack selectEndTime(String eqpId,String lotNo){
+        return baseMapper.selectEndTime(eqpId,lotNo);
+    }
+    @Override
+    public List<MesLotTrack> findCorrectData(Date startTime, Date endTime){
+        return baseMapper.findCorrectData(startTime,endTime);
+    }
 
     //public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();

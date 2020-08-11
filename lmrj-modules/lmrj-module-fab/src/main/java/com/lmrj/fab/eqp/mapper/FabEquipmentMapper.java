@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -34,5 +35,6 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
   //List<String> eqpIdMsList();
   List<Map> findEqpMsMap();
 
-
+  @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
+  String findeqpNoInfab(@Param("eqpId") String eqpId);
 }
