@@ -13,7 +13,11 @@ import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
+import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.lang.ArrayUtil;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -35,12 +39,14 @@ public class EdcSecsLogHandler {
     IEdcEvtDefineService edcEvtDefineService;
     @Autowired
     IFabEquipmentService fabEquipmentService;
-
+    @Autowired
+    IMesLotTrackService mesLotTrackService;
     @Autowired
     IFabEquipmentStatusService fabEquipmentStatusService;
     @Autowired
     private IEdcDskLogProductionService edcDskLogProductionService;
-
+    @Autowired
+    private IFabLogService fabLogService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -91,6 +97,10 @@ public class EdcSecsLogHandler {
             productionLog.setRecipeCode(equipmentStatus.getRecipeCode());
             productionLog.setStartTime(new Date());
             productionLog.setEndTime(new Date());
+            productionLog.setEqpModelId(fabEquipment.getModelId());
+            productionLog.setEqpModelName(fabEquipment.getModelName());
+            productionLog.setEqpModelName(fabEquipment.getEqpNo());
+            productionLog.setJudgeResult("y");
             productionLog.setDayYield(equipmentStatus.getDayYield());
             productionLog.setLotYield(equipmentStatus.getLotYield());
             productionLog.setDuration(0D);
@@ -104,8 +114,16 @@ public class EdcSecsLogHandler {
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
-
-
+            MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date(),new Date());
+            mesLotTrack.setLotYieldEqp(equipmentStatus.getLotYield());
+            boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
+            if(!updateFlag){
+                mesLotTrack.setStartTime(new Date());
+                mesLotTrack.setCreateBy("EQP");
+                mesLotTrackService.insert(mesLotTrack);
+            }
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info(eqpId, eventId, "TRM production更新", "TRM数据更新成功","", "gxj");
             if (eventParams != null) {
                 String[] params = eventParams.split(",");
                 if (params.length == 3) {
@@ -117,8 +135,5 @@ public class EdcSecsLogHandler {
                 }
             }
         }
-
-
     }
-
 }
