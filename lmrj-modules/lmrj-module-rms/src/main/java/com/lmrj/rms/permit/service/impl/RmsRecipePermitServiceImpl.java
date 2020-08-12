@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.email.service.IEmailSendService;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.permit.entity.RmsRecipePermitConfig;
 import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
@@ -50,8 +52,11 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
     private IEmailSendService emailSendService;
     @Autowired
     private IRmsRecipePermitConfigService rmsRecipePermitConfigService;
+    @Autowired
+    private IFabEquipmentService fabEquipmentService;
 
     public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+    private static String rootPath = "/RECIPE/";
 
     //老版遗弃
     @Override
@@ -108,6 +113,7 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
         RmsRecipePermit recipePermit = baseMapper.selectList(new EntityWrapper<RmsRecipePermit>().eq("recipe_id", recipeId).isNull("submit_result").eq("submitter_role", roleName)).get(0);
         RmsRecipe recipe = recipeService.selectById(recipeId);
         rmsRecipeLogService.addLog(recipe,"permit",recipe.getEqpId());
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(recipe.getEqpId());
         recipe.setApproveResult(submitResult);
         int approveStep = Integer.parseInt(recipe.getApproveStep());
         approveStep++;
@@ -131,18 +137,18 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                 recipeService.updateById(recipe);
             }else if(rmsRecipePermits.size() == 1){
                 //修改文件路径,复制文件
-                String DRAFTPath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeName();
+                String DRAFTPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + recipe.getEqpModelName() + "/DRAFT/" + recipe.getEqpId() + "/" + recipe.getRecipeName();
                 String filePath = null;
                 if ("EQP".equals(recipe.getVersionType())){
                     //获取备份文件目标路径
-                    filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/EQP/" + recipe.getEqpId() + "/" + recipe.getRecipeName();
+                    filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + recipe.getEqpModelName() + "/EQP/" + recipe.getEqpId() + "/" + recipe.getRecipeName();
                     //找到之前激活的EQP版本修改为停用
                     RmsRecipe eqp = recipeService.findLastByRecipeCode(recipe, "EQP");
                     eqp.setStatus("N");
                     recipeService.updateById(eqp);
                 } else if ("GOLD".equals(recipe.getVersionType())){
                     //获取备份文件目标路径
-                    filePath = "/recipe/shanghai/mold/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeName();
+                    filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeName();
                     //找到之前激活的GOLD版本修改为停用
                     RmsRecipe gold = recipeService.findLastByRecipeCode(recipe, "GOLD");
                     gold.setStatus("N");

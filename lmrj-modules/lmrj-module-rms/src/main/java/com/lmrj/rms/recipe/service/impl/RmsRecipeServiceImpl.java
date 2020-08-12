@@ -25,6 +25,7 @@ import com.lmrj.rms.recipe.utils.FileUtil;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -73,6 +74,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
 
     public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+    private static String rootPath = "/RECIPE/";
 
     @Override
     public RmsRecipe selectById(Serializable id){
@@ -227,25 +229,24 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public boolean uploadRecipe(String eqpId, String recipeName) throws Exception{
-        return uploadOvenRecipe(eqpId, recipeName);
-//        return analysisFile(eqpId, recipeName);
-//        return downloadFromFTP(eqpId,recipeName);
+    public boolean uploadRecipe(String eqpId, String recipeCode) throws Exception{
+        return uploadOvenRecipe(eqpId, recipeCode);
     }
 
     /**
      * 上传recipe
      * @param eqpId
-     * @param recipeName
+     * @param recipeCode
      * @return
      */
-    public boolean uploadOvenRecipe(String eqpId, String recipeName) throws Exception{
+    public boolean uploadOvenRecipe(String eqpId, String recipeCode) throws Exception{
         Map<String, String> map = Maps.newHashMap();
         map.put("METHOD", "UPLOAD_RECIPE");
-        map.put("RECIPE_NAME", recipeName);
+        map.put("RECIPE_CODE", recipeCode);
         map.put("EQP_ID", eqpId);
-        // TODO: 2020/8/12 获取登陆用户信息,不能写死 
-        map.put("USER_ID", "admin");
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
@@ -270,40 +271,60 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
             //获取rmsRecipe参数
             RmsRecipe rmsRecipe = (RmsRecipe)contentMap.get("rmsRecipe");
-            if (rmsRecipe == null){
-                //rmsRecipe参数为空说明是未解析的
-                String fileName = (String)contentMap.get("fileName");
-                //去FTP下载文件并进行解析
-                flag = downloadFromFTP(eqpId,recipeName,fileName);
-            } else {
-                //解析过的对象直接添加到数据库
-                this.insert(rmsRecipe);
-                for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
-                    rmsRecipeBodyService.insert(recipeBody);
+            flag = repeatUpload(rmsRecipe);
+        }
+        return flag;
+    }
+
+    /**
+     * 是否重复上传
+     * @param rmsRecipe
+     * @return
+     */
+    public boolean repeatUpload(RmsRecipe rmsRecipe) throws Exception{
+        String[] strings = rmsRecipe.getRecipeFilePath().split("/");
+        String fileName = strings[strings.length - 1];
+        String fileSuffix = fileName.split("\\.")[1];
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(rmsRecipe.getEqpId());
+        Integer versionNo = 1;
+        //获取上一版本的配方
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", rmsRecipe.getRecipeCode()).eq("eqp_id", rmsRecipe.getEqpId()).orderBy("version_no", false));
+        if (rmsRecipes.size() > 0){
+            RmsRecipe oldRecipe = rmsRecipes.get(0);
+            Integer oldRecipeVersionNo = oldRecipe.getVersionNo();
+            versionNo = oldRecipeVersionNo++;
+            //判断上一版本是否为DRAFT版本
+            if ("DRAFT".equals(oldRecipe.getVersionType())){
+                //判断上一版本是否已经开始审批了
+                if ("0".equals(oldRecipe.getStatus())){
+                    //改为禁用，文件备份到HIS文件夹
+                    oldRecipe.setStatus("N");
+                    baseMapper.updateById(oldRecipe);
+                    String[] oldRecipePath = rmsRecipe.getRecipeFilePath().split("/");
+                    String oldRecipeFileName = oldRecipePath[oldRecipePath.length - 1];
+                    String HISPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeName() + "/HIS";
+                    if (!FtpUtil.copyFile(FTP94,oldRecipe.getRecipeFilePath(),oldRecipeFileName,HISPath,oldRecipeFileName)){
+                        throw new Exception("备份文件失败");
+                    }
                 }
-                flag = true;
             }
-            //String content = mesResult.getContent().toString();
-//            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();
-//            List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
-//            for (String key : contentMap.keySet()) {
-//                log.debug("key= " + key + " and value= " + contentMap.get(key));
-//                RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
-//                rmsRecipeBody.setParaCode(key);
-//                rmsRecipeBody.setSetValue(contentMap.get(key));
-//                rmsRecipeBodyDtlList.add(rmsRecipeBody);
-//            }
-//            RmsRecipe rmsRecipe = new RmsRecipe();
-//            rmsRecipe.setRecipeCode(recipeName);
-//            rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
-//            rmsRecipe.setEqpId(eqpId);
-//            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
-//            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-//            this.insert(rmsRecipe);
-//            //提前备份文件
-//            String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
-//            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
-//            log.info("迁移文件结果:{};", copyFlag);
+        }
+        //修改文件名
+        FtpUtil.rename(FTP94,rmsRecipe.getRecipeFilePath(),fileName,rmsRecipe.getRecipeCode()+ "_V" + versionNo + "." + fileSuffix);
+        //判断是不是需要解析
+        boolean flag;
+        if (rmsRecipe.getRmsRecipeBodyDtlList() == null){
+            //去FTP下载文件并进行解析
+            flag = downloadFromFTP(rmsRecipe.getEqpId(),rmsRecipe.getRecipeCode(),fileName);
+        } else {
+            //解析过的对象直接添加到数据库
+            rmsRecipe.setStatus("0");
+            rmsRecipe.setVersionNo(versionNo);
+            this.insert(rmsRecipe);
+            for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
+                rmsRecipeBodyService.insert(recipeBody);
+            }
+            flag = true;
         }
         return flag;
     }
@@ -315,9 +336,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      */
     public boolean downloadFromFTP(String eqpId, String recipeName, String fileName) throws Exception {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        // TODO: 2020/8/12 根据设备信息拼接路径,不能写死 
-        String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
-        String localPath = "D:/ftpTest/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
+        String remotePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
+        String localPath = "D:" + rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
         boolean flag = false;
         try {
             //下载文件
@@ -339,19 +359,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @param fabEquipment, recipeName, filePath
      * @return
      */
-    public boolean analysisFile(FabEquipment fabEquipment, String recipeName, String filePath) throws Exception {
-//        String fileName = "SIM6822-FRD-1_TJZC";
-//        String filePath = "D:/cim-dsk/"+ fileName +".csv";
-//        InputStream inputStream = new FileInputStream("C:/Users/daoda/Desktop/"+ fileName +".csv");
-//        Workbook workbook = new XSSFWorkbook(inputStream);
-//        List<String[]> excelData = ExcelUtil.getExcelData(workbook);
-//        Map<String, String> contentMap = new HashMap<>();
-//        for (int i = 0; i < excelData.size(); i++) {
-//            String[] strings = excelData.get(i);
-//            if (strings[0] != null && strings[1] != null){
-//                contentMap.put(strings[0] + strings[1] , strings[4]);
-//            }
-//        }
+    public boolean analysisFile(FabEquipment fabEquipment, String recipeCode, String filePath) throws Exception {
         Map<String, String> contentMap = FileUtil.analysis(filePath);
         List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
         for (String key : contentMap.keySet()) {
@@ -364,53 +372,65 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             rmsRecipeBodyDtlList.add(rmsRecipeBody);
         }
         RmsRecipe rmsRecipe = new RmsRecipe();
-        rmsRecipe.setRecipeCode(recipeName);
+        rmsRecipe.setRecipeName(recipeCode);
         rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
+        rmsRecipe.setStatus("0");
         rmsRecipe.setEqpId(fabEquipment.getEqpId());
         rmsRecipe.setEqpModelId(fabEquipment.getModelId());
         rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+        Integer versionNo = 1;
+        //获取上一版本的配方
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", rmsRecipe.getRecipeCode()).eq("eqp_id", rmsRecipe.getEqpId()).orderBy("version_no", false));
+        if (rmsRecipes.size() > 0){
+            RmsRecipe oldRecipe = rmsRecipes.get(0);
+            Integer oldRecipeVersionNo = oldRecipe.getVersionNo();
+            versionNo = oldRecipeVersionNo++;
+        }
+        rmsRecipe.setVersionNo(versionNo);
         this.insert(rmsRecipe);
         return true;
     }
 
     @Override
-    public boolean downloadRecipe(String eqpId, String recipeName) throws Exception{
-        return download(eqpId, recipeName);
+    public boolean downloadRecipe(String eqpId, String recipeCode) throws Exception{
+        return download(eqpId, recipeCode);
     }
 
     /**
      * 下载recipe
      * @param eqpId
-     * @param recipeName
+     * @param recipeCode
      * @return
      */
-    public boolean download(String eqpId, String recipeName) throws Exception{
+    public boolean download(String eqpId, String recipeCode) throws Exception{
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null){
             throw new Exception("该设备不存在");
         }
         //去下载配置中找到优先下载的版本类型
-        String versionType = getDownloadVersionType(eqpId, recipeName);
+        String versionType = getDownloadVersionType(eqpId, recipeCode);
         if (versionType == null) {
             throw new Exception("下载失败，未找到指定配方，请检查配置或先上传配方");
         }
         Map<String, String> map = Maps.newHashMap();
-        map.put("METHOD", "DOWN LOAD_RECIPE");
-        map.put("RECIPE_NAME", recipeName);
+        map.put("METHOD", "DOWNLOAD_RECIPE");
+        map.put("RECIPE_CODE", recipeCode);
         map.put("EQP_ID", eqpId);
         map.put("VERSION_TYPE", versionType);
-        map.put("USER_ID", "admin");
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
         String bc = fabEquipment.getBcCode();
-        log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
-        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
         byte[] message = (byte[]) test;
         String msg = null;
         try {
             msg = new String(message, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
+            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
             log.error("Exception:", e);
         }
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
@@ -418,30 +438,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         if (!"Y".equals(mesResult.getFlag())){
             return false;
         }
-//        if ("Y".equals(mesResult.getFlag())) {
-//            //String content = mesResult.getContent().toString();
-//            Map<String, String> contentMap = (Map<String, String>) mesResult.getContent();
-//            List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
-//            for (String key : contentMap.keySet()) {
-//                log.debug("key= " + key + " and value= " + contentMap.get(key));
-//                RmsRecipeBody rmsRecipeBody = new RmsRecipeBody();
-//                rmsRecipeBody.setParaCode(key);
-//                rmsRecipeBody.setSetValue(contentMap.get(key));
-//                rmsRecipeBodyDtlList.add(rmsRecipeBody);
-//            }
-//            RmsRecipe rmsRecipe = new RmsRecipe();
-//            rmsRecipe.setRecipeCode(recipeName);
-//            rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
-//            rmsRecipe.setEqpId(eqpId);
-//            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
-//            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-//            this.insert(rmsRecipe);
-//            //提前备份文件
-//            String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
-//            boolean copyFlag = FtpUtil.copyFile(FTP94, "/recipe/shanghai/cure/UP55A/DRAFT/", rmsRecipe.getRecipeName(), "/recipe/shanghai/cure/UP55A/DRAFT/HIS", rmsRecipe.getRecipeName());
-//            log.info("迁移文件结果:{};", copyFlag);
-//        }
-        rmsRecipeLogService.addLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeName).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
+        rmsRecipeLogService.addLog(baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name",recipeCode).eq("VERSION_TYPE", "GOLD")).get(0), "download", eqpId);
         return true;
     }
 
@@ -500,6 +497,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @return
      */
     public boolean checkFileExist(String level, FabEquipment fabEquipment, String eqpId, String recipeName) {
+        // TODO 2020/8/12 文件不存在时判断时间会很长
         List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_name", recipeName));
         if (rmsRecipes.size() < 1){
             return false;
@@ -514,11 +512,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         String fileSuffix = fileName.split("\\.")[1];
         String filePath = null;
         if ("GOLD".equals(level)){
-            filePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/GOLD/" + recipeName;
+            filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/GOLD/" + recipeName;
             boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
             return flag;
         } else {
-            filePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/" + level + "/" + eqpId + "/" + recipeName;
+            filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/" + level + "/" + eqpId + "/" + recipeName;
             boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
             return flag;
         }
