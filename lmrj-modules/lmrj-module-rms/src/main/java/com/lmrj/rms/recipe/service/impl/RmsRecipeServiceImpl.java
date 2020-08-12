@@ -244,6 +244,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         map.put("METHOD", "UPLOAD_RECIPE");
         map.put("RECIPE_NAME", recipeName);
         map.put("EQP_ID", eqpId);
+        // TODO: 2020/8/12 获取登陆用户信息,不能写死 
         map.put("USER_ID", "admin");
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
@@ -252,14 +253,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             throw new Exception("该设备不存在");
         }
         String bc = fabEquipment.getBcCode();
-        log.info("发送至 S2C.T.CURE.COMMAND({});", bc);
-        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.CURE.COMMAND", bc, msgg);
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
         byte[] message = (byte[]) test;
         String msg = null;
         try {
             msg = new String(message, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            log.info("接收 S2C.T.CURE.COMMAND 数据失败");
+            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
             log.error("Exception:", e);
         }
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
@@ -314,6 +315,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      */
     public boolean downloadFromFTP(String eqpId, String recipeName, String fileName) throws Exception {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        // TODO: 2020/8/12 根据设备信息拼接路径,不能写死 
         String remotePath = "/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
         String localPath = "D:/ftpTest/recipe/shanghai/mold/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
         boolean flag = false;
