@@ -22,7 +22,7 @@ public class RmsHandler {
     @RabbitListener(queues = {"C2S.Q.RMS.UPLOAD"})
     public void repeatAlarm(String msg) {
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
-        RmsRecipe rmsRecipe = JsonUtil.from(msgMap.get("alarm"), RmsRecipe.class);
+        RmsRecipe rmsRecipe = JsonUtil.from(msgMap.get("recipe"), RmsRecipe.class);
         try {
             rmsRecipeServiceImpl.repeatUpload(rmsRecipe);
         } catch (Exception e) {
