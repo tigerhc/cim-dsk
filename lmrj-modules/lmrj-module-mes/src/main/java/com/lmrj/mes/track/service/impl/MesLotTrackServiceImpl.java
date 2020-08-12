@@ -443,7 +443,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public MesLotTrack findNextStartTime(String endTime, String eqpId) {
         return baseMapper.findNextStartTime(endTime, eqpId);
     }
-
+    @Override
+    public MesLotTrack findLotByStartTime(String eqpId,Date startTime){
+        return baseMapper.findLotByStartTime(eqpId,startTime);
+    }
     @Override
     public Boolean updateTrackLotYeildEqp(String eqpId,String lotNo,Integer lotYieldEqp){
         return baseMapper.updateTrackLotYeildEqp(eqpId,lotNo,lotYieldEqp);

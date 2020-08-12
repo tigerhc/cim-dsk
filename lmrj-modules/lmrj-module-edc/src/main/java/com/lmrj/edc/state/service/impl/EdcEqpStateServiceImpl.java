@@ -68,7 +68,8 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             firstData.setEndTime(eqpStateList.get(0).getStartTime());
             Double state = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
             firstData.setStateTimes(state);
-            firstData.setState("IDLE");
+            //把第一条数据的状态值设为昨天八点前最后一条数据的状态
+            firstData.setState(baseMapper.findLastData(startTime, eqpId).getState());
             firstData.setEqpId(eqpId);
             this.insert(firstData);
             log.info("插入记录成功");
@@ -81,11 +82,6 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
                 lastEdcEqpState.setStateTimes(stateTime1);
                 neweqpStateList.add(lastEdcEqpState);
-                if(StringUtil.isBlank(lastEdcEqpState.getState())){
-                    if (i>1){
-                        lastEdcEqpState.setState(eqpStateList.get(i-1).getState());
-                    }
-                }
             }else{
                 //给每条数据加endTime和stateTime
                 EdcEqpState edcEqpState = eqpStateList.get(i);
@@ -94,13 +90,14 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
                 edcEqpState.setStateTimes(stateTime);
                 neweqpStateList.add(edcEqpState);
-                if(StringUtil.isBlank(edcEqpState.getState())){
-                    if (i>1){
+                //如果当前无状态值 将上一条数据状态值赋给它
+                /*if(StringUtil.isBlank(edcEqpState.getState())){
+                    if (i>0){
                         edcEqpState.setState(eqpStateList.get(i-1).getState());
-                    }/*else{
+                    }else{
                         edcEqpState.setState("IDLE");
-                    }*/
-                }
+                    }
+                }*/
             }
         }
         if (CollectionUtils.isEmpty(eqpStateList)) {
