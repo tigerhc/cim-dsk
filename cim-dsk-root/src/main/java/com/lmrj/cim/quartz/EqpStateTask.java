@@ -23,14 +23,14 @@ public class EqpStateTask {
      * 计算当天的设备OEE数据
      * 每隔10分钟一次
      */
-    //@Scheduled(cron = "0 45 11 * * ?")
+    //@Scheduled(cron = "0 0/10 * * * ?")
     public void eqpStateDay() {
         log.info("EqpStateTask定时任务开始执行");
         try {
             //当天时间
             Date endTime = new Date();
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 8);
+            cal.set(Calendar.HOUR_OF_DAY, 24);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             endTime = cal.getTime();
@@ -46,6 +46,26 @@ public class EqpStateTask {
             log.error("EqpStateTask; ", e);
         }
         log.info("EqpStateTask定时任务结束执行");
+    }
+    /**
+     * 修正前天的设备OEE数据
+     * 每天八点执行
+     */
+    //@Scheduled(cron = "0 0 8 * * ?")
+    public void  fixeqpState(){
+        Date endTime = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        endTime = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date startTime = cal.getTime();
+        log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+        List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+        for (String eqpId : eqpIdList) {
+            edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
+        }
     }
 
 }

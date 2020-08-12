@@ -62,34 +62,40 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime,endTime,eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在8点到第一条数据之间新建一条数据
-        if (eqpStateList.get(0).getStartTime()!=(startTime)) {
+        if (eqpStateList.get(0).getStartTime().after(startTime)) {
             EdcEqpState firstData = new EdcEqpState();
+            //当天八点前最后一条数据
+            EdcEqpState lastData=baseMapper.findLastData(startTime, eqpId);
+            lastData.setEndTime(startTime);
+            Double state = (double) (lastData.getStartTime().getTime() - startTime.getTime());
+            lastData.setStateTimes(state);
+            this.updateById(lastData);
             firstData.setStartTime(startTime);
             firstData.setEndTime(eqpStateList.get(0).getStartTime());
-            Double state = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
-            firstData.setStateTimes(state);
-            //把第一条数据的状态值设为昨天八点前最后一条数据的状态
-            firstData.setState(baseMapper.findLastData(startTime, eqpId).getState());
+            Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
+            firstData.setStateTimes(state1);
+            //把第一条数据的状态值设为当天八点前最后一条数据的状态
+            firstData.setState(lastData.getState());
             firstData.setEqpId(eqpId);
             this.insert(firstData);
             log.info("插入记录成功");
         }
-        for (int i = 0; i < eqpStateList.size(); i++) {
-            //将最后一条数据的endtime改为当天8点 并计算StateTime
-            if (i == eqpStateList.size() - 1) {
-                EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
-                lastEdcEqpState.setEndTime(endTime);
-                Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
-                lastEdcEqpState.setStateTimes(stateTime1);
-                neweqpStateList.add(lastEdcEqpState);
-            }else{
-                //给每条数据加endTime和stateTime
+        EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
+        if(lastEdcEqpState.getEndTime().after(endTime)){
+            lastEdcEqpState.setEndTime(endTime);
+            Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
+            lastEdcEqpState.setStateTimes(stateTime1);
+            neweqpStateList.add(lastEdcEqpState);
+        }
+        for (int i = 0; i < eqpStateList.size()-1; i++) {
+                //给每条没有endTime的数据加endTime和stateTime
                 EdcEqpState edcEqpState = eqpStateList.get(i);
-                EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
-                edcEqpState.setEndTime(nextedcEqpState.getStartTime());
-                Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
-                edcEqpState.setStateTimes(stateTime);
-                neweqpStateList.add(edcEqpState);
+                if(edcEqpState.getEndTime()==null||edcEqpState.getStateTimes()==0){
+                    EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
+                    edcEqpState.setEndTime(nextedcEqpState.getStartTime());
+                    Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+                    edcEqpState.setStateTimes(stateTime);
+                    neweqpStateList.add(edcEqpState);
                 //如果当前无状态值 将上一条数据状态值赋给它
                 /*if(StringUtil.isBlank(edcEqpState.getState())){
                     if (i>0){
@@ -123,7 +129,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         Date startTime = null;
         Date endTime = null;
         try {
-            startTime = DateUtil.parseDate(periodDate + "080000", "yyyyMMddHHmmss");
+            startTime = DateUtil.parseDate(periodDate + "000000", "yyyyMMddHHmmss");
             Calendar cal = Calendar.getInstance();
             cal.setTime(startTime);
             cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -184,4 +190,13 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     public EdcEqpState findLastData(Date startTime, String eqpId) {
         return baseMapper.findLastData(startTime, eqpId);
     }
+    @Override
+    public List<EdcEqpState> findWrongEqpList(String eqpId,Date startTime,Date endTime){
+        return baseMapper.findWrongEqpList(eqpId,startTime,endTime);
+    }
+    @Override
+    public EdcEqpState findNextData(Date startTime,String eqpId){
+        return baseMapper.findNextData(startTime,eqpId);
+    }
+
 }

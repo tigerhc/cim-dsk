@@ -45,5 +45,15 @@
         order by start_time desc
         limit 1
     </select>
-
+    <select id="findWrongEqpList" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select * from edc_eqp_state
+        where end_time is null  and eqp_id=#{eqpId} and start_time between #{startTime} and #{endTime}
+        order by start_time
+    </select>
+    <select id="findNextData" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select * from edc_eqp_state
+        where start_time &gt; #{startTime} and eqp_id=#{eqpId}
+        order by start_time
+        limit 1
+    </select>
 </mapper>
