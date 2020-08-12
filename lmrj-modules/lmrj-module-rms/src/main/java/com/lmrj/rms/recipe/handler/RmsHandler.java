@@ -19,7 +19,7 @@ public class RmsHandler {
     private RmsRecipeServiceImpl rmsRecipeServiceImpl;
 
     @RabbitHandler
-    @RabbitListener(queues = {"S2C.T.RMS.COMMAND"})
+    @RabbitListener(queues = {"C2S.Q.RMS.UPLOAD"})
     public void repeatAlarm(String msg) {
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         RmsRecipe rmsRecipe = JsonUtil.from(msgMap.get("alarm"), RmsRecipe.class);
