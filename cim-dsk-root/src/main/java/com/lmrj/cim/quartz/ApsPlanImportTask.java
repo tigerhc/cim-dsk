@@ -213,7 +213,7 @@ public class ApsPlanImportTask {
         map1.put("G","7");
         map1.put("H","8");
         map1.put("I","9");
-        map1.put("G","10");
+        map1.put("J","10");
         map1.put("K","11");
         map1.put("L","12");
         map1.put("M","13");
