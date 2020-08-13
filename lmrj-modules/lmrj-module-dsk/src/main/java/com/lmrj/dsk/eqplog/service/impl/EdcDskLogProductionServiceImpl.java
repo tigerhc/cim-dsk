@@ -208,9 +208,9 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
             if (edcDskLogProduction.getLotYield() != j) {
                 edcDskLogProduction.setLotYield(j);
-                j++;
                 wrongDataList.add(edcDskLogProduction);
             }
+            j++;
         }
         if (!wrongDataList.isEmpty()) {
             //将设备产量数据放入mesLotTrack对象，修改track表设备产量
@@ -218,11 +218,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             mesLotTrack.setEqpId(edcDskLogProductionList.get(0).getEqpId());
             mesLotTrack.setLotNo(edcDskLogProductionList.get(0).getLotNo());
             if(edcDskLogProductionList.get(0).getEqpId()=="SIM-REFLOW1"){
-                mesLotTrack.setLotYieldEqp((edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getLotYield())*12);
+                mesLotTrack.setLotYieldEqp(edcDskLogProductionList.size()*12);
             }else{
-                mesLotTrack.setLotYieldEqp(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getLotYield());
+                mesLotTrack.setLotYieldEqp(edcDskLogProductionList.size());
             }
-            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getLotYieldEqp());
+            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),edcDskLogProductionList.size());
             this.updateBatchById(wrongDataList);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "updateProductionLotYieId", "修正批量内连番数据条数：" + wrongDataList.size(), "", "");

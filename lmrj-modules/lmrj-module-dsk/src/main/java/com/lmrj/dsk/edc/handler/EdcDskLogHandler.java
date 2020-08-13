@@ -178,7 +178,7 @@ public class EdcDskLogHandler {
         List<EdcDskLogProduction> productionList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
         //修正批量内连番
         if(productionList.size()>0){
-            i=productionList.get(productionList.size()-1).getLotYield()+1;
+            i=productionList.size()+1;
         }
         for (EdcDskLogProduction edcDskLogProduction : proList) {
             edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
@@ -205,10 +205,11 @@ public class EdcDskLogHandler {
         }
         edcDskLogProductionService.insertBatch(proList);
         String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info("", eventId, "production更新", "本次数据为不同批次，track更新成功","", "gxj");
+        fabLogService.info("", eventId, "production更新", "production数据插入结束","", "gxj");
         //当前批次在production表中最后一条数据
-        EdcDskLogProduction lastPro = productionList.get(proList.size()-1);
-        mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
+        EdcDskLogProduction lastPro = productionList.get(productionList.size()-1);
+        mesLotTrack.setLotYieldEqp(productionList.size());
+        mesLotTrack.setUpdateBy("gxj");
         boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
         if(!updateFlag){
             mesLotTrack.setStartTime(new Date());
@@ -216,7 +217,7 @@ public class EdcDskLogHandler {
             mesLotTrack.setCreateBy("EQP");
             mesLotTrackService.insert(mesLotTrack);
         }
-        fabLogService.info("", eventId, "mes_lot_track更新", "本次数据为同一批次，track更新结束", lastPro.getLotNo(), "gxj");
+        fabLogService.info("", eventId, "mes_lot_track更新", "track更新结束", lastPro.getLotNo(), "gxj");
     }
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
