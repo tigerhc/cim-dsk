@@ -37,6 +37,9 @@ public class ApsPlanPdtYieldDetail extends BaseDataEntity {
     /**作业指示书批量*/
     @TableField(value = "lot_no")
     private String lotNo;
+    /**日序列*/
+    @TableField(value = "day_no")
+    private String dayNo;
     ///**开始时间*/
     //@TableField(value = "start_time")
     //private Date startTime;

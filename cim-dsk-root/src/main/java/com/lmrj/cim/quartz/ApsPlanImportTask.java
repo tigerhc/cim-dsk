@@ -12,7 +12,6 @@ import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -33,9 +32,7 @@ public class ApsPlanImportTask {
     @Value("${aps.dir}")
     public String dir;
 
-
-    @Scheduled(cron = "0 30 0/6 * * ?")
-    public void dskaps() {
+    public void rundskAps() {
         log.info("定时任务开始执行");
         String[] extensions = {"xls"};
         List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
@@ -52,8 +49,9 @@ public class ApsPlanImportTask {
         log.info("定时任务开始执行结束");
     }
 
+    //String dir  ="D:\\1项目\\大连三垦\\2需求分设\\APS\\";
     private void readApsPlan(String path){
-        //String dir  ="D:\\1项目\\大连三垦\\2需求分设\\APS\\";
+
         //ApsPlanPdtYield apsPlanPdtYield = new ApsPlanPdtYield();
         List<ApsPlanPdtYield> apsPlanPdtYieldList = Lists.newArrayList();
         List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetailList = Lists.newArrayList();
@@ -195,12 +193,47 @@ public class ApsPlanImportTask {
             apsPlanPdtYieldDetail.setPlanQty(singleYieldMap.get(apsPlanPdtYieldDetail.getProductionNo()));
         }
         System.out.println(apsPlanPdtYieldDetailList.size());
+        Map<String,Integer> map = Maps.newHashMap();
+        for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetailList) {
+            String productionNo = apsPlanPdtYieldDetail.getProductionNo();
+            String planDate = apsPlanPdtYieldDetail.getPlanDate();
+            Integer count =  map.get(productionNo+planDate);
+            if(count ==null){
+                count = 0;
+            }
+            map.put(productionNo+planDate,++count);
+        }
+        Map<String, String> map1 = Maps.newHashMap();
+        map1.put("A","1");
+        map1.put("B","2");
+        map1.put("C","3");
+        map1.put("D","4");
+        map1.put("E","5");
+        map1.put("F","6");
+        map1.put("G","7");
+        map1.put("H","8");
+        map1.put("I","9");
+        map1.put("G","10");
+        map1.put("K","11");
+        map1.put("L","12");
+        map1.put("M","13");
+        map1.put("N","14");
+        map1.put("O","15");
+        map1.put("P","16");
+
+        for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetailList) {
+            String productionNo = apsPlanPdtYieldDetail.getProductionNo();
+            String planDate = apsPlanPdtYieldDetail.getPlanDate();
+            String lotNo = apsPlanPdtYieldDetail.getLotNo();
+            String indexChar = lotNo.substring(4,5);
+            String no = map1.get(indexChar);
+            int count =  map.get(productionNo+planDate);
+            apsPlanPdtYieldDetail.setDayNo(no+"/"+count);
+        }
         apsPlanPdtYieldService.deleteByPeriod(period);
         apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
-
-
-
     }
+
 }

@@ -60,7 +60,7 @@ public class MesLotTrack extends BaseDataEntity {
     @TableField(value = "start_time")
     private Date startTime;
     /**结束时间*/
-    @Excel(name = "结束时间", orderNum = "7")
+    @Excel(name = "结束时间", orderNum = "7",format="yyyy-MM-dd HH:mm:ss")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "end_time")

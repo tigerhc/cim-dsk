@@ -40,6 +40,6 @@ public class EdcDskLogOperationController extends BaseCRUDController<EdcDskLogOp
     //@LogAspectj(logType = LogType.EXPORT)
 //    @RequiresMethodPermissions("export")
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
-        return doExport("作业日志记录", queryable,  propertyPreFilterable,  request,  response);
+        return doExport("稼动日志记录", queryable,  propertyPreFilterable,  request,  response);
     }
 }

@@ -58,7 +58,7 @@ public class EdcAmsRecord extends AbstractEntity {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date startDate;
     /**结束时间*/
-    @Excel(name = "结束时间", orderNum = "6")
+    @Excel(name = "结束时间", orderNum = "6",format="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "end_date")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
