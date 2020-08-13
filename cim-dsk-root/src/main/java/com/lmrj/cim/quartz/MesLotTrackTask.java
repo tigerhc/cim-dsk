@@ -1,10 +1,10 @@
 package com.lmrj.cim.quartz;
 
+import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.fab.log.service.IFabLogService;
-import com.lmrj.mes.lot.entity.MesLotWip;
-import com.lmrj.mes.lot.service.IMesLotWipService;
 import com.lmrj.mes.track.entity.MesLotTrack;
-import com.lmrj.util.lang.StringUtil;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,67 +15,34 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class MesLotWipTask {
+public class MesLotTrackTask {
+    @Autowired
+    IEdcDskLogProductionService edcDskLogProductionService;
     @Autowired
     private IFabLogService fabLogService;
     @Autowired
-    IMesLotWipService iMesLotWipService;
+    IMesLotTrackService iMesLotTrackService;
 
     //往mes_lot_wip表中导入数据
     //@Scheduled(cron = "0 10 0 * * ?")
-    public void buildWipData() {
+    public void fixLotTrackData() {
         Date endTime = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        Date startTime = calendar.getTime();
-        List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
-        for (MesLotTrack mes :
-                mesList) {
-            MesLotWip mesLotWip1=iMesLotWipService.findStep(mes.getEqpId());
-            MesLotWip mesLotWip=new MesLotWip();
-            mesLotWip.setStepId(mesLotWip1.getStepId());
-            mesLotWip.setStepCode(mesLotWip1.getStepCode());
-            mesLotWip.setStationCode(mesLotWip1.getStationCode());
-            mesLotWip.setEqpId(mes.getEqpId());
-            mesLotWip.setLotNo(mes.getLotNo());
-            mesLotWip.setStartTime(mes.getStartTime());
-            mesLotWip.setLotYield(mes.getLotYield());
-            mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
-            mesLotWip.setOrderNo(mes.getOrderNo());
-            mesLotWip.setProductionNo(mes.getProductionNo());
-            mesLotWip.setProductionName(mes.getProductionName());
-            mesLotWip.setEndTime(mes.getEndTime());
-            if (iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo()) == null) {
-                //向表中新建数据
-                if (iMesLotWipService.insert(mesLotWip)){
-                    String eventId = StringUtil.randomTimeUUID("RPT");
-                    fabLogService.info(mesLotWip.getEqpId(),eventId,"insterWip","数据插入成功",mes.getLotNo(),"");
-                }
-                continue;
-            } else {
-                mesLotWip=iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
-                mesLotWip.setLotYield(mes.getLotYield());
-                mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
-                mesLotWip.setEqpId(mes.getEqpId());
-                mesLotWip.setStepId(mesLotWip1.getStepId());
-                mesLotWip.setStepCode(mesLotWip1.getStepCode());
-                mesLotWip.setStationCode(mesLotWip1.getStationCode());
-                //更新数据
-                if (iMesLotWipService.updateById(mesLotWip)) {
-                    log.info("mes_lot_wip表数据更新成功 批次：" + mesLotWip.getEqpId());
-                    String eventId = StringUtil.randomTimeUUID("RPT");
-                    fabLogService.info(mesLotWip.getEqpId(),eventId,"updateWip","数据更新成功",mesLotWip.getLotNo(),"");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 24);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        endTime = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        Date startTime = cal.getTime();
+        List<MesLotTrack> mesLotList= iMesLotTrackService.findCorrectData(startTime,endTime);
+        if(mesLotList.size()>0){
+            for (MesLotTrack mesLotTrack : mesLotList) {
+                List<EdcDskLogProduction> proList =edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+                if(proList.size()>0){
+                    mesLotTrack.setLotYieldEqp(proList.get(proList.size()-1).getLotYield());
                 }
             }
-        }
-        //更新wip表中数据 将已完成数据删除
-        List<MesLotWip> wipList = iMesLotWipService.selectWip();
-        for (MesLotWip mesLotWip : wipList) {
-            if (iMesLotWipService.selectEndData(mesLotWip.getLotNo(), mesLotWip.getProductionNo()) != null) {
-                iMesLotWipService.deleteEndData(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
-                String eventId = StringUtil.randomTimeUUID("RPT");
-                fabLogService.info(mesLotWip.getEqpId(),eventId,"deleteEndData","数据删除成功",mesLotWip.getLotNo(),"");
-            }
+            iMesLotTrackService.updateBatchById(mesLotList);
         }
     }
 }

@@ -117,7 +117,11 @@ public class EdcSecsLogHandler {
             edcDskLogProductionService.insert(productionLog);
             MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date());
             List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
-            mesLotTrack.setLotYieldEqp(proList.size());
+            if(proList.size()>0){
+                mesLotTrack.setLotYieldEqp(proList.get(proList.size()-1).getLotYield()+12);
+            }else {
+                mesLotTrack.setLotYieldEqp(12);
+            }
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
             if(!updateFlag){
                 mesLotTrack.setStartTime(new Date());
