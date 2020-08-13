@@ -293,19 +293,23 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", rmsRecipe.getRecipeCode()).eq("eqp_id", rmsRecipe.getEqpId()).orderBy("version_no", false));
         if (rmsRecipes.size() > 0){
             RmsRecipe oldRecipe = rmsRecipes.get(0);
-            Integer oldRecipeVersionNo = oldRecipe.getVersionNo();
-            versionNo = oldRecipeVersionNo++;
+            versionNo = oldRecipe.getVersionNo();
+            versionNo ++;
             //判断上一版本是否为DRAFT版本
             if ("DRAFT".equals(oldRecipe.getVersionType())){
                 //判断上一版本是否已经开始审批了
                 if ("0".equals(oldRecipe.getStatus())){
                     //改为禁用，文件备份到HIS文件夹
                     oldRecipe.setStatus("N");
-                    baseMapper.updateById(oldRecipe);
-                    String[] oldRecipePath = rmsRecipe.getRecipeFilePath().split("/");
+                    String[] oldRecipePath = oldRecipe.getRecipeFilePath().split("/");
                     String oldRecipeFileName = oldRecipePath[oldRecipePath.length - 1];
-                    String HISPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeCode() + "/HIS";
-                    if (!FtpUtil.copyFile(FTP94,oldRecipe.getRecipeFilePath(),oldRecipeFileName,HISPath,oldRecipeFileName)){
+                    String oldPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeCode();
+                    String hisPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeCode() + "/HIS";
+                    boolean copyFile = FtpUtil.copyFile(FTP94, oldPath, oldRecipeFileName, hisPath, oldRecipeFileName);
+                    oldRecipe.setRecipeFilePath(hisPath + "/" + oldRecipeFileName);
+                    baseMapper.updateById(oldRecipe);
+                    FtpUtil.deleteFile(FTP94,oldRecipe.getRecipeFilePath());
+                    if (!copyFile){
                         throw new Exception("备份文件失败");
                     }
                 }
@@ -314,16 +318,22 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         //修改文件名
         String newFileName = fileName + "_V" + versionNo;
         boolean rename = FtpUtil.rename(FTP94, rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + rmsRecipe.getEqpId() + "/" + rmsRecipe.getRecipeCode(), oldFileName, newFileName);
+        rmsRecipe.setRecipeFilePath(rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + rmsRecipe.getEqpId() + "/" + rmsRecipe.getRecipeCode() + "/" + newFileName);
+        rmsRecipe.setVersionNo(versionNo);
         //判断是不是需要解析
         boolean flag;
         if (rmsRecipe.getRmsRecipeBodyDtlList().size() == 0){
             //去FTP下载文件并进行解析
-            flag = downloadFromFTP(rmsRecipe.getEqpId(),rmsRecipe.getRecipeCode(),newFileName);
+            flag = downloadFromFTP(rmsRecipe,newFileName);
         } else {
             //解析过的对象直接添加到数据库
             rmsRecipe.setStatus("0");
             rmsRecipe.setVersionNo(versionNo);
             rmsRecipe.setRecipeName(rmsRecipe.getRecipeCode());
+            rmsRecipe.setVersionType("DRAFT");
+            rmsRecipe.setApproveStep("1");
+            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
             baseMapper.insert(rmsRecipe);
             for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
                 rmsRecipeBodyService.insert(recipeBody);
@@ -335,13 +345,13 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
     /**
      * 从FTP服务器下载配方文件到本地
-     * @param eqpId, recipeName, fileName
+     * @param rmsRecipe, fileName
      * @return
      */
-    public boolean downloadFromFTP(String eqpId, String recipeName, String fileName) throws Exception {
-        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        String remotePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
-        String localPath = "D:" + rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + eqpId + "/" + recipeName;
+    public boolean downloadFromFTP(RmsRecipe rmsRecipe, String fileName) throws Exception {
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(rmsRecipe.getEqpId());
+        String remotePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + rmsRecipe.getEqpId() + "/" + rmsRecipe.getRecipeCode();
+        String localPath = "D:" + rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + rmsRecipe.getEqpId() + "/" + rmsRecipe.getRecipeCode();
         boolean flag = false;
         try {
             //下载文件
@@ -352,7 +362,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         if (flag) {
             //如果flag为true说明文件下载成功，找到文件进行解析
             String filePath = localPath + "/" + fileName;
-            flag = analysisFile(fabEquipment, recipeName, filePath);
+            flag = analysisFile(fabEquipment, rmsRecipe, filePath);
         }
         return flag;
     }
@@ -363,7 +373,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      * @param fabEquipment, recipeName, filePath
      * @return
      */
-    public boolean analysisFile(FabEquipment fabEquipment, String recipeCode, String filePath) throws Exception {
+    public boolean analysisFile(FabEquipment fabEquipment, RmsRecipe rmsRecipe, String filePath) throws Exception {
         Map<String, String> contentMap = FileUtil.analysis(filePath);
         List<RmsRecipeBody> rmsRecipeBodyDtlList = Lists.newArrayList();
         for (String key : contentMap.keySet()) {
@@ -375,22 +385,13 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             rmsRecipeBody.setSetValue(strings[1]);
             rmsRecipeBodyDtlList.add(rmsRecipeBody);
         }
-        RmsRecipe rmsRecipe = new RmsRecipe();
-        rmsRecipe.setRecipeName(recipeCode);
+        rmsRecipe.setRecipeName(rmsRecipe.getRecipeCode());
         rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyDtlList);
         rmsRecipe.setStatus("0");
-        rmsRecipe.setEqpId(fabEquipment.getEqpId());
+        rmsRecipe.setVersionType("DRAFT");
+        rmsRecipe.setApproveStep("1");
         rmsRecipe.setEqpModelId(fabEquipment.getModelId());
         rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-        Integer versionNo = 1;
-        //获取上一版本的配方
-        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", rmsRecipe.getRecipeCode()).eq("eqp_id", rmsRecipe.getEqpId()).orderBy("version_no", false));
-        if (rmsRecipes.size() > 0){
-            RmsRecipe oldRecipe = rmsRecipes.get(0);
-            Integer oldRecipeVersionNo = oldRecipe.getVersionNo();
-            versionNo = oldRecipeVersionNo++;
-        }
-        rmsRecipe.setVersionNo(versionNo);
         baseMapper.insert(rmsRecipe);
         return true;
     }

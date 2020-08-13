@@ -46,9 +46,8 @@ public class RmsRecipeServiceImplTest {
 
     @Test
     public void downloadFromFTP() throws Exception {
-        String eqpId = "SIM-DM1";
-        String recipeName = "TEST";
-        boolean flag = rmsRecipeServiceImpl.downloadFromFTP(eqpId, recipeName,"");
+        RmsRecipe rmsRecipe = new RmsRecipe();
+        boolean flag = rmsRecipeServiceImpl.downloadFromFTP(rmsRecipe,"");
         System.out.println(flag);
     }
 
