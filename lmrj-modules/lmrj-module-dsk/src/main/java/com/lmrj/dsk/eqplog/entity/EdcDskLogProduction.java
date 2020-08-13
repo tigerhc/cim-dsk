@@ -90,7 +90,7 @@ public class EdcDskLogProduction extends AbstractEntity {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
-    @Excel(name = "发生时间", orderNum = "1", width = 40)
+    @Excel(name = "发生时间", orderNum = "1", width = 25, format="yyyy-MM-dd HH:mm:ss")
     private Date startTime;
     /**结束时间*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")

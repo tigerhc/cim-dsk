@@ -33,25 +33,27 @@ public class EdcEvtRecord extends AbstractEntity {
     @TableId(value = "id", type = IdType.UUID)
     protected String id;
     /**设备号*/
-    @Excel(name = "设备id", orderNum = "1")
+    @Excel(name = "设备id", orderNum = "1", width = 20)
     @TableField(value = "eqp_id")
     private String eqpId;
     /**事件ID*/
-    @Excel(name = "事件id", orderNum = "2")
+    @Excel(name = "事件id", orderNum = "2", width = 10)
     @TableField(value = "event_id")
     private String eventId;
+    @Excel(name = "事件描述", orderNum = "3", width = 30)
     @TableField(value = "event_desc")
     private String eventDesc;
+    @Excel(name = "事件参数", orderNum = "4", width = 30)
     @TableField(value = "event_params")
     private String eventParams;
     /**开始日期*/
-    @Excel(name = "开始日期", orderNum = "3")
+    @Excel(name = "开始日期", orderNum = "5", width = 30,format="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "start_date")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date startDate;
 
-    @Excel(name = "创建日期", orderNum = "4")
+    @Excel(name = "创建日期", orderNum = "6", width = 30,format="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_date", fill = FieldFill.INSERT, update = "now()")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")

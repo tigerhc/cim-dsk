@@ -54,7 +54,7 @@ public class EdcDskLogRecipe extends AbstractEntity {
     @TableField(value = "start_time")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    @Excel(name = "发生时间", orderNum = "1", width = 40)
+    @Excel(name = "发生时间", orderNum = "1", width = 40, format="yyyy-MM-dd HH:mm:ss")
     private Date startTime;
     /**作业指示书订单*/
     @TableField(value = "order_no")

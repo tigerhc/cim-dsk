@@ -76,7 +76,7 @@ public class FabLog extends AbstractEntity {
     @TableField(value = "create_date", fill = FieldFill.INSERT)
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    @Excel(name = "创建时间", orderNum = "9", width = 20)
+    @Excel(name = "创建时间", orderNum = "9", width = 20,format="yyyy-MM-dd HH:mm:ss")
     protected Date createDate; // 创建日期
 
 }

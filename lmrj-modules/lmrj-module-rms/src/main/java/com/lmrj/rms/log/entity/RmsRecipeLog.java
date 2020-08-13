@@ -77,7 +77,7 @@ public class RmsRecipeLog extends AbstractEntity {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_date", fill = FieldFill.INSERT)
-    @Excel(name = "创建时间", orderNum = "9", width = 20)
+    @Excel(name = "创建时间", orderNum = "9", width = 20,format="yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
 }

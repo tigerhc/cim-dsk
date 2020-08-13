@@ -74,7 +74,7 @@ public class EdcAmsRecord extends AbstractEntity {
     @TableField(value = "lot_yield")
     private Integer lotYield;
 
-    @Excel(name = "创建时间", orderNum = "7")
+    @Excel(name = "创建时间", orderNum = "7", width = 25,format="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_date", fill = FieldFill.INSERT, update = "now()")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
