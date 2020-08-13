@@ -83,8 +83,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public EdcDskLogProduction findNextYield(String eqpId, Date startTime) {
-        EdcDskLogProduction edcDskLogProduction = baseMapper.findNextYield(eqpId, startTime);
+    public EdcDskLogProduction findLastYield(String eqpId, Date startTime) {
+        EdcDskLogProduction edcDskLogProduction = baseMapper.findLastYield(eqpId, startTime);
         return edcDskLogProduction;
 
     }
@@ -204,10 +204,11 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     public void updateProductionLotYieId(List<EdcDskLogProduction> edcDskLogProductionList) {
         //循环数据   重新计算批量内连番
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
-        for (int i = 0; i < edcDskLogProductionList.size(); i++) {
-            EdcDskLogProduction edcDskLogProduction = edcDskLogProductionList.get(i);
-            if (edcDskLogProduction.getLotYield() != (i + 1)) {
-                edcDskLogProduction.setLotYield(i + 1);
+        int j=1;
+        for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
+            if (edcDskLogProduction.getLotYield() != j) {
+                edcDskLogProduction.setLotYield(j);
+                j++;
                 wrongDataList.add(edcDskLogProduction);
             }
         }
@@ -217,9 +218,9 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             mesLotTrack.setEqpId(edcDskLogProductionList.get(0).getEqpId());
             mesLotTrack.setLotNo(edcDskLogProductionList.get(0).getLotNo());
             if(edcDskLogProductionList.get(0).getEqpId()=="SIM-REFLOW1"){
-                mesLotTrack.setLotYieldEqp(wrongDataList.size()*12);
+                mesLotTrack.setLotYieldEqp((edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getLotYield())*12);
             }else{
-                mesLotTrack.setLotYieldEqp(wrongDataList.size());
+                mesLotTrack.setLotYieldEqp(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getLotYield());
             }
             iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getLotYieldEqp());
             this.updateBatchById(wrongDataList);

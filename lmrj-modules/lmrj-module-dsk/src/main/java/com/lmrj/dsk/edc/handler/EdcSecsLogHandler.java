@@ -115,7 +115,7 @@ public class EdcSecsLogHandler {
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
-            MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date(),new Date());
+            MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date());
             List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
             mesLotTrack.setLotYieldEqp(proList.size());
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);

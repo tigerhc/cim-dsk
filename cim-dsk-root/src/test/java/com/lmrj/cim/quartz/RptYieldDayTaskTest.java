@@ -16,6 +16,8 @@ public class RptYieldDayTaskTest {
     RptYieldTask rptYieldTask;
     @Autowired
     EqpStateTask eqpStateTask;
+    @Autowired
+    OperationYieldTask operationYieldTask;
     @Test
     public void test() throws Exception{
         /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
@@ -23,6 +25,8 @@ public class RptYieldDayTaskTest {
         Date endTime = simpleDateFormat.parse("2020-07-31 14:04:33");*/
         //rptYieldDayTask.updateDayYield();
         //rptYieldTask.updateYield();
-        eqpStateTask.eqpStateDay();
+        //eqpStateTask.eqpStateDay();
+        //eqpStateTask.fixeqpState();
+        operationYieldTask.dskaps();
     }
 }

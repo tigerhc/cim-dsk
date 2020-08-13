@@ -107,7 +107,7 @@ public class EdcDskLogHandler {
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
         List<MesLotTrack> mesLotList=null;
-        if (edcDskLogProductionList != null && edcDskLogProductionList.size() > 0) {
+        if (edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
             EdcDskLogProduction edcDskLogProductionLast=edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
@@ -173,12 +173,12 @@ public class EdcDskLogHandler {
     }
     //修正数据
     public void fixProData(List<EdcDskLogProduction> proList,MesLotTrack mesLotTrack){
-        int i=0;
+        int i=1;
         String eqpId=mesLotTrack.getEqpId();
         List<EdcDskLogProduction> productionList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
         //修正批量内连番
         if(productionList.size()>0){
-            i=productionList.size()+1;
+            i=productionList.get(productionList.size()-1).getLotYield()+1;
         }
         for (EdcDskLogProduction edcDskLogProduction : proList) {
             edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
@@ -260,6 +260,8 @@ public class EdcDskLogHandler {
         String status = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
+            String eventId1 = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info(edcDskLogOperation.getEqpId(), eventId1, "Operation更新", "本次事件开始时间"+edcDskLogOperation.getStartTime(),"", "gxj");
             if ("2".equals(eventId)) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
@@ -273,7 +275,7 @@ public class EdcDskLogHandler {
                 edcAmsRecordList.add(edcAmsRecord);
                 if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
 
-                } else {
+                } else if(!"8".equals(eventId)){
                     status = "ALARM";
                 }
             } else {

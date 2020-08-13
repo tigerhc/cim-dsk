@@ -35,7 +35,7 @@ public class EdcStateHandler {
         //设置上一条数据的结束时间，并计算持续时间
         EdcEqpState lastedcEqpState = iEdcEqpStateService.findLastData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
         lastedcEqpState.setEndTime(edcEqpState.getStartTime());
-        Double state = (double) (lastedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+        Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
         lastedcEqpState.setStateTimes(state);
         edcEqpStateService.updateById(lastedcEqpState);
         //修改设备实时状态

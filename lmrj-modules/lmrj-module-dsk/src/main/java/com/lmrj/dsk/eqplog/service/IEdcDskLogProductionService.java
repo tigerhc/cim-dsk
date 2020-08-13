@@ -19,7 +19,7 @@ import java.util.List;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogProduction> {
-    EdcDskLogProduction findNextYield(String eqpId, Date startTime);
+    EdcDskLogProduction findLastYield(String eqpId, Date startTime);
 
     List<EdcDskLogProductionHis> findBackUpYield(String eqpId, Date startTime, Date endTime);
 

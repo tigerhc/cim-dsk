@@ -80,7 +80,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             this.insert(firstData);
             log.info("插入记录成功");
         }
-        EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
+        EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 2);
         if(lastEdcEqpState.getEndTime().after(endTime)){
             lastEdcEqpState.setEndTime(endTime);
             Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
@@ -109,10 +109,12 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         if (CollectionUtils.isEmpty(eqpStateList)) {
             return 0;
         } else {
-            if (this.updateBatchById(neweqpStateList)) {
-                log.info("edc_eqp_state更新成功");
-                String eventId = StringUtil.randomTimeUUID("RPT");
-                fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功", "", "");
+            if(neweqpStateList.size()>0){
+                if (this.updateBatchById(neweqpStateList)) {
+                    log.info("edc_eqp_state更新成功");
+                    String eventId = StringUtil.randomTimeUUID("RPT");
+                    fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功", "", "");
+                }
             }
         }
         return eqpStateList.size();
