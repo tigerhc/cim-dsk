@@ -73,7 +73,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     @Autowired
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
 
-    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+//    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+    public static String[] FTP94 = new String[]{"127.0.0.1", "21", "FTP", "FTP"};
     private static String rootPath = "/RECIPE/";
 
     @Override
@@ -283,8 +284,9 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
      */
     public boolean repeatUpload(RmsRecipe rmsRecipe) throws Exception{
         String[] strings = rmsRecipe.getRecipeFilePath().split("/");
-        String fileName = strings[strings.length - 1];
-        String fileSuffix = fileName.split("\\.")[1];
+        String oldFileName = strings[strings.length - 1];
+        String fileName = oldFileName.split("-")[0];
+//        String fileSuffix = fileName.split("\\.")[1];
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(rmsRecipe.getEqpId());
         Integer versionNo = 1;
         //获取上一版本的配方
@@ -302,7 +304,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
                     baseMapper.updateById(oldRecipe);
                     String[] oldRecipePath = rmsRecipe.getRecipeFilePath().split("/");
                     String oldRecipeFileName = oldRecipePath[oldRecipePath.length - 1];
-                    String HISPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeName() + "/HIS";
+                    String HISPath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + oldRecipe.getEqpModelName() + "/DRAFT/" + oldRecipe.getEqpId() + "/" + oldRecipe.getRecipeCode() + "/HIS";
                     if (!FtpUtil.copyFile(FTP94,oldRecipe.getRecipeFilePath(),oldRecipeFileName,HISPath,oldRecipeFileName)){
                         throw new Exception("备份文件失败");
                     }
@@ -310,17 +312,19 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             }
         }
         //修改文件名
-        FtpUtil.rename(FTP94,rmsRecipe.getRecipeFilePath(),fileName,rmsRecipe.getRecipeCode()+ "_V" + versionNo + "." + fileSuffix);
+        String newFileName = fileName + "_V" + versionNo;
+        boolean rename = FtpUtil.rename(FTP94, rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/DRAFT/" + rmsRecipe.getEqpId() + "/" + rmsRecipe.getRecipeCode(), oldFileName, newFileName);
         //判断是不是需要解析
         boolean flag;
-        if (rmsRecipe.getRmsRecipeBodyDtlList() == null){
+        if (rmsRecipe.getRmsRecipeBodyDtlList().size() == 0){
             //去FTP下载文件并进行解析
-            flag = downloadFromFTP(rmsRecipe.getEqpId(),rmsRecipe.getRecipeCode(),fileName);
+            flag = downloadFromFTP(rmsRecipe.getEqpId(),rmsRecipe.getRecipeCode(),newFileName);
         } else {
             //解析过的对象直接添加到数据库
             rmsRecipe.setStatus("0");
             rmsRecipe.setVersionNo(versionNo);
-            this.insert(rmsRecipe);
+            rmsRecipe.setRecipeName(rmsRecipe.getRecipeCode());
+            baseMapper.insert(rmsRecipe);
             for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
                 rmsRecipeBodyService.insert(recipeBody);
             }
@@ -387,7 +391,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             versionNo = oldRecipeVersionNo++;
         }
         rmsRecipe.setVersionNo(versionNo);
-        this.insert(rmsRecipe);
+        baseMapper.insert(rmsRecipe);
         return true;
     }
 
@@ -509,15 +513,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         }
         String[] strings = recipeFilePath.split("/");
         String fileName = strings[strings.length - 1];
-        String fileSuffix = fileName.split("\\.")[1];
         String filePath = null;
         if ("GOLD".equals(level)){
             filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/GOLD/" + recipeName;
-            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
+            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName);
             return flag;
         } else {
             filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + fabEquipment.getModelName() + "/" + level + "/" + eqpId + "/" + recipeName;
-            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName + "." + fileSuffix);
+            boolean flag = FtpUtil.checkFileExist(FtpUtil.connectFtp(FTP94), filePath, recipeName);
             return flag;
         }
     }
