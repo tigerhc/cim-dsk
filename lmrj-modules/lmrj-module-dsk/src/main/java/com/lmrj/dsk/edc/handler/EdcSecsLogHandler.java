@@ -134,8 +134,6 @@ public class EdcSecsLogHandler {
                 mesLotTrack.setCreateBy("EQP");
                 mesLotTrackService.insert(mesLotTrack);
             }
-            String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info(eqpId, eventId, "TRM production更新 handleMoldYield", "TRM数据更新成功","", "gxj");
             if (eventParams != null) {
                 String[] params = eventParams.split(",");
                 if (params.length == 3) {
@@ -146,6 +144,8 @@ public class EdcSecsLogHandler {
                     }
                 }
             }
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM production数据更新结束",equipmentStatus.getLotNo(), "gxj");
         }
     }
 }

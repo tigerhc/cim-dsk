@@ -18,6 +18,8 @@ public class RptYieldDayTaskTest {
     EqpStateTask eqpStateTask;
     @Autowired
     OperationYieldTask operationYieldTask;
+    @Autowired
+    EdcAmsRecordYieldTask edcAmsRecordYieldTask;
     @Test
     public void test() throws Exception{
         /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
@@ -27,6 +29,7 @@ public class RptYieldDayTaskTest {
         //rptYieldTask.updateYield();
         //eqpStateTask.eqpStateDay();
         //eqpStateTask.fixeqpState();
-//        operationYieldTask.dskaps();
+        //operationYieldTask.updateOperationYield();
+        edcAmsRecordYieldTask.updateAmsRecordYield();
     }
 }

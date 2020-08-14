@@ -208,14 +208,13 @@ public class EdcDskLogHandler {
             }
         }
         String eventId = null;
+        eventId = StringUtil.randomTimeUUID("RPT");
         EdcDskLogProduction lastPro = null;
         boolean updateFlag = false;
         try {
             if(edcDskLogProductionService.insertBatch(proList)){
-                log.info("插入成功");
+                fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共"+proList.size()+"条",mesLotTrack.getLotNo(), "gxj");
             }
-            eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("", eventId, "production更新", "production数据插入结束","", "gxj");
             //当前批次在production表中最后一条数据
             lastPro = proList.get(proList.size()-1);
             mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
@@ -223,7 +222,7 @@ public class EdcDskLogHandler {
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
             e.printStackTrace();
-            fabLogService.info(mesLotTrack.getEqpId(), eventId, "mes_lot_track更新", "track更新出错"+e+ "       ", lastPro.getLotNo(), "gxj");
+            fabLogService.info(eqpId, eventId, "fixProData", "track更新出错"+e+ "       ", mesLotTrack.getLotNo(), "gxj");
         }
         if(!updateFlag){
             System.out.println("修改失败");
@@ -232,7 +231,7 @@ public class EdcDskLogHandler {
             mesLotTrack.setCreateBy("EQP");
             mesLotTrackService.insert(mesLotTrack);
         }
-        fabLogService.info(mesLotTrack.getEqpId(), eventId, "mes_lot_track更新", "track更新结束", lastPro.getLotNo(), "gxj");
+        fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为："+mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
     }
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
@@ -248,7 +247,7 @@ public class EdcDskLogHandler {
         String eventId1 = StringUtil.randomTimeUUID("EDC");
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
-        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 第一条数据开始时间："+edcDskLogOperation0.getStartTime(),"", "gxj");
+        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数："+edcDskLogOperationlist.size(),"", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {

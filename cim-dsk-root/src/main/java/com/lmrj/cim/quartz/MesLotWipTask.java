@@ -49,7 +49,7 @@ public class MesLotWipTask {
                 //向表中新建数据
                 if (iMesLotWipService.insert(mesLotWip)){
                     String eventId = StringUtil.randomTimeUUID("RPT");
-                    fabLogService.info(mesLotWip.getEqpId(),eventId,"insterWip","数据插入成功",mes.getLotNo(),"");
+                    fabLogService.info(mesLotWip.getEqpId(),eventId,"insterWip","批次实时产量更新成功",mesLotWip.getLotNo(),"");
                 }
                 continue;
             } else {
@@ -74,7 +74,7 @@ public class MesLotWipTask {
             if (iMesLotWipService.selectEndData(mesLotWip.getLotNo(), mesLotWip.getProductionNo()) != null) {
                 iMesLotWipService.deleteEndData(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
                 String eventId = StringUtil.randomTimeUUID("RPT");
-                fabLogService.info(mesLotWip.getEqpId(),eventId,"deleteEndData","数据删除成功",mesLotWip.getLotNo(),"");
+                fabLogService.info(mesLotWip.getEqpId(),eventId,"Wip表数据更新结束","删除已结束批次数据",mesLotWip.getLotNo(),"");
             }
         }
     }
