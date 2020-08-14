@@ -237,6 +237,8 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
         log.info("recieved message:" + msg);
+        String eventId1 = StringUtil.randomTimeUUID("EDC");
+        fabLogService.info("", eventId1, "parseOperationlog ", "Operation解析 本次接收数据"+msg,"", "gxj");
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
@@ -244,7 +246,7 @@ public class EdcDskLogHandler {
         if (edcDskLogOperationlist == null || edcDskLogOperationlist.size() == 0) {
             return;
         }
-        String eventId1 = StringUtil.randomTimeUUID("EDC");
+
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
         fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数："+edcDskLogOperationlist.size(),"", "gxj");
