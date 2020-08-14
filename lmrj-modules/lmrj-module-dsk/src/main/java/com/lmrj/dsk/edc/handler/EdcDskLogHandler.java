@@ -113,7 +113,7 @@ public class EdcDskLogHandler {
             String eqpId = edcDskLogProduction0.getEqpId();
             //判断数据是否为同一批次
             List<MesLotTrack> lotList = mesLotTrackService.findLotByStartTime(eqpId,edcDskLogProduction0.getStartTime());
-            if(lotList.size()>1){
+            if(lotList.size()==2){
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                     if(edcDskLogProduction.getEndTime()!=null && lotList.get(0).getStartTime()!=null){
                         if(edcDskLogProduction.getEndTime().before(lotList.get(0).getStartTime())){
@@ -126,8 +126,11 @@ public class EdcDskLogHandler {
                 fixProData(proList1,lotList.get(1));
                 fixProData(proList0,lotList.get(0));
             }else{
-
+                MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,edcDskLogProduction0.getStartTime());
+                fixProData(edcDskLogProductionList,mesLotTrack);
             }
+        }else{
+
         }
         //产量不准,改为自己运算后更新
         //if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
