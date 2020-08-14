@@ -28,15 +28,15 @@ public class EqpStateTask {
         log.info("EqpStateTask定时任务开始执行");
         try {
             //当天时间
-            Date endTime = new Date();
+            Date startTime = new Date();
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND,0);
-            endTime = cal.getTime();
+            startTime = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, 1);
-            Date startTime = cal.getTime();
+            Date endTime = cal.getTime();
             log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
             List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
             for (String eqpId : eqpIdList) {
