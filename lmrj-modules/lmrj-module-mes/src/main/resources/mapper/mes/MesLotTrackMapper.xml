@@ -25,7 +25,7 @@
               FROM
               mes_lot_track
               WHERE
-              eqp_id = 'SIM-REFLOW1'
+              eqp_id = #{eqpId}
               AND ((
                 end_time &gt; #{startTime}
                 AND end_time &lt; #{endTime})
