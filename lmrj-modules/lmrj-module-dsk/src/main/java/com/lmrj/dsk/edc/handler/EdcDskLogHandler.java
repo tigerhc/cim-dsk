@@ -203,15 +203,26 @@ public class EdcDskLogHandler {
                     it.remove();
             }
         }
-        edcDskLogProductionService.insertBatch(proList);
-        String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info("", eventId, "production更新", "production数据插入结束","", "gxj");
-        //当前批次在production表中最后一条数据
-        EdcDskLogProduction lastPro = productionList.get(productionList.size()-1);
-        mesLotTrack.setLotYieldEqp(productionList.size());
-        mesLotTrack.setUpdateBy("gxj");
-        boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
+        String eventId = null;
+        EdcDskLogProduction lastPro = null;
+        boolean updateFlag = false;
+        try {
+            if(edcDskLogProductionService.insertBatch(proList)){
+                log.info("插入成功");
+            }
+            eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("", eventId, "production更新", "production数据插入结束","", "gxj");
+            //当前批次在production表中最后一条数据
+            lastPro = productionList.get(productionList.size()-1);
+            mesLotTrack.setLotYieldEqp(productionList.size());
+            mesLotTrack.setUpdateBy("gxj");
+            updateFlag = mesLotTrackService.updateById(mesLotTrack);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fabLogService.info(mesLotTrack.getEqpId(), eventId, "mes_lot_track更新", "track更新出错"+e+ "       ", lastPro.getLotNo(), "gxj");
+        }
         if(!updateFlag){
+            System.out.println("修改失败");
             mesLotTrack.setStartTime(new Date());
             mesLotTrack.setOrderNo(lastPro.getOrderNo());
             mesLotTrack.setCreateBy("EQP");

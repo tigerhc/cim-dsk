@@ -34,13 +34,15 @@ public class OperationYieldTask {
         cal.add(Calendar.HOUR_OF_DAY, -2);
         List<EdcDskLogOperation> operationList = edcDskLogOperationService.selectList(new EntityWrapper<EdcDskLogOperation>().eq("day_yield", "0").ge("create_date", cal.getTime()).like("eqp_id", "SIM-DM"));
         operationList.forEach(edcDskLogOperation -> {
-            EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
-            if (edcDskLogProduction != null && edcDskLogProduction.getLotYield()==0 && edcDskLogProduction.getDayYield()==0) {
-                int lotYield = edcDskLogProduction.getLotYield();
-                int dayYield = edcDskLogProduction.getDayYield();
-                edcDskLogOperation.setLotYield(lotYield);
-                edcDskLogOperation.setDayYield(dayYield);
-                edcDskLogOperationService.updateById(edcDskLogOperation);
+            if(edcDskLogOperation.getLotYield()==0 || edcDskLogOperation.getDayYield()==0){
+                EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
+                if (edcDskLogProduction != null) {
+                    int lotYield = edcDskLogProduction.getLotYield();
+                    int dayYield = edcDskLogProduction.getDayYield();
+                    edcDskLogOperation.setLotYield(lotYield);
+                    edcDskLogOperation.setDayYield(dayYield);
+                    edcDskLogOperationService.updateById(edcDskLogOperation);
+                }
             }
         });
         log.info("OperationYieldTask定时任务开始执行结束");
