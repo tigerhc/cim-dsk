@@ -23,8 +23,8 @@ import java.util.List;
 @Mapper
 public interface EdcDskLogProductionMapper extends BaseMapper<EdcDskLogProduction> {
 
-    @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and start_time  < #{startTime} order by start_time desc limit 1")
-    EdcDskLogProduction findLastYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
+    @Select("select * from edc_dsk_log_production where  eqp_id= #{eqpId} and lot_no = #{lotNo} and  start_time  < #{startTime} order by start_time desc limit 1")
+    EdcDskLogProduction findLastYield(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo, @Param("startTime") Date startTime);
 
     @Select("select * from edc_dsk_log_production where eqp_id = #{eqpId} and start_time  between #{startTime} and #{endTime}  order by start_time limit 1000")
     List<EdcDskLogProduction> findYields(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);

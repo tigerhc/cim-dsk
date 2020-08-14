@@ -62,23 +62,29 @@ public class EdcSecsLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.EVENT.DATA"})
     public void handleEvent(String msg) {
-        System.out.println("接收到的消息" + msg);
-        EdcEvtRecord edcEvtRecord = JsonUtil.from(msg, EdcEvtRecord.class);
-        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(edcEvtRecord.getEqpId());
-        String modelId = "";
-        if (fabEquipment != null) {
-            modelId = fabEquipment.getModelId();
+        try {
+            System.out.println("接收到的消息" + msg);
+            EdcEvtRecord edcEvtRecord = JsonUtil.from(msg, EdcEvtRecord.class);
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(edcEvtRecord.getEqpId());
+            String modelId = "";
+            if (fabEquipment != null) {
+                modelId = fabEquipment.getModelId();
 
-            EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
-            if (edcEvtDefine != null) {
-                edcEvtRecord.setEventDesc(edcEvtDefine.getEventName());
+                EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
+                if (edcEvtDefine != null) {
+                    edcEvtRecord.setEventDesc(edcEvtDefine.getEventName());
+                }
             }
-        }
-        // TODO: 2020/7/14 后期针对trm产量事件,可不存储
-        edcEvtRecordService.insert(edcEvtRecord);
-        //Mold单独处理
-        if ("TRM".equals(fabEquipment.getStepCode())) {
-            handleMoldYield(edcEvtRecord, fabEquipment);
+            // TODO: 2020/7/14 后期针对trm产量事件,可不存储
+            edcEvtRecordService.insert(edcEvtRecord);
+            //Mold单独处理
+            if ("TRM".equals(fabEquipment.getStepCode())) {
+                handleMoldYield(edcEvtRecord, fabEquipment);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误："+e,"", "gxj");
         }
 
     }

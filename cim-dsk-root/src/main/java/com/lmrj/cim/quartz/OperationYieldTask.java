@@ -25,7 +25,7 @@ public class OperationYieldTask {
      * 计算产量,写入操操作日志
      */
     //@Scheduled(cron = "0 0/10 * * * ?")
-    public void dskaps() {
+    public void updateOperationYield() {
         log.info("OperationYieldTask定时任务开始执行");
         //2天前
         Calendar cal = Calendar.getInstance();
@@ -35,7 +35,7 @@ public class OperationYieldTask {
         List<EdcDskLogOperation> operationList = edcDskLogOperationService.selectList(new EntityWrapper<EdcDskLogOperation>().eq("day_yield", "0").ge("create_date", cal.getTime()).like("eqp_id", "SIM-DM"));
         operationList.forEach(edcDskLogOperation -> {
             if(edcDskLogOperation.getLotYield()==0 || edcDskLogOperation.getDayYield()==0){
-                EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
+                EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getLotNo() ,edcDskLogOperation.getStartTime());
                 if (edcDskLogProduction != null) {
                     int lotYield = edcDskLogProduction.getLotYield();
                     int dayYield = edcDskLogProduction.getDayYield();
