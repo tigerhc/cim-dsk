@@ -106,68 +106,27 @@ public class EdcDskLogHandler {
         System.out.println("接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
-        List<MesLotTrack> mesLotList=null;
-        MesLotTrack noEndLot=null;
+        List<EdcDskLogProduction> proList0=new ArrayList<>();
+        List<EdcDskLogProduction> proList1=new ArrayList<>();
         if (edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
-            EdcDskLogProduction edcDskLogProductionLast=edcDskLogProductionList.get(edcDskLogProductionList.size()-1);
-            //批量内连番起始值
-            int i=1;
             //判断数据是否为同一批次
-            mesLotList = mesLotTrackService.findDataLotNo(eqpId,edcDskLogProduction0.getStartTime(),edcDskLogProductionLast.getEndTime());
-            if(mesLotList==null){
-                noEndLot=mesLotTrackService.findNoEndLotNo(eqpId,edcDskLogProduction0.getStartTime());
-            }
-            //数据为同一批次
-            if(mesLotList.size()==1 || noEndLot!=null){
-                MesLotTrack mesLotTrack=mesLotList.get(0);
-                fixProData(edcDskLogProductionList,mesLotTrack);
-            //数据为不同批次
-            }else if(mesLotList.size()>1){
-                List<EdcDskLogProduction> productionsList1=new ArrayList<>();
-                List<EdcDskLogProduction> productionsList2=new ArrayList<>();
-                for (EdcDskLogProduction edcDskLogPro : edcDskLogProductionList) {
-                    //如果当前数据为第一个批次的数据
-                    if(edcDskLogPro.getStartTime().after(mesLotList.get(0).getStartTime()) && edcDskLogPro.getEndTime().after(mesLotList.get(0).getEndTime())){
-                        productionsList1.add(edcDskLogPro);
-                    //如果当前数据为第二个批次的数据
-                    }else if(edcDskLogPro.getStartTime().after(mesLotList.get(1).getStartTime()) && edcDskLogPro.getEndTime().after(mesLotList.get(1).getEndTime())){
-                        productionsList2.add(edcDskLogPro);
-                    //如果这个数据正好处在两个批次之间，将它归到第一个批次
-                    }else{
-                        MesLotTrack mesLotTrack=mesLotTrackService.findLotByStartTime(edcDskLogPro.getEqpId(),edcDskLogPro.getStartTime());
-                        edcDskLogPro.setLotNo(mesLotTrack.getLotNo());
-                        productionsList1.add(edcDskLogPro);
-                    }
-                }
-                fixProData(productionsList1,mesLotList.get(0));
-                fixProData(productionsList2,mesLotList.get(1));
-            //其他特殊情况
-            }else if(mesLotList.size()==0 && noEndLot==null){
-                MesLotTrack mesLot=null;
-                List<EdcDskLogProduction> sprolist=new ArrayList<>();
-                //没循环一次判断mesLot与当前批次nowDataLot是否相同，将mesLot改为当前批次nowDataLot
-                for (EdcDskLogProduction pro : edcDskLogProductionList) {
-                    MesLotTrack nowDataLot=mesLotTrackService.findLotByStartTime(pro.getEqpId(),pro.getStartTime());
-                    if(mesLot==null){
-                        mesLot=nowDataLot;
-                        pro.setLotNo(nowDataLot.getLotNo());
-                        if(sprolist.size()==0){
-                            sprolist.add(pro);
+            List<MesLotTrack> lotList = mesLotTrackService.findLotByStartTime(eqpId,edcDskLogProduction0.getStartTime());
+            if(lotList.size()>1){
+                for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
+                    if(edcDskLogProduction.getEndTime()!=null && lotList.get(0).getStartTime()!=null){
+                        if(edcDskLogProduction.getEndTime().before(lotList.get(0).getStartTime())){
+                            proList1.add(edcDskLogProduction);
+                        }else{
+                            proList0.add(edcDskLogProduction);
                         }
-                    }else if(mesLot==nowDataLot){
-                        pro.setLotNo(nowDataLot.getLotNo());
-                        sprolist.add(pro);
-                    }else{
-                        fixProData(sprolist,mesLot);
-                        mesLot=nowDataLot;
-                        pro.setLotNo(nowDataLot.getLotNo());
-                        sprolist=new ArrayList<>();
-                        sprolist.add(pro);
                     }
                 }
-                fixProData(sprolist,mesLot);
+                fixProData(proList1,lotList.get(1));
+                fixProData(proList0,lotList.get(0));
+            }else{
+
             }
         }
         //产量不准,改为自己运算后更新
