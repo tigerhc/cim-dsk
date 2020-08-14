@@ -237,14 +237,14 @@ public class EdcDskLogHandler {
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
-        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {
-        });
-
+        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
         if (edcDskLogOperationlist == null || edcDskLogOperationlist.size() == 0) {
             return;
         }
+        String eventId1 = StringUtil.randomTimeUUID("EDC");
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
+        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析","", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
@@ -253,7 +253,6 @@ public class EdcDskLogHandler {
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
             });
         }
-
         edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
 
         //插入event或者alarm中
@@ -272,8 +271,7 @@ public class EdcDskLogHandler {
         String status = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
-            String eventId1 = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info(edcDskLogOperation.getEqpId(), eventId1, "Operation更新", "本次事件开始时间"+edcDskLogOperation.getStartTime(),"", "gxj");
+
             if ("2".equals(eventId)) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
