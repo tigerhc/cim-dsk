@@ -23,7 +23,7 @@ public class EdcAmsRecordYieldTask {
     /**
      * 计算产量,写入操操作日志
      */
-    //@Scheduled(cron = "0 0/10 * * * ?")
+    //@Scheduled(cron = "0 0/5 * * * ?")
     public void updateAmsRecordYield() {
         log.info("EdcAmsRecordYieldTask定时任务开始执行");
         Date endTime = new Date();
@@ -39,9 +39,11 @@ public class EdcAmsRecordYieldTask {
             for (EdcAmsRecord edcAmsRecord : edcAmsRecordList) {
                 if(edcAmsRecord.getLotNo()!=null){
                     EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcAmsRecord.getEqpId(),edcAmsRecord.getLotNo(), edcAmsRecord.getStartDate());
-                    edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
-                    edcAmsRecord.setLotYield(edcDskLogProduction.getLotYield());
-                    iEdcAmsRecordService.updateById(edcAmsRecord);
+                    if(edcDskLogProduction!=null){
+                        edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
+                        edcAmsRecord.setLotYield(edcDskLogProduction.getLotYield());
+                        iEdcAmsRecordService.updateById(edcAmsRecord);
+                    }
                 }
             }
         }

@@ -213,8 +213,8 @@ public class EdcDskLogHandler {
             eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "production更新", "production数据插入结束","", "gxj");
             //当前批次在production表中最后一条数据
-            lastPro = productionList.get(productionList.size()-1);
-            mesLotTrack.setLotYieldEqp(productionList.size());
+            lastPro = proList.get(proList.size()-1);
+            mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
