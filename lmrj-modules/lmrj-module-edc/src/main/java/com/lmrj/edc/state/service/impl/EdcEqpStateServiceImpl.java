@@ -2,7 +2,6 @@ package com.lmrj.edc.state.service.impl;
 
 import com.google.common.collect.Lists;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.edc.quartz.MapUtil;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.entity.RptEqpStateDay;
@@ -179,12 +178,14 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             rptEqpStateDayList.add(rptEqpStateDay);
         }
         //先删除day表 按照时间删除 在插入
-        if (rptEqpStateDayService.delete(new EntityWrapper<RptEqpStateDay>().eq("period_date", periodDate))
-                && rptEqpStateDayService.insertBatch(rptEqpStateDayList)) {
+        if(rptEqpStateDayService.deleteByPeriodData(periodDate)){
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
+        }else{
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info("", eventId, "OEE计算更新", "数据更新失败", "", "");
         }
-        ;
         return rptEqpStateDayList.size();
     }
 

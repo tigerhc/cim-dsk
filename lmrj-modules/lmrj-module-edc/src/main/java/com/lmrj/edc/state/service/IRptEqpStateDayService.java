@@ -29,4 +29,6 @@ public interface IRptEqpStateDayService extends ICommonService<RptEqpStateDay> {
     List<Map> selectNowGroupState(String officeId, String lineNo, String fab, String groupName);
 
     List<Map> selectEqpStateByPeriod(String officeId, String lineNo, String fab);
+
+    Boolean deleteByPeriodData(String periodDate);
 }

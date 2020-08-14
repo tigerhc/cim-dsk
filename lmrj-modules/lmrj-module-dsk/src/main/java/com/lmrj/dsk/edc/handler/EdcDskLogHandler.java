@@ -217,7 +217,7 @@ public class EdcDskLogHandler {
             mesLotTrack.setCreateBy("EQP");
             mesLotTrackService.insert(mesLotTrack);
         }
-        fabLogService.info("", eventId, "mes_lot_track更新", "track更新结束", lastPro.getLotNo(), "gxj");
+        fabLogService.info(mesLotTrack.getEqpId(), eventId, "mes_lot_track更新", "track更新结束", lastPro.getLotNo(), "gxj");
     }
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})

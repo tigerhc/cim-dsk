@@ -31,6 +31,10 @@ import java.util.Map;
 public class RptEqpStateDayServiceImpl  extends CommonServiceImpl<RptEqpStateDayMapper,RptEqpStateDay> implements  IRptEqpStateDayService {
 
     @Override
+    public Boolean deleteByPeriodData(String periodDate){
+        return baseMapper.deleteByPeriodData(periodDate);
+    }
+    @Override
     public List findEqpOee(String beginTime, String endTime, List eqpIds) {
         List list = (List) baseMapper.findEqpOee( beginTime, endTime,eqpIds);
         return list;
