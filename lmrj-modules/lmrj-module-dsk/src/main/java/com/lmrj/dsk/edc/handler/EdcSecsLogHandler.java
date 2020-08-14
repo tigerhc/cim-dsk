@@ -135,7 +135,7 @@ public class EdcSecsLogHandler {
                 mesLotTrackService.insert(mesLotTrack);
             }
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info(eqpId, eventId, "TRM production更新", "TRM数据更新成功","", "gxj");
+            fabLogService.info(eqpId, eventId, "TRM production更新 handleMoldYield", "TRM数据更新成功","", "gxj");
             if (eventParams != null) {
                 String[] params = eventParams.split(",");
                 if (params.length == 3) {

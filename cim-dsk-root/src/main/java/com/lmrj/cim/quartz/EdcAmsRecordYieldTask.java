@@ -30,6 +30,7 @@ public class EdcAmsRecordYieldTask {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND,0);
         endTime=cal.getTime();
         cal.add(Calendar.HOUR_OF_DAY, -2);
         Date startTime = cal.getTime();

@@ -244,7 +244,7 @@ public class EdcDskLogHandler {
         String eventId1 = StringUtil.randomTimeUUID("EDC");
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
-        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析","", "gxj");
+        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 第一条数据开始时间："+edcDskLogOperation0.getStartTime(),"", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
