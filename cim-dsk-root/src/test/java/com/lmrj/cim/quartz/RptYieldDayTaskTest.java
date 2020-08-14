@@ -27,6 +27,6 @@ public class RptYieldDayTaskTest {
         //rptYieldTask.updateYield();
         //eqpStateTask.eqpStateDay();
         //eqpStateTask.fixeqpState();
-        operationYieldTask.dskaps();
+//        operationYieldTask.dskaps();
     }
 }

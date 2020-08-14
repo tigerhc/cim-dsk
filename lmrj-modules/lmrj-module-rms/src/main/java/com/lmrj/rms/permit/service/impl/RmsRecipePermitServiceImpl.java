@@ -55,7 +55,8 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
     @Autowired
     private IFabEquipmentService fabEquipmentService;
 
-    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+//    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
+    public static String[] FTP94 = new String[]{"127.0.0.1", "21", "FTP", "FTP"};
     private static String rootPath = "/RECIPE/";
 
     //老版遗弃
@@ -144,27 +145,30 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
                     filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + recipe.getEqpModelName() + "/EQP/" + recipe.getEqpId() + "/" + recipe.getRecipeName();
                     //找到之前激活的EQP版本修改为停用
                     RmsRecipe eqp = recipeService.findLastByRecipeCode(recipe, "EQP");
-                    eqp.setStatus("N");
-                    recipeService.updateById(eqp);
+                    if (eqp != null) {
+                        eqp.setStatus("N");
+                        recipeService.updateById(eqp);
+                    }
                 } else if ("GOLD".equals(recipe.getVersionType())){
                     //获取备份文件目标路径
                     filePath = rootPath + fabEquipment.getFab() + "/" + fabEquipment.getStepCode() + "/" + recipe.getEqpModelName() + "/GOLD/" + recipe.getRecipeName();
                     //找到之前激活的GOLD版本修改为停用
                     RmsRecipe gold = recipeService.findLastByRecipeCode(recipe, "GOLD");
-                    gold.setStatus("N");
-                    recipeService.updateById(gold);
+                    if (gold != null ) {
+                        gold.setStatus("N");
+                        recipeService.updateById(gold);
+                    }
                 }
                 String recipeFilePath = recipe.getRecipeFilePath();
                 if (recipeFilePath != null && !"".equals(recipeFilePath)) {
                     String[] strings = recipeFilePath.split("/");
                     String fileName = strings[strings.length - 1];
-                    String fileSuffix = fileName.split("\\.")[1];
                     //复制recipe到his文件夹
                     FtpUtil.copyFile(FTP94,DRAFTPath,fileName,filePath + "/HIS",fileName);
                     //删除原来不带版本号的recipe
-                    FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeName() + "." + fileSuffix);
+                    FtpUtil.deleteFile(FTP94,filePath + "/" + recipe.getRecipeName());
                     //复制为最新版本
-                    FtpUtil.copyFile(FTP94,DRAFTPath,fileName,filePath,filePath + "/" + recipe.getRecipeName() + "." + fileSuffix);
+                    FtpUtil.copyFile(FTP94,DRAFTPath,fileName,filePath,filePath + "/" + recipe.getRecipeName());
                     //删除草稿版
                     FtpUtil.deleteFile(FTP94,recipeFilePath);
                     recipe.setRecipeFilePath(filePath + "/HIS/" + fileName);

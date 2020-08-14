@@ -256,15 +256,15 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         }
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
-        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
-        byte[] message = (byte[]) test;
-        String msg = null;
-        try {
-            msg = new String(message, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
-            log.error("Exception:", e);
-        }
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+//        byte[] message = (byte[]) test;
+//        String msg = null;
+//        try {
+//            msg = new String(message, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
+//            log.error("Exception:", e);
+//        }
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
         boolean flag = false;
         //判断返回值flag是否正确
@@ -429,15 +429,15 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         System.out.println(msgg);
         String bc = fabEquipment.getBcCode();
         log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
-        Object test = rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
-        byte[] message = (byte[]) test;
-        String msg = null;
-        try {
-            msg = new String(message, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
-            log.error("Exception:", e);
-        }
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+//        byte[] message = (byte[]) test;
+//        String msg = null;
+//        try {
+//            msg = new String(message, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            log.info("接收 S2C.T.RMS.COMMAND 数据失败");
+//            log.error("Exception:", e);
+//        }
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
         //判断返回值flag是否正确
         if (!"Y".equals(mesResult.getFlag())){
