@@ -66,7 +66,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             //当天八点前最后一条数据
             EdcEqpState lastData=baseMapper.findLastData(startTime, eqpId);
             lastData.setEndTime(startTime);
-            Double state = (double) (lastData.getStartTime().getTime() - startTime.getTime());
+            Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
             lastData.setStateTimes(state);
             this.updateById(lastData);
             firstData.setStartTime(startTime);
