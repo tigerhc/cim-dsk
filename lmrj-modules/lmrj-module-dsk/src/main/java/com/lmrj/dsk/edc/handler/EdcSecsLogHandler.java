@@ -124,7 +124,7 @@ public class EdcSecsLogHandler {
             MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date());
             List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
             if(proList.size()>0){
-                mesLotTrack.setLotYieldEqp(proList.size()+12);
+                mesLotTrack.setLotYieldEqp(proList.get(proList.size()-1).getLotYield()+12);
             }else {
                 mesLotTrack.setLotYieldEqp(12);
             }
