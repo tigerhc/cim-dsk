@@ -123,8 +123,12 @@ public class EdcDskLogHandler {
                         }
                     }
                 }
-                fixProData(proList1,lotList.get(1));
-                fixProData(proList0,lotList.get(0));
+                if(proList1.size()>0){
+                    fixProData(proList1,lotList.get(1));
+                }
+                if(proList0.size()>0){
+                    fixProData(proList0,lotList.get(0));
+                }
             }else{
                 MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,edcDskLogProduction0.getStartTime());
                 fixProData(edcDskLogProductionList,mesLotTrack);
