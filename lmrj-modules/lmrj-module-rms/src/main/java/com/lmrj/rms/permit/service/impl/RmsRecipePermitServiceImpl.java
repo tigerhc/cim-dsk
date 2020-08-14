@@ -204,6 +204,11 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
         RmsRecipe recipe = recipeService.selectById(recipeId);
         Integer approveStep = Integer.parseInt(recipe.getApproveStep());
         if ("EQP".equals(versionType)){
+            if (approveStep > 2) {
+                approveStep = 2;
+                recipe.setApproveStep("2");
+                recipeService.updateById(recipe);
+            }
             for (int i = approveStep; i<=2; i++){
                 RmsRecipePermit recipePermit = new RmsRecipePermit();
                 RmsRecipePermitConfig recipePermitConfig = recipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", i + "")).get(0);
@@ -216,6 +221,11 @@ public class RmsRecipePermitServiceImpl  extends CommonServiceImpl<RmsRecipePerm
             }
         }
         if ("GOLD".equals(versionType)){
+            if (approveStep > 3) {
+                approveStep = 3;
+                recipe.setApproveStep("3");
+                recipeService.updateById(recipe);
+            }
             for (int i = approveStep; i<=3; i++){
                 RmsRecipePermit recipePermit = new RmsRecipePermit();
                 RmsRecipePermitConfig recipePermitConfig = recipePermitConfigService.selectList(new EntityWrapper<RmsRecipePermitConfig>().eq("submit_level", i + "")).get(0);
