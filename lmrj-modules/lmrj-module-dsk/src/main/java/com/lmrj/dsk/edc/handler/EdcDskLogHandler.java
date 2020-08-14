@@ -107,6 +107,7 @@ public class EdcDskLogHandler {
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
         List<MesLotTrack> mesLotList=null;
+        MesLotTrack noEndLot=null;
         if (edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
@@ -114,9 +115,12 @@ public class EdcDskLogHandler {
             //批量内连番起始值
             int i=1;
             //判断数据是否为同一批次
-            mesLotList = mesLotTrackService.findLotNo(eqpId,edcDskLogProduction0.getStartTime(),edcDskLogProductionLast.getEndTime());
+            mesLotList = mesLotTrackService.findDataLotNo(eqpId,edcDskLogProduction0.getStartTime(),edcDskLogProductionLast.getEndTime());
+            if(mesLotList==null){
+                noEndLot=mesLotTrackService.findNoEndLotNo(eqpId,edcDskLogProduction0.getStartTime());
+            }
             //数据为同一批次
-            if(mesLotList.size()==1){
+            if(mesLotList.size()==1 || noEndLot!=null){
                 MesLotTrack mesLotTrack=mesLotList.get(0);
                 fixProData(edcDskLogProductionList,mesLotTrack);
             //数据为不同批次
@@ -140,7 +144,7 @@ public class EdcDskLogHandler {
                 fixProData(productionsList1,mesLotList.get(0));
                 fixProData(productionsList2,mesLotList.get(1));
             //其他特殊情况
-            }else{
+            }else if(mesLotList.size()==0 && noEndLot==null){
                 MesLotTrack mesLot=null;
                 List<EdcDskLogProduction> sprolist=new ArrayList<>();
                 //没循环一次判断mesLot与当前批次nowDataLot是否相同，将mesLot改为当前批次nowDataLot

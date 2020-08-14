@@ -424,10 +424,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrackLog.setEventCode(eventCode);
         mesLotTrackLogService.insert(mesLotTrackLog);
     }
-
     @Override
-    public List<MesLotTrack> findLotNo(String eqpId,Date startTime,Date endTime){
-        return baseMapper.findLotNo(eqpId,startTime,endTime);
+    public MesLotTrack findNoEndLotNo(String eqpId,Date startTime){
+        return baseMapper.findNoEndLotNo(eqpId,startTime);
+    }
+    @Override
+    public List<MesLotTrack> findDataLotNo(String eqpId,Date startTime,Date endTime){
+        return baseMapper.findDataLotNo(eqpId,startTime,endTime);
     }
 
     @Override

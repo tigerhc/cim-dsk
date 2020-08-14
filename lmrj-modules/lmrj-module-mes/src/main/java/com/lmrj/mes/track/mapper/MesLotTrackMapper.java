@@ -32,9 +32,10 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no != #{lotNo} and start_time > #{startTime} order by start_time limit 1")
     MesLotTrack findLastTrack(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime);
 
-    @Select("select * from mes_lot_track where eqp_id=#{eqpId} and (end_time > #{startTime} AND end_time < #{endTime} or start_time > #{startTime} AND start_time < #{endTime} or start_time < #{startTime} and end_time > #{endTime})order by start_time")
-    List<MesLotTrack> findLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    List<MesLotTrack> findDataLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select * from mes_lot_track where eqp_id = #{eqpId} and start_time <#{startTime} and end_time is null order by start_time desc limit 1  ")
+    MesLotTrack findNoEndLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime);
     @Select("select * from mes_lot_track where eqp_id=#{eqpId} and start_time <= #{startTime} order by start_time desc limit 1")
     MesLotTrack findLotNo1(@Param("eqpId") String eqpId,@Param("startTime") Date startTime);
 

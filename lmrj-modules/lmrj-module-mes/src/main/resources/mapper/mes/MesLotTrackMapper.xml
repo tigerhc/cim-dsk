@@ -19,7 +19,25 @@
        t.del_flag
 	</sql>
 
-       <!--<select id="findlotYield">-->
-
-       <!--</select>-->
+       <select id="findDataLotNo" resultType="com.lmrj.mes.track.entity.MesLotTrack">
+              SELECT
+              *
+              FROM
+              mes_lot_track
+              WHERE
+              eqp_id = 'SIM-REFLOW1'
+              AND ((
+                end_time &gt; #{startTime}
+                AND end_time &lt; #{endTime})
+                OR
+                (start_time &gt; #{startTime}
+                AND start_time &lt; #{endTiem}})
+                OR
+                (start_time &lt; #{startTime}
+                AND end_time &gt; #{endTime}
+                )
+              )
+              ORDER BY
+              start_time
+       </select>
 </mapper>
