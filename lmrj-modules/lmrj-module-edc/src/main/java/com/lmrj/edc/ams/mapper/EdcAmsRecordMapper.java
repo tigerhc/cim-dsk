@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +24,8 @@ import java.util.Map;
 @Mapper
 public interface EdcAmsRecordMapper extends BaseMapper<EdcAmsRecord> {
  List<EdcAmsRecord> selectAmsRecord(@Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("department") String department, @Param("fab") String fab);
-
-
+ @Select("select * from edc_ams_record where start_date between #{startTime} and #{endTime} order by start_date")
+ List<EdcAmsRecord> findAmsRecordByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
  List<Map> selectAlarmCountByLine(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo);
  List<Map> selectAlarmCountByEqp(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
 }

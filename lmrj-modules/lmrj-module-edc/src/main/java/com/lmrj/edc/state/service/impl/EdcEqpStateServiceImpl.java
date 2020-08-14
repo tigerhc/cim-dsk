@@ -80,7 +80,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             log.info("插入记录成功");
         }
         EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 2);
-        if(lastEdcEqpState.getEndTime().after(endTime)){
+        if(lastEdcEqpState.getEndTime()!=null && lastEdcEqpState.getEndTime().after(endTime)){
             lastEdcEqpState.setEndTime(endTime);
             Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
             lastEdcEqpState.setStateTimes(stateTime1);

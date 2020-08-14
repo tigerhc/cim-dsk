@@ -7,6 +7,7 @@ import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,9 @@ public class EdcAmsRecordServiceImpl  extends CommonServiceImpl<EdcAmsRecordMapp
     public List<Map> selectAlarmCountByEqp(String beginTime, String endTime, String eqpId) {
         return baseMapper.selectAlarmCountByEqp(beginTime, endTime,eqpId);
     }
-
+    @Override
+    public List<EdcAmsRecord> findAmsRecordByTime(Date startTime, Date endTime){
+        return baseMapper.findAmsRecordByTime(startTime,endTime);
+    }
 
 }
