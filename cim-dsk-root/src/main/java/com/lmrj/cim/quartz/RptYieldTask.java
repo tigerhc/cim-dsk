@@ -48,9 +48,6 @@ public class RptYieldTask {
             if (yield == null) {
                 continue;
             } else {
-                if ("SIM-REFLOW1".equals(eqpId)) {
-                    yield = yield * 12;
-                }
                 boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
                 if (!updateFlag) {
                     RptLotYield rptLotYield = new RptLotYield();

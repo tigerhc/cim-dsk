@@ -155,6 +155,11 @@ public class EdcDskLogHandler {
             edcDskLogProduction.setLotYield(i);
             i++;
         }
+        if(eqpId.contains("SIM-REFLOW")){
+            for (EdcDskLogProduction edcDskLogProduction : proList) {
+                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield()*12);
+            }
+        }
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             proList.forEach(edcDskLogProduction -> {
