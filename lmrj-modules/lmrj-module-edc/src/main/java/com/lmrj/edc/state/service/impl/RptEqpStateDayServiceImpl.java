@@ -47,6 +47,10 @@ public class RptEqpStateDayServiceImpl  extends CommonServiceImpl<RptEqpStateDay
     }
 
     @Override
+    public RptEqpStateDay findData(String periodDate){
+        return baseMapper.findData(periodDate);
+    }
+    @Override
     public List<Map> selectGroupState(String beginTime, String endTime, String officeId, String lineNo, String fab) {
         return baseMapper.selectGroupState(beginTime, endTime, officeId, null, null, "officeId");
     }

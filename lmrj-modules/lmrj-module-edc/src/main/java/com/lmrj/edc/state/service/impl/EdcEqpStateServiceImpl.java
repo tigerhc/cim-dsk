@@ -114,7 +114,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 if (this.updateBatchById(neweqpStateList)) {
                     log.info("edc_eqp_state更新成功");
                     String eventId = StringUtil.randomTimeUUID("RPT");
-                    fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功", "", "");
+                    fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功,"+neweqpStateList.size()+"条数据已更新", "", "");
                 }
             }
         }
@@ -179,13 +179,15 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             rptEqpStateDay.setOtherTime(other / 1000);
             rptEqpStateDayList.add(rptEqpStateDay);
         }
+        String eventId = StringUtil.randomTimeUUID("RPT");
         //先删除day表 按照时间删除 在插入
-        if(rptEqpStateDayService.deleteByPeriodData(periodDate)){
+        if(rptEqpStateDayService.findData(periodDate)==null){
             rptEqpStateDayService.insertBatch(rptEqpStateDayList);
-            String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
-        }else{
-            String eventId = StringUtil.randomTimeUUID("RPT");
+        }else if(rptEqpStateDayService.findData(periodDate)!=null && rptEqpStateDayService.deleteByPeriodData(periodDate)){
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList);
+            fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
+        } else{
             fabLogService.info("", eventId, "OEE计算更新", "数据更新失败", "", "");
         }
         return rptEqpStateDayList.size();

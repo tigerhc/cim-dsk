@@ -36,7 +36,8 @@
 
     <select id="calEqpSateDay" resultType="com.lmrj.edc.state.entity.EdcEqpState">
         select eqp_id, state, sum(state_times) state_times from edc_eqp_state
-        where start_time between #{startTime} and #{endTime}
+        where end_time between #{startTime} and #{endTime}
+        AND start_time between #{startTime} and #{endTime}
         group by eqp_id, state
     </select>
     <select id="findLastData" resultType="com.lmrj.edc.state.entity.EdcEqpState">

@@ -5,6 +5,7 @@ import com.lmrj.edc.state.entity.RptEqpStateDay;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,10 @@ public interface RptEqpStateDayMapper extends BaseMapper<RptEqpStateDay> {
     List<Map> selectGroupState(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab, @Param("groupName") String groupName);
 
     List<Map> selectEqpStateByPeriod(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab);
+
     @Delete("delete from rpt_eqp_state_day where period_date = #{periodDate}")
     Boolean deleteByPeriodData(@Param("periodDate") String periodDate);
+
+    @Select("select * from rpt_eqp_state_day where period_date = #{periodDate} limit 1")
+    RptEqpStateDay findData(@Param("periodDate") String periodDate);
 }

@@ -68,6 +68,6 @@ public class EqpStateTask {
         for (String eqpId : eqpIdList) {
             edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
         }
+        edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
     }
-
 }
