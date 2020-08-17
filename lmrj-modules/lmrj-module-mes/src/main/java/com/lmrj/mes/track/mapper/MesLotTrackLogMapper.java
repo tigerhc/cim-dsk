@@ -25,4 +25,7 @@ public interface MesLotTrackLogMapper extends BaseMapper<MesLotTrackLog> {
 
     @Select("select * from  mes_lot_track_log where CONCAT(lot_no,create_date) in (select CONCAT(lot_no, max(create_date)) from mes_lot_track_log where create_date > #{startTime}  group by lot_no)")
     List<MesLotTrackLog> findLatestLotEqp(@Param("startTime") Date startTime);
+
+    @Select("select * from mes_lot_track_log where create_date >= #{startTime} and event_code='TRACKOUT' and lot_yield is null")
+    List<MesLotTrackLog> findTrackLog(@Param("startTime") Date startTime);
 }

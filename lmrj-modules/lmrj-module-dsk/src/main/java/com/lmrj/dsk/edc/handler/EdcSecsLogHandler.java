@@ -1,7 +1,9 @@
 package com.lmrj.dsk.edc.handler;
 
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
@@ -48,6 +50,8 @@ public class EdcSecsLogHandler {
     private IEdcDskLogProductionService edcDskLogProductionService;
     @Autowired
     private IFabLogService fabLogService;
+    @Autowired
+    IEdcDskLogOperationService edcDskLogOperationService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -84,7 +88,7 @@ public class EdcSecsLogHandler {
         } catch (Exception e) {
             e.printStackTrace();
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误："+e,"", "gxj");
+            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误","", "gxj");
         }
 
     }
@@ -124,7 +128,7 @@ public class EdcSecsLogHandler {
             MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date());
             List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
             if(proList.size()>0){
-                mesLotTrack.setLotYieldEqp(proList.get(proList.size()-1).getLotYield()+12);
+                mesLotTrack.setLotYieldEqp(proList.size()*12);
             }else {
                 mesLotTrack.setLotYieldEqp(12);
             }
@@ -144,8 +148,22 @@ public class EdcSecsLogHandler {
                     }
                 }
             }
+
+
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM production数据更新结束",equipmentStatus.getLotNo(), "gxj");
         }
+        EdcDskLogOperation edcDskLogOperation=new EdcDskLogOperation();
+        FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+        edcDskLogOperation.setEqpId(eqpId);
+        edcDskLogOperation.setLotNo(equipmentStatus.getLotNo());
+        edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
+        edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
+        edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
+        edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
+        edcDskLogOperation.setEventId(evtRecord.getEventId());
+        edcDskLogOperation.setEventParams(evtRecord.getEventParams());
+        edcDskLogOperation.setCreateDate(evtRecord.getCreateDate());
+        edcDskLogOperationService.insert(edcDskLogOperation);
     }
 }

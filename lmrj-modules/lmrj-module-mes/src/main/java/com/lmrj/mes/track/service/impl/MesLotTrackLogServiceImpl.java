@@ -30,4 +30,8 @@ public class MesLotTrackLogServiceImpl  extends CommonServiceImpl<MesLotTrackLog
         return baseMapper.findLatestLotEqp(startTime);
     }
 
+    @Override
+    public List<MesLotTrackLog> findTrackLog(Date startTime){
+        return baseMapper.findTrackLog(startTime);
+    }
 }

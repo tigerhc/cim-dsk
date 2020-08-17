@@ -23,12 +23,12 @@ public class MesLotTrackTask {
     @Autowired
     IMesLotTrackService iMesLotTrackService;
 
-    //往mes_lot_wip表中导入数据
+    //修复mes_lot_track表中的批量内连番
     //@Scheduled(cron = "0 10 0 * * ?")
     public void fixLotTrackData() {
         Date endTime = new Date();
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 24);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         endTime = cal.getTime();
@@ -39,10 +39,10 @@ public class MesLotTrackTask {
             for (MesLotTrack mesLotTrack : mesLotList) {
                 List<EdcDskLogProduction> proList =edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
                 if(proList.size()>0){
-                    mesLotTrack.setLotYieldEqp(proList.get(proList.size()-1).getLotYield());
+                    iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                 }
             }
-            iMesLotTrackService.updateBatchById(mesLotList);
+
         }
     }
 }

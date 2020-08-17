@@ -20,14 +20,15 @@ public class ProductionYieldExportTask {
     public void doExportProductionCsv() throws Exception {
         log.info("导出production csv任务执行");
         try{
-            Date endTime = new Date();
+            Date startTime = new Date();
             Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 8);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
-            endTime = cal.getTime();
-            cal.add(Calendar.DAY_OF_MONTH, -1);
-            Date startTime = cal.getTime();
+            cal.set(Calendar.MILLISECOND, 0);
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Date endTime = cal.getTime();
             //更正表中批次品番
             List<MesLotTrack> wrongList = edcDskLogProductionService.updateProductionData(startTime, endTime);
             //导出数据生成文件

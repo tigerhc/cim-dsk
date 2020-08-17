@@ -13,7 +13,7 @@ public class MesLotTrackTaskTest {
     @Autowired
     MesLotTrackTask mesLotTrackTask;
     @Test
-    public void buildWipData() {
+    public void fixLotTrackData() {
         mesLotTrackTask.fixLotTrackData();
     }
 }

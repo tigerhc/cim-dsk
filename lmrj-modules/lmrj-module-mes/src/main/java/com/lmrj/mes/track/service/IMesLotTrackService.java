@@ -46,4 +46,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     List<MesLotTrack> findLotByStartTime(String eqpId,Date startTime);
 
     MesLotTrack findNoEndLotNo(String eqpId,Date startTime);
+
+    MesLotTrack findLotTrack(String eqpId,String lotNo,String productionNo);
 }

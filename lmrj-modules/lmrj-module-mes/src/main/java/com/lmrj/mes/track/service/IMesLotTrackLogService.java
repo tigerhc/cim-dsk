@@ -20,4 +20,6 @@ import java.util.List;
 public interface IMesLotTrackLogService extends ICommonService<MesLotTrackLog> {
 
     List<MesLotTrackLog> findLatestLotEqp(Date startTime);
+
+    List<MesLotTrackLog> findTrackLog(Date startTime);
 }

@@ -112,7 +112,7 @@ public class EdcDskLogHandler {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
             //判断数据是否为同一批次
-            List<MesLotTrack> lotList = mesLotTrackService.findLotByStartTime(eqpId,edcDskLogProduction0.getStartTime());
+            List<MesLotTrack> lotList = mesLotTrackService.findLotByStartTime(eqpId,edcDskLogProduction0.getEndTime());
             if(lotList.size()==2){
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                     if(edcDskLogProduction.getEndTime()!=null && lotList.get(0).getStartTime()!=null){
@@ -188,7 +188,7 @@ public class EdcDskLogHandler {
             }
             //当前批次在production表中最后一条数据
             lastPro = proList.get(proList.size()-1);
-            mesLotTrack.setLotYieldEqp(lastPro.getLotYield());
+            mesLotTrack.setLotYieldEqp(proList.size());
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
@@ -247,7 +247,6 @@ public class EdcDskLogHandler {
         String status = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
-
             if ("2".equals(eventId)) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());

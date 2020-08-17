@@ -177,7 +177,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }
             //循环比较每个批次时间内数据是否正确
             for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
-                if (!edcDskLogProduction.getProductionNo().equals(mesLotTrack.getProductionNo()) || !edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
+                if (!edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
                     edcDskLogProduction.setEqpNo(iFabEquipmentService.findeqpNoInfab(edcDskLogProduction.getEqpId()));
