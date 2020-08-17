@@ -74,6 +74,9 @@ public class FabLogServiceImpl extends CommonServiceImpl<FabLogMapper, FabLog> i
     @RabbitListener(queues = {"C2S.Q.FAB_LOG_D"}, concurrency="1")
     public void insertLogByMQ(String msg) {
         FabLog fabLog = JsonUtil.from(msg, FabLog.class);
+        if(StringUtil.isNotBlank(fabLog.getEventDesc()) && fabLog.getEventDesc().length()>255){
+            fabLog.setEventDesc(fabLog.getEventDesc().substring(0,255));
+        }
         this.insert(fabLog);
     }
 
