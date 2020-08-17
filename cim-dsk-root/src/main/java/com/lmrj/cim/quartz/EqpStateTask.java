@@ -37,7 +37,7 @@ public class EqpStateTask {
             startTime = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, 1);
             Date endTime = cal.getTime();
-            log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+            log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
             List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
             for (String eqpId : eqpIdList) {
                 edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
@@ -63,7 +63,7 @@ public class EqpStateTask {
         endTime = cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH, -1);
         Date startTime = cal.getTime();
-        log.error("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+        log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
         List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
         for (String eqpId : eqpIdList) {
             edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);

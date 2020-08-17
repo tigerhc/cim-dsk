@@ -79,12 +79,14 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             this.insert(firstData);
             log.info("插入记录成功");
         }
-        EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 2);
-        if(lastEdcEqpState.getEndTime()!=null && lastEdcEqpState.getEndTime().after(endTime)){
-            lastEdcEqpState.setEndTime(endTime);
-            Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
-            lastEdcEqpState.setStateTimes(stateTime1);
-            neweqpStateList.add(lastEdcEqpState);
+        if(eqpStateList.size()>=2){
+            EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 2);
+            if(lastEdcEqpState.getEndTime()!=null && lastEdcEqpState.getEndTime().after(endTime)){
+                lastEdcEqpState.setEndTime(endTime);
+                Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
+                lastEdcEqpState.setStateTimes(stateTime1);
+                neweqpStateList.add(lastEdcEqpState);
+            }
         }
         for (int i = 0; i < eqpStateList.size()-1; i++) {
                 //给每条没有endTime的数据加endTime和stateTime
