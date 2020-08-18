@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `map_equipment_config` (
   `id` varchar(32) NOT NULL,
   `eqp_id` varchar(32) NOT NULL COMMENT '设备ID',
   `down_eqp_id` varchar(32) DEFAULT NULL COMMENT '下游设备ID',
-  `eqp_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '设备类型(伪类型),0：普通，1：开始，2：报告，3：打码',
+  `eqp_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '设备类型(伪类型),0：普通，1：开始，2：报告，4：贴合，8：打码',
   `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
   `create_by` varchar(32) DEFAULT NULL COMMENT '创建人ID',
   `create_date` datetime(6) DEFAULT NULL COMMENT '创建日期',
@@ -92,8 +92,7 @@ CREATE TABLE IF NOT EXISTS `map_tray_chip_rebuilt` (
 -- 表map_tray_chip_move加索引
 -- ------------------------------------
 ALTER TABLE `map_tray_chip_move` ADD INDEX `idx_chip_id`(`chip_id`); 
-ALTER TABLE `map_tray_chip_move` ADD INDEX `idx_start_time`(`start_time`); 
-
+ALTER TABLE `map_tray_chip_move` ADD INDEX `idx_start_time`(`start_time`);
 
 -- ------------------------------------
 -- 正常处理过程
@@ -185,7 +184,7 @@ BEGIN
         SELECT id 
             FROM map_tray_chip_move 
             WHERE lot_no = SPEC_LOT_NO
-            AND eqp_id IN (SELECT eqp_id FROM map_equipment_config WHERE eqp_type = 3)
+            AND eqp_id IN (SELECT eqp_id FROM map_equipment_config WHERE eqp_type = 8)
             AND chip_id IS NOT NULL;
     ELSE 
         INSERT INTO tmp_chiped_curt
@@ -193,7 +192,7 @@ BEGIN
             FROM map_tray_chip_move 
             WHERE id > BEGIN_ID
             AND id <= END_ID
-            AND eqp_id IN (SELECT eqp_id FROM map_equipment_config WHERE eqp_type = 3)
+            AND eqp_id IN (SELECT eqp_id FROM map_equipment_config WHERE eqp_type = 8)
             AND chip_id IS NOT NULL;
     END IF;
     
@@ -379,7 +378,7 @@ BEGIN
                     SET a.chip_id = NULL
                     WHERE a.lot_no = @item
                     AND a.eqp_id = cnf.eqp_id
-                    AND cnf.eqp_type != 3
+                    AND cnf.eqp_type != 8
                     AND a.chip_id IS NOT NULL;
                     
                     -- 删除待处理的异常数据
@@ -401,7 +400,7 @@ BEGIN
             SET a.chip_id = NULL
             WHERE a.id >= @re_start_no
             AND a.eqp_id = cnf.eqp_id
-            AND cnf.eqp_type != 3
+            AND cnf.eqp_type != 8
             AND a.chip_id IS NOT NULL;
             
             -- 删除待处理异常数据中ID>=X的数据
@@ -504,4 +503,3 @@ BEGIN
 	END; 	  
 END$$
 DELIMITER ;
-
