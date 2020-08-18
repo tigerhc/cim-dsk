@@ -25,16 +25,16 @@ public class MesLotTrackTask {
     IMesLotTrackService iMesLotTrackService;
 
     //修复mes_lot_track表中的批量内连番
-    //@Scheduled(cron = "0 10 0 * * ?")
+    //@Scheduled(cron = "0 0/5 * * * ?")
     public void fixLotTrackData() {
-        Date endTime = new Date();
+        Date startTime = new Date();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-        endTime = cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
-        Date startTime = cal.getTime();
+        startTime = cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        Date endTime = cal.getTime();
         List<MesLotTrack> mesLotList= iMesLotTrackService.findCorrectData(startTime,endTime);
         if(mesLotList.size()>0){
             for (MesLotTrack mesLotTrack : mesLotList) {

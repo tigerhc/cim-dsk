@@ -156,19 +156,23 @@ public class EdcSecsLogHandler {
         }
         EdcDskLogOperation edcDskLogOperation=new EdcDskLogOperation();
         FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+        if(equipmentStatus!=null){
+            edcDskLogOperation.setLotNo(equipmentStatus.getLotNo());
+            edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
+            edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
+            edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
+        }
         edcDskLogOperation.setEqpId(eqpId);
-        edcDskLogOperation.setLotNo(equipmentStatus.getLotNo());
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
         edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
-        edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
-        edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
         edcDskLogOperation.setEventId(evtRecord.getEventId());
-        edcDskLogOperation.setEventParams(evtRecord.getEventParams());
         edcDskLogOperation.setCreateDate(new Date());
+        edcDskLogOperation.setStartTime(evtRecord.getStartDate());
         EdcEvtDefine edcEvtDefine=iEdcEvtDefineService.findDataByEvtId(evtRecord.getEventId());
-        edcDskLogOperation.setEventName(edcEvtDefine.getEventName());
-        edcDskLogOperation.setEventDetail(evtRecord.getEventDesc());
-        edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
+        if(edcEvtDefine!=null){
+            edcDskLogOperation.setEventName(edcEvtDefine.getEventName());
+            edcDskLogOperation.setEventDetail(edcEvtDefine.getEventDesc());
+        }
         edcDskLogOperationService.insert(edcDskLogOperation);
     }
 }

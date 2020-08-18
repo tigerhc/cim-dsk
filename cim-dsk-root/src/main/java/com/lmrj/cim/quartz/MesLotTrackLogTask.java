@@ -22,8 +22,7 @@ public class MesLotTrackLogTask {
     private IFabLogService fabLogService;
     @Autowired
     IMesLotTrackService iMesLotTrackService;
-
-    //往mes_lot_wip表中导入数据
+    //给tracklog表添加产量
     //@Scheduled(cron = "0 10 0 * * ?")
     public void fixLotTrackLogData() {
         Calendar cal = Calendar.getInstance();
