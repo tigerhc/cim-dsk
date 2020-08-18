@@ -155,7 +155,7 @@ public class EdcDskLogHandler {
             edcDskLogProduction.setLotYield(i);
             i++;
         }
-        if(eqpId.contains("SIM-REFLOW")){
+        if(eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")){
             for (EdcDskLogProduction edcDskLogProduction : proList) {
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield()*12);
             }

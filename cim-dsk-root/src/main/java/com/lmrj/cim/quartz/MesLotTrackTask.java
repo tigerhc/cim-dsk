@@ -47,6 +47,9 @@ public class MesLotTrackTask {
                         proList=edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),lastTrack.getStartTime(),mesLotTrack.getEqpId());
                     }
                     if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
+                        if(mesLotTrack.getEqpId().contains("SIM-REFLOW") || mesLotTrack.getEqpId().contains("SIM-PRINTER")){
+                            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),(proList.size()*12));
+                        }
                         iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                     }
                 }
