@@ -100,13 +100,14 @@
 	</select>
 	
 	<select id="queryChip" resultType="map" parameterType="string">
-	    SELECT mv.`id`, mv.`chip_id` AS chipId, mv.`eqp_id` AS eqpId,
+	    SELECT mv.`id`, mv.`chip_id` AS chipId, mv.`eqp_id` AS eqpId, ec.`eqp_type` AS eqpType,
 	    cf.`tray_row` AS trayRow, cf.`tray_col` AS trayCol,
 	    mv.`from_tray_id` AS fromTrayId, mv.`from_x` AS fromX, mv.`from_y` AS fromY, 
 	    mv.`to_tray_id` AS toTrayId, mv.`to_x` AS toX, mv.`to_y` AS toY, mv.`to_z` AS toZ, 
 	    mv.`judge_result` AS judgeResult, mv.`start_time` AS startTime
 		FROM `map_tray_chip_move` mv
 		INNER JOIN `map_tray_config` cf ON mv.`to_tray_id` = cf.`tray_id`
+		LEFT JOIN `map_equipment_config` ec ON mv.`eqp_id` = ec.`eqp_id`
 		WHERE `chip_id` = #{chipId}
 	</select>
 </mapper>
