@@ -212,9 +212,9 @@ BEGIN
             id bigint,      -- 本次需要处理的记录ID
             down_id bigint  -- 下游已经处理的记录ID，由于是向前追溯，所以是下游数据
         ) SELECT id,down_id FROM (
-            SELECT id,down_id, @num:=IF(@chip = chip_id, @num + 1, 1) AS num, @chip:=chip_id AS chip_id
+            SELECT id,down_id, @num:=IF(@chip_eqp = CONCAT(chip_id,eqp_id), @num + 1, 1) AS num, @chip_eqp:=CONCAT(chip_id,eqp_id) AS chip_eqp
             FROM (
-                SELECT a.chip_id, b.id, a.down_id, b.start_time
+                SELECT a.chip_id, b.eqp_id, b.id, a.down_id, b.start_time
                 FROM map_tray_chip_move b,
                 (
                     SELECT cp.id AS down_id, cp.lot_no,cp.chip_id,cp.start_time,cnf.eqp_id,
@@ -236,7 +236,7 @@ BEGIN
                 AND b.eqp_id = c.eqp_id
                 -- 下游时间晚于上游时间
                 AND a.start_time > b.start_time
-            )t,(SELECT @num := 0,@chip:='') tt
+            )t,(SELECT @num := 0,@chip_eqp:='') tt
             ORDER BY chip_id, start_time DESC
         ) res 
         WHERE num = 1;
