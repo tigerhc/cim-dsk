@@ -15,5 +15,5 @@ import com.lmrj.edc.evt.entity.EdcEvtDefine;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcEvtDefineService extends ICommonService<EdcEvtDefine> {
-
+    EdcEvtDefine findDataByEvtId(String eventCode);
 }

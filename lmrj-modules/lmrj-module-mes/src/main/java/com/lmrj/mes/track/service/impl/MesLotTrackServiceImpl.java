@@ -25,12 +25,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -465,7 +460,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public List<MesLotTrack> findCorrectData(Date startTime, Date endTime){
         return baseMapper.findCorrectData(startTime,endTime);
     }
-
+    @Override
+    public MesLotTrack findLastTrack(String eqpId,String lotNo,Date startTime){
+        return baseMapper.findLastTrack(eqpId,lotNo,startTime);
+    }
     //public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();
     //    map.put("1", "2");

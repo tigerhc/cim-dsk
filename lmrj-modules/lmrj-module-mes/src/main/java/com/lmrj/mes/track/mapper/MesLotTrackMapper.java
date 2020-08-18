@@ -29,7 +29,7 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select("select start_time from mes_lot_track where start_time >= #{endTime}  and eqp_id = #{eqpId} order by start_time  limit 1 ")
     MesLotTrack findNextStartTime(@Param("endTime") String endTime, @Param("eqpId") String eqpId);
 
-    @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no != #{lotNo} and start_time > #{startTime} order by start_time limit 1")
+    @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no > #{lotNo} and start_time > #{startTime} order by start_time limit 1")
     MesLotTrack findLastTrack(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime);
 
     List<MesLotTrack> findDataLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);

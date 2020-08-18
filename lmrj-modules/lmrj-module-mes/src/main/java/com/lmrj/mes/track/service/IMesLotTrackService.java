@@ -48,4 +48,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesLotTrack findNoEndLotNo(String eqpId,Date startTime);
 
     MesLotTrack findLotTrack(String eqpId,String lotNo,String productionNo);
+
+    MesLotTrack findLastTrack(String eqpId,String lotNo,Date startTime);
 }

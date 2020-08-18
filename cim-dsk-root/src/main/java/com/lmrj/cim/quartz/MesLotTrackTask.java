@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,12 +38,19 @@ public class MesLotTrackTask {
         List<MesLotTrack> mesLotList= iMesLotTrackService.findCorrectData(startTime,endTime);
         if(mesLotList.size()>0){
             for (MesLotTrack mesLotTrack : mesLotList) {
-                List<EdcDskLogProduction> proList =edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
-                if(proList.size()>0){
-                    iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
+                List<EdcDskLogProduction> proList=new ArrayList<>();
+                if(mesLotTrack.getEndTime()!=null){
+                    MesLotTrack lastTrack=iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getStartTime());
+                    if(lastTrack==null && mesLotTrack.getEndTime()!=null){
+                        proList =edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),mesLotTrack.getEndTime(),mesLotTrack.getEqpId());
+                    }else{
+                        proList=edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),lastTrack.getStartTime(),mesLotTrack.getEqpId());
+                    }
+                    if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
+                        iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
+                    }
                 }
             }
-
         }
     }
 }

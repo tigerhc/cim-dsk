@@ -22,5 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("edcEvtDefineService")
 public class EdcEvtDefineServiceImpl  extends CommonServiceImpl<EdcEvtDefineMapper,EdcEvtDefine> implements  IEdcEvtDefineService {
-
+    @Override
+    public EdcEvtDefine findDataByEvtId(String eventCode){
+        return baseMapper.findDataByEvtId(eventCode);
+    }
 }

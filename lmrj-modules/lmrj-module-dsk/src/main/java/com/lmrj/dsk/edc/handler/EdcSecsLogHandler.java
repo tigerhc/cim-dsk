@@ -33,25 +33,26 @@ import java.util.List;
 @Service
 @Slf4j
 public class EdcSecsLogHandler {
-
     @Autowired
-    IEdcEvtRecordService edcEvtRecordService;
+    private IEdcEvtDefineService iEdcEvtDefineService;
     @Autowired
-    IEdcAmsRecordService edcAmsRecordService;
+    private IEdcEvtRecordService edcEvtRecordService;
     @Autowired
-    IEdcEvtDefineService edcEvtDefineService;
+    private IEdcAmsRecordService edcAmsRecordService;
     @Autowired
-    IFabEquipmentService fabEquipmentService;
+    private IEdcEvtDefineService edcEvtDefineService;
     @Autowired
-    IMesLotTrackService mesLotTrackService;
+    private IFabEquipmentService fabEquipmentService;
     @Autowired
-    IFabEquipmentStatusService fabEquipmentStatusService;
+    private IMesLotTrackService mesLotTrackService;
+    @Autowired
+    private IFabEquipmentStatusService fabEquipmentStatusService;
     @Autowired
     private IEdcDskLogProductionService edcDskLogProductionService;
     @Autowired
     private IFabLogService fabLogService;
     @Autowired
-    IEdcDskLogOperationService edcDskLogOperationService;
+    private IEdcDskLogOperationService edcDskLogOperationService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -88,7 +89,7 @@ public class EdcSecsLogHandler {
         } catch (Exception e) {
             e.printStackTrace();
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误","", "gxj");
+            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误"+e,"", "gxj");
         }
 
     }
@@ -163,7 +164,11 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
         edcDskLogOperation.setEventId(evtRecord.getEventId());
         edcDskLogOperation.setEventParams(evtRecord.getEventParams());
-        edcDskLogOperation.setCreateDate(evtRecord.getCreateDate());
+        edcDskLogOperation.setCreateDate(new Date());
+        EdcEvtDefine edcEvtDefine=iEdcEvtDefineService.findDataByEvtId(evtRecord.getEventId());
+        edcDskLogOperation.setEventName(edcEvtDefine.getEventName());
+        edcDskLogOperation.setEventDetail(evtRecord.getEventDesc());
+        edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
         edcDskLogOperationService.insert(edcDskLogOperation);
     }
 }
