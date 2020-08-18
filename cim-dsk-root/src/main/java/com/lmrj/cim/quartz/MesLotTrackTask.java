@@ -49,8 +49,9 @@ public class MesLotTrackTask {
                     if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
                         if(mesLotTrack.getEqpId().contains("SIM-REFLOW") || mesLotTrack.getEqpId().contains("SIM-PRINTER")){
                             iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),(proList.size()*12));
+                        }else{
+                            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                         }
-                        iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                     }
                 }
             }

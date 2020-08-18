@@ -53,6 +53,7 @@ public class EdcSecsLogHandler {
     private IFabLogService fabLogService;
     @Autowired
     private IEdcDskLogOperationService edcDskLogOperationService;
+
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -89,7 +90,7 @@ public class EdcSecsLogHandler {
         } catch (Exception e) {
             e.printStackTrace();
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误"+e,"", "gxj");
+            fabLogService.info("", eventId, "TRM抛错", "TRM数据更新错误" + e, "", "gxj");
         }
 
     }
@@ -126,15 +127,15 @@ public class EdcSecsLogHandler {
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
-            MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,new Date());
-            List<EdcDskLogProduction> proList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
-            if(proList.size()>0){
-                mesLotTrack.setLotYieldEqp(proList.size()*12);
-            }else {
+            MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
+            List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
+            if (proList.size() > 0) {
+                mesLotTrack.setLotYieldEqp(proList.size() * 12);
+            } else {
                 mesLotTrack.setLotYieldEqp(12);
             }
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
-            if(!updateFlag){
+            if (!updateFlag) {
                 mesLotTrack.setStartTime(new Date());
                 mesLotTrack.setCreateBy("EQP");
                 mesLotTrackService.insert(mesLotTrack);
@@ -149,14 +150,12 @@ public class EdcSecsLogHandler {
                     }
                 }
             }
-
-
             String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM production数据更新结束",equipmentStatus.getLotNo(), "gxj");
+            fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM production数据更新结束", equipmentStatus.getLotNo(), "gxj");
         }
-        EdcDskLogOperation edcDskLogOperation=new EdcDskLogOperation();
+        EdcDskLogOperation edcDskLogOperation = new EdcDskLogOperation();
         FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-        if(equipmentStatus!=null){
+        if (equipmentStatus != null) {
             edcDskLogOperation.setLotNo(equipmentStatus.getLotNo());
             edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
             edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
@@ -168,8 +167,8 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setEventId(evtRecord.getEventId());
         edcDskLogOperation.setCreateDate(new Date());
         edcDskLogOperation.setStartTime(evtRecord.getStartDate());
-        EdcEvtDefine edcEvtDefine=iEdcEvtDefineService.findDataByEvtId(evtRecord.getEventId());
-        if(edcEvtDefine!=null){
+        EdcEvtDefine edcEvtDefine = iEdcEvtDefineService.findDataByEvtId(evtRecord.getEventId());
+        if (edcEvtDefine != null) {
             edcDskLogOperation.setEventName(edcEvtDefine.getEventName());
             edcDskLogOperation.setEventDetail(edcEvtDefine.getEventDesc());
         }

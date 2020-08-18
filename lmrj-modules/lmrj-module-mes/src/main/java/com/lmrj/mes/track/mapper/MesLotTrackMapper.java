@@ -29,7 +29,7 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select("select start_time from mes_lot_track where start_time >= #{endTime}  and eqp_id = #{eqpId} order by start_time  limit 1 ")
     MesLotTrack findNextStartTime(@Param("endTime") String endTime, @Param("eqpId") String eqpId);
 
-    @Select("select * from mes_lot_wip where eqp_id = #{eqpId} and lot_no > #{lotNo} and start_time > #{startTime} order by start_time limit 1")
+    @Select("select * from mes_lot_track where eqp_id = #{eqpId} and lot_no > #{lotNo} and start_time > #{startTime} order by start_time limit 1")
     MesLotTrack findLastTrack(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime);
 
     List<MesLotTrack> findDataLotNo(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
@@ -48,8 +48,8 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select("select * from mes_lot_track where start_time between #{startTime} and #{endTime} order by lot_no")
     List<MesLotTrack> findCorrectData(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    @Select("select * from mes_lot_track where eqp_id=#{eqpId} and start_time<=#{startTime} order by start_time desc limit 2")
-    List<MesLotTrack> findLotByStartTime(@Param("eqpId") String eqpId,@Param("startTime") Date startTime);
+    @Select("select * from mes_lot_track where eqp_id=#{eqpId} and start_time<=#{startTime} order by start_time desc limit 1")
+    MesLotTrack findLotByStartTime(@Param("eqpId") String eqpId,@Param("startTime") Date startTime);
 
     @Select("select * from mes_lot_track where eqp_id=#{eqpId} and lot_no=#{lotNo} and production_no=#{productionNo}")
     MesLotTrack findLotTrack(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo,@Param("productionNo") String productionNo);

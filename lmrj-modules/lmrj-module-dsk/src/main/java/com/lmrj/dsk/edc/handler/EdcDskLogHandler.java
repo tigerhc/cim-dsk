@@ -54,6 +54,8 @@ import java.util.*;
 @Slf4j
 public class EdcDskLogHandler {
     @Autowired
+    IMesLotTrackService iMesLotTrackService;
+    @Autowired
     private IFabLogService fabLogService;
     @Autowired
     IEdcEqpStateService iEdcEqpStateService;
@@ -106,58 +108,55 @@ public class EdcDskLogHandler {
         System.out.println("接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
-        List<EdcDskLogProduction> proList0=new ArrayList<>();
-        List<EdcDskLogProduction> proList1=new ArrayList<>();
+        List<EdcDskLogProduction> proList = new ArrayList<>();
+        List<EdcDskLogProduction> nextproList = new ArrayList<>();
         if (edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
             //判断数据是否为同一批次
-            List<MesLotTrack> lotList = mesLotTrackService.findLotByStartTime(eqpId,edcDskLogProduction0.getEndTime());
-            if(lotList.size()==2){
+            MesLotTrack lotTrack = mesLotTrackService.findLotByStartTime(eqpId, edcDskLogProduction0.getStartTime());
+            MesLotTrack nextLotTrack = mesLotTrackService.findLastTrack(eqpId, lotTrack.getLotNo(), lotTrack.getStartTime());
+            //同一批次
+            if (nextLotTrack == null) {
+                fixProData(edcDskLogProductionList, lotTrack);
+            } else {
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
-                    if(edcDskLogProduction.getEndTime()!=null && lotList.get(0).getStartTime()!=null){
-                        if(edcDskLogProduction.getEndTime().before(lotList.get(0).getStartTime())){
-                            proList1.add(edcDskLogProduction);
-                        }else{
-                            proList0.add(edcDskLogProduction);
-                        }
+                    if (edcDskLogProduction.getStartTime().before(nextLotTrack.getStartTime())) {
+                        proList.add(edcDskLogProduction);
+                    } else {
+                        nextproList.add(edcDskLogProduction);
                     }
                 }
-                if(proList1.size()>0){
-                    fixProData(proList1,lotList.get(1));
+                if (proList.size() > 0) {
+                    fixProData(proList, lotTrack);
                 }
-                if(proList0.size()>0){
-                    fixProData(proList0,lotList.get(0));
+                if (nextproList.size() > 0) {
+                    fixProData(nextproList, nextLotTrack);
                 }
-            }else{
-                MesLotTrack mesLotTrack=mesLotTrackService.findLotNo1(eqpId,edcDskLogProduction0.getStartTime());
-                fixProData(edcDskLogProductionList,mesLotTrack);
             }
-        }else{
+        } else {
 
         }
-        //产量不准,改为自己运算后更新
-        //if(StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)){
-        //    fabEquipmentStatusService.updateYield(eqpId,"", lotNo, recipeCode, lotYield, dayYield);
-        //}
     }
+
     //修正数据
-    public void fixProData(List<EdcDskLogProduction> proList,MesLotTrack mesLotTrack){
-        int i=1;
-        String eqpId=mesLotTrack.getEqpId();
-        List<EdcDskLogProduction> productionList=edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+    public void fixProData(List<EdcDskLogProduction> proList, MesLotTrack mesLotTrack) {
+        int i = 1;
+        String eqpId = mesLotTrack.getEqpId();
+        List<EdcDskLogProduction> productionList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
         //修正批量内连番
-        if(productionList.size()>0){
-            i=productionList.size()+1;
+        if (productionList.size() > 0) {
+            i = productionList.size() + 1;
         }
         for (EdcDskLogProduction edcDskLogProduction : proList) {
             edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
             edcDskLogProduction.setLotYield(i);
             i++;
         }
-        if(eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")){
+        //如果为REFLOW 或 PRINTER 再乘以12
+        if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
             for (EdcDskLogProduction edcDskLogProduction : proList) {
-                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield()*12);
+                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
         if (StringUtil.isNotBlank(eqpId)) {
@@ -169,6 +168,7 @@ public class EdcDskLogHandler {
                 edcDskLogProduction.setJudgeResult("Y");
             });
         }
+        //将重复数据去除
         if (eqpId.contains("SIM-DM")) {
             Iterator it = proList.iterator();
             while (it.hasNext()) {
@@ -183,44 +183,58 @@ public class EdcDskLogHandler {
         EdcDskLogProduction lastPro = null;
         boolean updateFlag = false;
         try {
-            if(edcDskLogProductionService.insertBatch(proList)){
-                fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共"+proList.size()+"条",mesLotTrack.getLotNo(), "gxj");
+            if (edcDskLogProductionService.insertBatch(proList)) {
+                fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共" + proList.size() + "条", mesLotTrack.getLotNo(), "gxj");
             }
-            //当前批次在production表中最后一条数据
-            lastPro = proList.get(proList.size()-1);
-            mesLotTrack.setLotYieldEqp(proList.size());
+            //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
+            List<EdcDskLogProduction> allProList = new ArrayList<>();
+            MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
+            if (lastTrack == null && mesLotTrack.getEndTime() != null) {
+                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            } else if (lastTrack == null && mesLotTrack.getEndTime() == null) {
+                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), new Date(), mesLotTrack.getEqpId());
+            } else {
+                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), lastTrack.getStartTime(), mesLotTrack.getEqpId());
+            }
+            lastPro = proList.get(proList.size() - 1);
+            mesLotTrack.setLotYieldEqp(allProList.size());
+            if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
+                mesLotTrack.setLotYieldEqp(allProList.size() * 12);
+            }
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
             e.printStackTrace();
-            fabLogService.info(eqpId, eventId, "fixProData", "track更新出错"+e+ "       ", mesLotTrack.getLotNo(), "gxj");
+            fabLogService.info(eqpId, eventId, "fixProData", "track更新出错" + e + "       ", mesLotTrack.getLotNo(), "gxj");
         }
-        if(!updateFlag){
+        if (!updateFlag) {
             System.out.println("修改失败");
             mesLotTrack.setStartTime(new Date());
-            mesLotTrack.setOrderNo(lastPro.getOrderNo());
+            if (lastPro.getOrderNo() != null) {
+                mesLotTrack.setOrderNo(lastPro.getOrderNo());
+            }
             mesLotTrack.setCreateBy("EQP");
             mesLotTrackService.insert(mesLotTrack);
         }
-        fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为："+mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
+        fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为：" + mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
     }
+
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
         log.info("recieved message:" + msg);
-        String eventId1 = StringUtil.randomTimeUUID("EDC");
-        fabLogService.info("", eventId1, "parseOperationlog ", "Operation解析 本次接收数据"+msg,"", "gxj");
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
-        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {});
+        List<EdcDskLogOperation> edcDskLogOperationlist = JsonUtil.from(msg, new TypeReference<List<EdcDskLogOperation>>() {
+        });
         if (edcDskLogOperationlist == null || edcDskLogOperationlist.size() == 0) {
             return;
         }
-
         EdcDskLogOperation edcDskLogOperation0 = edcDskLogOperationlist.get(0);
         String eqpId = edcDskLogOperation0.getEqpId();
-        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数："+edcDskLogOperationlist.size(),"", "gxj");
+        String eventId1 = StringUtil.randomTimeUUID("EDC");
+        fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数：" + edcDskLogOperationlist.size(), "", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
@@ -260,7 +274,7 @@ public class EdcDskLogHandler {
                 edcAmsRecordList.add(edcAmsRecord);
                 if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
 
-                } else if(!"8".equals(eventId)){
+                } else if (!"8".equals(eventId)) {
                     status = "ALARM";
                 }
             } else {
@@ -301,7 +315,7 @@ public class EdcDskLogHandler {
             edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
             edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
             edcEqpState.setState(status);
-            if(StringUtil.isNotBlank(status)){
+            if (StringUtil.isNotBlank(status)) {
                 String stateJson = JsonUtil.toJsonString(edcEqpState);
                 rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
             }
