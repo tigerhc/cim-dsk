@@ -34,10 +34,12 @@ public class EdcAmsRecordYieldTask {
         endTime=cal.getTime();
         cal.add(Calendar.HOUR_OF_DAY, -2);
         Date startTime = cal.getTime();
+        //获取两小时以内所有AmsRecord
         List<EdcAmsRecord> edcAmsRecordList=iEdcAmsRecordService.findAmsRecordByTime(startTime,endTime);
         if(edcAmsRecordList.size()>0){
             for (EdcAmsRecord edcAmsRecord : edcAmsRecordList) {
                 if(edcAmsRecord.getLotNo()!=null){
+                    //遍历查找最近的批次
                     EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcAmsRecord.getEqpId(),edcAmsRecord.getLotNo(), edcAmsRecord.getStartDate());
                     if(edcDskLogProduction!=null){
                         edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());

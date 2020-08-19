@@ -128,10 +128,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     public int syncOldEqpSate(Date startTime, Date endTime, String eqpId) {
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
-        //在8点到第一条数据之间新建一条数据
+        //在0点到第一条数据之间新建一条数据
         if (eqpStateList.get(0).getStartTime().after(startTime)) {
             EdcEqpState firstData = new EdcEqpState();
-            //当天八点前最后一条数据
+            //当天0点前最后一条数据
             EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
             lastData.setEndTime(startTime);
             Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
@@ -141,7 +141,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             firstData.setEndTime(eqpStateList.get(0).getStartTime());
             Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
             firstData.setStateTimes(state1);
-            //把第一条数据的状态值设为当天八点前最后一条数据的状态
+            //把第一条数据的状态值设为当天0点前最后一条数据的状态
             firstData.setState(lastData.getState());
             firstData.setEqpId(eqpId);
             this.insert(firstData);

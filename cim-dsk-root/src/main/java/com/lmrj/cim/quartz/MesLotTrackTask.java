@@ -35,6 +35,7 @@ public class MesLotTrackTask {
         startTime = cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         Date endTime = cal.getTime();
+        //查询lotTrack一天内批次信息 修正产量
         List<MesLotTrack> mesLotList= iMesLotTrackService.findCorrectData(startTime,endTime);
         if(mesLotList.size()>0){
             for (MesLotTrack mesLotTrack : mesLotList) {

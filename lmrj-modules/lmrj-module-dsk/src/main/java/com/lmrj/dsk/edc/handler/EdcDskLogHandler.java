@@ -119,6 +119,7 @@ public class EdcDskLogHandler {
             //同一批次
             if (nextLotTrack == null) {
                 fixProData(edcDskLogProductionList, lotTrack);
+            //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
             } else {
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                     if (edcDskLogProduction.getStartTime().before(nextLotTrack.getStartTime())) {

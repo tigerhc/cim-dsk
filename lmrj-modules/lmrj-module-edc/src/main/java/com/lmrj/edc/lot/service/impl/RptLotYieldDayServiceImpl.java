@@ -58,6 +58,7 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
         return baseMapper.findEqpId();
     }
     public void updateDayYield(Date startTime, Date endTime){
+        //查询一天内每个批次的产量并存入日产量表
         List<RptLotYieldDay> rptLotYieldDayList=baseMapper.findDayYeild(startTime,endTime,baseMapper.findEqpId());
         for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
             lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));

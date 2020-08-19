@@ -15,7 +15,7 @@ public class RptYieldDayTask {
     RptLotYieldDayServiceImpl rptLotYieldDayService;
 
     /**
-     * 计算产量,写入报表 edc_dsk_log_production -- >   rpt_lot_yield
+     * 计算产量,写入报表 edc_dsk_log_production -- >   rpt_lot_yield_day
      *
      * rpt_lot_yield: 批次产量,当前站点的产量
      */
