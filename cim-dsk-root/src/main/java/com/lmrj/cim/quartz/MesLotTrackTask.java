@@ -47,12 +47,12 @@ public class MesLotTrackTask {
                     }else{
                         proList=edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),lastTrack.getStartTime(),mesLotTrack.getEqpId());
                     }
-                    if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
-                        if(mesLotTrack.getEqpId().contains("SIM-REFLOW") || mesLotTrack.getEqpId().contains("SIM-PRINTER")){
+                    if(mesLotTrack.getEqpId().contains("SIM-REFLOW") || mesLotTrack.getEqpId().contains("SIM-PRINTER") || mesLotTrack.getEqpId().contains("SIM-TRM")){
+                        if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=(proList.size()*12)){
                             iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),(proList.size()*12));
-                        }else{
-                            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                         }
+                    }else if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
+                            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                     }
                 }
             }
