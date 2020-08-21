@@ -168,6 +168,7 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setEventId(evtRecord.getEventId());
         edcDskLogOperation.setCreateDate(new Date());
         edcDskLogOperation.setStartTime(evtRecord.getStartDate());
+        edcDskLogOperation.setEventParams(evtRecord.getEventParams());
         EdcEvtDefine edcEvtDefine = iEdcEvtDefineService.findDataByEvtId(evtRecord.getEventId());
         if (edcEvtDefine != null) {
             edcDskLogOperation.setEventName(edcEvtDefine.getEventName());
