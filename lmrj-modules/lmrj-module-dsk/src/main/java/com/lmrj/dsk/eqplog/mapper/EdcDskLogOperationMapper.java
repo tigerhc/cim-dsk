@@ -1,10 +1,15 @@
 package com.lmrj.dsk.eqplog.mapper;
 
-import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.Date;
+import java.util.List;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +22,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcDskLogOperationMapper extends BaseMapper<EdcDskLogOperation> {
+    @Select("select * from edc_dsk_log_operation where eqp_id=#{eqpId} and start_time between #{startTime} and #{endTime} order by start_time")
+    List<EdcDskLogOperation> findDataByTimeAndEqpId(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select distinct eqp_id from edc_dsk_log_operation where start_time between #{startTime} and #{endTime}")
+    List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }
