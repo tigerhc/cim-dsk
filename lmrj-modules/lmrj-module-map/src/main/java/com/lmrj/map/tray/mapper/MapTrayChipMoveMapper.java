@@ -1,10 +1,13 @@
 package com.lmrj.map.tray.mapper;
 
-import com.lmrj.map.tray.entity.MapTrayChipMove;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
- /**
+import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -16,6 +19,12 @@ import org.apache.ibatis.annotations.Mapper;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 @Mapper
-public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
+public interface MapTrayChipMoveMapper {
+
+    public List<Map<String, Object>> queryChipMove(MapTrayChipMoveQueryVo query);
     
+    public int countChipMove(MapTrayChipMoveQueryVo query);
+    
+    public List<Map<String, Object>> queryChip(String chipId);
+
 }
