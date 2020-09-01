@@ -40,10 +40,11 @@ public class EdcAmsRecordYieldTask {
             for (EdcAmsRecord edcAmsRecord : edcAmsRecordList) {
                 if(edcAmsRecord.getLotNo()!=null){
                     //遍历查找最近的批次
-                    EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcAmsRecord.getEqpId(),edcAmsRecord.getLotNo(), edcAmsRecord.getStartDate());
+                    EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcAmsRecord.getEqpId(), edcAmsRecord.getStartDate());
                     if(edcDskLogProduction!=null){
                         edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
                         edcAmsRecord.setLotYield(edcDskLogProduction.getLotYield());
+                        edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
                         iEdcAmsRecordService.updateById(edcAmsRecord);
                     }
                 }

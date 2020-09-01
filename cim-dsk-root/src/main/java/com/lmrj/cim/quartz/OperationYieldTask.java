@@ -36,12 +36,14 @@ public class OperationYieldTask {
         List<EdcDskLogOperation> operationList = edcDskLogOperationService.selectList(new EntityWrapper<EdcDskLogOperation>().eq("day_yield", "0").ge("create_date", cal.getTime()).like("eqp_id", "SIM-DM"));
         operationList.forEach(edcDskLogOperation -> {
             if(edcDskLogOperation.getLotYield()==0 || edcDskLogOperation.getDayYield()==0){
-                EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getLotNo() ,edcDskLogOperation.getStartTime());
+                EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getStartTime());
                 if (edcDskLogProduction != null) {
                     int lotYield = edcDskLogProduction.getLotYield();
                     int dayYield = edcDskLogProduction.getDayYield();
+                    String lotNo = edcDskLogProduction.getLotNo();
                     edcDskLogOperation.setLotYield(lotYield);
                     edcDskLogOperation.setDayYield(dayYield);
+                    edcDskLogOperation.setLotNo(lotNo);
                     edcDskLogOperationService.updateById(edcDskLogOperation);
                 }
             }

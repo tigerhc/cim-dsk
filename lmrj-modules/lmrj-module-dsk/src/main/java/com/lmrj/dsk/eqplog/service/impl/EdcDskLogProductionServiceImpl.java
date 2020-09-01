@@ -83,8 +83,8 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public EdcDskLogProduction findLastYield(String eqpId, String lotNo,Date startTime) {
-        EdcDskLogProduction edcDskLogProduction = baseMapper.findLastYield(eqpId, lotNo,startTime);
+    public EdcDskLogProduction findLastYield(String eqpId,Date startTime) {
+        EdcDskLogProduction edcDskLogProduction = baseMapper.findLastYield(eqpId,startTime);
         return edcDskLogProduction;
 
     }
