@@ -239,6 +239,11 @@ public class EdcDskLogHandler {
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
+                EdcDskLogProduction pro=edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getStartTime());
+                if(pro!=null){
+                    edcDskLogOperation.setLotYield(pro.getLotYield());
+                    edcDskLogOperation.setDayYield(pro.getDayYield());
+                }
                 edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
                 edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
