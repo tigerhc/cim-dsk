@@ -20,5 +20,5 @@ public interface IApsPlanPdtYieldDetailService extends ICommonService<ApsPlanPdt
     List<ApsPlanPdtYieldDetail> selectDayYield(String beginTime, String endTime, String lineNo);
     void deleteByPeriod(String period);
     int findDayPlan(String productionNo, String lotNo);
-    int findCurrentDayPlan(String productionNo);
+    int findCurrentDayPlan(String productionNo,String planDate);
 }

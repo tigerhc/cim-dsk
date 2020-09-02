@@ -4,7 +4,6 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.mapper.ApsPlanPdtYieldDetailMapper;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.util.calendar.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +53,7 @@ public class ApsPlanPdtYieldDetailServiceImpl extends CommonServiceImpl<ApsPlanP
      * @return
      */
     @Override
-    public int findCurrentDayPlan(String productionNo) {
-        String planDate = DateUtil.getDate("yyyyMMdd");
+    public int findCurrentDayPlan(String productionNo,String planDate) {
         return baseMapper.findCurrentDayPlan(productionNo, planDate);
     }
 

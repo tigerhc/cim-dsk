@@ -25,10 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -73,7 +70,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     public void indexFour(HttpServletRequest request) throws ParseException {
         //aps_plan_pdt_yield_detail=WHERE production_name like '%SIM%' AND plan_date = '20200509'
         String periodDate = DateUtil.getDate("yyyyMMdd");
-        if(DateUtil.getDate("dd").compareTo("08")<0 ){
+        if(DateUtil.getDate("hh").compareTo("08")<0 ){
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             periodDate = DateUtil.formatDate(calendar.getTime(),"yyyyMMdd");
@@ -87,11 +84,10 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         //    int qty = apsPlanPdtYieldDetail.getPlanQty();
         //    yieldQty = yieldQty+qty;
         //}
-
-        List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("lot_no", fabEquipmentStatus.getLotNo()).eq("production_no", fabEquipmentStatus.getProductionNo()));
+        List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).eq("production_no", fabEquipmentStatus.getProductionNo()));
         //int yieldQty = yieldList.get(0).getPlanQty();
         //改为当日目标产量
-        int yieldQty = apsPlanPdtYieldDetailService.findCurrentDayPlan(fabEquipmentStatus.getProductionNo());
+        int yieldQty = apsPlanPdtYieldDetailService.findCurrentDayPlan(fabEquipmentStatus.getProductionNo(),periodDate);
         List<MesLotTrack> lotYieldDaylList = Lists.newArrayList();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
