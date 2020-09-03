@@ -67,6 +67,15 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
             lotYieldDay.setPeriodDate(sim.format(startTime));
             this.insert(lotYieldDay);
         }
+        //只能处理SIM的无产量情况
+        if(rptLotYieldDayList.size()==0){
+            RptLotYieldDay lotYieldDay = new RptLotYieldDay();
+            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
+            lotYieldDay.setProductionName(baseMapper.findProductionName("5002915"));
+            lotYieldDay.setPeriodDate(sim.format(startTime));
+            lotYieldDay.setLotYield(0);
+            this.insert(lotYieldDay);
+        }
         String eventId = StringUtil.randomTimeUUID("RPT");
         fabLogService.info("",eventId,"updateDayYield","更新批次日产量","","");
     }
@@ -83,7 +92,10 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
         for (Map yieldDay : yieldDayList) {
             //String key = yieldDay.get("production_no").toString() + yieldDay.get("lot_no").toString();
             String key = yieldDay.get("period_date") + "";
-            int planQty = planYieldmap.get(key);
+            int planQty = 0;
+            if(planYieldmap.get(key)!=null){
+                planQty = planYieldmap.get(key);
+            }
             if (planQty != 0) {
                 double rate = Double.parseDouble(yieldDay.get("lot_yield") + "") * 100 / planQty;
                 rate = (double) Math.round(rate * 100) / 100;
