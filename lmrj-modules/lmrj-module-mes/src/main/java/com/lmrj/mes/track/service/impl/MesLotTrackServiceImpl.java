@@ -202,6 +202,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if(line.startsWith("SX")){
             line = "SX";
         }
+        //String kongdongDir = "G:\\8sim\\"+line+"\\" + productionName.replace("J.",""); //本地测试
         String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
         log.info(kongdongDir);
         List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir), new String[]{"bmp"}, false);
@@ -219,7 +220,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         for (File kongdongFile : kongdongFiles) {
             if (kongdongFile.getName().contains(lotNo)) {
                 lotNoFile.add(kongdongFile);
-                if (lotNoFile.size() == 7) {
+                if("SIM".equals(line) && lotNoFile.size() == 7){
+                    break;
+                }
+                if("SX".equals(line) && lotNoFile.size() == 8){
                     break;
                 }
             }
@@ -233,6 +237,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 return "ERROR:  file quantity need > 1,but found " + lotNoFile.size() + " for " + lotNo;
             }
             String[] kongdongVal = new String[7];
+            if("SX".equals(line)){
+                kongdongVal = new String[8];
+            }
             for (File file : lotNoFile) {
                 String[] fileNames = file.getName().split("-");
                 String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
