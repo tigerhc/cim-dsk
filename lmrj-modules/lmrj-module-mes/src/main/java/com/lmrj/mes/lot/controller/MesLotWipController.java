@@ -70,7 +70,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     public void indexFour(HttpServletRequest request) throws ParseException {
         //aps_plan_pdt_yield_detail=WHERE production_name like '%SIM%' AND plan_date = '20200509'
         String periodDate = DateUtil.getDate("yyyyMMdd");
-        if(DateUtil.getDate("hh").compareTo("08")<0 ){
+        if(DateUtil.getDate("HH").compareTo("08")<0 ){
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             periodDate = DateUtil.formatDate(calendar.getTime(),"yyyyMMdd");
@@ -92,7 +92,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
             String lotNo = apsPlanPdtYieldDetail.getLotNo();
-            List<MesLotTrack> rptLotYieldList = mesLotTrackService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("production_no", productionNo).eq("lot_no", lotNo));
+            List<MesLotTrack> rptLotYieldList = mesLotTrackService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("production_no", productionNo).eq("lot_no", lotNo).eq("eqp_id","SIM-DM1"));
             lotYieldDaylList.addAll(rptLotYieldList);
         }
         int lotYieldAll = 0;
