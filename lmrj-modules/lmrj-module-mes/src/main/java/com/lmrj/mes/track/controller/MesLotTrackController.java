@@ -69,7 +69,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
-            String productionName = trackinfos[1];
+            String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
 
@@ -150,7 +150,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
-            String productionName = trackinfos[1];
+            String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
             String lotNo = lotNos[lotNos.length - 1].substring(0, 5);
@@ -180,7 +180,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
-            String productionName = trackinfos[1];
+            String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
 
