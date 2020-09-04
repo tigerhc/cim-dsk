@@ -49,5 +49,16 @@ public class RptLotYieldDay extends BaseDataEntity {
     /**批次设备产量*/
     @TableField(value = "lot_yield_eqp")
     private Integer lotYieldEqp;
-
+    /**站别ID*/
+    @TableField(value = "station_id")
+    private String stationId;
+    /**站别*/
+    @TableField(value = "station_code")
+    private String stationCode;
+    /**线别*/
+    @TableField(value = "line_no")
+    private String lineNo;
+    /**子线别*/
+    @TableField(value = "sub_line_no")
+    private String subLineNo;
 }

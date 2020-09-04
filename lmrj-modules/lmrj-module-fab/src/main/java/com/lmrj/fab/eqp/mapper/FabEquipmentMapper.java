@@ -23,18 +23,25 @@ import java.util.Map;
 @Mapper
 public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
 
-  /**
-   * 禁用设备
-   * 主要是为了测试框架加的功能
-   * @param id
-   * @return
-      */
-  Integer updateActiveFlag(@Param("id") String id, @Param("activeFlag") String activeFlag);
-  List<String> findEqpIdList();
-  List<Map> findEqpMap();
-  //List<String> eqpIdMsList();
-  List<Map> findEqpMsMap();
+    /**
+     * 禁用设备
+     * 主要是为了测试框架加的功能
+     *
+     * @param id
+     * @return
+     */
+    Integer updateActiveFlag(@Param("id") String id, @Param("activeFlag") String activeFlag);
 
-  @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
-  String findeqpNoInfab(@Param("eqpId") String eqpId);
+    List<String> findEqpIdList();
+
+    List<Map> findEqpMap();
+
+    //List<String> eqpIdMsList();
+    List<Map> findEqpMsMap();
+
+    @Select("select distinct station_code from  fab_equipment where line_no=#{lineNo}")
+    List<String> findStationCodeByLineNo(@Param("lineNo") String lineNo);
+
+    @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
+    String findeqpNoInfab(@Param("eqpId") String eqpId);
 }

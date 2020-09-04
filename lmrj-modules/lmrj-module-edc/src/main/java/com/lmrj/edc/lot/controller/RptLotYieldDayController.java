@@ -42,7 +42,9 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     @RequestMapping("/pdtChart")
     public Response findProduction(@RequestParam String lineNo,@RequestParam String beginTime,@RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res=new Response();
-        List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo);
+        //添加线别和站别产量
+        String stationCode="DM";
+        List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode);
         res.put("yield",maps);
         return res;
     }

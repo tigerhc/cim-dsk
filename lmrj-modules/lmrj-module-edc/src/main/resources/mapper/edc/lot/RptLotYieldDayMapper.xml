@@ -21,17 +21,11 @@
        t.del_flag
 	</sql>
 
-       <select id="selectlotpdt" resultType="map">
-              select period_date, lot_no, production_no, production_name, sum(lot_yield) , sum(lot_yield_eqp) from rpt_lot_yield_day
-              where production_name like '%SIM%'
-              group by period_date, lot_no, production_no, production_name
-              order by production_no, lot_no, period_date
-       </select>
-
        <select id="selectDaypdt" resultType="map">
               select period_date, sum(lot_yield) lot_yield , sum(lot_yield_eqp) lot_yield_eqp
               from rpt_lot_yield_day
-              where production_name like '%SIM%'
+              where line_no = #{lineNo}
+              and station_code = #{stationCode}
               and period_date between #{beginTime} and #{endTime}
               group by period_date
               order by period_date

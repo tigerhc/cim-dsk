@@ -19,13 +19,13 @@ import java.util.Map;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
-    List<Map> pdtChart(String beginTime, String endTime, String line);
+    List<Map> pdtChart(String beginTime, String endTime, String line, String stationCode);
 
-    List<RptLotYieldDay> findDayYeild(Date startTime,Date endTime);
+    List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime, String stationCode);
 
     String findProductionName(String productionNo);
 
-    Integer findLotYield(String lotNo,Date startTime,Date endTime);
+    Integer findLotYield(String eqpId, String lotNo, Date startTime, Date endTime);
 
-    String findEqpId();
+    List<String> findEqpId(String lineNo, String stationCode);
 }

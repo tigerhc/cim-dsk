@@ -13,19 +13,24 @@ import java.util.Map;
 
 
 /**
-* All rights Reserved, Designed By www.gzst.gov.cn
-*
-* @version V1.0
-* @package com.lmrj.fab.service.impl
-* @title: fab_equipment服务实现
-* @description: fab_equipment服务实现
-* @author: 张伟江
-* @date: 2019-06-04 15:42:26
-* @copyright: 2018 www.gzst.gov.cn Inc. All rights reserved.
-*/
+ * All rights Reserved, Designed By www.gzst.gov.cn
+ *
+ * @version V1.0
+ * @package com.lmrj.fab.service.impl
+ * @title: fab_equipment服务实现
+ * @description: fab_equipment服务实现
+ * @author: 张伟江
+ * @date: 2019-06-04 15:42:26
+ * @copyright: 2018 www.gzst.gov.cn Inc. All rights reserved.
+ */
 @Transactional
 @Service("fabequipmentService")
-public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapper,FabEquipment> implements  IFabEquipmentService {
+public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMapper, FabEquipment> implements IFabEquipmentService {
+
+    @Override
+    public List<String> findStationCodeByLineNo(String lineNo) {
+        return baseMapper.findStationCodeByLineNo(lineNo);
+    }
 
     @Override
     public void activeEqp(String id, String flag) {
@@ -35,7 +40,7 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
     @Override
     public FabEquipment findEqpByCode(String eqpId) {
         List<FabEquipment> fabEquipmentList = baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("eqp_id", eqpId));
-        if(fabEquipmentList.size() == 0){
+        if (fabEquipmentList.size() == 0) {
             return null;
         }
         return fabEquipmentList.get(0);
@@ -68,7 +73,7 @@ public class FabEquipmentServiceImpl  extends CommonServiceImpl<FabEquipmentMapp
     }
 
     @Override
-    public String findeqpNoInfab(String eqpId){
+    public String findeqpNoInfab(String eqpId) {
         return baseMapper.findeqpNoInfab(eqpId);
     }
 }

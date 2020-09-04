@@ -21,20 +21,20 @@ import java.util.Map;
 
 
 /**
-* All rights Reserved, Designed By www.lmrj.com
-*
-* @version V1.0
-* @package com.lmrj.edc.lot.service.impl
-* @title: rpt_lot_yield_day服务实现
-* @description: rpt_lot_yield_day服务实现
-* @author: 张伟江
-* @date: 2020-05-17 21:10:56
-* @copyright: 2018 www.lmrj.com Inc. All rights reserved.
-*/
+ * All rights Reserved, Designed By www.lmrj.com
+ *
+ * @version V1.0
+ * @package com.lmrj.edc.lot.service.impl
+ * @title: rpt_lot_yield_day服务实现
+ * @description: rpt_lot_yield_day服务实现
+ * @author: 张伟江
+ * @date: 2020-05-17 21:10:56
+ * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
+ */
 @Transactional
 @Service("rptLotYieldDayService")
 @Slf4j
-public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDayMapper,RptLotYieldDay> implements  IRptLotYieldDayService {
+public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayMapper, RptLotYieldDay> implements IRptLotYieldDayService {
 
     @Autowired
     private IFabLogService fabLogService;
@@ -42,48 +42,60 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Override
-    public  List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime){
-        return baseMapper.findDayYeild(startTime,endTime,baseMapper.findEqpId());
-    }
-    @Override
-    public String findProductionName(String productionNo){
-        return baseMapper.findProductionName(productionNo);
-    }
-    @Override
-    public Integer findLotYield(String lotNo,Date startTime,Date endTime){
-        return baseMapper.findLotYield(lotNo,startTime,endTime);
-    }
-    @Override
-    public String findEqpId(){
-        return baseMapper.findEqpId();
-    }
-    public void updateDayYield(Date startTime, Date endTime){
-        //查询一天内每个批次的产量并存入日产量表
-        List<RptLotYieldDay> rptLotYieldDayList=baseMapper.findDayYeild(startTime,endTime,baseMapper.findEqpId());
-        for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
-            lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));
-            lotYieldDay.setLotYield(baseMapper.findLotYield(lotYieldDay.getLotNo(),startTime,endTime));
-            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
-            lotYieldDay.setPeriodDate(sim.format(startTime));
-            this.insert(lotYieldDay);
-        }
-        //只能处理SIM的无产量情况
-        if(rptLotYieldDayList.size()==0){
-            RptLotYieldDay lotYieldDay = new RptLotYieldDay();
-            SimpleDateFormat sim=new SimpleDateFormat("yyyyMMdd");
-            lotYieldDay.setProductionName(baseMapper.findProductionName("5002915"));
-            lotYieldDay.setPeriodDate(sim.format(startTime));
-            lotYieldDay.setLotYield(0);
-            this.insert(lotYieldDay);
-        }
-        String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info("",eventId,"updateDayYield","更新批次日产量","","");
+    public List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime, String eqpId) {
+        return baseMapper.findDayYeild(startTime, endTime, eqpId);
     }
 
     @Override
-    public List<Map> pdtChart(String beginTime, String endTime, String line) {
-        List<Map> yieldDayList = baseMapper.selectDaypdt(beginTime, endTime, "SIM");
-        List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime,"SIM");
+    public String findProductionName(String productionNo) {
+        return baseMapper.findProductionName(productionNo);
+    }
+
+    @Override
+    public Integer findLotYield(String eqpId, String lotNo, Date startTime, Date endTime) {
+        return baseMapper.findLotYield(eqpId, lotNo, startTime, endTime);
+    }
+
+    @Override
+    public List<String> findEqpId(String lineNo, String stationCode) {
+        return baseMapper.findEqpId(lineNo, stationCode);
+    }
+
+    public void updateDayYield(Date startTime, Date endTime, String lineNo, String stationCode) {
+        //查询站别计算产量时需要计算的eqpID
+        List<String> eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
+        for (String eqpid : eqpIdlist) {
+            //查询一天内该设备每个批次的产量，并新建产量数据
+            List<RptLotYieldDay> rptLotYieldDayList = baseMapper.findDayYeild(startTime, endTime, eqpid);
+            for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
+                lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));
+                lotYieldDay.setLotYield(baseMapper.findLotYield(eqpid, lotYieldDay.getLotNo(), startTime, endTime));
+                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
+                lotYieldDay.setPeriodDate(sim.format(startTime));
+                lotYieldDay.setStationCode(stationCode);
+                lotYieldDay.setLineNo(lineNo);
+                this.insert(lotYieldDay);
+            }
+            //当天该设备无产量则新建无产量数据
+            if (rptLotYieldDayList.size() == 0) {
+                RptLotYieldDay lotYieldDay = new RptLotYieldDay();
+                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
+                lotYieldDay.setPeriodDate(sim.format(startTime));
+                lotYieldDay.setLotYield(0);
+                lotYieldDay.setLotYieldEqp(0);
+                lotYieldDay.setStationCode(stationCode);
+                lotYieldDay.setLineNo(lineNo);
+                this.insert(lotYieldDay);
+            }
+        }
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info("", eventId, "updateDayYield", "更新批次日产量", "", "");
+    }
+
+    @Override
+    public List<Map> pdtChart(String beginTime, String endTime, String lineNo, String stationCode) {
+        List<Map> yieldDayList = baseMapper.selectDaypdt(beginTime, endTime, lineNo, stationCode);
+        List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime, lineNo);
         Map<String, Integer> planYieldmap = Maps.newHashMap();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetails) {
             //planYieldmap.put(apsPlanPdtYieldDetail.getProductionNo() + apsPlanPdtYieldDetail.getLotNo(), apsPlanPdtYieldDetail.getPlanQty());
@@ -93,7 +105,7 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
             //String key = yieldDay.get("production_no").toString() + yieldDay.get("lot_no").toString();
             String key = yieldDay.get("period_date") + "";
             int planQty = 0;
-            if(planYieldmap.get(key)!=null){
+            if (planYieldmap.get(key) != null) {
                 planQty = planYieldmap.get(key);
             }
             if (planQty != 0) {
@@ -104,7 +116,7 @@ public class RptLotYieldDayServiceImpl  extends CommonServiceImpl<RptLotYieldDay
                 eqpRate = (double) Math.round(eqpRate * 100) / 100;
                 yieldDay.put("rate", rate);
                 yieldDay.put("eqp_rate", eqpRate);
-            }else{
+            } else {
                 yieldDay.put("rate", 0);
                 yieldDay.put("eqp_rate", 0);
             }

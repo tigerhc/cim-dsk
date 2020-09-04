@@ -1,19 +1,22 @@
 package com.lmrj.cim.quartz;
 
 import com.lmrj.edc.lot.service.impl.RptLotYieldDayServiceImpl;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
 public class RptYieldDayTask {
     @Autowired
     RptLotYieldDayServiceImpl rptLotYieldDayService;
-
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
     /**
      * 计算产量,写入报表 edc_dsk_log_production -- >   rpt_lot_yield_day
      *
@@ -29,8 +32,12 @@ public class RptYieldDayTask {
         endTime=cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH,-1);
         Date startTime=cal.getTime();
-        log.info("定时任务开始执行");
-        rptLotYieldDayService.updateDayYield(startTime,endTime);
-        log.info("定时任务开始执行结束");
+        log.info("日产量计算定时任务开始执行");
+        String lineNo="SIM";
+        List<String> stationCodeList = iFabEquipmentService.findStationCodeByLineNo(lineNo);
+        for (String stationCode : stationCodeList) {
+            rptLotYieldDayService.updateDayYield(startTime,endTime,lineNo,stationCode);
+        }
+        log.info("日产量计算定时任务执行结束");
     }
 }
