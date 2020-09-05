@@ -26,6 +26,8 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
 
     List<Map> selectDaypdt(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
+    List<Map> selectDaypdtById(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") String eqpId);
+
     @Select("SELECT production_no,lot_no,(MAX(lot_yield) - MIN(lot_yield)) AS lot_yield_eqp FROM edc_dsk_log_production WHERE start_time BETWEEN #{startTime} AND #{endTime} and eqp_id = #{eqpId}  GROUP BY production_no,lot_no")
     List<RptLotYieldDay> findDayYeild(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
 

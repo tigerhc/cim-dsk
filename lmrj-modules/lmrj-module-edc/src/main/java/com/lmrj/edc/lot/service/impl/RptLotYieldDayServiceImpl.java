@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,11 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         return baseMapper.findEqpId(lineNo, stationCode);
     }
 
+    /*@Override
+    public List<Map> selectDaypdt(String beginTime,String endTime,String lineNo,String stationCode){
+        return baseMapper.selectDaypdt(beginTime, endTime, lineNo, stationCode);
+    }*/
+
     public void updateDayYield(Date startTime, Date endTime, String lineNo, String stationCode) {
         //查询站别计算产量时需要计算的eqpID
         List<String> eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
@@ -74,6 +80,7 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                 lotYieldDay.setPeriodDate(sim.format(startTime));
                 lotYieldDay.setStationCode(stationCode);
                 lotYieldDay.setLineNo(lineNo);
+                lotYieldDay.setEqpId(eqpid);
                 this.insert(lotYieldDay);
             }
             //当天该设备无产量则新建无产量数据
@@ -85,6 +92,7 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                 lotYieldDay.setLotYieldEqp(0);
                 lotYieldDay.setStationCode(stationCode);
                 lotYieldDay.setLineNo(lineNo);
+                lotYieldDay.setEqpId(eqpid);
                 this.insert(lotYieldDay);
             }
         }
@@ -108,22 +116,54 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
             if (planYieldmap.get(key) != null) {
                 planQty = planYieldmap.get(key);
             }
+            //把计划也送回前端
             if (planQty != 0) {
                 double rate = Double.parseDouble(yieldDay.get("lot_yield") + "") * 100 / planQty;
                 rate = (double) Math.round(rate * 100) / 100;
-
                 double eqpRate = Double.parseDouble(yieldDay.get("lot_yield_eqp") + "") * 100 / planQty;
                 eqpRate = (double) Math.round(eqpRate * 100) / 100;
                 yieldDay.put("rate", rate);
                 yieldDay.put("eqp_rate", eqpRate);
+                yieldDay.put("plan_qty",planQty);
             } else {
                 yieldDay.put("rate", 0);
                 yieldDay.put("eqp_rate", 0);
+                yieldDay.put("plan_qty",0);
             }
             //去除年份
             yieldDay.put("period_date", key.substring(4));
         }
         return yieldDayList;
+    }
+    @Override
+    public List<Map> pdtChart(String beginTime, String endTime, String lineNo, String stationCode,String eqpId) {
+        String eqpid[]=eqpId.split(",");
+        List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime, lineNo);
+        Map<String, Integer> planYieldmap = Maps.newHashMap();
+        for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetails) {
+            planYieldmap.put(apsPlanPdtYieldDetail.getPlanDate(), apsPlanPdtYieldDetail.getPlanQty());
+        }
+        List<Map> yieldDayLists=new ArrayList<>();
+        for (int i = 0; i < eqpid.length; i++) {
+            List<Map> yieldDayList = baseMapper.selectDaypdtById(beginTime, endTime, lineNo, stationCode,eqpid[i]);
+            for (Map yieldDay : yieldDayList) {
+                String key = yieldDay.get("period_date") + "";
+                int planQty = 0;
+                if (planYieldmap.get(key) != null) {
+                    planQty = planYieldmap.get(key);
+                }
+                //把计划也送回前端
+                if (planQty != 0) {
+                    yieldDay.put("eqp_id",eqpid[i]);
+                } else {
+                    yieldDay.put("eqp_id",eqpid[i]);
+                }
+                //去除年份
+                yieldDay.put("period_date", key.substring(4));
+                yieldDayLists.add(yieldDay);
+            }
+        }
+        return yieldDayLists;
     }
 
 }
