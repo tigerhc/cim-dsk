@@ -202,7 +202,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if(line.startsWith("SX")){
             line = "SX";
         }
-        //String kongdongDir = "G:\\8sim\\"+line+"\\" + productionName.replace("J.",""); //本地测试
+        //String kongdongDir = "G:\\DSK_SIMULATOR\\8sim\\"+line+"\\" + productionName.replace("J.",""); //本地测试
         String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
         log.info(kongdongDir);
         List<File> kongdongFiles = (List<File>) FileUtil.listFiles(new File(kongdongDir), new String[]{"bmp"}, false);
@@ -244,7 +244,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 String[] fileNames = file.getName().split("-");
                 String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
                 String index = fileNames[fileNames.length - 1].replace(".bmp", "");
-                kongdongVal[Integer.parseInt(index) - 1] = value;
+                if(Integer.parseInt(index)>8){
+                    kongdongVal[Integer.parseInt(index) - 9] = value;
+                }else{
+                    kongdongVal[Integer.parseInt(index) - 1] = value;
+                }
             }
             kongdongStr = StringUtil.join(kongdongVal, ",");
 
