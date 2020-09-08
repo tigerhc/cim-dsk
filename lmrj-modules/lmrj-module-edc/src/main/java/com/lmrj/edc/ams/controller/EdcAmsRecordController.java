@@ -56,6 +56,14 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
         return res;
     }
 
+    @RequestMapping("/selectAlarmCountByStation")
+    public Response selectAlarmCountByStation(@RequestParam String lineNo,@RequestParam String stationCode, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res=new Response();
+        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByStation(beginTime,endTime,lineNo,stationCode);
+        res.put("record",maps);
+        return res;
+    }
+
     //@GetMapping("export")
     //public Response export(HttpServletRequest request) {
     //    Response response = Response.ok("导出成功");
