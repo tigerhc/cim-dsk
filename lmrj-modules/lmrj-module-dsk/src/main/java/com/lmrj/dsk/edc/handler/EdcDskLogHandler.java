@@ -85,7 +85,8 @@ public class EdcDskLogHandler {
     RepeatAlarmUtil repeatAlarmUtil;
     @Autowired
     private AmqpTemplate rabbitTemplate;
-
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
             "Pick up press level", "取晶位置下压量",
             "1st bonding pos  Z", "第一固晶位置 Z",
@@ -277,6 +278,11 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
                 edcAmsRecord.setStartDate(edcDskLogOperation.getStartTime());
+                FabEquipment fabEquipment=iFabEquipmentService.findEqpByCode(edcDskLogOperation.getEqpId());
+                if(fabEquipment!=null){
+                    edcAmsRecord.setLineNo(fabEquipment.getLineNo());
+                    edcAmsRecord.setStationCode(fabEquipment.getStationCode());
+                }
                 edcAmsRecordList.add(edcAmsRecord);
                 if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
 
@@ -300,7 +306,6 @@ public class EdcDskLogHandler {
                             datas.put("PARAM_CODE", eventParams);
                             datas.put("OLD_VAL", "");
                             datas.put("NEW_VAL", "");
-
                             emailSendService.send(emails, "PARAM_CHANGE", datas);
                             break;
                         }

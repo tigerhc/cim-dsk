@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.edc.ams.mapper.EdcAmsRecordMapper" >
+<mapper namespace="com.lmrj.edc.ams.mapper.EdcAmsRecordMapper">
 
-	<sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
        t.id,
        t.eqp_id,
        t.alarm_code,
@@ -14,29 +14,29 @@
        t.create_date
 	</sql>
     <select id="selectAmsRecord" resultType="com.lmrj.edc.ams.entity.EdcAmsRecord">
-           SELECT
-           <include refid="Base_Column_List" />, f.MODEL_NAME modelName
-           FROM
-           edc_ams_record t
-           LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
-           WHERE f.active_flag = '1'
-           <if test="officeId != null and officeId != ''">
-                  and f.OFFICE_ID = #{officeId}
-           </if>
-           <if test="lineNo != null and lineNo != ''">
-                  and f.line_no = #{lineNo}
-           </if>
-           <if test="department != null and department != ''">
-                  and f.department = #{department}
-           </if>
-           <if test="fab != null and fab != ''">
-                  and f.fab = #{fab}
-           </if>
-           order by t.start_date desc
-           limit 5
+        SELECT
+        <include refid="Base_Column_List"/>, f.MODEL_NAME modelName
+        FROM
+        edc_ams_record t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+        WHERE f.active_flag = '1'
+        <if test="officeId != null and officeId != ''">
+            and f.OFFICE_ID = #{officeId}
+        </if>
+        <if test="lineNo != null and lineNo != ''">
+            and f.line_no = #{lineNo}
+        </if>
+        <if test="department != null and department != ''">
+            and f.department = #{department}
+        </if>
+        <if test="fab != null and fab != ''">
+            and f.fab = #{fab}
+        </if>
+        order by t.start_date desc
+        limit 5
     </select>
 
-       <select id="selectAlarmCountByLine" resultType="map">
+    <select id="selectAlarmCountByLine" resultType="map">
            select tt.eqp_id, tt.alarm_count, error_count from
                (select eqp_id,count(*) alarm_count, count(*) error_count
               from edc_ams_record
@@ -50,7 +50,7 @@
               order by eqp.sort_no
        </select>
 
-       <select id="selectAlarmCountByEqp" resultType="map">
+    <select id="selectAlarmCountByEqp" resultType="map">
               select alarm_code, alarm_name,count(*) alarm_count, count(*) error_count
               from edc_ams_record
               where start_date between #{beginTime} and #{endTime}
@@ -59,7 +59,15 @@
               order by alarm_code
        </select>
 
-
+    <select id="selectAlarmCountByStation" resultType="map">
+              select station_code , alarm_code , alarm_name,count(*) alarm_count, count(*) error_count
+              from edc_ams_record
+              where start_date between #{beginTime} and #{endTime}
+                and line_no = #{lineNo}
+                and station_code = #{stationCode}
+              group by station_code , alarm_code
+              order by alarm_code
+       </select>
 
 
 </mapper>

@@ -32,52 +32,82 @@ public class EdcAmsRecord extends AbstractEntity {
 
     @TableId(value = "id", type = IdType.UUID)
     protected String id;
-    /**设备号*/
+    /**
+     * 设备号
+     */
     @Excel(name = "设备id", orderNum = "1")
     @TableField(value = "eqp_id")
     private String eqpId;
-    /**警报ID*/
+    /**
+     * 警报ID
+     */
     @Excel(name = "警报CODE", orderNum = "2")
     @TableField(value = "alarm_code")
     private String alarmCode;
-    /**警报名称*/
+    /**
+     * 警报名称
+     */
     @Excel(name = "警报名称", orderNum = "3")
     @TableField(value = "alarm_name")
     private String alarmName;
     @Excel(name = "报警详细", orderNum = "3")
     @TableField(value = "alarm_detail")
     private String alarmDetail;
-    /**警报开关 1:set 0:cleared*/
+    /**
+     * 警报开关 1:set 0:cleared
+     */
     @Excel(name = "警报开关", orderNum = "4")
     @TableField(value = "alarm_switch")
     private String alarmSwitch;
-    /**开始日期*/
+    /**
+     * 开始日期
+     */
     @Excel(name = "开始时间", orderNum = "5")
     @TableField(value = "start_date")
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss SSS")
     private Date startDate;
-    /**结束时间*/
-    @Excel(name = "结束时间", orderNum = "6",format="yyyy-MM-dd HH:mm:ss")
+    /**
+     * 结束时间
+     */
+    @Excel(name = "结束时间", orderNum = "6", format = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "end_date")
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss SSS")
     private Date endDate;
 
-    /**警报开关 1:set 0:cleared*/
+    /**
+     * 批次
+     */
     @Excel(name = "批次", orderNum = "8")
     @TableField(value = "lot_no")
     private String lotNo;
 
-    /**警报开关 1:set 0:cleared*/
+    /**
+     * 批次产量
+     */
     @Excel(name = "批次产量", orderNum = "9")
     @TableField(value = "lot_yield")
     private Integer lotYield;
 
-    @Excel(name = "创建时间", orderNum = "7", width = 25,format="yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "创建时间", orderNum = "7", width = 25, format = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_date", fill = FieldFill.INSERT, update = "now()")
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss SSS")
     protected Date createDate; // 创建日期
+
+    /**
+     * 线别
+     */
+    @Excel(name = "线别", orderNum = "10")
+    @TableField(value = "line_no")
+    private String lineNo;
+
+    /**
+     * 站别
+     */
+    @Excel(name = "站别", orderNum = "11")
+    @TableField(value = "station_code")
+    private String stationCode;
 
 }
