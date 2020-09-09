@@ -92,7 +92,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
             String lotNo = apsPlanPdtYieldDetail.getLotNo();
-            List<MesLotTrack> rptLotYieldList = mesLotTrackService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("production_no", productionNo).eq("lot_no", lotNo).eq("eqp_id","SIM-DM1"));
+            List<MesLotTrack> rptLotYieldList = mesLotTrackService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("production_no", productionNo).eq("lot_no", lotNo).eq("eqp_id","SIM-PRINTER1"));
             lotYieldDaylList.addAll(rptLotYieldList);
         }
         int lotYieldAll = 0;
