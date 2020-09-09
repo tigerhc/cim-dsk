@@ -77,6 +77,7 @@ public class EdcDskLogRecipe extends AbstractEntity {
 
     @TableField(exist = false)
     List<EdcDskLogRecipeBody> edcDskLogRecipeBodyList;
-
+    @TableField(exist = false)
+    private String oldId;
 
 }

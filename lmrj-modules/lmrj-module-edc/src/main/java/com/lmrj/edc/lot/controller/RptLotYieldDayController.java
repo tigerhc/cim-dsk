@@ -44,9 +44,14 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         Response res=new Response();
         //添加线别和站别产量
         String stationCode="DM";
-        String eqpId="SIM-DM7";
-        List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode);
-        res.put("yield",maps);
+        String eqpId=null;
+        if(eqpId==null){
+            List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode);
+            res.put("yield",maps);
+        }else{
+            List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode,eqpId);
+            res.put("yield",maps);
+        }
         return res;
     }
 }

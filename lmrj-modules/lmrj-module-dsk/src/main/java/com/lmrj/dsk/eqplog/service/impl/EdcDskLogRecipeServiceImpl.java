@@ -1,7 +1,6 @@
 package com.lmrj.dsk.eqplog.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogRecipeMapper;
@@ -36,8 +35,18 @@ public class EdcDskLogRecipeServiceImpl  extends CommonServiceImpl<EdcDskLogReci
     @Override
     public EdcDskLogRecipe selectById(Serializable id){
         EdcDskLogRecipe edcDskLogRecipe = super.selectById(id);
-        List<EdcDskLogRecipeBody> rmsRecipeBodyList = edcDskLogRecipeBodyService.selectList(new EntityWrapper<EdcDskLogRecipeBody>(EdcDskLogRecipeBody.class).eq("recipe_log_id",id));
+        String oldRecipeId=baseMapper.findOldRecipeId(edcDskLogRecipe.getEqpId(),edcDskLogRecipe.getStartTime());
+        List<EdcDskLogRecipeBody> rmsRecipeBodyList = edcDskLogRecipeBodyService.selectParamList(edcDskLogRecipe.getId());
+        List<EdcDskLogRecipeBody> oldRmsRecipeBodyList = edcDskLogRecipeBodyService.selectParamList(oldRecipeId);
+        if(oldRmsRecipeBodyList.size()==rmsRecipeBodyList.size()){
+            for (int i = 0; i < rmsRecipeBodyList.size(); i++) {
+                if(oldRmsRecipeBodyList.get(i).getSortNo()==rmsRecipeBodyList.get(i).getSortNo()){
+                    rmsRecipeBodyList.get(i).setPreValue(oldRmsRecipeBodyList.get(i).getSetValue());
+                }
+            }
+        }
         edcDskLogRecipe.setEdcDskLogRecipeBodyList(rmsRecipeBodyList);
+        edcDskLogRecipe.setOldId(oldRecipeId);
         return edcDskLogRecipe;
     }
 

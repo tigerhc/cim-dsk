@@ -7,6 +7,8 @@ import com.lmrj.dsk.eqplog.mapper.EdcDskLogRecipeBodyMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -22,5 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("edcDskLogRecipeBodyService")
 public class EdcDskLogRecipeBodyServiceImpl  extends CommonServiceImpl<EdcDskLogRecipeBodyMapper,EdcDskLogRecipeBody> implements  IEdcDskLogRecipeBodyService {
-
+    @Override
+    public List<EdcDskLogRecipeBody> selectParamList(String recipeLogId){
+        return baseMapper.selectParamList(recipeLogId);
+    }
 }

@@ -3,6 +3,8 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +17,5 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcDskLogRecipeBodyService extends ICommonService<EdcDskLogRecipeBody> {
-
+    List<EdcDskLogRecipeBody> selectParamList(String recipeLogId);
 }

@@ -1,10 +1,14 @@
 package com.lmrj.dsk.eqplog.mapper;
 
-import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.List;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +21,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcDskLogRecipeBodyMapper extends BaseMapper<EdcDskLogRecipeBody> {
-    
+ @Select("select * from edc_dsk_log_recipe_body where recipe_log_id = #{recipeLogId} order by sort_no")
+ List<EdcDskLogRecipeBody> selectParamList(@Param("recipeLogId") String recipeLogId);
 }

@@ -154,8 +154,18 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                 }
                 //把计划也送回前端
                 if (planQty != 0) {
+                    double rate = Double.parseDouble(yieldDay.get("lot_yield") + "") * 100 / planQty;
+                    rate = (double) Math.round(rate * 100) / 100;
+                    double eqpRate = Double.parseDouble(yieldDay.get("lot_yield_eqp") + "") * 100 / planQty;
+                    eqpRate = (double) Math.round(eqpRate * 100) / 100;
+                    yieldDay.put("rate", rate);
+                    yieldDay.put("eqp_rate", eqpRate);
+                    yieldDay.put("plan_qty",planQty);
                     yieldDay.put("eqp_id",eqpid[i]);
                 } else {
+                    yieldDay.put("rate", 0);
+                    yieldDay.put("eqp_rate", 0);
+                    yieldDay.put("plan_qty",0);
                     yieldDay.put("eqp_id",eqpid[i]);
                 }
                 //去除年份

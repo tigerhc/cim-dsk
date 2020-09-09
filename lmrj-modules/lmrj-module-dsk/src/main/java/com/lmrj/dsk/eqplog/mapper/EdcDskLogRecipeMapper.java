@@ -1,10 +1,14 @@
 package com.lmrj.dsk.eqplog.mapper;
 
-import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.Date;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +21,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EdcDskLogRecipeMapper extends BaseMapper<EdcDskLogRecipe> {
-    
+ @Select("select id from edc_dsk_log_recipe where eqp_id=#{eqpId} and start_time< #{startTime} order by start_time desc limit 1")
+ String findOldRecipeId(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
 }
