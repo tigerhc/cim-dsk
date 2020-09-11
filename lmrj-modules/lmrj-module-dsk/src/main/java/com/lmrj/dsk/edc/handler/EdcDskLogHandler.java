@@ -1,5 +1,6 @@
 package com.lmrj.dsk.edc.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -35,7 +36,9 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
@@ -87,6 +90,8 @@ public class EdcDskLogHandler {
     private AmqpTemplate rabbitTemplate;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
+
+
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
             "Pick up press level", "取晶位置下压量",
             "1st bonding pos  Z", "第一固晶位置 Z",
@@ -388,4 +393,15 @@ public class EdcDskLogHandler {
         }
     }
 
-}
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
+    public void sendAlarm(String msg) {
+        String eqpId = null;
+        Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
+        for(String key : msgMap.keySet()){
+            eqpId =(String)msgMap.get(key);
+        }
+        String email = fabEquipmentService.findEmail(eqpId);
+        emailSendService.send(email,"请查看设备！",msgMap);
+        }
+    }

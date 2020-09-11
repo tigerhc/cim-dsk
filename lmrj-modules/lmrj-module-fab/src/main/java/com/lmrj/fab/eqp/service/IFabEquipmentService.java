@@ -37,4 +37,6 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     List<Map> findEqpMsMap();
 
     String findeqpNoInfab(String eqpId);
+
+    String findEmail (String eqpId);
 }

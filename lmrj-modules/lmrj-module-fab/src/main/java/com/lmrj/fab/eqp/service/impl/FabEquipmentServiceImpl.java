@@ -1,10 +1,12 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.mapper.FabEquipmentMapper;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +57,7 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     public List<FabEquipment> findEqpBySubLine(String lineNo) {
         return baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("sub_line_no", lineNo));
     }
-
-
+    
     @Override
     public List<String> findEqpIdList() {
         return baseMapper.findEqpIdList();
@@ -75,5 +76,10 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     @Override
     public String findeqpNoInfab(String eqpId) {
         return baseMapper.findeqpNoInfab(eqpId);
+    }
+
+    public String findEmail (String eqpId){
+        Map<String,Object> result = baseMapper.findEmail(eqpId);
+       return UserUtil.getByUserName((String) result.get("name")).getEmail();
     }
 }

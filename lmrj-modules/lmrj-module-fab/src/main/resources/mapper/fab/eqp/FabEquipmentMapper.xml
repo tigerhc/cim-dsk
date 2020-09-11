@@ -63,4 +63,10 @@
         order by sort_no, step_id
     </select>
 
+    <select id="findEmail" resultType="map" parameterType="java.lang.String">
+        select eqp_liable as name
+        from fab_equipment as eqp
+        where eqp.eqp_id = #{eqpId}
+    </select>
+
 </mapper>

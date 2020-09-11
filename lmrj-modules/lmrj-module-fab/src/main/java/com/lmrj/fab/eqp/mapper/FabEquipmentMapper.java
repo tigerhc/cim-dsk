@@ -44,4 +44,6 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
 
     @Select("select eqp_no from fab_equipment where eqp_id= #{eqpId}")
     String findeqpNoInfab(@Param("eqpId") String eqpId);
+
+    Map<String,Object> findEmail (@Param("eqpId") String eqpId);
 }
