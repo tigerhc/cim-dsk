@@ -12,6 +12,7 @@ import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -21,7 +22,8 @@ import java.util.Map;
 @Slf4j
 @Component
 public class ApsPlanImportTask {
-
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Autowired
     private IApsPlanPdtYieldService apsPlanPdtYieldService;
@@ -45,7 +47,11 @@ public class ApsPlanImportTask {
                 lastFile = file;
             }
         }
-        this.readApsPlan(lastFile.getAbsolutePath());
+        try {
+            this.readApsPlan(lastFile.getAbsolutePath());
+        } catch (Exception e){
+            log.error("排程有异常");
+        }
         log.info("定时任务开始执行结束");
     }
 
@@ -234,6 +240,14 @@ public class ApsPlanImportTask {
         apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
+        //将排程的数据上传到redis中
+        for(ApsPlanPdtYieldDetail item : apsPlanPdtYieldDetailList){
+            String proNo = item.getProductionNo();
+            String proName = item.getProductionName();
+            if(null !=proNo && !"".equals(proNo) && null !=proName && !"".equals(proName)){
+                redisTemplate.opsForValue().set(proNo, proName);
+            }
+        }
     }
 
 }
