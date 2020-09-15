@@ -398,10 +398,8 @@ public class EdcDskLogHandler {
     public void sendAlarm(String msg) {
         String eqpId = null;
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
-        for(String key : msgMap.keySet()){
-            eqpId =(String)msgMap.get(key);
-        }
+        eqpId = (String) msgMap.get("EQP_ID");
         String email = fabEquipmentService.findEmail(eqpId);
-        emailSendService.send(email,"请查看设备！",msgMap);
+        emailSendService.send(email,"RTP_ALARM",msgMap);
         }
     }
