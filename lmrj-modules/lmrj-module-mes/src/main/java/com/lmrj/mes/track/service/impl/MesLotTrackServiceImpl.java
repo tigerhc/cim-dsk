@@ -142,6 +142,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             map.put("PARAM", param);
             map.put("LOTNO", lotNo);
             map.put("PRODUCTIONNO", productionNo);
+            log.info("findParam 参数"+map);
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC1", JsonUtil.toJsonString(map));
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);

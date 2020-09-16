@@ -15,7 +15,6 @@ import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,8 +41,8 @@ import java.util.Map;
 public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYieldMapper, ApsPlanPdtYield> implements IApsPlanPdtYieldService {
     @Autowired
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
-    @Autowired
-    RedisTemplate redisTemplate;
+//    @Autowired
+//    RedisTemplate redisTemplate;
 
     @Value("${aps.dir}")
     public String dir;
@@ -57,13 +56,13 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
 
     @Override
     public String findProductionName(String proNo) {
-        String proName = (String) redisTemplate.opsForValue().get(proNo);
-        if (StringUtil.isBlank(proName)) {
-            proName = baseMapper.findProName(proNo);
-            redisTemplate.opsForValue().set(proNo, proName);
+//        String proName = (String) redisTemplate.opsForValue().get(proNo);
+//        if (StringUtil.isBlank(proName)) {
+            String proName = baseMapper.findProName(proNo);
+//            redisTemplate.opsForValue().set(proNo, proName);
             return proName;
-        }
-        return proName;
+        //}
+        //return proName;
     }
 
     @Override
