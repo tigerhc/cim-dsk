@@ -28,6 +28,11 @@ import java.util.Map;
 @Service("mesLotWipService")
 public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, MesLotWip> implements IMesLotWipService {
     @Override
+    public int findDayLotYield( String eqpId, Date startTime, Date endTime){
+        return baseMapper.findDayLotYield(eqpId,startTime,endTime);
+    }
+
+    @Override
     public List<MesLotTrack> findIncompleteLotNo(Date startTime, Date endTime) {
         return baseMapper.findIncompleteLotNo(startTime, endTime);
     }

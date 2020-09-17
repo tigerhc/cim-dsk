@@ -51,4 +51,7 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
 
     @Select("select count(*) from edc_dsk_log_production where eqp_id=#{eqpId} and lot_no=#{lotNo} and production_no=#{productionNo}")
     Integer selectLotYieldEqp();
+
+    @Select("select count(eqp_id) from edc_dsk_log_production where eqp_id = #{eqpId} and start_time between #{startTime} and #{endTime} ")
+    int findDayLotYield(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 }

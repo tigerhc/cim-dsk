@@ -34,9 +34,14 @@ public class RptYieldDayTask {
         Date startTime=cal.getTime();
         log.info("日产量计算定时任务开始执行");
         String lineNo="SIM";
-        List<String> stationCodeList = iFabEquipmentService.findStationCodeByLineNo(lineNo);
-        for (String stationCode : stationCodeList) {
-            rptLotYieldDayService.updateDayYield(startTime,endTime,lineNo,stationCode);
+        try {
+            List<String> stationCodeList = iFabEquipmentService.findStationCodeByLineNo(lineNo);
+            for (String stationCode : stationCodeList) {
+                rptLotYieldDayService.updateDayYield(startTime,endTime,lineNo,stationCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("updateDayYield():执行异常");
         }
         log.info("日产量计算定时任务执行结束");
     }

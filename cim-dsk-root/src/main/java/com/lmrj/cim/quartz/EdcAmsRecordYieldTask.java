@@ -39,12 +39,11 @@ public class EdcAmsRecordYieldTask {
         if(edcAmsRecordList.size()>0){
             for (EdcAmsRecord edcAmsRecord : edcAmsRecordList) {
                 if(edcAmsRecord.getLotNo()!=null){
-                    //遍历查找最近的批次
+                    //遍历查找时间距离最近的产量日志数据的批次产量
                     EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcAmsRecord.getEqpId(), edcAmsRecord.getStartDate());
                     if(edcDskLogProduction!=null){
                         edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
                         edcAmsRecord.setLotYield(edcDskLogProduction.getLotYield());
-                        edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
                         iEdcAmsRecordService.updateById(edcAmsRecord);
                     }
                 }

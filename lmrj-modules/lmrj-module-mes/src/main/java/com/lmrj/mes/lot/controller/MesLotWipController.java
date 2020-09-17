@@ -25,11 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -53,13 +49,10 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     private IMesLotWipService iMesLotWipService;
     @Autowired
     private IFabEquipmentStatusService fabEquipmentStatusService;
-
     @Autowired
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
-
     @Autowired
     private IMesLotTrackService mesLotTrackService;
-
     //批次在制品(仕掛)批次状态图
     @RequestMapping("/findLotYield")
     public Response findLotYield(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response) {
@@ -92,21 +85,31 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         //改为当日目标产量
         int yieldQty = apsPlanPdtYieldDetailService.findCurrentDayPlan(fabEquipmentStatus.getProductionNo(),periodDate);
         List<MesLotTrack> lotYieldDaylList = Lists.newArrayList();
-        for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
+        /*for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : yieldList) {
+
             String productionNo = apsPlanPdtYieldDetail.getProductionNo();
             String lotNo = apsPlanPdtYieldDetail.getLotNo();
             List<MesLotTrack> rptLotYieldList = mesLotTrackService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("production_no", productionNo).eq("lot_no", lotNo).eq("eqp_id","SIM-PRINTER1"));
             lotYieldDaylList.addAll(rptLotYieldList);
-        }
-        int lotYieldAll = 0;
-        for (MesLotTrack rptLotYield : lotYieldDaylList) {
+        }*/
+        Date startTime=new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY,8);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        startTime=cal.getTime();
+        cal.add(Calendar.DAY_OF_MONTH,1);
+        Date endTime=cal.getTime();
+        int lotYieldAll=0;
+        lotYieldAll = iMesLotWipService.findDayLotYield("SIM-DM1",startTime,endTime);
+        /*for (MesLotTrack rptLotYield : lotYieldDaylList) {
             int lotYield = rptLotYield.getLotYield();
             if(lotYield ==0){
                 lotYieldAll = lotYieldAll+rptLotYield.getLotYieldEqp();
             }else{
                 lotYieldAll += lotYield;
             }
-        }
+        }*/
         //改为日产量, 从towa上获取
 
         List<Map> mapList= Lists.newArrayList();

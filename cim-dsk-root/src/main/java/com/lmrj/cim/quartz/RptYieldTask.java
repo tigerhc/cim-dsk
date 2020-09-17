@@ -38,28 +38,33 @@ public class RptYieldTask {
         log.info("定时任务开始执行");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, -1);
-        List<MesLotTrackLog> trackLogList = mesLotTrackLogService.findLatestLotEqp(cal.getTime());
-        for (MesLotTrackLog mesLotTrackLog : trackLogList) {
-            String lotNo = mesLotTrackLog.getLotNo();
-            String productionNo = mesLotTrackLog.getProductionNo();
-            String productionName = mesLotTrackLog.getProductionName();
-            String eqpId = mesLotTrackLog.getEqpId();
-            Integer yield = edcDskLogProductionService.findNewYieldByLot(eqpId, productionNo, lotNo);
-            if (yield == null) {
-                continue;
-            } else {
-                boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
-                if (!updateFlag) {
-                    RptLotYield rptLotYield = new RptLotYield();
-                    rptLotYield.setLotNo(lotNo);
-                    rptLotYield.setProductionNo(productionNo);
-                    rptLotYield.setProductionName(productionName);
-                    rptLotYield.setEqpId(eqpId);
-                    rptLotYield.setLotYieldEqp(yield);
-                    rptLotYield.setLotYield(0);
-                    rptLotYieldService.insert(rptLotYield);
+        try {
+            List<MesLotTrackLog> trackLogList = mesLotTrackLogService.findLatestLotEqp(cal.getTime());
+            for (MesLotTrackLog mesLotTrackLog : trackLogList) {
+                String lotNo = mesLotTrackLog.getLotNo();
+                String productionNo = mesLotTrackLog.getProductionNo();
+                String productionName = mesLotTrackLog.getProductionName();
+                String eqpId = mesLotTrackLog.getEqpId();
+                Integer yield = edcDskLogProductionService.findNewYieldByLot(eqpId, productionNo, lotNo);
+                if (yield == null) {
+                    continue;
+                } else {
+                    boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
+                    if (!updateFlag) {
+                        RptLotYield rptLotYield = new RptLotYield();
+                        rptLotYield.setLotNo(lotNo);
+                        rptLotYield.setProductionNo(productionNo);
+                        rptLotYield.setProductionName(productionName);
+                        rptLotYield.setEqpId(eqpId);
+                        rptLotYield.setLotYieldEqp(yield);
+                        rptLotYield.setLotYield(0);
+                        rptLotYieldService.insert(rptLotYield);
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("updateYield():执行异常");
         }
         String eventId = StringUtil.randomTimeUUID("RPT");
         fabLogService.info("",eventId,"updateYield","更新批次产量","","");
