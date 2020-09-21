@@ -350,7 +350,6 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
         log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行");
-        
         repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
