@@ -6,6 +6,7 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -50,4 +51,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesLotTrack findLotTrack(String eqpId,String lotNo,String productionNo);
 
     MesLotTrack findLastTrack(String eqpId,String lotNo,Date startTime);
+
+    List<Map> lotTrackQuery(String lineNo, String startTime, String endTime);
 }

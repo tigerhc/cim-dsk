@@ -479,6 +479,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public MesLotTrack findLastTrack(String eqpId,String lotNo,Date startTime){
         return baseMapper.findLastTrack(eqpId,lotNo,startTime);
     }
+    @Override
+    public List<Map> lotTrackQuery(String lineNo,String startTime,String endTime){
+        return baseMapper.lotTrackQuery(lineNo,startTime,endTime);
+    }
     //public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();
     //    map.put("1", "2");

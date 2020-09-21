@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -53,4 +54,7 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
 
     @Select("select * from mes_lot_track where eqp_id=#{eqpId} and lot_no=#{lotNo} and production_no=#{productionNo}")
     MesLotTrack findLotTrack(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo,@Param("productionNo") String productionNo);
+
+    @Select("select * from mes_lot_track where eqp_id like '%#{lineNo}%' and start_time between #{startTime} and #{endTime} group by lot_no order by start_time")
+    List<Map> lotTrackQuery(@Param("lineNo") String lineNo, @Param("startTime") String startTime, @Param("endTime") String endTime);
 }

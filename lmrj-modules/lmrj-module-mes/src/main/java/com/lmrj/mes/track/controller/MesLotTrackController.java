@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -62,6 +64,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //public MesResult trackin(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
     //}
+    @RequestMapping("/findLotTrack")
+    public Response lotTrackQuery(@RequestParam String lineNo, @RequestParam String beginTime,@RequestParam String endTime,HttpServletRequest request, HttpServletResponse response) {
+        Response res=new Response();
+        List<Map> maps =  mesLotTrackService.lotTrackQuery(lineNo,beginTime,endTime);
+        res.put("lottrack",maps);
+        return res;
+    }
 
     //50029150702D 37368342             037368342ED   J.SIM6812M(E)D-URA F2971
     @RequestMapping(value = "/dsktrackin/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
