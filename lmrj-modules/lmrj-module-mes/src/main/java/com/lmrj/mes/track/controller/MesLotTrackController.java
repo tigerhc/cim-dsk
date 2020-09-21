@@ -64,7 +64,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //public MesResult trackin(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
     //}
-    @RequestMapping("/findLotTrack")
+    @RequestMapping("/lotTrackQuery")
     public Response lotTrackQuery(@RequestParam String lineNo, @RequestParam String beginTime,@RequestParam String endTime,HttpServletRequest request, HttpServletResponse response) {
         Response res=new Response();
         List<Map> maps =  mesLotTrackService.lotTrackQuery(lineNo,beginTime,endTime);

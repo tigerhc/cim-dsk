@@ -109,7 +109,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             endTime=cal.getTime();
         }
         int lotYieldAll=0;
-        lotYieldAll = iMesLotWipService.findDayLotYield("SIM-DM1",startTime,endTime);
+        lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
         /*for (MesLotTrack rptLotYield : lotYieldDaylList) {
             int lotYield = rptLotYield.getLotYield();
             if(lotYield ==0){
