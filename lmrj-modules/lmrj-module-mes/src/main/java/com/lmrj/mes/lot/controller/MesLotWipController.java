@@ -93,13 +93,21 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             lotYieldDaylList.addAll(rptLotYieldList);
         }*/
         Date startTime=new Date();
+        Date endTime = new Date();
+        String hour =DateUtil.getDate("HH");
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY,8);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-        startTime=cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH,1);
-        Date endTime=cal.getTime();
+        if(Integer.parseInt(hour)<8){
+            endTime=cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH,-1);
+            startTime= cal.getTime();
+        }else{
+            startTime=cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH,1);
+            endTime=cal.getTime();
+        }
         int lotYieldAll=0;
         lotYieldAll = iMesLotWipService.findDayLotYield("SIM-DM1",startTime,endTime);
         /*for (MesLotTrack rptLotYield : lotYieldDaylList) {

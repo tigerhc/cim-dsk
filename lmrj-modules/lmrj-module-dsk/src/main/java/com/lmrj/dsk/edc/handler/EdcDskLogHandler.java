@@ -1,6 +1,5 @@
 package com.lmrj.dsk.edc.handler;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,9 +35,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
@@ -352,6 +349,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
+        log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行");
         repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
