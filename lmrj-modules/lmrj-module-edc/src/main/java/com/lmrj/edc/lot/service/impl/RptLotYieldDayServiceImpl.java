@@ -181,4 +181,8 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         return baseMapper.searchStand(lineNo);
     }
 
+    @Override
+    public  List<Map<String,Object>> findEqp(String stationId){
+        return baseMapper.findEqp(stationId);
+    }
 }

@@ -64,4 +64,9 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     public List<Map<String,Object>> searchStand (@PathVariable("lineNo") String lineNo) {
         return rptLotYieldDayService.searchStand(lineNo);
     }
+
+    @RequestMapping(value = "/findEqp/{stationId}")
+    public List<Map<String,Object>> findEqp(@PathVariable("stationId") String stationId) {
+        return rptLotYieldDayService.findEqp(stationId);
+    }
 }
