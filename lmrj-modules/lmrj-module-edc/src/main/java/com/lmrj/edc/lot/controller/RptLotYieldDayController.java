@@ -7,6 +7,7 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
 import com.lmrj.edc.lot.service.IRptLotYieldDayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,5 +54,10 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
             res.put("yield",maps);
         }
         return res;
+    }
+
+    @RequestMapping(value = "/searchStand/{lineNo}")
+    public List<Map<String,Object>> searchStand (@PathVariable("lineNo") String lineNo) {
+        return rptLotYieldDayService.searchStand(lineNo);
     }
 }

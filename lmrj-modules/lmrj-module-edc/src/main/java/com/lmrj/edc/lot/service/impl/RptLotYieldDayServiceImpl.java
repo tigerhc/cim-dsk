@@ -176,4 +176,9 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         return yieldDayLists;
     }
 
+    @Override
+    public  List<Map<String,Object>> searchStand(String lineNo){
+        return baseMapper.searchStand(lineNo);
+    }
+
 }
