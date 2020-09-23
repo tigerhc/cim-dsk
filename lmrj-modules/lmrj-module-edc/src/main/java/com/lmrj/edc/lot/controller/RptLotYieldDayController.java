@@ -6,6 +6,7 @@ import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
 import com.lmrj.edc.lot.service.IRptLotYieldDayService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,10 +42,13 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     // 获取产量
 
     @RequestMapping("/pdtChart")
-    public Response findProduction(@RequestParam String lineNo,@RequestParam String beginTime,@RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+    public Response findProduction(@RequestParam String stationCode,@RequestParam String lineNo,@RequestParam String beginTime,@RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res=new Response();
         //添加线别和站别产量
-        String stationCode="DM";
+//        String stationCode="DM";
+        if(StringUtil.isEmpty(stationCode)){
+            stationCode ="DM";
+        }
         String eqpId=null;
         if(eqpId==null){
             List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode);
