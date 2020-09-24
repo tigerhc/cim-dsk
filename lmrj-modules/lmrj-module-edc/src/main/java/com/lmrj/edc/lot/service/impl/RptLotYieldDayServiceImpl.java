@@ -182,7 +182,7 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     }
 
     @Override
-    public  List<Map<String,Object>> findEqp(String stationId){
-        return baseMapper.findEqp(stationId);
+    public  List<Map<String,Object>> findEqp(String stationId,String date){
+        return baseMapper.findEqp(stationId,date);
     }
 }

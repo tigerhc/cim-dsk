@@ -43,6 +43,6 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     @Select("select distinct station_code from fab_equipment where line_no=#{lineNo}")
     List<Map<String,Object>> searchStand( @Param("lineNo") String lineNo);
 
-    @Select("select lot_yield,lot_yield_eqp,eqp_id from rpt_lot_yield_day where station_code=#{stationId}")
-    List<Map<String,Object>> findEqp( @Param("stationId") String stationId);
+    @Select("select lot_yield,lot_yield_eqp,eqp_id from rpt_lot_yield_day where station_code=#{stationId} and period_date=#{date}")
+    List<Map<String,Object>> findEqp( @Param("stationId") String stationId,@Param("date") String date);
 }

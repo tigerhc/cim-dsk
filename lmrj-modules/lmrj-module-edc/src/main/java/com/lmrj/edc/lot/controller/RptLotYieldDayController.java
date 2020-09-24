@@ -65,8 +65,13 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         return rptLotYieldDayService.searchStand(lineNo);
     }
 
-    @RequestMapping(value = "/findEqp/{stationId}")
-    public List<Map<String,Object>> findEqp(@PathVariable("stationId") String stationId) {
-        return rptLotYieldDayService.findEqp(stationId);
+    @RequestMapping(value = "/findEqp")
+    public List<Map<String,Object>> findEqp(@RequestParam String day,@RequestParam String year,@RequestParam String stationCode) {
+        if(StringUtil.isEmpty(stationCode)){
+            stationCode ="DM";
+        }
+        String head = year.substring(0,4);
+        String date = head.concat(day);
+        return rptLotYieldDayService.findEqp(stationCode,date);
     }
 }
