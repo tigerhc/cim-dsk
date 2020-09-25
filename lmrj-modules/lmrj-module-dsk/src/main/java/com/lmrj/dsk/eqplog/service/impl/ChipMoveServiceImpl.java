@@ -21,7 +21,6 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(Map<String, Object> item : dataList){
                 ChipMove data = new ChipMove();
-                data.setChipId("");//打码机在其他地方
                 data.setEqpId(MapUtils.getString(item, "eqpNo"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
