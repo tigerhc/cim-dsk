@@ -104,6 +104,7 @@ public class EdcSecsLogHandler {
         if (ArrayUtil.contains(ceids, ceid)) {
             fabEquipmentStatusService.increaseYield(eqpId, 12);
             FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+            log.info("TRM设备产量+12  eqpId："+eqpId+"DayYield"+equipmentStatus.getDayYield()+"LotYield"+equipmentStatus.getLotYield()+"LotYieldEqp"+equipmentStatus.getLotYieldEqp());
             // TODO: 2020/7/8 写入 edc_dsk_log_production
             EdcDskLogProduction productionLog = new EdcDskLogProduction();
             productionLog.setEqpId(evtRecord.getEqpId());
@@ -114,7 +115,8 @@ public class EdcSecsLogHandler {
             productionLog.setEqpModelName(fabEquipment.getModelName());
             productionLog.setEqpNo(fabEquipment.getEqpNo());
             productionLog.setJudgeResult("y");
-            productionLog.setDayYield(equipmentStatus.getDayYield());
+            EdcDskLogProduction pro= edcDskLogProductionService.findLastYield(eqpId,new Date());
+            productionLog.setDayYield(pro.getDayYield());
             productionLog.setLotYield(equipmentStatus.getLotYield());
             productionLog.setDuration(0D);
             //productionLog.setMaterialNo(columns[columnNo++]); //制品的序列号
@@ -127,8 +129,6 @@ public class EdcSecsLogHandler {
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
             edcDskLogProductionService.insert(productionLog);
-            String eventId = StringUtil.randomTimeUUID("RPT");
-            fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM production数据更新结束", equipmentStatus.getLotNo(), "gxj");
             MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
@@ -142,7 +142,6 @@ public class EdcSecsLogHandler {
                 mesLotTrack.setCreateBy("EQP");
                 mesLotTrackService.insert(mesLotTrack);
             }
-            fabLogService.info(evtRecord.getEqpId(), eventId, "handleMoldYield", "TRM lotTrack数据更新结束", equipmentStatus.getLotNo(), "gxj");
             if (eventParams != null) {
                 String[] params = eventParams.split(",");
                 if (params.length == 3) {
