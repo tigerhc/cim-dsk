@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -23,4 +25,8 @@ import java.util.Date;
 public interface EdcDskLogRecipeMapper extends BaseMapper<EdcDskLogRecipe> {
  @Select("select id from edc_dsk_log_recipe where eqp_id=#{eqpId} and start_time< #{startTime} order by start_time desc limit 1")
  String findOldRecipeId(@Param("eqpId") String eqpId, @Param("startTime") Date startTime);
+
+ List<Map<String,String>> findData(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+ String findOldData(@Param("eqpId") String eqpId, @Param("startTime") String startTime, @Param("paramName") String paramName);
 }

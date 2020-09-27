@@ -21,4 +21,6 @@ public interface IEdcDskLogOperationService extends ICommonService<EdcDskLogOper
     List<EdcDskLogOperation> findDataByTimeAndEqpId(String eqpId,Date startTime,Date endTime);
 
     List<String> findEqpId(Date startTime,Date endTime);
+
+    Boolean exportOperationFile(String eqpId,Date startTime,Date endTime);
 }

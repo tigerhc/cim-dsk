@@ -60,8 +60,8 @@ public class EdcSecsLogHandler {
         System.out.println("接收到的消息" + msg);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msg, EdcAmsRecord.class);
         //if(){
-        //
-        //}
+        ////
+        ////}
         edcAmsRecordService.insert(edcAmsRecord);
     }
 

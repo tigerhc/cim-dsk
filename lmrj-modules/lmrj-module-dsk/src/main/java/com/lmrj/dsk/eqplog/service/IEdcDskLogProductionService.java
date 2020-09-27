@@ -3,6 +3,7 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
+import com.lmrj.mes.track.entity.MesLotTrack;
 
 import java.util.Date;
 import java.util.List;
@@ -33,5 +34,5 @@ public interface IEdcDskLogProductionService extends ICommonService<EdcDskLogPro
 
     List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId);
 
-
+    Boolean exportProductionFile(List<MesLotTrack> lotList);
 }

@@ -40,7 +40,6 @@ import java.util.*;
 @Service("edcDskLogProductionService")
 @Slf4j
 public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogProductionMapper, EdcDskLogProduction> implements IEdcDskLogProductionService {
-    public String fileType = "PRODUCTION";
     @Autowired
     private IFabLogService fabLogService;
     @Autowired
@@ -99,12 +98,27 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
     }
 
-
     @Override
     public List<EdcDskLogProduction> findProByTime(Date startTime, Date endTime, String eqpId) {
         return baseMapper.findProByTime(startTime, endTime, eqpId);
     }
 
+    @Override
+    public Boolean exportProductionFile(List<MesLotTrack> lotList) {
+        List<EdcDskLogProduction> proList = new ArrayList<>();
+        for (MesLotTrack mesLotTrack : lotList) {
+            //打印产量日志
+            proList = baseMapper.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+            try {
+                String fileType = "PRODUCTION";
+                this.printProlog(proList,fileType);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return true;
+    }
 
     /**
      * @param eqpId
@@ -238,15 +252,16 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
      */
     //打印批次或品番错误的数据的production文件
     public void printProductionCsv(List<MesLotTrack> wrongList) {
-        for (MesLotTrack pro : wrongList) {
+        for (MesLotTrack lot : wrongList) {
             //根据批次、品番和设备号查找所有记录
-            List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            List<EdcDskLogProduction> prolist = baseMapper.findDataBylotNo(lot.getLotNo(), lot.getEqpId(), lot.getProductionNo());
             //修改批次内连番
             updateProductionLotYieId(prolist);
-            prolist = baseMapper.findDataBylotNo(pro.getLotNo(), pro.getEqpId(), pro.getProductionNo());
+            prolist = baseMapper.findDataBylotNo(lot.getLotNo(), lot.getEqpId(), lot.getProductionNo());
             try {
                 //导出文件 一个批次生成一个文件
-                this.printProlog(prolist);
+                String fileType = "PRODUCTION";
+                this.printProlog(prolist,fileType);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -285,7 +300,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         FileUtil.writeLines(newFile, "UTF-8", lines);
     }*/
 
-    public void printProlog(List<EdcDskLogProduction> prolist) throws Exception {
+    public void printProlog(List<EdcDskLogProduction> prolist,String fileType) throws Exception {
         String eqpNo = "";
         List<String> lines = new ArrayList<>();
         String filename = null;
