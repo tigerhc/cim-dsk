@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,4 +76,36 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         String date = head.concat(day);
         return rptLotYieldDayService.findEqp(lineNo,stationCode,date);
     }
+
+    @RequestMapping(value = "/searchStandAndEqp/{lineNo}")
+    public List<Map<String,Object>> searchStandAndEqp (@PathVariable("lineNo") String lineNo) {
+        List<Map<String,Object>> parent = rptLotYieldDayService.searchStandAndEqp(lineNo);
+        List<Map<String,Object>> result = new ArrayList<>();
+        for(Map<String,Object> map:parent){
+            Map<String,Object> son = new HashMap<String,Object>();
+            String param = (String) map.get("value");
+            son.put("value",map.get("value"));
+            son.put("label",map.get("label"));
+
+            List<Map<String,Object>> children = new ArrayList<>();
+            List<Map<String,Object>> resultSon =rptLotYieldDayService.findSonEqp(lineNo,param);
+            for(Map<String,Object> maps:resultSon){
+                Map<String,Object> temp = new HashMap<String,Object>();
+                temp.put("value",maps.get("eqp_id"));
+                temp.put(" label",maps.get("eqp_id"));
+                children.add(temp);
+            }
+            son.put("children",children);
+            result.add(son);
+
+        }
+
+
+
+        return result;
+    }
+
+
+
+
 }
