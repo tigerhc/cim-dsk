@@ -63,10 +63,24 @@
         order by sort_no, step_id
     </select>
 
-    <select id="findEmail" resultType="map" parameterType="java.lang.String">
-        select eqp_liable as name
-        from fab_equipment as eqp
-        where eqp.eqp_id = #{eqpId}
+    <select id="findEmail" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+	    b.email as email
+        FROM
+	    fab_equipment AS a
+	    left JOIN fab_org_structure as b
+	    on a.department = b.department_code
+        WHERE
+	    a.eqp_id = #{eqpId}
+    </select>
+
+    <select id="findEmailALL" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+	    email as email
+        FROM
+        fab_org_structure as b
+        WHERE
+	    b.department_code = #{code}
     </select>
 
 </mapper>

@@ -57,7 +57,7 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     public List<FabEquipment> findEqpBySubLine(String lineNo) {
         return baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("sub_line_no", lineNo));
     }
-    
+
     @Override
     public List<String> findEqpIdList() {
         return baseMapper.findEqpIdList();
@@ -78,8 +78,13 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
         return baseMapper.findeqpNoInfab(eqpId);
     }
 
-    public String findEmail (String eqpId){
-        Map<String,Object> result = baseMapper.findEmail(eqpId);
-       return UserUtil.getByUserName((String) result.get("name")).getEmail();
+    public List<Map<String,Object>> findEmail (String eqpId){
+        List<Map<String,Object>> result = baseMapper.findEmail(eqpId);
+       return result;
+    }
+
+    public List<Map<String,Object>> findEmailALL (String  code){
+        List<Map<String,Object>> result = baseMapper.findEmailALL(code);
+        return result;
     }
 }
