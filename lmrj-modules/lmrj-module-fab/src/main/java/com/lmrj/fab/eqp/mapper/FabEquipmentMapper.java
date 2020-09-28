@@ -48,4 +48,7 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
     List<Map<String,Object>> findEmail (@Param("eqpId") String eqpId);
 
     List<Map<String,Object>> findEmailALL (@Param("code") String code);
+
+    @Select("select * from fab_equipment where eqp_id like concat(#{eqpId},'%')")
+    List<FabEquipment> findWbEqp(@Param("eqpId") String eqpId);
 }

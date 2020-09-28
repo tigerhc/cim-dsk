@@ -1,12 +1,10 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.mapper.FabEquipmentMapper;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +27,10 @@ import java.util.Map;
 @Service("fabequipmentService")
 public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMapper, FabEquipment> implements IFabEquipmentService {
 
+    @Override
+    public List<FabEquipment> findWbEqp(String eqpId){
+        return baseMapper.findWbEqp(eqpId);
+    }
     @Override
     public List<String> findStationCodeByLineNo(String lineNo) {
         return baseMapper.findStationCodeByLineNo(lineNo);
