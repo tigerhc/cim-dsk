@@ -7,8 +7,14 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogOperationMapper;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.edc.config.service.impl.EdcConfigFileCsvServiceImpl;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
+import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +44,14 @@ import java.util.*;
 public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOperationMapper, EdcDskLogOperation> implements IEdcDskLogOperationService {
     @Autowired
     IEdcDskLogProductionService iEdcDskLogProductionService;
+    @Autowired
+    private IFabLogService fabLogService;
+    @Autowired
+    EdcConfigFileCsvServiceImpl edcConfigFileCsvService;
+    @Autowired
+    FabEquipmentServiceImpl fabEquipmentService;
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
     @Override
     public List<EdcDskLogOperation> findDataByTimeAndEqpId(String eqpId, Date startTime, Date endTime) {
         return baseMapper.findDataByTimeAndEqpId(eqpId, startTime, endTime);
@@ -181,4 +195,60 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         //反查已读文件
         fancha(file.getName(),mesLotTrack.getLotNo(),newlines);
     }*/
+    @Override
+    public Boolean exportOperationFile(String eqpId,Date startTime,Date endTime){
+        List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId,startTime,endTime);
+
+        return true;
+    }
+
+    public void printOperlog(List<EdcDskLogOperation> operlist,String fileType) throws Exception {
+        String eqpNo = "";
+        List<String> lines = new ArrayList<>();
+        String filename = null;
+        EdcDskLogOperation oper;
+        String pattern1 = "yyyyMMddHHmm999";
+        String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
+        String filePath = null;
+        String fileBackUpPath = null;
+        //获取表格title添加到lines中
+        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(operlist.get(0).getEqpId(), fileType));
+        for (int i = 0; i < operlist.size(); i++) {
+            eqpNo = iFabEquipmentService.findeqpNoInfab(operlist.get(i).getEqpId());
+            oper = operlist.get(i);
+            //拼写文件存储路径及备份路径
+            if (i == 0) {
+                String createTimeString = DateUtil.formatDate(oper.getCreateDate(), pattern1);
+                filename = "DSK_" + oper.getEqpId() + "_"  + createTimeString + "_Operationlog.csv";
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(oper.getEqpId());
+                filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + oper.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + oper.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
+                fileBackUpPath = new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
+            }
+            String startTimeString = DateUtil.formatDate(oper.getStartTime(), pattern2);
+            //拼写当前行字符串
+            String line = oper.getEqpId() + "," + oper.getEqpModelName() + "," + eqpNo + "," + oper.getRecipeCode() + "," + startTimeString + "," + oper.getDayYield() + "," + oper.getLotYield() + "," +
+                    oper.getDuration() + "," + "," + "," + "," + "," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo() + "," + oper.getEventParams();
+            lines.add(line);
+        }
+        //创建文件路径
+        FileUtil.mkDir(fileBackUpPath);
+        File newFile = new File(filePath + "\\" + filename);
+        FileUtil.writeLines(newFile, "UTF-8", lines);
+        String eventId = StringUtil.randomTimeUUID("RPT");
+        fabLogService.info(filename.split("_")[1], eventId, "printOperlog", "生成Operation文件","", "");
+        //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
+        List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
+        for (File file : fileList) {
+            if (file.getName().contains("Operation.csv")) {
+                //eqpId lotNo
+                if (file.getName().split("_")[1].equals(filename.split("_")[1]) &&
+                        file.getName().split("_")[2].equals(filename.split("_")[2]) &&
+                        !file.getName().split("_")[3].equals(filename.split("_")[3])) {
+                    FileUtil.move(filePath + "\\" + file.getName(), fileBackUpPath + "\\" + file.getName(), false);
+                }
+            }
+        }
+    }
 }

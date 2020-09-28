@@ -57,4 +57,5 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
 
     @Select("select * from mes_lot_track where eqp_id like concat(#{eqpId},'%') and start_time between #{startTime} and #{endTime} group by lot_no order by eqp_id,start_time")
     List<Map> lotTrackQuery(@Param("lineNo") String lineNo, @Param("startTime") String startTime, @Param("endTime") String endTime);
+
 }

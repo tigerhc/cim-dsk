@@ -235,7 +235,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             } else {
                 return result.getMsg();
             }
-
         } catch (Exception e) {
             fabLogService.info(eqpId,"Error6","MesLotTrackController.dmTrackout","有异常",trackinfo,"wangdong");//日志记录
             return e.getMessage();

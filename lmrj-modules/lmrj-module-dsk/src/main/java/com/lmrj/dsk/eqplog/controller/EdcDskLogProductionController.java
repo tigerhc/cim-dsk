@@ -46,4 +46,6 @@ public class EdcDskLogProductionController extends BaseCRUDController<EdcDskLogP
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
         return doExport("生产日志记录", queryable,  propertyPreFilterable,  request,  response);
     }
+
+
 }

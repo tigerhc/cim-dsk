@@ -16,4 +16,31 @@
        t.create_date,
        t.create_by
 	</sql>
+       <select id="findData" resultType="java.util.Map">
+              select
+                a.eqp_id,a.recipe_code,a.start_time,b.recipe_log_id,b.para_name,b.set_value,b.sort_no
+              from
+                edc_dsk_log_recipe a
+              LEFT JOIN
+                edc_dsk_log_recipe_body b
+                on a.id = b.recipe_log_id
+              where
+               a.eqp_id=#{eqpId}
+              and a.start_time between #{startTime} and #{endTime}
+              ORDER BY a.start_time
+       </select>
+    <select id="findOldData" resultType="java.lang.String">
+        SELECT
+        b.set_value
+        FROM
+        edc_dsk_log_recipe a
+        INNER JOIN edc_dsk_log_recipe_body b ON a.id = b.recipe_log_id
+        WHERE
+        a.eqp_id = #{eqpId}
+        AND a.start_time &lt; #{startTime}
+        AND b.para_name = #{paraName}
+        ORDER BY
+        a.start_time DESC
+        LIMIT 1
+    </select>
 </mapper>
