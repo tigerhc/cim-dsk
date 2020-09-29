@@ -122,7 +122,7 @@ public class EdcSecsLogHandler {
             productionLog.setEqpNo(fabEquipment.getEqpNo());
             productionLog.setJudgeResult("y");
             EdcDskLogProduction pro= edcDskLogProductionService.findLastYield(eqpId,new Date());
-            productionLog.setDayYield(pro.getDayYield());
+            productionLog.setDayYield(pro.getDayYield()+12);
             productionLog.setLotYield(equipmentStatus.getLotYield());
             productionLog.setDuration(0D);
             //productionLog.setMaterialNo(columns[columnNo++]); //制品的序列号
