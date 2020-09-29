@@ -53,12 +53,18 @@ public class EdcSecsLogHandler {
     private IFabLogService fabLogService;
     @Autowired
     private IEdcDskLogOperationService edcDskLogOperationService;
-
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
         System.out.println("接收到的消息" + msg);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msg, EdcAmsRecord.class);
+        FabEquipment fabEquipment=iFabEquipmentService.findEqpByCode(edcAmsRecord.getEqpId());
+        if(fabEquipment!=null){
+            edcAmsRecord.setStationCode(fabEquipment.getStationCode());
+            edcAmsRecord.setLineNo(fabEquipment.getLineNo());
+        }
         //if(){
         ////
         ////}
