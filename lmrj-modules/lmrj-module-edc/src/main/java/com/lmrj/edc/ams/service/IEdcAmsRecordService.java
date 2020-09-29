@@ -21,6 +21,7 @@ import java.util.Map;
 public interface IEdcAmsRecordService extends ICommonService<EdcAmsRecord> {
     List<EdcAmsRecord> selectAmsRecord(String officeId, String lineNo,String department, String fab);
     List<Map>  selectAlarmCountByLine(String beginTime, String endTime, String lineNo);
+    List<Map>  selectAlarmCountByLineOther(String stationCode,String beginTime, String endTime, String lineNo);
     List<Map>  selectAlarmCountByEqp(String beginTime, String endTime, String eqpId);
     List<EdcAmsRecord> findAmsRecordByTime(Date startTime, Date endTime);
     List<Map> selectAlarmCountByStation(String beginTime, String endTime, String lineNo, String stationCode);

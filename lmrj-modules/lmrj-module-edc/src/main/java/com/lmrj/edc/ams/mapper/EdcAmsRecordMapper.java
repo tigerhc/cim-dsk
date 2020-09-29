@@ -30,6 +30,8 @@ public interface EdcAmsRecordMapper extends BaseMapper<EdcAmsRecord> {
 
     List<Map> selectAlarmCountByLine(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo);
 
+    List<Map> selectAlarmCountByLineOther(@Param("stationCode") String stationCode,@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo);
+
     List<Map> selectAlarmCountByEqp(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
 
     List<Map> selectAlarmCountByStation(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);

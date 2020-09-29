@@ -7,6 +7,7 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,26 +42,31 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
     private IEdcAmsRecordService iEdcAmsRecordService;
 
     @RequestMapping("/selectAlarmCountByLine")
-    public Response selectAlarmCountByLine(@RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
-        Response res=new Response();
-        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByLine(beginTime,endTime,lineNo);
-        res.put("record",maps);
+    public Response selectAlarmCountByLine(@RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, @RequestParam String stationCode, HttpServletRequest request, HttpServletResponse response) {
+        Response res = new Response();
+        if (StringUtil.isEmpty(stationCode)) {
+            List<Map> maps = iEdcAmsRecordService.selectAlarmCountByLine(beginTime, endTime, lineNo);
+            res.put("record", maps);
+        } else {
+            List<Map> maps = iEdcAmsRecordService.selectAlarmCountByLineOther(stationCode, beginTime, endTime, lineNo);
+            res.put("record", maps);
+        }
         return res;
     }
 
     @RequestMapping("/selectAlarmCountByEqp")
     public Response selectAlarmCountByEqp(@RequestParam String eqpId, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
-        Response res=new Response();
-        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByEqp(beginTime,endTime,eqpId);
-        res.put("record",maps);
+        Response res = new Response();
+        List<Map> maps = iEdcAmsRecordService.selectAlarmCountByEqp(beginTime, endTime, eqpId);
+        res.put("record", maps);
         return res;
     }
 
     @RequestMapping("/selectAlarmCountByStation")
-    public Response selectAlarmCountByStation(@RequestParam String lineNo,@RequestParam String stationCode, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
-        Response res=new Response();
-        List<Map> maps =  iEdcAmsRecordService.selectAlarmCountByStation(beginTime,endTime,lineNo,stationCode);
-        res.put("record",maps);
+    public Response selectAlarmCountByStation(@RequestParam String lineNo, @RequestParam String stationCode, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res = new Response();
+        List<Map> maps = iEdcAmsRecordService.selectAlarmCountByStation(beginTime, endTime, lineNo, stationCode);
+        res.put("record", maps);
         return res;
     }
 
