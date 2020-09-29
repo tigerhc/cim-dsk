@@ -41,4 +41,19 @@
               group by period_date
               order by period_date
        </select>
+
+       <select id="findSonEqp" resultType="map">
+              SELECT
+	          station_code as parent,
+	          eqp_id as son
+              FROM
+	          fab_equipment
+              WHERE
+	          line_no = #{lineNo}
+	          AND station_code in
+              <foreach collection="stationId" open="(" close=")" separator="," item="item" index="index">
+                     #{item}
+              </foreach>
+	          GROUP BY station_code,eqp_id
+       </select>
 </mapper>

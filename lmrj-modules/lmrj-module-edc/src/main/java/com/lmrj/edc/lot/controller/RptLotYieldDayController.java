@@ -44,68 +44,68 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     // 获取产量
 
     @RequestMapping("/pdtChart")
-    public Response findProduction(@RequestParam String stationCode,@RequestParam String lineNo,@RequestParam String beginTime,@RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
-        Response res=new Response();
+    public Response findProduction(@RequestParam String stationCode, @RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res = new Response();
         //添加线别和站别产量
 //        String stationCode="DM";
-        if(StringUtil.isEmpty(stationCode)){
-            stationCode ="DM";
+        if (StringUtil.isEmpty(stationCode)) {
+            stationCode = "DM";
         }
-        String eqpId=null;
-        if(eqpId==null){
-            List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode);
-            res.put("yield",maps);
-        }else{
-            List<Map> maps =  rptLotYieldDayService.pdtChart(beginTime.replace("-",""),endTime.replace("-",""),lineNo,stationCode,eqpId);
-            res.put("yield",maps);
+        String eqpId = null;
+        if (eqpId == null) {
+            List<Map> maps = rptLotYieldDayService.pdtChart(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
+            res.put("yield", maps);
+        } else {
+            List<Map> maps = rptLotYieldDayService.pdtChart(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode, eqpId);
+            res.put("yield", maps);
         }
         return res;
     }
 
     @RequestMapping(value = "/searchStand/{lineNo}")
-    public List<Map<String,Object>> searchStand (@PathVariable("lineNo") String lineNo) {
+    public List<Map<String, Object>> searchStand(@PathVariable("lineNo") String lineNo) {
         return rptLotYieldDayService.searchStand(lineNo);
     }
 
     @RequestMapping(value = "/findEqp")
-    public List<Map<String,Object>> findEqp(@RequestParam String lineNo,@RequestParam String day,@RequestParam String year,@RequestParam String stationCode) {
-        if(StringUtil.isEmpty(stationCode)){
-            stationCode ="DM";
+    public List<Map<String, Object>> findEqp(@RequestParam String lineNo, @RequestParam String day, @RequestParam String year, @RequestParam String stationCode) {
+        if (StringUtil.isEmpty(stationCode)) {
+            stationCode = "DM";
         }
-        String head = year.substring(0,4);
+        String head = year.substring(0, 4);
         String date = head.concat(day);
-        return rptLotYieldDayService.findEqp(lineNo,stationCode,date);
+        return rptLotYieldDayService.findEqp(lineNo, stationCode, date);
     }
 
     @RequestMapping(value = "/searchStandAndEqp/{lineNo}")
-    public List<Map<String,Object>> searchStandAndEqp (@PathVariable("lineNo") String lineNo) {
-        List<Map<String,Object>> parent = rptLotYieldDayService.searchStandAndEqp(lineNo);
-        List<Map<String,Object>> result = new ArrayList<>();
-        for(Map<String,Object> map:parent){
-            Map<String,Object> son = new HashMap<String,Object>();
-            String param = (String) map.get("value");
-            son.put("value",map.get("value"));
-            son.put("label",map.get("label"));
-
-            List<Map<String,Object>> children = new ArrayList<>();
-            List<Map<String,Object>> resultSon =rptLotYieldDayService.findSonEqp(lineNo,param);
-            for(Map<String,Object> maps:resultSon){
-                Map<String,Object> temp = new HashMap<String,Object>();
-                temp.put("value",maps.get("eqp_id"));
-                temp.put(" label",maps.get("eqp_id"));
-                children.add(temp);
-            }
-            son.put("children",children);
-            result.add(son);
-
+    public List<Object> searchStandAndEqp(@PathVariable("lineNo") String lineNo) {
+        long startTime = System.currentTimeMillis();
+        List<Map<String, Object>> parents = rptLotYieldDayService.searchStandAndEqp(lineNo);
+        List<Object> result = new ArrayList<>();
+        List<String> parentParams = new ArrayList<>();
+        for (Map<String, Object> map : parents) {
+            parentParams.add((String) map.get("value"));
         }
+        List<Map<String, Object>> sons = rptLotYieldDayService.findSonEqp(lineNo, parentParams);
+        for (Map<String, Object> map : parents) {
+            List<Object> small = new ArrayList<>();
+            Map<String, Object> item = new HashMap<>();
+            item.put("value", map.get("value"));
+            item.put("label", map.get("value"));
 
-
-
+            for (Map<String, Object> mapson : sons) {
+                Map<String, Object> temp = new HashMap<>();
+                if (map.get("value").equals(mapson.get("parent"))) {
+                    temp.put("value", mapson.get("son"));
+                    temp.put("label", mapson.get("son"));
+                    small.add(temp);
+                }
+            }
+            item.put("children", small);
+            result.add(item);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
         return result;
     }
-
-
-
-
 }
