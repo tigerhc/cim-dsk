@@ -46,6 +46,7 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     @RequestMapping("/pdtChart")
     public Response findProduction(@RequestParam String stationCode, @RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res = new Response();
+        
         //添加线别和站别产量
 //        String stationCode="DM";
         if (StringUtil.isEmpty(stationCode)) {

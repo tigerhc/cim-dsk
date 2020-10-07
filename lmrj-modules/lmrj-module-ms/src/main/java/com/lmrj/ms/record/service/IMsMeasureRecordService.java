@@ -25,4 +25,5 @@ public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord>
 
     List<MsMeasureRecord> findAll();
 
+    List<Map> findWeight(Map<String, Object> param);
 }

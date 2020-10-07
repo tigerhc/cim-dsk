@@ -49,4 +49,23 @@
               <id column="id" property="id"/>
               <collection property="detail" select="com.lmrj.ms.record.mapper.MsMeasureRecordDetailMapper.findDetailByRecordId" column="id"></collection>
        </resultMap>
+
+       <select id="findWeight" parameterType="java.util.Map" resultType="java.util.Map">
+            SELECT date_format(dtl.create_date,'%Y-%m-%d %H:%i:%s') as "createDate",
+                    dtl.item_value as "weight",
+                    rcd.eqp_id as "eqpId"
+             from ms_measure_record_detail dtl
+            LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
+            where dtl.item_code='WEIGHT'
+            <if test="lotNo !=null and lotNo !=''">
+                   and rcd.lot_no=#{lotNo}
+            </if>
+            <if test="eqpId!=null and eqpId!=''">
+                   and rcd.eqp_id=#{eqpId}
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                  and dtl.create_date between #{startTime} and #{endTime}
+            </if>
+            order by dtl.create_date
+       </select>
 </mapper>

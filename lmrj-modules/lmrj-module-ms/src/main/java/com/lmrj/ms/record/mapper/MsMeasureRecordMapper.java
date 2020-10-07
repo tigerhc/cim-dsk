@@ -29,4 +29,5 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
 @Select("select * from ms_measure_record")
  List<MsMeasureRecord> findAll();
 
+ List<Map> findWeight(Map<String, Object> param);
 }
