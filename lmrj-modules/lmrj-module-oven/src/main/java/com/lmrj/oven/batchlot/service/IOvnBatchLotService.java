@@ -33,4 +33,8 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     void resolveAllTempFile(String eqpId);
 
     List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
+
+    List<Map<String, Object>> findTodayEqpIds();
+
+    boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp);
 }
