@@ -99,4 +99,24 @@
         order by t.create_date, t.batch_id
     </select>
 
+    <select id="findToEqpId" parameterType="java.lang.String" resultType="java.util.Map">
+        select eqp_id as "eqpId",
+                id as "id"
+        from ovn_batch_lot
+        where DATE_FORMAT(create_date,'%Y-%m-%d')=#{dateStr}
+        GROUP BY eqp_id
+    </select>
+
+    <insert id="saveEqp" parameterType="java.util.Map">
+        insert into ovn_batch_lot(id,eqp_id,create_date,del_flag)values
+        <foreach collection="eqps" item="item" separator=",">
+            (#{item.id},#{item.eqpId},now(),0)
+        </foreach>
+    </insert>
+    <insert id="saveTempParam" parameterType="java.util.Map">
+        insert into ovn_batch_lot_param(id,batch_id,temp_pv,create_date,del_flag)values
+        <foreach collection="temps" item="item" separator=",">
+            (#{item.id},#{item.batchId},#{item.tempPv},#{item.sendTime},0)
+        </foreach>
+    </insert>
 </mapper>

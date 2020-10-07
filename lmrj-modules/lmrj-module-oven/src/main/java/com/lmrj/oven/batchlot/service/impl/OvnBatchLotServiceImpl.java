@@ -232,4 +232,21 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             return detail;
         }
     }
+
+    @Override
+    public List<Map<String, Object>> findTodayEqpIds() {
+        String timeStr = DateUtil.getDate();
+        return baseMapper.findToEqpId(timeStr);
+    }
+
+    @Override
+    public boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp) {
+        if(eqpList!=null && eqpList.size()>0){
+            baseMapper.saveEqp(eqpList);
+        }
+        if(temp!=null && temp.size()>0){
+            baseMapper.saveTempParam(temp);
+        }
+        return true;
+    }
 }

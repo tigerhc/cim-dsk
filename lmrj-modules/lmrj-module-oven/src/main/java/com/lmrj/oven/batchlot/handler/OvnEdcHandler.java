@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
+import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -19,6 +20,7 @@ import com.lmrj.edc.param.service.IEdcParamRecordService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -27,9 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -195,5 +195,60 @@ public class OvnEdcHandler {
 //            edcParamRecordService.transfer2His(edcParamRecord.getEqpId());
 //        }
         return "下载成功";
+    }
+
+    /**
+     * @param dataJson
+     * @createTime 2020-09-29
+     */
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.TEMPSENSOR"})
+    public void handleTempSensorData(String dataJson) {
+        logger.info("TempSensorHandler_handleTempSensorData:find data in queue");
+        try {
+            System.out.println(dataJson);
+            List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
+            if(dataList!=null && dataList.size()>0){
+                List<Map<String, Object>> eqpData = new ArrayList<>();
+                List<Map<String, Object>> tempData = new ArrayList<>();
+
+                //find eqp
+                List<Map<String, Object>> eqpIds = ovnBatchLotService.findTodayEqpIds();
+                boolean eqpSizeFlag = (eqpIds==null||eqpIds.size()==0)?false:true;
+
+                for(Map<String, Object> item : dataList){
+                    Map<String, Object> dataItem = new HashMap<String, Object>();
+                    dataItem.put("tempPv", MapUtils.getString(item,"tempValue"));
+                    dataItem.put("id", UUIDUtil.createUUID());
+                    dataItem.put("sendTime", MapUtils.getString(item,"sendTime"));
+
+                    String eqpId = MapUtils.getString(item,"eqpId");
+                    boolean findFlag = true;
+                    if(eqpSizeFlag){
+                        for(Map<String, Object> eqpInfo : eqpIds){
+                            if(eqpId.equals(MapUtils.getString(eqpInfo, "eqpId"))){
+                                dataItem.put("batchId",MapUtils.getString(eqpInfo,"id"));
+                                findFlag = false;
+                            }
+                        }
+                    }
+                    if(findFlag){
+                        String id = UUIDUtil.createUUID();
+                        dataItem.put("batchId",id);
+                        Map<String, Object> eqpDataItem = new HashMap<>();
+                        eqpDataItem.put("id",id);
+                        eqpDataItem.put("eqpId", eqpId);
+                        eqpData.add(eqpDataItem);
+                        eqpIds.add(eqpDataItem);//防止下次循环会重复创建
+                    }
+                    tempData.add(dataItem);
+                }
+                System.out.println(eqpData.toString());
+                ovnBatchLotService.saveTempData(eqpData, tempData);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("TempSensorHandler_handleTempSensorData:error");
+        }
     }
 }
