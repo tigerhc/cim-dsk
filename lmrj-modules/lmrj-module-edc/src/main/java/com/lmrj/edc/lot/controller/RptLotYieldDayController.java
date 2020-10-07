@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -46,7 +43,7 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     @RequestMapping("/pdtChart")
     public Response findProduction(@RequestParam String stationCode, @RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res = new Response();
-        
+
         //添加线别和站别产量
 //        String stationCode="DM";
         if (StringUtil.isEmpty(stationCode)) {
@@ -115,10 +112,10 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         List<Map<String,Object>> temp = rptLotYieldDayService.findAllEqp(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
         List<Map<String,Object>> result = new ArrayList<>();
         for (int i =0;i < temp.size();i++){
-            Map<String,Object> ele = new HashMap<>();
+            Map<String,Object> ele = new LinkedHashMap<>();
             ele.put("period_date",temp.get(i).get("period_date"));
-            ele.put((String) temp.get(i).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
             ele.put((String) temp.get(i).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
+            ele.put((String) temp.get(i).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
 
             for (int j =i+1;j < temp.size();j++){
                 if(temp.get(i).get("period_date").equals(temp.get(j).get("period_date"))){
