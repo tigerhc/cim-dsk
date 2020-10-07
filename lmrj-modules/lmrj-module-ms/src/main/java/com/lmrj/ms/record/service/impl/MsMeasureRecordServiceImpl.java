@@ -114,4 +114,9 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public List<MsMeasureRecord> findAll() {
         return baseMapper.findAll();
     }
+
+    @Override
+    public List<Map> findWeight(Map<String, Object> param) {
+        return baseMapper.findWeight(param);
+    }
 }
