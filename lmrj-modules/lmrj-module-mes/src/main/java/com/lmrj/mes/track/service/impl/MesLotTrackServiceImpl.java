@@ -270,11 +270,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public MesResult trackin(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
         saveTrackLog(eqpId, "TRACKIN", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
-        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        // TODO: 2020/7/17 待删除
         if ("SIM-DM1".equals(eqpId)) {
             eqpId = "SIM-DM";
-        }if (fabEquipment != null) {
+        }
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        // TODO: 2020/7/17 待删除
+        if (fabEquipment != null) {
             result = doTrackIn(fabEquipment, productionNo, productionName, orderNo, lotNo, recipeCode, opId, 0);
         } else {
             if(eqpId.contains("WB")){
@@ -351,8 +352,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             if(eqpId.contains("WB")){
                 result = trackoutWB(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
+            }else{
+                result = trackoutLine(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
             }
-            result = trackoutLine(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
         }
         return result;
     }
@@ -379,7 +381,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (fabEquipmentList.size() == 0) {
             return MesResult.error("eqp not found");
         }
-
         for (FabEquipment fabEquipment : fabEquipmentList) {
             result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
