@@ -31,7 +31,7 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     @Select("SELECT production_no,lot_no,(MAX(lot_yield) - MIN(lot_yield)) AS lot_yield_eqp FROM edc_dsk_log_production WHERE start_time BETWEEN #{startTime} AND #{endTime} and eqp_id = #{eqpId}  GROUP BY production_no,lot_no")
     List<RptLotYieldDay> findDayYeild(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
 
-    @Select("select eqp_id from fab_equipment where step_yield_flag='1' and line_no=#{lineNo} and station_code=#{stationCode}")
+    @Select("select eqp_id from fab_equipment where line_no=#{lineNo} and station_code=#{stationCode}")
     List<String> findEqpId(@Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
     @Select("select production_name from aps_plan_pdt_yield where production_no=#{productionNo} LIMIT 1")
@@ -50,4 +50,6 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     List<Map<String,Object>> searchStandAndEqp( @Param("lineNo") String lineNo);
 
     List<Map<String,Object>> findSonEqp( @Param("lineNo") String lineNo,@Param("stationId") List<String> stationId);
+
+    List<Map<String,Object>> findAllEqp(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 }

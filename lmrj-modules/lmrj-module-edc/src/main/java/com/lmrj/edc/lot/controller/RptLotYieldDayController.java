@@ -108,4 +108,27 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
         return result;
     }
+
+    @RequestMapping(value = "/findAllEqp")
+    public List<Map<String, Object>> findAllEqp(@RequestParam String stationCode, @RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        List<Map<String,Object>> temp = rptLotYieldDayService.findAllEqp(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
+        List<Map<String,Object>> result = new ArrayList<>();
+        for (int i =0;i < temp.size();i++){
+            Map<String,Object> ele = new HashMap<>();
+            ele.put("period_date",temp.get(i).get("period_date"));
+            ele.put((String) temp.get(i).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
+            ele.put((String) temp.get(i).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
+
+            for (int j =i+1;j < temp.size();j++){
+                if(temp.get(i).get("period_date").equals(temp.get(j).get("period_date"))){
+                    ele.put((String) temp.get(j).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
+                    ele.put((String) temp.get(j).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
+                    i=j;
+                }
+            }
+            result.add(ele);
+        }
+
+        return result;
+    }
 }

@@ -197,4 +197,10 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         return baseMapper.findSonEqp(lineNo,stationId);
 
     }
+
+    @Override
+    public  List<Map<String,Object>> findAllEqp(String beginTime, String endTime, String lineNo, String stationCode){
+        return baseMapper.findAllEqp(beginTime, endTime, lineNo, stationCode);
+
+    }
 }
