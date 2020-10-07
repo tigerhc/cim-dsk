@@ -108,4 +108,10 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
         return result;
     }
+
+
+
+
+
+    
 }
