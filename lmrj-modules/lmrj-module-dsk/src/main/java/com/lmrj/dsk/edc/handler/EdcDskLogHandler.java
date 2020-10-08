@@ -339,7 +339,7 @@ public class EdcDskLogHandler {
                     status="RUN";
                 }else if(edcDskLogOperation.getEventName().equals("8")){
                     status="ALARM";
-                }else if(edcDskLogOperation.getEventName().equals("16")){
+                }else if(edcDskLogOperation.getEventName().equals("16") || edcDskLogOperation.getEventName().equals("32")){
                     status="IDLE";
                 }
             }
