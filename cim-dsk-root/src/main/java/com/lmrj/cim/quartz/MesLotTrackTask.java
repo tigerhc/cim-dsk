@@ -38,21 +38,27 @@ public class MesLotTrackTask {
         //查询lotTrack一天内批次信息 修正产量
         List<MesLotTrack> mesLotList= iMesLotTrackService.findCorrectData(startTime,endTime);
         if(mesLotList.size()>0){
-            for (MesLotTrack mesLotTrack : mesLotList) {
+            for (int i = 0; i < mesLotList.size(); i++) {
                 List<EdcDskLogProduction> proList=new ArrayList<>();
+                MesLotTrack mesLotTrack = mesLotList.get(i);
+                MesLotTrack nextLotTrack=null;
                 if(mesLotTrack.getEndTime()!=null){
-                    MesLotTrack lastTrack=iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),mesLotTrack.getStartTime());
-                    if(lastTrack==null && mesLotTrack.getEndTime()!=null){
+                    if(i<mesLotList.size()-1){
+                        if(mesLotList.get(i+1).getEqpId().equals(mesLotTrack.getEqpId())){
+                            nextLotTrack=mesLotList.get(i+1);
+                        }
+                    }
+                    if(nextLotTrack==null){
                         proList =edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),mesLotTrack.getEndTime(),mesLotTrack.getEqpId());
                     }else{
-                        proList=edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),lastTrack.getStartTime(),mesLotTrack.getEqpId());
+                        proList=edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(),nextLotTrack.getStartTime(),mesLotTrack.getEqpId());
                     }
                     if(mesLotTrack.getEqpId().contains("SIM-REFLOW") || mesLotTrack.getEqpId().contains("SIM-PRINTER") || mesLotTrack.getEqpId().contains("SIM-TRM")){
                         if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=(proList.size()*12)){
                             iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),(proList.size()*12));
                         }
                     }else if(proList.size()>0 && mesLotTrack.getLotYieldEqp()!=proList.size()){
-                            iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
+                        iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),proList.size());
                     }
                 }
             }

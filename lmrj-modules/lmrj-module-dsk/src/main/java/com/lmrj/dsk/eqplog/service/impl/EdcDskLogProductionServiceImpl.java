@@ -180,10 +180,42 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         List<MesLotTrack> wrongLotList = new ArrayList<>();
         //循环MesLotTrack批次
+        for (int i = 0; i < mesLotTrackList.size(); i++) {
+            List<EdcDskLogProduction> lotNoList =new ArrayList<>();
+            MesLotTrack mesLotTrack=mesLotTrackList.get(i);
+            boolean wrongLotFlag = false;
+            String eqpNo=iFabEquipmentService.findeqpNoInfab(mesLotTrack.getEqpId());
+            MesLotTrack nextLotTrack=null;
+            if(i<mesLotTrackList.size()-1){
+                if(mesLotTrackList.get(i+1).getEqpId().equals(mesLotTrack.getEqpId())){
+                    nextLotTrack=mesLotTrackList.get(i+1);
+                }
+            }
+            if(nextLotTrack!=null){
+                lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), nextLotTrack.getStartTime(), mesLotTrack.getEqpId());
+            }else{
+                lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
+            }
+            for (EdcDskLogProduction edcDskLogProduction : lotNoList) {
+                if (!edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
+                    edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
+                    edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                    edcDskLogProduction.setEqpNo(eqpNo);
+                    wrongDataList.add(edcDskLogProduction);
+                    wrongLotFlag = true;
+                }
+            }
+            if (wrongLotFlag) {
+                //存入修改的批次信息 返回
+                wrongLotList.add(mesLotTrack);
+            }
+        }
         for (MesLotTrack mesLotTrack : mesLotTrackList) {
             MesLotTrack nextLot=iMesLotTrackService.selectEndTime(mesLotTrack.getEqpId(),mesLotTrack.getLotNo());
             List<EdcDskLogProduction> lotNoList =new ArrayList<>();
             boolean wrongLotFlag = false;
+            //查询批次时间内的production数据
+            String eqpNo=iFabEquipmentService.findeqpNoInfab(mesLotTrack.getEqpId());
             if(nextLot!=null){
                 lotNoList = baseMapper.findProByTime(mesLotTrack.getStartTime(), nextLot.getStartTime(), mesLotTrack.getEqpId());
             }else{
@@ -194,7 +226,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 if (!edcDskLogProduction.getLotNo().equals(mesLotTrack.getLotNo())) {
                     edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
                     edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
-                    edcDskLogProduction.setEqpNo(iFabEquipmentService.findeqpNoInfab(edcDskLogProduction.getEqpId()));
+                    edcDskLogProduction.setEqpNo(eqpNo);
                     wrongDataList.add(edcDskLogProduction);
                     wrongLotFlag = true;
                 }

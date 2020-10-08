@@ -163,6 +163,11 @@ public class EdcDskLogHandler {
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
+        if(eqpId.contains("SIM-WB")){
+            for (EdcDskLogProduction edcDskLogProduction : proList) {
+                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 6);
+            }
+        }
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             proList.forEach(edcDskLogProduction -> {
