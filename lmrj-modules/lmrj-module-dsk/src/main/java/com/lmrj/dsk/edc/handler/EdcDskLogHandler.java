@@ -332,6 +332,17 @@ public class EdcDskLogHandler {
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
             edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
+            if(eqpId.contains("WB")){
+                if(edcDskLogOperation.getEventName().equals("2")){
+                    status="DOWN";
+                }else if(edcDskLogOperation.getEventName().equals("4")){
+                    status="RUN";
+                }else if(edcDskLogOperation.getEventName().equals("8")){
+                    status="ALARM";
+                }else if(edcDskLogOperation.getEventName().equals("16")){
+                    status="IDLE";
+                }
+            }
             edcEqpState.setState(status);
             if (StringUtil.isNotBlank(status)) {
                 String stateJson = JsonUtil.toJsonString(edcEqpState);
