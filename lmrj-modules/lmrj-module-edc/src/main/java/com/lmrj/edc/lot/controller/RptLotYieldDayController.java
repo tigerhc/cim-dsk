@@ -113,7 +113,8 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         List<Map<String,Object>> result = new ArrayList<>();
         for (int i =0;i < temp.size();i++){
             Map<String,Object> ele = new LinkedHashMap<>();
-            ele.put("period_date",temp.get(i).get("period_date"));
+            String str = (String) temp.get(i).get("period_date");
+            ele.put("period_date",str.substring(4));
             ele.put((String) temp.get(i).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
             ele.put((String) temp.get(i).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
 
