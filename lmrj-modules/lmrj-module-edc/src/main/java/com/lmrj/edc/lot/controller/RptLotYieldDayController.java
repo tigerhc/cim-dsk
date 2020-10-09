@@ -123,8 +123,8 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
 
             for (int j =i+1;j < temp.size();j++){
                 if(temp.get(i).get("period_date").equals(temp.get(j).get("period_date"))){
-                    ele.put((String) temp.get(j).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
-                    ele.put((String) temp.get(j).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
+                    ele.put((String) temp.get(j).get("eqp_id")+"-MES产量",temp.get(j).get("lot_yield"));
+                    ele.put((String) temp.get(j).get("eqp_id")+"-设备产量",temp.get(j).get("lot_yield_eqp"));
                     i=j;
                 }
             }
