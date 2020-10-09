@@ -50,6 +50,9 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
             stationCode = "DM";
         }
         String eqpId = null;
+        if( stationCode.equals("DM")){
+            eqpId ="SIM-DM7";
+        }
         if (eqpId == null) {
             List<Map> maps = rptLotYieldDayService.pdtChart(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
             res.put("yield", maps);
