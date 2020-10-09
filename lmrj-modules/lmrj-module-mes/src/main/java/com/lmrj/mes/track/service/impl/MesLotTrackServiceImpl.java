@@ -14,10 +14,12 @@ import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.util.FileUtils;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -527,6 +529,68 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public List<Map> lotTrackQuery(String lineNo,String startTime,String endTime){
         return baseMapper.lotTrackQuery(lineNo,startTime,endTime);
     }
+
+    @Override
+    public List<Map<String, Object>> chartKongDong(String lotNo, String productionNo, String startDate, String endDate) {
+        try {
+            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
+            String line = productionName.split("-")[0].replace("J.","");
+            if(line.length()>3){
+                line = line.substring(0,3);
+            }
+            if(line.startsWith("SX")){
+                line = "SX";
+            }
+//            String kongdongDir = "d:\\backup\\"+line+"\\" + productionName.replace("J.",""); //本地测试
+            String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
+            log.info(kongdongDir);
+            List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
+            List<Map<String, Object>> res = _handleFileName(files, lotNo);
+            return res;
+        }catch (Exception e){
+            log.error("MesLotTrackServiceImpl_chartKongDong:error,lotNo:"+lotNo+",productionNo:"+productionNo);
+        }
+        return null;
+    }
+
+    private List<Map<String, Object>> _handleFileName(List<Map<String, Object>> files, String lotNo){
+        if(files!=null && files.size()>0){
+            List<Map<String, Object>> res = new ArrayList<>();
+            for(Map<String, Object> item : files){
+                String fileName = MapUtils.getString(item, "fileName");
+                if(_chkFileName(fileName)){
+                    String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
+                    String fileLotNo = fileName.substring(0,fileName.indexOf(" "));
+                    String xAxis = fileName.substring(fileName.indexOf("-"),fileName.lastIndexOf("."));
+                    xAxis = fileLotNo+xAxis;
+                    item.put("lotNo", fileLotNo);
+                    item.put("kongdongVal", kongdongVal);
+                    item.put("xAxis", xAxis);
+                    if(StringUtil.isEmpty(lotNo)||fileLotNo.equals(lotNo)){
+                        res.add(item);
+                    }
+                }else{
+                    log.warn("MesLotTrackServiceImpl__handleFileName:fileName is error:"+fileName);
+                }
+            }
+            return res;
+        }
+        return files;
+    }
+
+    private boolean _chkFileName(String fileName){
+        if(fileName.indexOf(" ")<=0){
+            return false;
+        }
+        if(fileName.indexOf("%")<=0){
+            return false;
+        }
+        if(fileName.indexOf("-")<=0){
+            return false;
+        }
+        return true;
+    }
+
     //public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();
     //    map.put("1", "2");

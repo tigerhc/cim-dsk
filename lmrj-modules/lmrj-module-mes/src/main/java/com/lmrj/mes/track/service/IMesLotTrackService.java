@@ -53,4 +53,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesLotTrack findLastTrack(String eqpId,String lotNo,Date startTime);
 
     List<Map> lotTrackQuery(String lineNo, String startTime, String endTime);
+
+    List<Map<String, Object>> chartKongDong(String lotNo, String productionNo, String startDate, String endDate);
 }
