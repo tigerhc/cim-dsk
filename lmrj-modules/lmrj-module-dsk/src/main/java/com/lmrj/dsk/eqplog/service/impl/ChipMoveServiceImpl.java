@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.dsk.eqplog.entity.ChipMove;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
+import com.lmrj.edc.quartz.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
@@ -35,14 +36,24 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
                 }
                 if(!StringUtil.isEmpty(chipId)){
-                    data.setToX(MapUtils.getIntValue(item, "toRow"));
+                    data.setFromX(MapUtils.getIntValue(item, "toRow"));
                 }else{
-                    data.setFromX(MapUtils.getIntValue(item, "fromRow"));
+                    String fromRow = MapUtils.getString(item, "fromRow");
+                    if(StringUtil.isEmpty(fromRow)){
+                        data.setFromX(null);
+                    }else{
+                        data.setFromX(Integer.parseInt(fromRow));
+                    }
                 }
                 if(!StringUtil.isEmpty(chipId)){
-                    data.setToY(MapUtils.getIntValue(item, "toCol"));
+                    data.setFromY(MapUtils.getIntValue(item, "toCol"));
                 }else{
-                    data.setFromY(MapUtils.getIntValue(item, "fromCol"));
+                    String fromCol = MapUtils.getString(item, "fromCol");
+                    if(StringUtil.isEmpty(fromCol)){
+                        data.setFromY(null);
+                    }else{
+                        data.setFromY(Integer.parseInt(fromCol));
+                    }
                 }
                 data.setToTrayId(MapUtils.getString(item, "toTrayId"));
                 data.setToX(MapUtils.getIntValue(item, "toRow"));
