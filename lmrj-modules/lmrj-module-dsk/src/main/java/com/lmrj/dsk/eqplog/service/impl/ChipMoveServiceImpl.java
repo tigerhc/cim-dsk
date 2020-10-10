@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.dsk.eqplog.entity.ChipMove;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
+import com.lmrj.util.lang.StringUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +22,34 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(Map<String, Object> item : dataList){
                 ChipMove data = new ChipMove();
+                String chipId = MapUtils.getString(item, "chipId");
+                if(StringUtil.isEmpty(chipId)||"null".equals(chipId)||"NULL".equals(chipId)){
+                    chipId = null;
+                }
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
-                data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
-                data.setFromX(MapUtils.getIntValue(item, "fromRow"));
-                data.setFromY(MapUtils.getIntValue(item, "fromCol"));
+                if(!StringUtil.isEmpty(chipId)){
+                    data.setFromTrayId(MapUtils.getString(item, "toTrayId"));
+                }else{
+                    data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
+                }
+                if(!StringUtil.isEmpty(chipId)){
+                    data.setToX(MapUtils.getIntValue(item, "toRow"));
+                }else{
+                    data.setFromX(MapUtils.getIntValue(item, "fromRow"));
+                }
+                if(!StringUtil.isEmpty(chipId)){
+                    data.setToY(MapUtils.getIntValue(item, "toCol"));
+                }else{
+                    data.setFromY(MapUtils.getIntValue(item, "fromCol"));
+                }
                 data.setToTrayId(MapUtils.getString(item, "toTrayId"));
                 data.setToX(MapUtils.getIntValue(item, "toRow"));
                 data.setToY(MapUtils.getIntValue(item, "toCol"));
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                data.setChipId(chipId);
                 mapperList.add(data);
             }
             return baseMapper.insertMoveLog(mapperList);

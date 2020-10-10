@@ -18,10 +18,11 @@
 	</sql>
     <insert id="insertMoveLog" parameterType="com.lmrj.dsk.eqplog.entity.ChipMove">
         insert into map_tray_chip_move(eqp_id,production_no,lot_no,from_tray_id,from_x,from_y,to_tray_id,to_x,to_y,to_z,
-             judge_result,start_time,create_date) values
+             judge_result,start_time,create_date,chip_id) values
              <foreach collection="dataList" item="item" separator=",">
                     (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.fromTrayId},#{item.fromX}
-                    ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.toZ},#{item.judgeResult},#{item.startTime},now())
+                    ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.toZ},#{item.judgeResult},
+                    #{item.startTime},now(),#{item.chipId})
              </foreach>
     </insert>
 </mapper>
