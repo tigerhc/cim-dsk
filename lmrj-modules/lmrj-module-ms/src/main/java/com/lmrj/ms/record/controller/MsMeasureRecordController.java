@@ -264,4 +264,18 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         res.putList("weightList", msMeasureRecordService.findWeight(param));
         return res;
     }
+
+    @RequestMapping(value = "/getEqpIdOptions", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response getEqpIdOptions(@RequestParam String lineNo){
+        Response res = Response.ok();
+        res.putList("eqpIdOptions",msMeasureRecordService.getEqpIdOptions(lineNo));
+        return res;
+    }
+
+    @RequestMapping(value = "/getLineNoOptions", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response getLineNoOptions(){
+        Response res = Response.ok();
+        res.putList("lineNoOptions",msMeasureRecordService.getLineNoOptions());
+        return res;
+    }
 }

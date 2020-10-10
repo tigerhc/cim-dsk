@@ -119,4 +119,14 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public List<Map> findWeight(Map<String, Object> param) {
         return baseMapper.findWeight(param);
     }
+
+    @Override
+    public List<Map> getEqpIdOptions(String eqpId) {
+        return baseMapper.getEqpIds(eqpId);
+    }
+
+    @Override
+    public List<Map> getLineNoOptions() {
+        return baseMapper.getLineNoOptions();
+    }
 }

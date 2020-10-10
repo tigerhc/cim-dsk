@@ -30,4 +30,8 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
  List<MsMeasureRecord> findAll();
 
  List<Map> findWeight(Map<String, Object> param);
+
+ List<Map> getEqpIds(@Param("lineNo") String lineNo);
+
+ List<Map> getLineNoOptions();
 }
