@@ -1,10 +1,12 @@
 package com.lmrj.dsk.dashboard.controller;
 
+import com.lmrj.common.http.Response;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.dsk.dashboard.entity.FbpbistolO;
 import com.lmrj.dsk.dashboard.entity.FipinqtoolO;
 import com.lmrj.dsk.dashboard.entity.ToolGroupInfo;
 import com.lmrj.dsk.dashboard.service.IDashboardService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -252,5 +256,20 @@ public class DashboardController {
         FipinqtoolO fipinqtoolO =  dashboardServiceImpl.findEqpStateByStep(bay_id);
         ServletUtils.printJson(response, fipinqtoolO);
     }
+
+    @RequestMapping("/dayYield")
+    public Response dayYield(@RequestParam String stationCode, @RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response) {
+        Response res = new Response();
+        if (StringUtil.isEmpty(stationCode)) {
+            stationCode = "DM";
+        } else if (StringUtil.isEmpty(lineNo)){
+            lineNo = "SIM";
+        }
+        List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode);
+        res.put("yield", maps);
+        return res;
+    }
+
+
 
 }

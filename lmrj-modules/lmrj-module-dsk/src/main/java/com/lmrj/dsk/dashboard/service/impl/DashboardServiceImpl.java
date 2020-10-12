@@ -16,6 +16,7 @@ import com.lmrj.dsk.dashboard.entity.ToolGroupInfo;
 import com.lmrj.dsk.dashboard.service.IDashboardService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.lot.service.IRptLotYieldDayService;
 import com.lmrj.edc.state.service.IRptEqpStateDayService;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +58,8 @@ public class DashboardServiceImpl  implements IDashboardService {
     @Autowired
     private IRptEqpStateDayService rptEqpStateDayService;
 
+    @Autowired
+    private IRptLotYieldDayService iRptLotYieldDayService;
     @Override
     public ToolGroupInfo findOrgGroupInfo(String fab) {
         List<Organization> organizationList = organizationService.findChildren(fab);
@@ -251,4 +255,13 @@ public class DashboardServiceImpl  implements IDashboardService {
         });
         return fipinqtoolO;
     }
+
+    public List<Map> dayYield(String lineNo, String stationCode) {
+        String endTime =DateUtil.getDate("yyyyMMdd");
+        Calendar rightNow = Calendar.getInstance();
+        rightNow.add(Calendar.DAY_OF_MONTH, -5);
+        String beginTime = DateUtil.formatDate(rightNow.getTime(),"yyyyMMdd");
+        List<Map> result = iRptLotYieldDayService.pdtChart(beginTime,endTime,lineNo,stationCode);
+        return result;
+}
 }

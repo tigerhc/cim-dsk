@@ -4,6 +4,9 @@ import com.lmrj.dsk.dashboard.entity.FbpbistolO;
 import com.lmrj.dsk.dashboard.entity.FipinqtoolO;
 import com.lmrj.dsk.dashboard.entity.ToolGroupInfo;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -25,4 +28,5 @@ public interface IDashboardService {
     FbpbistolO findEqpStatusByFabId(String fab);
 
     FipinqtoolO findEqpStateByPeriod(String fab);
+    List<Map> dayYield(String line, String stationCode);
 }
