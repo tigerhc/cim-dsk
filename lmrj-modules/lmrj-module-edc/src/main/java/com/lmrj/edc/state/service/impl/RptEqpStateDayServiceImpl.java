@@ -91,5 +91,9 @@ public class RptEqpStateDayServiceImpl  extends CommonServiceImpl<RptEqpStateDay
         return baseMapper.selectEqpStateByPeriod(beginTime, endTime, officeId, lineNo, fab);
     }
 
-
+    @Override
+    public List<Map> curPeriodData(String fab) {
+        String endTime =DateUtil.getDate("yyyyMMdd");
+        return baseMapper.selectCurEqpStateByPeriod(endTime, endTime, fab);
+    }
 }

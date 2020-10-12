@@ -33,4 +33,6 @@ public interface IRptEqpStateDayService extends ICommonService<RptEqpStateDay> {
     Boolean deleteByPeriodData(String periodDate);
 
     RptEqpStateDay findData(String periodDate);
+
+    List<Map> curPeriodData(String fab);
 }

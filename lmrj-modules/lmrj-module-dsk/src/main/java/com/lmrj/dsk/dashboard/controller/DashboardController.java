@@ -5,6 +5,8 @@ import com.lmrj.dsk.dashboard.entity.FbpbistolO;
 import com.lmrj.dsk.dashboard.entity.FipinqtoolO;
 import com.lmrj.dsk.dashboard.entity.ToolGroupInfo;
 import com.lmrj.dsk.dashboard.service.IDashboardService;
+import com.lmrj.util.mapper.JsonUtil;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -66,134 +72,174 @@ public class DashboardController {
      * @return
      */
     @RequestMapping("/q2")
-    public String setRightTopData(HttpServletRequest request, HttpServletResponse response) {
-        return "{\n" +
-                "    \"oaryB1\": [\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-1\",\n" +
-                "            \"bay_name\": \"SMA\",\n" +
-                "            \"second_time\": 0,\n" +
-                "            \"time\": 66,\n" +
-                "            \"timeToal\": 66,\n" +
-                "            \"toolIds\": 20,\n" +
-                "            \"tool_id_fk\": \"SWYS01-AG\",\n" +
-                "            \"tool_stat\": \"DOWN\",\n" +
-                "            \"toolg_id\": \"$TSWYS\",\n" +
-                "            \"wholeToolIds\": 20\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-1\",\n" +
-                "            \"bay_name\": \"SX\",\n" +
-                "            \"second_time\": 0,\n" +
-                "            \"time\": 66,\n" +
-                "            \"timeToal\": 66,\n" +
-                "            \"toolIds\": 20,\n" +
-                "            \"tool_id_fk\": \"SWYS01-BG\",\n" +
-                "            \"tool_stat\": \"DOWN\",\n" +
-                "            \"toolg_id\": \"$TSWYS\",\n" +
-                "            \"wholeToolIds\": 20\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-2\",\n" +
-                "            \"bay_name\": \"SIM\",\n" +
-                "            \"second_time\": 0,\n" +
-                "            \"time\": 66,\n" +
-                "            \"timeToal\": 66,\n" +
-                "            \"toolIds\": 20,\n" +
-                "            \"tool_id_fk\": \"SWYS02-AG\",\n" +
-                "            \"tool_stat\": \"DOWN\",\n" +
-                "            \"toolg_id\": \"$TSWYS\",\n" +
-                "            \"wholeToolIds\": 20\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-2\",\n" +
-                "            \"bay_name\": \"6GI\",\n" +
-                "            \"second_time\": 2176,\n" +
-                "            \"time\": 36,\n" +
-                "            \"timeToal\": 66,\n" +
-                "            \"toolIds\": 20,\n" +
-                "            \"tool_id_fk\": \"SWYS02-BG\",\n" +
-                "            \"tool_stat\": \"DOWN\",\n" +
-                "            \"toolg_id\": \"$TSWYS\",\n" +
-                "            \"wholeToolIds\": 20\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-3\",\n" +
-                "            \"bay_name\": \"5GI\",\n" +
-                "            \"second_time\": 3780,\n" +
-                "            \"time\": 63,\n" +
-                "            \"timeToal\": 66,\n" +
-                "            \"toolIds\": 20,\n" +
-                "            \"tool_id_fk\": \"SWYS03-AG\",\n" +
-                "            \"tool_stat\": \"PM\",\n" +
-                "            \"toolg_id\": \"$TSWYS\",\n" +
-                "            \"wholeToolIds\": 20\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"oaryC\": [\n" +
-                "        {\n" +
-                "            \"time\": 364,\n" +
-                "            \"tool_stat\": \"DOWN\",\n" +
-                "            \"totalTime\": 1320\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"time\": 828,\n" +
-                "            \"tool_stat\": \"RUN\",\n" +
-                "            \"totalTime\": 1320\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"time\": 126,\n" +
-                "            \"tool_stat\": \"PM\",\n" +
-                "            \"totalTime\": 1320\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"oaryE\": [\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-7\",\n" +
-                "            \"bay_index\": \"07\",\n" +
-                "            \"bay_name\": \"SMA\",\n" +
-                "            \"run_time\": 121,\n" +
-                "            \"toolg_id\": \"101A-7\",\n" +
-                "            \"total_time\": 132\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-6\",\n" +
-                "            \"bay_index\": \"06\",\n" +
-                "            \"bay_name\": \"SX\",\n" +
-                "            \"run_time\": 132,\n" +
-                "            \"toolg_id\": \"101A-6\",\n" +
-                "            \"total_time\": 132\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-9\",\n" +
-                "            \"bay_index\": \"09\",\n" +
-                "            \"bay_name\": \"SIM\",\n" +
-                "            \"run_time\": 80,\n" +
-                "            \"toolg_id\": \"101A-9\",\n" +
-                "            \"total_time\": 132\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-8\",\n" +
-                "            \"bay_index\": \"08\",\n" +
-                "            \"bay_name\": \"6GI\",\n" +
-                "            \"run_time\": 132,\n" +
-                "            \"toolg_id\": \"101A-8\",\n" +
-                "            \"total_time\": 132\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"bay_id\": \"101A-10\",\n" +
-                "            \"bay_index\": \"10\",\n" +
-                "            \"bay_name\": \"5GI\",\n" +
-                "            \"run_time\": 66,\n" +
-                "            \"toolg_id\": \"101A-10\",\n" +
-                "            \"total_time\": 132\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"rtn_code\": \"0000000\",\n" +
-                "    \"rtn_mesg\": \"SUCCESS\",\n" +
-                "    \"trx_id\": \"FIPINQTOL\",\n" +
-                "    \"type_id\": \"O\"\n" +
-                "}";
+    public String setRightTopData(HttpServletRequest request, HttpServletResponse response,@RequestParam String fab_id_fk) {
+//        return "{\n" +
+//                "    \"oaryB1\": [\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-1\",\n" +
+//                "            \"bay_name\": \"SMA\",\n" +
+//                "            \"second_time\": 0,\n" +
+//                "            \"time\": 66,\n" +
+//                "            \"timeToal\": 66,\n" +
+//                "            \"toolIds\": 20,\n" +
+//                "            \"tool_id_fk\": \"SWYS01-AG\",\n" +
+//                "            \"tool_stat\": \"DOWN\",\n" +
+//                "            \"toolg_id\": \"$TSWYS\",\n" +
+//                "            \"wholeToolIds\": 20\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-1\",\n" +
+//                "            \"bay_name\": \"SX\",\n" +
+//                "            \"second_time\": 0,\n" +
+//                "            \"time\": 66,\n" +
+//                "            \"timeToal\": 66,\n" +
+//                "            \"toolIds\": 20,\n" +
+//                "            \"tool_id_fk\": \"SWYS01-BG\",\n" +
+//                "            \"tool_stat\": \"DOWN\",\n" +
+//                "            \"toolg_id\": \"$TSWYS\",\n" +
+//                "            \"wholeToolIds\": 20\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-2\",\n" +
+//                "            \"bay_name\": \"SIM\",\n" +
+//                "            \"second_time\": 0,\n" +
+//                "            \"time\": 66,\n" +
+//                "            \"timeToal\": 66,\n" +
+//                "            \"toolIds\": 20,\n" +
+//                "            \"tool_id_fk\": \"SWYS02-AG\",\n" +
+//                "            \"tool_stat\": \"DOWN\",\n" +
+//                "            \"toolg_id\": \"$TSWYS\",\n" +
+//                "            \"wholeToolIds\": 20\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-2\",\n" +
+//                "            \"bay_name\": \"6GI\",\n" +
+//                "            \"second_time\": 2176,\n" +
+//                "            \"time\": 36,\n" +
+//                "            \"timeToal\": 66,\n" +
+//                "            \"toolIds\": 20,\n" +
+//                "            \"tool_id_fk\": \"SWYS02-BG\",\n" +
+//                "            \"tool_stat\": \"DOWN\",\n" +
+//                "            \"toolg_id\": \"$TSWYS\",\n" +
+//                "            \"wholeToolIds\": 20\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-3\",\n" +
+//                "            \"bay_name\": \"5GI\",\n" +
+//                "            \"second_time\": 3780,\n" +
+//                "            \"time\": 63,\n" +
+//                "            \"timeToal\": 66,\n" +
+//                "            \"toolIds\": 20,\n" +
+//                "            \"tool_id_fk\": \"SWYS03-AG\",\n" +
+//                "            \"tool_stat\": \"PM\",\n" +
+//                "            \"toolg_id\": \"$TSWYS\",\n" +
+//                "            \"wholeToolIds\": 20\n" +
+//                "        }\n" +
+//                "    ],\n" +
+//                "    \"oaryC\": [\n" +
+//                "        {\n" +
+//                "            \"time\": 364,\n" +
+//                "            \"tool_stat\": \"DOWN\",\n" +
+//                "            \"totalTime\": 1320\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"time\": 828,\n" +
+//                "            \"tool_stat\": \"RUN\",\n" +
+//                "            \"totalTime\": 1320\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"time\": 126,\n" +
+//                "            \"tool_stat\": \"PM\",\n" +
+//                "            \"totalTime\": 1320\n" +
+//                "        }\n" +
+//                "    ],\n" +
+//                "    \"oaryE\": [\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-7\",\n" +
+//                "            \"bay_index\": \"07\",\n" +
+//                "            \"bay_name\": \"SMA\",\n" +
+//                "            \"run_time\": 121,\n" +
+//                "            \"toolg_id\": \"101A-7\",\n" +
+//                "            \"total_time\": 132\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-6\",\n" +
+//                "            \"bay_index\": \"06\",\n" +
+//                "            \"bay_name\": \"SX\",\n" +
+//                "            \"run_time\": 132,\n" +
+//                "            \"toolg_id\": \"101A-6\",\n" +
+//                "            \"total_time\": 132\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-9\",\n" +
+//                "            \"bay_index\": \"09\",\n" +
+//                "            \"bay_name\": \"SIM\",\n" +
+//                "            \"run_time\": 80,\n" +
+//                "            \"toolg_id\": \"101A-9\",\n" +
+//                "            \"total_time\": 132\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-8\",\n" +
+//                "            \"bay_index\": \"08\",\n" +
+//                "            \"bay_name\": \"6GI\",\n" +
+//                "            \"run_time\": 132,\n" +
+//                "            \"toolg_id\": \"101A-8\",\n" +
+//                "            \"total_time\": 132\n" +
+//                "        },\n" +
+//                "        {\n" +
+//                "            \"bay_id\": \"101A-10\",\n" +
+//                "            \"bay_index\": \"10\",\n" +
+//                "            \"bay_name\": \"5GI\",\n" +
+//                "            \"run_time\": 66,\n" +
+//                "            \"toolg_id\": \"101A-10\",\n" +
+//                "            \"total_time\": 132\n" +
+//                "        }\n" +
+//                "    ],\n" +
+//                "    \"rtn_code\": \"0000000\",\n" +
+//                "    \"rtn_mesg\": \"SUCCESS\",\n" +
+//                "    \"trx_id\": \"FIPINQTOL\",\n" +
+//                "    \"type_id\": \"O\"\n" +
+//                "}";
+        List<Map> datas = dashboardServiceImpl.findCurStateByPeriod(fab_id_fk);
+        if(datas!=null && datas.size()>0){
+            List<Map> res = new ArrayList<>();
+            for(Map<String, Object> item : datas){
+                Map<String, Object> downObj = new HashMap<>();
+                downObj.put("time", MapUtils.getIntValue(item, "downTime"));
+                downObj.put("tool_stat", "DOWN");
+                downObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
+                res.add(downObj);
+                Map<String, Object> runObj = new HashMap<>();
+                runObj.put("time", MapUtils.getIntValue(item, "runTime"));
+                runObj.put("tool_stat", "RUN");
+                runObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
+                res.add(runObj);
+                Map<String, Object> pmObj = new HashMap<>();
+                pmObj.put("time", MapUtils.getIntValue(item, "pmTime"));
+                pmObj.put("tool_stat", "PM");
+                pmObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
+                res.add(pmObj);
+                Map<String, Object> idleObj = new HashMap<>();
+                idleObj.put("time", MapUtils.getIntValue(item, "idleTime"));
+                idleObj.put("tool_stat", "IDLE");
+                idleObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
+                res.add(idleObj);
+                Map<String, Object> otherObj = new HashMap<>();
+                otherObj.put("time", MapUtils.getIntValue(item, "otherTime"));
+                otherObj.put("tool_stat", "OTHER");
+                otherObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
+                res.add(idleObj);
+            }
+            Map<String, Object> map = new HashMap<>();
+            map.put("oaryC", res);
+            map.put("rtn_code","0000000");
+            map.put("rtn_mesg","SUCCESS");
+            map.put("trx_id","FIPINQTOL");
+            map.put("type_id","O");
+            return JsonUtil.toJsonString(map);
+        }else{
+            return "[]";
+        }
     }
 
 

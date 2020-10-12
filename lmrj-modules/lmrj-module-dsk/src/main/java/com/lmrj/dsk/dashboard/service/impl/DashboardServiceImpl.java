@@ -251,4 +251,9 @@ public class DashboardServiceImpl  implements IDashboardService {
         });
         return fipinqtoolO;
     }
+
+    @Override
+    public List<Map> findCurStateByPeriod(String fab) {
+        return rptEqpStateDayService.curPeriodData(fab);
+    }
 }

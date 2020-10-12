@@ -31,6 +31,8 @@ public interface RptEqpStateDayMapper extends BaseMapper<RptEqpStateDay> {
 
     List<Map> selectEqpStateByPeriod(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab);
 
+    List<Map> selectCurEqpStateByPeriod(@Param("beginTime") String beginTime, @Param("endTime") String endTime,@Param("fab") String fab);
+
     @Delete("delete from rpt_eqp_state_day where period_date = #{periodDate}")
     Boolean deleteByPeriodData(@Param("periodDate") String periodDate);
 
