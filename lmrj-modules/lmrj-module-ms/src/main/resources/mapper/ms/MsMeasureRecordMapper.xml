@@ -68,4 +68,16 @@
             </if>
             order by dtl.create_date
        </select>
+
+    <select id="getEqpIds" parameterType="java.lang.String" resultType="java.util.Map">
+        select eqp_id as "eqpId",eqp_name as "eqpName"
+          from fab_equipment
+         where sub_line_no=#{lineNo}
+    </select>
+
+    <select id="getLineNoOptions" resultType="java.util.Map">
+        select DISTINCT sub_line_no as "lineNo",sub_line_no as "eqpName"
+          from fab_equipment
+          where sub_line_no is not null
+    </select>
 </mapper>
