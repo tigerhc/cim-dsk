@@ -30,4 +30,6 @@ public interface IDashboardService {
     FipinqtoolO findEqpStateByPeriod(String fab);
 
     List<Map> findCurStateByPeriod(String fab);
+
+    List<Map> dayYield(String line, String stationCode);
 }
