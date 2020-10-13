@@ -363,7 +363,11 @@ public class DashboardController {
         } else if (StringUtil.isEmpty(lineNo)){
             lineNo = "SIM";
         }
-        List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode);
+        String eqpId = null;
+        if( stationCode.equals("DM")){
+            eqpId ="SIM-DM7";
+        }
+        List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode,eqpId);
         res.put("yield", maps);
         return res;
     }
