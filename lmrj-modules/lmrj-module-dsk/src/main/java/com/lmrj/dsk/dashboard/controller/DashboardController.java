@@ -318,7 +318,13 @@ public class DashboardController {
             eqpId ="SIM-DM7";
         }
         List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode,eqpId);
-        res.put("yield", maps);
+        List<Map<String,Object>> result = new ArrayList<>();
+        for(Map map: maps){
+            String temp = (String)map.get("period_date");
+            map.put("period_date",temp.substring(2,4));
+            result.add(map);
+        }
+        res.put("yield", result);
         return res;
     }
 
