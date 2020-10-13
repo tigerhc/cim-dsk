@@ -38,4 +38,6 @@ public interface RptEqpStateDayMapper extends BaseMapper<RptEqpStateDay> {
 
     @Select("select * from rpt_eqp_state_day where period_date = #{periodDate} limit 1")
     RptEqpStateDay findData(@Param("periodDate") String periodDate);
+
+    List<Map> findSIMState(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }

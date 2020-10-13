@@ -96,4 +96,10 @@ public class RptEqpStateDayServiceImpl  extends CommonServiceImpl<RptEqpStateDay
         String endTime =DateUtil.getDate("yyyyMMdd");
         return baseMapper.selectCurEqpStateByPeriod(endTime, endTime, fab);
     }
+
+    @Override
+    public List<Map> findSIMState() {
+        String endTime =DateUtil.getDate("yyyyMMdd");
+        return baseMapper.findSIMState(endTime, endTime);
+    }
 }

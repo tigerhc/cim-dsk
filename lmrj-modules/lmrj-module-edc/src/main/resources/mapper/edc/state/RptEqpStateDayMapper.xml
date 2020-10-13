@@ -116,4 +116,20 @@
         </if>
         group by t.period_date
     </select>
+    <select id="findSIMState" resultType="map">
+        SELECT
+        period_date periodDate,
+        sum(run_time) runTime,
+        sum(idle_time) idleTime,
+        sum(down_time) downTime,
+        sum(pm_time) pmTime,
+        sum(other_time) otherTime,
+        sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time) as "totalTime"
+        FROM
+        rpt_eqp_state_day t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        WHERE t.period_date between #{beginTime} and #{endTime}
+        and f.line_no='SIM'
+        group by t.period_date
+    </select>
 </mapper>

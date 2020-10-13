@@ -206,6 +206,11 @@ public class DashboardController {
 //                "    \"trx_id\": \"FIPINQTOL\",\n" +
 //                "    \"type_id\": \"O\"\n" +
 //                "}";
+        Map<String, Object> map = new HashMap<>();
+        map.put("rtn_code","0000000");
+        map.put("rtn_mesg","SUCCESS");
+        map.put("trx_id","FIPINQTOL");
+        map.put("type_id","O");
         List<Map> datas = dashboardServiceImpl.findCurStateByPeriod(fab_id_fk);
         if(datas!=null && datas.size()>0){
             List<Map> res = new ArrayList<>();
@@ -236,16 +241,61 @@ public class DashboardController {
                 otherObj.put("totalTime", MapUtils.getIntValue(item, "totalTime"));
                 res.add(idleObj);
             }
-            Map<String, Object> map = new HashMap<>();
             map.put("oaryC", res);
-            map.put("rtn_code","0000000");
-            map.put("rtn_mesg","SUCCESS");
-            map.put("trx_id","FIPINQTOL");
-            map.put("type_id","O");
-            return JsonUtil.toJsonString(map);
+
         }else{
-            return "[]";
+            map.put("oaryC",new ArrayList<>());
         }
+        List<Map> oaryE = dashboardServiceImpl.findSIMState();
+        List<Map> oaryERes = new ArrayList<>();
+        if(oaryE!=null && oaryE.size()>0){
+            for(Map<String, Object> item : oaryE){
+                Map<String, Object> simObj = new HashMap<>();
+                simObj.put("bay_id", "101A-9");
+                simObj.put("bay_index", "09");
+                simObj.put("bay_name", "SIM");
+                simObj.put("run_time", MapUtils.getString(item, "runTime"));
+                simObj.put("toolg_id", "101A-9");
+                simObj.put("total_time", MapUtils.getIntValue(item, "totalTime"));
+                oaryERes.add(simObj);
+            }
+            Map<String, Object> SMAObj = new HashMap<>();
+            SMAObj.put("bay_id", "101A-7");
+            SMAObj.put("bay_index", "07");
+            SMAObj.put("bay_name", "SMA");
+            SMAObj.put("run_time", 121);
+            SMAObj.put("toolg_id", "101A-9");
+            SMAObj.put("total_time", 132);
+            oaryERes.add(SMAObj);
+            Map<String, Object> SXObj = new HashMap<>();
+            SXObj.put("bay_id", "101A-6");
+            SXObj.put("bay_index", "06");
+            SXObj.put("bay_name", "SX");
+            SXObj.put("run_time", 132);
+            SXObj.put("toolg_id", "101A-6");
+            SXObj.put("total_time", 132);
+            oaryERes.add(SXObj);
+            Map<String, Object> GI6Obj = new HashMap<>();
+            GI6Obj.put("bay_id", "101A-8");
+            GI6Obj.put("bay_index", "08");
+            GI6Obj.put("bay_name", "6GI");
+            GI6Obj.put("run_time", 132);
+            GI6Obj.put("toolg_id", "101A-8");
+            GI6Obj.put("total_time", 132);
+            oaryERes.add(GI6Obj);
+            Map<String, Object> GI5Obj = new HashMap<>();
+            GI5Obj.put("bay_id", "101A-10");
+            GI5Obj.put("bay_index", "10");
+            GI5Obj.put("bay_name", "5GI");
+            GI5Obj.put("run_time", 66);
+            GI5Obj.put("toolg_id", "101A-10");
+            GI5Obj.put("total_time", 132);
+            oaryERes.add(GI5Obj);
+            map.put("oaryE", oaryERes);
+        }else{
+            map.put("oaryE",oaryERes);
+        }
+        return JsonUtil.toJsonString(map);
     }
 
 
