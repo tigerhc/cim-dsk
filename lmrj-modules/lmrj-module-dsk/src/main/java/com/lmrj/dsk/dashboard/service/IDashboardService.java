@@ -31,5 +31,7 @@ public interface IDashboardService {
 
     List<Map> findCurStateByPeriod(String fab);
 
+    List<Map> findSIMState();
+
     List<Map> dayYield(String line, String stationCode);
 }

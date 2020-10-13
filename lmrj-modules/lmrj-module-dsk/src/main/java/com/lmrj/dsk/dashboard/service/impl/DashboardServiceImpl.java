@@ -261,6 +261,11 @@ public class DashboardServiceImpl  implements IDashboardService {
         return rptEqpStateDayService.curPeriodData(fab);
     }
 
+    @Override
+    public List<Map> findSIMState() {
+        return rptEqpStateDayService.findSIMState();
+    }
+
     public List<Map> dayYield(String lineNo, String stationCode) {
         String endTime =DateUtil.getDate("yyyyMMdd");
         Calendar rightNow = Calendar.getInstance();
