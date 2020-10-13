@@ -263,7 +263,7 @@ public class DashboardServiceImpl  implements IDashboardService {
     public List<Map> dayYield(String lineNo, String stationCode,String eqpId) {
         String endTime =DateUtil.getDate("yyyyMMdd");
         Calendar rightNow = Calendar.getInstance();
-        rightNow.add(Calendar.DAY_OF_MONTH, -13);
+        rightNow.add(Calendar.DAY_OF_MONTH, -12);
         String beginTime = DateUtil.formatDate(rightNow.getTime(),"yyyyMMdd");
         List<Map> result = iRptLotYieldDayService.pdtChart(beginTime,endTime,lineNo,stationCode, eqpId);
         return result;
