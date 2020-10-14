@@ -101,12 +101,12 @@
     <select id="selectCurEqpStateByPeriod" resultType="map">
         SELECT
         period_date periodDate,
-        sum(run_time) runTime,
-        sum(idle_time) idleTime,
-        sum(down_time) downTime,
-        sum(pm_time) pmTime,
-        sum(other_time) otherTime,
-        sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time) as "totalTime"
+        sum(run_time)/60 runTime,
+        sum(idle_time)/60 idleTime,
+        sum(down_time)/60 downTime,
+        sum(pm_time)/60 pmTime,
+        sum(other_time)/60 otherTime,
+        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
@@ -119,12 +119,12 @@
     <select id="findSIMState" resultType="map">
         SELECT
         period_date periodDate,
-        sum(run_time) runTime,
-        sum(idle_time) idleTime,
-        sum(down_time) downTime,
-        sum(pm_time) pmTime,
-        sum(other_time) otherTime,
-        sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time) as "totalTime"
+        sum(run_time)/60 runTime,
+        sum(idle_time)/60 idleTime,
+        sum(down_time)/60 downTime,
+        sum(pm_time)/60 pmTime,
+        sum(other_time)/60 otherTime,
+        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
