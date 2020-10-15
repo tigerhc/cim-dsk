@@ -37,7 +37,24 @@
               where line_no = #{lineNo}
               and station_code = #{stationCode}
               and period_date between #{beginTime} and #{endTime}
-              and eqp_id = #{eqpId}
+              and eqp_id in
+              <foreach collection="eqpId" index="index" item="id" open="(" separator="," close=")">
+                     #{id}
+              </foreach>
+              group by period_date
+              order by period_date
+       </select>
+
+       <select id="selectDaypdtByIds" resultType="map">
+              select period_date, sum(lot_yield) lot_yield , sum(lot_yield_eqp) lot_yield_eqp
+              from rpt_lot_yield_day
+              where line_no = #{lineNo}
+              and station_code = #{stationCode}
+              and period_date between #{beginTime} and #{endTime}
+              and eqp_id in
+              <foreach collection="eqpId" index="index" item="id" open="(" separator="," close=")">
+                     #{id}
+              </foreach>
               group by period_date
               order by period_date
        </select>

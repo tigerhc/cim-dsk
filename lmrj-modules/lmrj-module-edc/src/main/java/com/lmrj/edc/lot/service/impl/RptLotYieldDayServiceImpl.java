@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -143,17 +140,22 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     }
     @Override
     public List<Map> pdtChart(String beginTime, String endTime, String lineNo, String stationCode,String eqpId) {
-
         String eqpid[]=eqpId.split(",");
+        List<String> params = new ArrayList<>();
+        params = Arrays.asList(eqpid);
         List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime, lineNo);
         Map<String, Integer> planYieldmap = Maps.newHashMap();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetails) {
             planYieldmap.put(apsPlanPdtYieldDetail.getPlanDate(), apsPlanPdtYieldDetail.getPlanQty());
         }
         List<Map> yieldDayLists=new ArrayList<>();
-        for (int i = 0; i < eqpid.length; i++) {
-            List<Map> yieldDayList = baseMapper.selectDaypdtById(beginTime, endTime, lineNo, stationCode,eqpid[i]);
-
+        List<Map> yieldDayList=new ArrayList<>();
+        int test = eqpId.length();
+//        for (int i = 0; i < eqpid.length; i++) {
+        if(eqpid.length==1){
+             yieldDayList = baseMapper.selectDaypdtById(beginTime, endTime, lineNo, stationCode,params);}
+        else {
+             yieldDayList = baseMapper.selectDaypdtByIds(beginTime, endTime, lineNo, stationCode,params);}
             for (Map yieldDay : yieldDayList) {
 
                 String key = yieldDay.get("period_date") + "";
@@ -170,18 +172,18 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                     yieldDay.put("rate", rate);
                     yieldDay.put("eqp_rate", eqpRate);
                     yieldDay.put("plan_qty",planQty);
-                    yieldDay.put("eqp_id",eqpid[i]);
+                    yieldDay.put("eqp_id",yieldDay.get("eqp_id"));
                 } else {
                     yieldDay.put("rate", 0);
                     yieldDay.put("eqp_rate", 0);
                     yieldDay.put("plan_qty",0);
-                    yieldDay.put("eqp_id",eqpid[i]);
+                    yieldDay.put("eqp_id",yieldDay.get("eqp_id"));
                 }
                 //去除年份
                 yieldDay.put("period_date", key.substring(4));
                 yieldDayLists.add(yieldDay);
             }
-        }
+//        }
         return yieldDayLists;
     }
 
