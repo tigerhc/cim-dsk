@@ -69,12 +69,7 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
 
     public void updateDayYield(Date startTime, Date endTime, String lineNo, String stationCode) {
         //查询站别计算产量时需要计算的eqpID
-        List<String> eqpIdlist = new ArrayList<>();
-        if(stationCode.equals("DM")){
-            eqpIdlist.add("SIM-DM7");
-        }else{
-            eqpIdlist=baseMapper.findEqpId(lineNo, stationCode);
-        }
+        List<String> eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
         for (String eqpid : eqpIdlist) {
             //查询一天内该设备每个批次的产量，并新建产量数据
             List<RptLotYieldDay> rptLotYieldDayList = baseMapper.findDayYeild(startTime, endTime, eqpid);
@@ -148,6 +143,7 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     }
     @Override
     public List<Map> pdtChart(String beginTime, String endTime, String lineNo, String stationCode,String eqpId) {
+
         String eqpid[]=eqpId.split(",");
         List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime, lineNo);
         Map<String, Integer> planYieldmap = Maps.newHashMap();
@@ -157,7 +153,9 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         List<Map> yieldDayLists=new ArrayList<>();
         for (int i = 0; i < eqpid.length; i++) {
             List<Map> yieldDayList = baseMapper.selectDaypdtById(beginTime, endTime, lineNo, stationCode,eqpid[i]);
+
             for (Map yieldDay : yieldDayList) {
+
                 String key = yieldDay.get("period_date") + "";
                 int planQty = 0;
                 if (planYieldmap.get(key) != null) {
