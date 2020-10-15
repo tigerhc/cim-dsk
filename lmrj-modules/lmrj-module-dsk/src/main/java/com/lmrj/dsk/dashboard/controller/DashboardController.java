@@ -369,10 +369,7 @@ public class DashboardController {
             lineNo = "SIM";
         }
         String eqpId = null;
-        if( stationCode.equals("DM")){
-            eqpId ="SIM-DM7";
-        }
-        List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode,eqpId);
+        List<Map> maps = dashboardServiceImpl.dayYield(lineNo,stationCode);
         List<Map<String,Object>> result = new ArrayList<>();
         for(Map map: maps){
             String temp = (String)map.get("period_date");

@@ -26,12 +26,14 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
 
     List<Map> selectDaypdt(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
-    List<Map> selectDaypdtById(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") String eqpId);
+    List<Map> selectDaypdtById(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") List<String> eqpId);
+
+    List<Map> selectDaypdtByIds(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") List<String> eqpId);
 
     @Select("SELECT production_no,lot_no,(MAX(lot_yield) - MIN(lot_yield)) AS lot_yield_eqp FROM edc_dsk_log_production WHERE start_time BETWEEN #{startTime} AND #{endTime} and eqp_id = #{eqpId}  GROUP BY production_no,lot_no")
     List<RptLotYieldDay> findDayYeild(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
 
-    @Select("select eqp_id from fab_equipment where line_no=#{lineNo} and station_code=#{stationCode} order by eqp_id")
+    @Select("select eqp_id from fab_equipment where line_no=#{lineNo} and station_code=#{stationCode} order by eqp_id and step_yield_flag='1'")
     List<String> findEqpId(@Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
     @Select("select production_name from aps_plan_pdt_yield where production_no=#{productionNo} LIMIT 1")

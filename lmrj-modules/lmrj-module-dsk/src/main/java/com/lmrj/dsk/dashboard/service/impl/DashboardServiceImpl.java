@@ -266,12 +266,12 @@ public class DashboardServiceImpl  implements IDashboardService {
         return rptEqpStateDayService.findSIMState();
     }
 
-    public List<Map> dayYield(String lineNo, String stationCode,String eqpId) {
+    public List<Map> dayYield(String lineNo, String stationCode) {
         String endTime =DateUtil.getDate("yyyyMMdd");
         Calendar rightNow = Calendar.getInstance();
         rightNow.add(Calendar.DAY_OF_MONTH, -12);
         String beginTime = DateUtil.formatDate(rightNow.getTime(),"yyyyMMdd");
-        List<Map> result = iRptLotYieldDayService.pdtChart(beginTime,endTime,lineNo,stationCode, eqpId);
+        List<Map> result = iRptLotYieldDayService.pdtChart(beginTime,endTime,lineNo,stationCode);
         return result;
     }
 }

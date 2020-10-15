@@ -33,5 +33,5 @@ public interface IDashboardService {
 
     List<Map> findSIMState();
 
-    List<Map> dayYield(String line, String stationCode,String eqpId);
+    List<Map> dayYield(String line, String stationCode);
 }

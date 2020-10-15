@@ -251,12 +251,23 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         //循环数据   重新计算批量内连番
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         int j=1;
-        for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
-            if (edcDskLogProduction.getLotYield() != j) {
-                edcDskLogProduction.setLotYield(j);
-                wrongDataList.add(edcDskLogProduction);
+        if(wrongDataList.get(0).getEqpId().contains("TRM") ||wrongDataList.get(0).getEqpId().contains("REFLOW")){
+            j=12;
+            for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
+                if (edcDskLogProduction.getLotYield() != j) {
+                    edcDskLogProduction.setLotYield(j);
+                    wrongDataList.add(edcDskLogProduction);
+                }
+                j=j+12;
             }
-            j++;
+        }else{
+            for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
+                if (edcDskLogProduction.getLotYield() != j) {
+                    edcDskLogProduction.setLotYield(j);
+                    wrongDataList.add(edcDskLogProduction);
+                }
+                j++;
+            }
         }
         if (!wrongDataList.isEmpty()) {
             //将设备产量数据放入mesLotTrack对象，修改track表设备产量
