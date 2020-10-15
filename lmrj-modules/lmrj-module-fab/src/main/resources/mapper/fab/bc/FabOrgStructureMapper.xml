@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.bc.mapper.FabOrgStructureMapper" >
+    <select id="selectOrgByCode" parameterType="java.lang.String" resultType="java.util.Map">
+         select code as "code",
+                name as "name",
+                parent_id as "parentId",
+                parent_ids as "parentIds"
+           from sys_organization
+          where del_flag=0
+            and code=#{code}
+          limit 1
+    </select>
+
+    <select id="chkExistFab" parameterType="java.lang.String" resultType="com.lmrj.fab.bc.entity.FabOrgStructure">
+         select id,
+                org_code,
+                org_name,
+                org_type,
+                center_id,
+                center_code,
+                center_name,
+                company_id,
+                company_code,
+                company_name,
+                factory_id,
+                factory_code,
+                factory_name,
+                department_id,
+                department_code,
+                department_name,
+                line_id,
+                line_code,
+                line_name,
+                station_id,
+                station_code,
+                station_name,
+                process_id,
+                process_code,
+                process_name,
+                ver_no,
+                name,
+                email
+           from fab_org_structure where org_code=#{code}
+    </select>
+
+    <select id="chkExistFabCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(1) from fab_org_structure where org_code=#{code}
+    </select>
+
+    <select id="selectParentOrg" resultType="java.util.Map">
+         select code as "code",
+                name as "name",
+                parent_id as "parentId",
+                parent_ids as "parentIds"
+           from sys_organization
+          where code in (
+            <foreach collection="pids" item="item" separator=",">
+                #{item}
+            </foreach>
+          )
+    </select>
+</mapper>
