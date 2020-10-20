@@ -20,11 +20,11 @@
 
     <select id="findEqpOee" resultType="map">
         select max(eqp_id) eqpId, period_date periodDate,
-        round(sum(run_time)/3600,2) runTime,
-        round(sum(idle_time)/3600,2) idleTime,
-        round(sum(down_time)/3600,2) downTime,
-        round(sum(pm_time)/3600,2) pmTime,
-        round(sum(other_time)/3600,2) otherTime
+        round(sum(run_time)/3600,3) runTime,
+        round(sum(idle_time)/3600,3) idleTime,
+        round(sum(down_time)/3600,3) downTime,
+        round(sum(pm_time)/3600,3) pmTime,
+        round(sum(other_time)/3600,3) otherTime
         from rpt_eqp_state_day
         where period_date between #{beginTime} and #{endTime}
         and eqp_id in
@@ -35,11 +35,11 @@
     </select>
     <select id="findEqpsOee" resultType="map">
         select eqp_id eqpId, max(period_date) periodDate,
-        round(sum(run_time)/3600,2) runTime,
-        round(sum(idle_time)/3600,2) idleTime,
-        round(sum(down_time)/3600,2) downTime,
-        round(sum(pm_time)/3600,2) pmTime,
-        round(sum(other_time)/3600,2) otherTime
+        round(sum(run_time)/3600,3) runTime,
+        round(sum(idle_time)/3600,3) idleTime,
+        round(sum(down_time)/3600,3) downTime,
+        round(sum(pm_time)/3600,3) pmTime,
+        round(sum(other_time)/3600,3) otherTime
         from rpt_eqp_state_day
         where period_date between #{beginTime} and #{endTime}
         and eqp_id in
