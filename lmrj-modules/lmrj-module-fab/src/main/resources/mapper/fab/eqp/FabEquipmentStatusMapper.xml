@@ -119,11 +119,10 @@
     </select>
 
     <select id="selectLotwip" resultType="map">
-        select fab.step_code, count(*) count, sum(lot_yield) lot_yield
-        from mes_lot_wip t
-             left join fab_equipment fab on t.eqp_id = fab.eqp_id
-        where end_time is not null
-        group by fab.step_code
+        select step_code,count(*) count, count(*)*4896 lot_yield
+        from   mes_lot_wip
+        where  end_time is  null
+        group by step_code
     </select>
 
 
