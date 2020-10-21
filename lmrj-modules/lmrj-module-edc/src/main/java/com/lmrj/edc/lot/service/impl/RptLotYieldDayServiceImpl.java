@@ -33,21 +33,10 @@ import java.util.*;
 @Service("rptLotYieldDayService")
 @Slf4j
 public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayMapper, RptLotYieldDay> implements IRptLotYieldDayService {
-
     @Autowired
     private IFabLogService fabLogService;
     @Autowired
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
-
-    @Override
-    public List<RptLotYieldDay> findDayYeild(Date startTime, Date endTime, String eqpId) {
-        return baseMapper.findDayYeild(startTime, endTime, eqpId);
-    }
-
-    @Override
-    public String findProductionName(String productionNo) {
-        return baseMapper.findProductionName(productionNo);
-    }
 
     @Override
     public Integer findLotYield(String eqpId, String lotNo, Date startTime, Date endTime) {
@@ -59,6 +48,10 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         return baseMapper.findEqpId(lineNo, stationCode);
     }
 
+    @Override
+    public RptLotYieldDay findDayYield(String eqpId,Date startTime, Date endTime){
+        return baseMapper.findDayYield(eqpId,startTime,endTime);
+    }
     /*@Override
     public List<Map> selectDaypdt(String beginTime,String endTime,String lineNo,String stationCode){
         return baseMapper.selectDaypdt(beginTime, endTime, lineNo, stationCode);
@@ -66,29 +59,17 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
 
     public void updateDayYield(Date startTime, Date endTime, String lineNo, String stationCode) {
         //查询站别计算产量时需要计算的eqpID
-        List<String> eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
+        List<String> eqpIdlist = new ArrayList<>();
         if(lineNo.equals("SIM") && stationCode.equals("DM")){
-            eqpIdlist=null;
             eqpIdlist.add("SIM-REFLOW1");
+        }else{
+            eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
         }
         for (String eqpid : eqpIdlist) {
-            //查询一天内该设备每个批次的产量，并新建产量数据
-            List<RptLotYieldDay> rptLotYieldDayList = baseMapper.findDayYeild(startTime, endTime, eqpid);
-            for (RptLotYieldDay lotYieldDay : rptLotYieldDayList) {
-                lotYieldDay.setProductionName(baseMapper.findProductionName(lotYieldDay.getProductionNo()));
-                lotYieldDay.setLotYield(4896);
-                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
-                lotYieldDay.setPeriodDate(sim.format(startTime));
-                lotYieldDay.setStationCode(stationCode);
-                lotYieldDay.setLineNo(lineNo);
-                if(eqpid.contains("WB")){
-                    eqpid=eqpid.substring(0,8);
-                }
-                lotYieldDay.setEqpId(eqpid);
-                this.insert(lotYieldDay);
-            }
+            //查询一天内该设备的产量，并新建产量数据
+            RptLotYieldDay rptLotYieldDay = baseMapper.findDayYield(eqpid,startTime,endTime);
             //当天该设备无产量则新建无产量数据
-            if (rptLotYieldDayList.size() == 0) {
+            if (Objects.isNull(rptLotYieldDay)) {
                 RptLotYieldDay lotYieldDay = new RptLotYieldDay();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
                 lotYieldDay.setPeriodDate(sim.format(startTime));
@@ -101,6 +82,16 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                 }
                 lotYieldDay.setEqpId(eqpid);
                 this.insert(lotYieldDay);
+            }else{
+                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
+                rptLotYieldDay.setPeriodDate(sim.format(startTime));
+                rptLotYieldDay.setStationCode(stationCode);
+                rptLotYieldDay.setLineNo(lineNo);
+                if(eqpid.contains("WB")){
+                    eqpid=eqpid.substring(0,8);
+                }
+                rptLotYieldDay.setEqpId(eqpid);
+                this.insert(rptLotYieldDay);
             }
         }
         String eventId = StringUtil.randomTimeUUID("RPT");
