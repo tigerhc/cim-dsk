@@ -163,11 +163,6 @@ public class EdcDskLogHandler {
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
-        if(eqpId.contains("SIM-WB")){
-            for (EdcDskLogProduction edcDskLogProduction : proList) {
-                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 6);
-            }
-        }
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             proList.forEach(edcDskLogProduction -> {
@@ -213,6 +208,13 @@ public class EdcDskLogHandler {
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
+            log.info("00000000000000000000000"+e);
+            if(eqpId.contains("GAZO")){
+                for (EdcDskLogProduction edcDskLogProduction : proList) {
+                    log.info(edcDskLogProduction.getStartTime() +"    "+ edcDskLogProduction.toString());
+                }
+                log.info(proList.toString());
+            }
             e.printStackTrace();
             fabLogService.info(eqpId, eventId, "fixProData", "track更新出错" + e + "       ", mesLotTrack.getLotNo(), "gxj");
         }

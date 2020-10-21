@@ -99,7 +99,7 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
         List<Map> wips =  baseMapper.selectLotwip(lineNo);
         Map wipMap = Maps.newHashMap();
         for (Map wip : wips) {
-            wipMap.put(wip.get("step_code"),wip.get("count")+"|"+wip.get("lot_yield") );
+            wipMap.put(wip.get("station_code"),wip.get("count")+"|"+wip.get("lot_yield") );
         }
         for (Map yield : yields) {
             String count = (String) wipMap.get(yield.get("step_code"));

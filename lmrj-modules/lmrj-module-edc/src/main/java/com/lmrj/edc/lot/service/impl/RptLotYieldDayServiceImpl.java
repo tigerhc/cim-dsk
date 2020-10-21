@@ -67,6 +67,10 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     public void updateDayYield(Date startTime, Date endTime, String lineNo, String stationCode) {
         //查询站别计算产量时需要计算的eqpID
         List<String> eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
+        if(lineNo.equals("SIM") && stationCode.equals("DM")){
+            eqpIdlist=null;
+            eqpIdlist.add("SIM-REFLOW1");
+        }
         for (String eqpid : eqpIdlist) {
             //查询一天内该设备每个批次的产量，并新建产量数据
             List<RptLotYieldDay> rptLotYieldDayList = baseMapper.findDayYeild(startTime, endTime, eqpid);
