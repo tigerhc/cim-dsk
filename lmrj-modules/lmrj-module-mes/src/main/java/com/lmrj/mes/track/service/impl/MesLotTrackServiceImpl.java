@@ -384,7 +384,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             return MesResult.error("eqp not found");
         }
         for (FabEquipment fabEquipment : fabEquipmentList) {
-            result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, "4896", recipeCode, opId);
+            result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, "2448", recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
                 return result; //失败提前退出
             }
