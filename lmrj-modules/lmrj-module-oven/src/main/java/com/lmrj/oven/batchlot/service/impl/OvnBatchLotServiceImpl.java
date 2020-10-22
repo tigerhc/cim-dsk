@@ -261,7 +261,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                     for (int j = 0; j <Other.length ; j++) {
                         if (j==0||j%4 == 0){
                             BigDecimal first = BigDecimal.valueOf(Other[j]);
-                            BigDecimal multiply = new BigDecimal(61);
+                            BigDecimal multiply = new BigDecimal(60);
                             if(i==detail.size()-1){
                                 multiply = new BigDecimal(detail.size()%60);
                             }
