@@ -29,9 +29,9 @@ public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
 
     List<Map> selectChartByCase(String officeId);
 
-    int findCountBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
+    int findCountBytime(@Param("eqpId") String eqpId,@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
-    List<Map> findDetailBytime(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("eqpId") String eqpId);
+    List<Map> findDetailBytime(@Param("eqpId") String eqpId,@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
     List<Map<String, Object>> findToEqpId(@Param("dateStr")String dateStr);
 

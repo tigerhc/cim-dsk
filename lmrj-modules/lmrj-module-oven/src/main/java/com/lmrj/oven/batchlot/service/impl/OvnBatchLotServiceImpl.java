@@ -10,6 +10,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.mapper.OvnBatchLotMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -22,10 +23,11 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
@@ -223,12 +225,82 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     }
 
     @Override
-    public List<Map> findDetailBytime(String eqpId, String beginTime, String endTime) {
+    public List<Map> findDetailBytime(String beginTime, String endTime,String eqpId) {
         int count = baseMapper.findCountBytime(eqpId,  beginTime,  endTime);
         if(count>100000){
             return null;
         }else{
             List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
+            long timeFlag = 0;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                Date begin = format.parse(beginTime);
+                Date end = format.parse(endTime);
+                 timeFlag = end.getTime()-begin.getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (timeFlag > 24*3600*1000*7){
+            List<Map> result =new ArrayList<>();
+            Map<String,Object> temp = new HashMap<>();
+            BigDecimal pv = new BigDecimal(0);
+            String resultArr = (String) detail.get(0).get("other_temps_value");
+            String[] strResultArr = resultArr.split(",");
+            Double[] Other = new Double[strResultArr.length];
+            for (int j = 0; j < strResultArr.length ; j++) {
+                Other[j]=(Double.valueOf(strResultArr[j]));
+            }
+            for (int i = 0; i <detail.size() ; i++) {
+                if((i!=0&&i%60==0)||(i==(detail.size()-1))){
+                    for (int j = 0; j <Other.length ; j++) {
+                        if (j%4 == 0){
+                            BigDecimal first = BigDecimal.valueOf(Other[j]);
+                            BigDecimal multiply = new BigDecimal(60);
+                            Other[j] =Double.valueOf(first.divide(multiply,2, RoundingMode.HALF_UP).toString());
+                        }
+                    }
+                    Map<String,Object> element = new HashMap<>();
+                    String[] stringArr = new String[Other.length];
+                    for (int j = 0; j <Other.length ; j++) {
+                        stringArr[j] = Other[j].toString();
+                    }
+                    BigDecimal multiply = new BigDecimal(60);
+                    element.put("temp_pv",Double.valueOf(pv.divide(multiply,2,RoundingMode.HALF_UP).toString()));
+                    element.put("temp_min",detail.get(i).get("temp_min"));
+                    element.put("temp_sp",detail.get(i).get("temp_sp"));
+                    element.put("temp_max",detail.get(i).get("temp_max"));
+                    element.put("create_date",detail.get(i).get("create_date"));
+                    element.put("other_temps_value", StringUtil.join(stringArr,","));
+                    result.add(element);
+                    pv = new BigDecimal(0);
+                    String str = (String) detail.get(i).get("other_temps_value");
+                    String[] strArr = str.split(",");
+                    Double[] doubleArr = new Double[strArr.length];
+                    for (int j = 0; j <strArr.length ; j++) {
+                        doubleArr[j]=(Double.valueOf(strArr[j]));
+                    }
+                    Other = doubleArr;
+                    continue;
+                }
+                String convert = String.valueOf(detail.get(i).get("temp_pv"));
+                BigDecimal pv_temp = new BigDecimal(convert);
+                pv = pv_temp.add(pv);
+                String str = (String) detail.get(i).get("other_temps_value");
+                String[] strArr = str.split(",");
+                Double[] doubleArr = new Double[strArr.length];
+                for (int j = 0; j <strArr.length ; j++) {
+                    doubleArr[j]=(Double.valueOf(strArr[j]));
+                }
+                for (int j = 0; j <doubleArr.length ; j++) {
+                    if (j%4 == 0){
+                        BigDecimal first = BigDecimal.valueOf(Other[j]);
+                        BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
+                        Other[j] = Double.valueOf(first.add(second).toString());
+                    }
+                }
+            }
+                return result;
+            }
             return detail;
         }
     }
