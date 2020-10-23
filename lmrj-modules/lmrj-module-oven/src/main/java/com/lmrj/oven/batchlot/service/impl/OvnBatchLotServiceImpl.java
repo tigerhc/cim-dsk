@@ -258,6 +258,24 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             }
             for (int i = 0; i <detail.size() ; i++) {
                 if((i!=0&&flag==60)||(i==(detail.size()-1))){
+                    if (i==(detail.size()-1)){
+                        String convert = String.valueOf(detail.get(i).get("temp_pv"));
+                        BigDecimal pv_temp = new BigDecimal(convert);
+                        pv = pv.add( pv_temp);
+                        String str = (String) detail.get(i).get("other_temps_value");
+                        String[] strArr = str.split(",");
+                        Double[] doubleArr = new Double[strArr.length];
+                        for (int j = 0; j <strArr.length ; j++) {
+                            doubleArr[j]=(Double.valueOf(strArr[j]));
+                        }
+                        for (int j = 0; j <doubleArr.length ; j++) {
+                            if (j==0||j%4 == 0){
+                                BigDecimal first = BigDecimal.valueOf(Other[j]);
+                                BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
+                                Other[j] = Double.valueOf(first.add(second).toString());
+                            }
+                        }
+                    }
                     for (int j = 0; j <Other.length ; j++) {
                         if (j==0||j%4 == 0){
                             BigDecimal first = BigDecimal.valueOf(Other[j]);
@@ -289,18 +307,14 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                     String[] strArr = str.split(",");
                     Double[] doubleArr = new Double[strArr.length];
                     for (int j = 0; j <strArr.length ; j++) {
-
-
                         if (j==0||j%4 == 0){
                             doubleArr[j]= Double.valueOf(0);
                         }else {
                             doubleArr[j]=(Double.valueOf(strArr[j]));
                         }
-
                     }
                     Other = doubleArr;
                     flag=0;
-
                 }
                 String convert = String.valueOf(detail.get(i).get("temp_pv"));
                 BigDecimal pv_temp = new BigDecimal(convert);
@@ -318,9 +332,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                         Other[j] = Double.valueOf(first.add(second).toString());
                     }
                 }
-
            flag+=1;
-
             }
                 return result;
             }
