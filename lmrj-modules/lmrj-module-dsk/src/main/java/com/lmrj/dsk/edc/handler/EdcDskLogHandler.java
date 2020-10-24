@@ -415,13 +415,19 @@ public class EdcDskLogHandler {
         String eqpId = null;
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
+        List<String> emails = new ArrayList<>();
         List<Map<String,Object>> result =  fabEquipmentService.findEmail(eqpId);
+        if(!result.isEmpty()){
         for (Map<String,Object> map:result){
-           emailSendService.send((String) map.get("email"),"RTP_ALARM",msgMap);
-        }
+         emails.add((String) map.get("email"));
+        }}
         List<Map<String,Object>> common =  fabEquipmentService.findEmailALL("ALL");
-        for (Map<String,Object> maps:common){
-            emailSendService.send((String) maps.get("email"),"RTP_ALARM",msgMap);
-        }
+        if(!common.isEmpty()){
+            for (Map<String,Object> map:common){
+                emails.add((String) map.get("email"));
+            }}
+        String[] params = new String[emails.size()];
+        emails.toArray(params);
+        emailSendService.blockSend( params,"RTP_ALARM",msgMap);
         }
     }

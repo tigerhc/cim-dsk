@@ -146,4 +146,55 @@ public class EmailSendServiceImpl implements IEmailSendService {
             sendEmail(eventId,email,subject,content);
         }
     }
+
+    @Override
+    public void blockSend(String[] emails, String code, Map<String, Object> datas) {
+        EmailTemplate template = emailTemplateService.selectOne(new EntityWrapper<EmailTemplate>().eq("code", code));
+        if (datas == null) {
+            datas = new HashMap<>();
+        }
+        if (template == null){
+            return ;
+        }
+        String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
+        String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
+        // List<EmailSendLog> emailSendLogList = new ArrayList<EmailSendLog>();
+
+        EmailSendLog emailSendLog = new EmailSendLog();
+        String email = StringUtil.join(emails,",");
+        emailSendLog.setEmail(email);
+        emailSendLog.setSubject(subject);
+        emailSendLog.setContent(content);
+        emailSendLog.setMsg("发送成功");
+        emailSendLog.setSendCode(code);
+        emailSendLog.setResponseDate(new Date());
+        emailSendLog.setSendData(JsonUtil.toJsonString(datas));
+        emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
+        emailSendLog.setTryNum(0);
+        emailSendLog.setDelFlag("0");
+        // emailSendLogList.add(emailSendLog);
+        emailSendLogService.insert(emailSendLog);
+        // 发送邮件
+        blockSendEmail(emailSendLog.getId(),emails,subject,content);
+
+        /*if (emailSendLogList.size()>0) {
+            emailSendLogService.insertBatch(emailSendLogList);
+        }*/
+    }
+
+    @Override
+    public void blockSendEmail(String eventId, String[] emails, String subject, String text){
+        try {
+            MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
+            //true表示需要创建一个multipart message
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sender);
+            helper.setTo(emails);
+            helper.setSubject(subject);
+            helper.setText(text,true);
+            emailHelper.sendAsync(eventId,message,null);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

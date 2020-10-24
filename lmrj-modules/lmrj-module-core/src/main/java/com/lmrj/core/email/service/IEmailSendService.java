@@ -23,4 +23,8 @@ public interface IEmailSendService {
     void send(String eventId, String[] emails, String code, Map<String, Object> datas);
 
     void sendEmail(String eventId,String to,String subject,String text);
+
+    public void blockSendEmail(String eventId, String[] emails, String subject, String text);
+
+    public void blockSend(String[] emails, String code, Map<String, Object> datas);
 }
