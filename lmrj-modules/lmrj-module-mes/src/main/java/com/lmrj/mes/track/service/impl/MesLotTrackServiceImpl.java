@@ -531,9 +531,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public List<Map<String, Object>> chartKongDong(String lotNo, String productionNo, String startDate, String endDate) {
+    public Map<String, Object> chartKongDong(String proName, String startDate, String endDate) {
         try {
-            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
+//            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
+            String productionName = baseMapper.findProName(proName);
             String line = productionName.split("-")[0].replace("J.","");
             if(line.length()>3){
                 line = line.substring(0,3);
@@ -545,10 +546,84 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
             log.info(kongdongDir);
             List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
-            List<Map<String, Object>> res = _handleFileName(files, lotNo);
-            return res;
+            return _handleFileName(files);
         }catch (Exception e){
-            log.error("MesLotTrackServiceImpl_chartKongDong:error,lotNo:"+lotNo+",productionNo:"+productionNo);
+            log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> chartKongDong(String lotNo,String proName, String startDate, String endDate) {
+        try {
+//            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
+            String productionName = baseMapper.findProName(proName);
+            String line = productionName.split("-")[0].replace("J.","");
+            if(line.length()>3){
+                line = line.substring(0,3);
+            }
+            if(line.startsWith("SX")){
+                line = "SX";
+            }
+//            String kongdongDir = "d:\\backup\\"+line+"\\" + productionName.replace("J.",""); //本地测试
+            String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
+            log.info(kongdongDir);
+            List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
+            return _handleFileName(files, lotNo);
+        }catch (Exception e){
+            log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName+",lotNo:"+lotNo);
+        }
+        return null;
+    }
+
+    private Map<String, Object> _handleFileName(List<Map<String, Object>> files){
+        Map<String, Object> chartOption = new HashMap<>();
+        Map<String, Object> allLine = new HashMap<>();
+        if(files!=null && files.size()>0){
+            List<String> xaxis = new ArrayList<>();
+            for(Map<String, Object> item : files){
+                String fileName = MapUtils.getString(item, "fileName");
+                if(_chkFileName(fileName)){
+                    String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
+                    String fileLotNo = fileName.substring(0,fileName.indexOf(" "));
+                    String fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
+                    String fileData = MapUtils.getString(allLine, fileNo);
+                    fileData = fileData + "," +kongdongVal;
+                    allLine.put(fileNo,fileData);
+
+                    boolean chkFlag = true;
+                    if(xaxis.size()>0){
+                        for(String chkLotNo : xaxis){
+                            if(chkLotNo.equals(fileLotNo)){
+                                chkFlag = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(chkFlag){
+                        xaxis.add(fileLotNo);
+                    }
+                }else{
+                    log.warn("MesLotTrackServiceImpl__handleFileName:fileName is error:"+fileName);
+                }
+            }
+            List<Map<String, Object>> res = new ArrayList<>();
+            List<String> legend = new ArrayList<>();
+            for(String key : allLine.keySet()){
+                String datas = MapUtils.getString(allLine, key);
+                datas = datas.substring(5);
+                Map<String, Object> lineItem = new HashMap<>();
+                lineItem.put("type", "line");
+                lineItem.put("name", key);
+
+                lineItem.put("data",str2Double(datas.split(",")));
+                res.add(lineItem);
+                legend.add(key);
+            }
+            chartOption.put("series",res);
+            chartOption.put("xAxis", xaxis);
+            chartOption.put("legend",legend);
+            return chartOption;
         }
         return null;
     }
@@ -561,8 +636,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 if(_chkFileName(fileName)){
                     String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
                     String fileLotNo = fileName.substring(0,fileName.indexOf(" "));
-                    String xAxis = fileName.substring(fileName.indexOf("-"),fileName.lastIndexOf("."));
-                    xAxis = fileLotNo+xAxis;
+                    String xAxis = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
                     item.put("lotNo", fileLotNo);
                     item.put("kongdongVal", kongdongVal);
                     item.put("xAxis", xAxis);
@@ -589,6 +663,16 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             return false;
         }
         return true;
+    }
+
+    private List<Double> str2Double(String[] strArr){
+        List<Double> rs = new ArrayList<>();
+        if(strArr.length>0){
+            for(String item : strArr){
+                rs.add(Double.parseDouble(item));
+            }
+        }
+        return rs;
     }
 
     //public static void main(String[] args) {
