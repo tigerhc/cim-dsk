@@ -418,10 +418,10 @@ public class EdcDskLogHandler {
         List<Map<String,Object>> users = new ArrayList<>();
         List<Map<String,Object>> department =  fabEquipmentService.findDepartment(eqpId);
        if(department.get(0).get("department").equals("YK")){
-           users =  fabEquipmentService.findEmailALL("E000-7");
+           users =  fabEquipmentService.findEmailALL("E-0007");
        }
        else if(department.get(0).get("department").equals("EK")){
-           users =  fabEquipmentService.findEmailALL("E000-8");
+           users =  fabEquipmentService.findEmailALL("E-0008");
        }
        List<String> param = new ArrayList<>();
         if(!users.isEmpty()){
