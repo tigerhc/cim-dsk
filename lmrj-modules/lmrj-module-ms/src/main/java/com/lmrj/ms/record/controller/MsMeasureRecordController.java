@@ -233,16 +233,11 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
     }
 
     /**
-     * @param lotNo 批次号
-     * @param eqpId 设备
      * @return 可以直接在echart中展示的重量数据
      */
     @RequestMapping(value = "/weightChart", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response weightChart(@RequestParam String lotNo,@RequestParam String eqpId,
+    public Response weightChart(@RequestParam String productionNo,@RequestParam String lotNo,
                                   @RequestParam String startTime,@RequestParam String endTime){
-        if(StringUtil.isEmpty(lotNo) && StringUtil.isEmpty(eqpId)){
-            return Response.error("批次号和设备不可同时为空");
-        }
         if(StringUtil.isEmpty(startTime)&&!StringUtil.isEmpty(endTime)){
             return Response.error("请选择开始时间");
         }
@@ -250,12 +245,8 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             return Response.error("请选择结束时间");
         }
         Map<String, Object> param = new HashMap<>();
-        if(!StringUtil.isEmpty(lotNo)){
-            param.put("lotNo",lotNo);
-        }
-        if(!StringUtil.isEmpty(eqpId)){
-            param.put("eqpId",eqpId);
-        }
+        param.put("productionNo",productionNo);
+        param.put("lotNo", lotNo);
         if(!StringUtil.isEmpty(startTime)){
             param.put("startTime",startTime);
             param.put("endTime",endTime);

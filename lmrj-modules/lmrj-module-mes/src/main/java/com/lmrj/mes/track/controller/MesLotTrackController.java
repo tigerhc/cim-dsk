@@ -279,8 +279,18 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/chartKongDong", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response chartKongDong(@RequestParam String productionNo, @RequestParam String lotNo,
+    public Response chartKongDong(@RequestParam String productionNo,
             @RequestParam String startDate, @RequestParam String endDate){
+        log.info("MesLotTrackController_chartKongDong : productionNo,"+productionNo);
+        Map<String, Object> data = mesLotTrackService.chartKongDong(productionNo,startDate,endDate);
+        Response rs = Response.ok();
+        rs.put("kongdong", data);
+        return rs;
+    }
+
+    @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response kongDongBar(@RequestParam String productionNo, @RequestParam String lotNo,
+                                  @RequestParam String startDate, @RequestParam String endDate){
         log.info("MesLotTrackController_chartKongDong : productionNo,"+productionNo);
         List data = mesLotTrackService.chartKongDong(lotNo, productionNo,startDate,endDate);
         Response rs = Response.ok();

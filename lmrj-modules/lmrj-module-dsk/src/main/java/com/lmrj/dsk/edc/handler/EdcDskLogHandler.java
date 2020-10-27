@@ -277,7 +277,7 @@ public class EdcDskLogHandler {
         String status = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
-            if ("2".equals(eventId)) {
+            if ((!eqpId.contains("WB") && "2".equals(eventId)) || (eqpId.contains("WB") && "8".equals(eventId))) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
                 String alarmCode = edcDskLogOperation.getAlarmCode();
