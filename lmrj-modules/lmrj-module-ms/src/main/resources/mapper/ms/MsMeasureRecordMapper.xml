@@ -55,7 +55,8 @@
                     dtl.item_value as "weight",
                     rcd.eqp_id as "eqpId",
                     dtl.limit_min as "limitMin",
-                    dtl.limit_max as "limitMax"
+                    dtl.limit_max as "limitMax",
+                    rcd.lot_no as "lotNo"
              from ms_measure_record_detail dtl
             LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
             where dtl.item_code='WEIGHT'
