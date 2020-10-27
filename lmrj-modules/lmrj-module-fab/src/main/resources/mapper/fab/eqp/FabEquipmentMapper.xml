@@ -63,24 +63,29 @@
         order by sort_no, step_id
     </select>
 
-    <select id="findEmail" resultType="java.util.Map" parameterType="java.lang.String">
+    <select id="findDepartment" resultType="java.util.Map" parameterType="java.lang.String">
         SELECT
-	    b.email as email
+	    department as department
         FROM
-	    fab_equipment AS a
-	    left JOIN fab_org_structure as b
-	    on a.department = b.department_code
+	    fab_equipment
         WHERE
-	    a.eqp_id = #{eqpId}
+	    eqp_id = #{eqpId}
     </select>
 
     <select id="findEmailALL" resultType="java.util.Map" parameterType="java.lang.String">
-        SELECT
-	    email as email
-        FROM
-        fab_org_structure as b
-        WHERE
-	    b.department_code = #{code}
+       SELECT
+       b.user_name AS name,
+	   b.user_email AS email
+       FROM
+	   edc_ams_rpt_define a
+	   LEFT JOIN edc_ams_rpt_define_act_email b
+	   ON
+       a.id =b.rpt_alarm_id
+       WHERE
+	   a.alarm_id = #{code} AND
+	   a.del_flag = '0' AND
+	   b.del_flag = '0' AND
+	   a.active_flag = '1'
     </select>
 
 </mapper>

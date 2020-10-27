@@ -80,8 +80,8 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
         return baseMapper.findeqpNoInfab(eqpId);
     }
 
-    public List<Map<String,Object>> findEmail (String eqpId){
-        List<Map<String,Object>> result = baseMapper.findEmail(eqpId);
+    public List<Map<String,Object>> findDepartment (String eqpId){
+        List<Map<String,Object>> result = baseMapper.findDepartment(eqpId);
        return result;
     }
 
