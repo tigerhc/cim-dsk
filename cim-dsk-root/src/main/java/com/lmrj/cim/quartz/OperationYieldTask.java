@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class OperationYieldTask {
         cal.set(Calendar.MILLISECOND,0);
         cal.add(Calendar.HOUR_OF_DAY, -2);
         List<EdcDskLogOperation> operationList = edcDskLogOperationService.selectList(new EntityWrapper<EdcDskLogOperation>().eq("day_yield", "0").ge("create_date", cal.getTime()).like("eqp_id", "SIM-DM"));
+        List<EdcDskLogOperation> operationList1=new ArrayList<>();
         operationList.forEach(edcDskLogOperation -> {
             if(edcDskLogOperation.getLotYield()==0 || edcDskLogOperation.getDayYield()==0){
                 EdcDskLogProduction edcDskLogProduction = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getStartTime());
@@ -44,10 +46,13 @@ public class OperationYieldTask {
                     edcDskLogOperation.setLotYield(lotYield);
                     edcDskLogOperation.setDayYield(dayYield);
                     edcDskLogOperation.setLotNo(lotNo);
-                    edcDskLogOperationService.updateById(edcDskLogOperation);
+                    operationList1.add(edcDskLogOperation);
                 }
             }
         });
+        if(operationList1.size()>0){
+            edcDskLogOperationService.insertBatch(operationList1);
+        }
         log.info("OperationYieldTask定时任务开始执行结束");
     }
 
