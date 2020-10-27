@@ -280,7 +280,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                         if (j==0||j%4 == 0){
                             BigDecimal first = BigDecimal.valueOf(Other[j]);
                             BigDecimal multiply = new BigDecimal(60);
-                            if(i==detail.size()-1){
+                            if((detail.size()%60!=0)&&i==detail.size()-1){
                                 multiply = new BigDecimal(detail.size()%60);
                             }
                             Other[j] =Double.valueOf(first.divide(multiply,2, RoundingMode.HALF_UP).toString());
@@ -292,7 +292,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                         stringArr[j] = Other[j].toString();
                     }
                     BigDecimal multiplyTwo = new BigDecimal(60);
-                    if(i==detail.size()-1){
+                    if((detail.size()%60!=0)&&i==detail.size()-1){
                         multiplyTwo = new BigDecimal(detail.size()%60);
                     }
                     element.put("temp_pv",Double.valueOf(pv.divide(multiplyTwo,2,RoundingMode.HALF_UP).toString()));
@@ -334,7 +334,12 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                 }
            flag+=1;
             }
-                return result;
+
+
+
+                  result.remove(result.size()-1);
+                return  result;
+
             }
             return detail;
         }
