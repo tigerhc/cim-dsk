@@ -159,23 +159,28 @@ public class EmailSendServiceImpl implements IEmailSendService {
         String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
         String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
         // List<EmailSendLog> emailSendLogList = new ArrayList<EmailSendLog>();
+        String id = null;
+        for (int i = 0; i <emails.length ; i++) {
 
-        EmailSendLog emailSendLog = new EmailSendLog();
-        String email = StringUtil.join(emails,",");
-        emailSendLog.setEmail(email);
-        emailSendLog.setSubject(subject);
-        emailSendLog.setContent(content);
-        emailSendLog.setMsg("发送成功");
-        emailSendLog.setSendCode(code);
-        emailSendLog.setResponseDate(new Date());
-        emailSendLog.setSendData(JsonUtil.toJsonString(datas));
-        emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
-        emailSendLog.setTryNum(0);
-        emailSendLog.setDelFlag("0");
-        // emailSendLogList.add(emailSendLog);
-        emailSendLogService.insert(emailSendLog);
-        // 发送邮件
-        blockSendEmail(emailSendLog.getId(),emails,subject,content);
+
+            EmailSendLog emailSendLog = new EmailSendLog();
+            String email = StringUtil.join(emails, ",");
+            emailSendLog.setEmail(emails[i]);
+            emailSendLog.setSubject(subject);
+            emailSendLog.setContent(content);
+            emailSendLog.setMsg("发送成功");
+            emailSendLog.setSendCode(code);
+            emailSendLog.setResponseDate(new Date());
+            emailSendLog.setSendData(JsonUtil.toJsonString(datas));
+            emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
+            emailSendLog.setTryNum(0);
+            emailSendLog.setDelFlag("0");
+            // emailSendLogList.add(emailSendLog);
+            emailSendLogService.insert(emailSendLog);
+            id = emailSendLog.getId();
+            // 发送邮件
+        }
+        this.blockSendEmail(id,emails,subject,content);
 
         /*if (emailSendLogList.size()>0) {
             emailSendLogService.insertBatch(emailSendLogList);

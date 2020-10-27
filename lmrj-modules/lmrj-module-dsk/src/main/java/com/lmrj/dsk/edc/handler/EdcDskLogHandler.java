@@ -415,19 +415,21 @@ public class EdcDskLogHandler {
         String eqpId = null;
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
-        List<String> emails = new ArrayList<>();
-        List<Map<String,Object>> result =  fabEquipmentService.findEmail(eqpId);
-        if(!result.isEmpty()){
-        for (Map<String,Object> map:result){
-         emails.add((String) map.get("email"));
-        }}
-        List<Map<String,Object>> common =  fabEquipmentService.findEmailALL("ALL");
-        if(!common.isEmpty()){
-            for (Map<String,Object> map:common){
-                emails.add((String) map.get("email"));
+        List<Map<String,Object>> users = new ArrayList<>();
+        List<Map<String,Object>> department =  fabEquipmentService.findDepartment(eqpId);
+       if(department.get(0).get("department").equals("YK")){
+           users =  fabEquipmentService.findEmailALL("E000-7");
+       }
+       else if(department.get(0).get("department").equals("EK")){
+           users =  fabEquipmentService.findEmailALL("E000-8");
+       }
+       List<String> param = new ArrayList<>();
+        if(!users.isEmpty()){
+            for (Map<String,Object> map:users){
+                param.add((String)map.get("email"));
             }}
-        String[] params = new String[emails.size()];
-        emails.toArray(params);
-        emailSendService.blockSend( params,"RTP_ALARM",msgMap);
+        String[] params = new String[param.size()];
+        param.toArray(params);
+        emailSendService.blockSend(params,"RTP_ALARM",msgMap);
         }
     }

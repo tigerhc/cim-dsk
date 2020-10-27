@@ -38,7 +38,7 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
 
     String findeqpNoInfab(String eqpId);
 
-    List<Map<String,Object>> findEmail (String eqpId);
+    List<Map<String,Object>> findDepartment (String eqpId);
 
     List<Map<String,Object>> findEmailALL (String code);
 
