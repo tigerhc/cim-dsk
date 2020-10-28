@@ -122,7 +122,7 @@ public class EdcDskLogHandler {
             //同一批次
             if (nextLotTrack == null) {
                 fixProData(edcDskLogProductionList, lotTrack);
-            //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
+                //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
             } else {
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                     if (edcDskLogProduction.getStartTime().before(nextLotTrack.getStartTime())) {
@@ -208,10 +208,10 @@ public class EdcDskLogHandler {
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
         } catch (Exception e) {
-            log.info("00000000000000000000000"+e);
-            if(eqpId.contains("GAZO")){
+            log.info("00000000000000000000000" + e);
+            if (eqpId.contains("GAZO")) {
                 for (EdcDskLogProduction edcDskLogProduction : proList) {
-                    log.info(edcDskLogProduction.getStartTime() +"    "+ edcDskLogProduction.toString());
+                    log.info(edcDskLogProduction.getStartTime() + "    " + edcDskLogProduction.toString());
                 }
                 log.info(proList.toString());
             }
@@ -249,8 +249,8 @@ public class EdcDskLogHandler {
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             edcDskLogOperationlist.forEach(edcDskLogOperation -> {
-                EdcDskLogProduction pro=edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(),edcDskLogOperation.getStartTime());
-                if(pro!=null){
+                EdcDskLogProduction pro = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
+                if (pro != null) {
                     edcDskLogOperation.setLotYield(pro.getLotYield());
                     edcDskLogOperation.setDayYield(pro.getDayYield());
                 }
@@ -287,10 +287,35 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
                 edcAmsRecord.setStartDate(edcDskLogOperation.getStartTime());
-                FabEquipment fabEquipment=iFabEquipmentService.findEqpByCode(edcDskLogOperation.getEqpId());
-                if(fabEquipment!=null){
+                FabEquipment fabEquipment = iFabEquipmentService.findEqpByCode(edcDskLogOperation.getEqpId());
+                if (fabEquipment != null) {
                     edcAmsRecord.setLineNo(fabEquipment.getLineNo());
                     edcAmsRecord.setStationCode(fabEquipment.getStationCode());
+                }
+                if ("34014801".equals(alarmCode) || "34015212".equals(alarmCode)) {
+                    List<Map<String, Object>> users = new ArrayList<>();
+                    users = fabEquipmentService.findEmailALL("WBAlarm");
+                    Map<String, Object> msgMap = new HashMap<>();
+                    if ("34014801".equals(alarmCode)) {
+                        msgMap.put("ALARM_CODE", "フレームプッシュエラー");
+                    } else {
+                        msgMap.put("ALARM_CODE", "連結機 搬送過負荷エラー");
+                    }
+                    msgMap.put("EQP_ID", eqpId);
+                    List<String> param = new ArrayList<>();
+                    if (!users.isEmpty()) {
+                        for (Map<String, Object> map : users) {
+                            param.add((String) map.get("email"));
+                        }
+                    }
+                    String[] params = new String[param.size()];
+                    param.toArray(params);
+                    try {
+                        emailSendService.blockSend(params, "RTP_ALARM", msgMap);
+                    } catch (Exception e) {
+                        log.error("WB Alarm 邮件发送出错" + e);
+                        e.printStackTrace();
+                    }
                 }
                 edcAmsRecordList.add(edcAmsRecord);
                 if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
@@ -334,15 +359,15 @@ public class EdcDskLogHandler {
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
             edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
-            if(eqpId.contains("WB")){
-                if(edcDskLogOperation.getEventName().equals("2")){
-                    status="DOWN";
-                }else if(edcDskLogOperation.getEventName().equals("4")){
-                    status="RUN";
-                }else if(edcDskLogOperation.getEventName().equals("8")){
-                    status="ALARM";
-                }else if(edcDskLogOperation.getEventName().equals("16") || edcDskLogOperation.getEventName().equals("32")){
-                    status="IDLE";
+            if (eqpId.contains("WB")) {
+                if (edcDskLogOperation.getEventName().equals("2")) {
+                    status = "DOWN";
+                } else if (edcDskLogOperation.getEventName().equals("4")) {
+                    status = "RUN";
+                } else if (edcDskLogOperation.getEventName().equals("8")) {
+                    status = "ALARM";
+                } else if (edcDskLogOperation.getEventName().equals("16") || edcDskLogOperation.getEventName().equals("32")) {
+                    status = "IDLE";
                 }
             }
             edcEqpState.setState(status);
@@ -415,21 +440,21 @@ public class EdcDskLogHandler {
         String eqpId = null;
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
-        List<Map<String,Object>> users = new ArrayList<>();
-        List<Map<String,Object>> department =  fabEquipmentService.findDepartment(eqpId);
-       if(department.get(0).get("department").equals("YK")){
-           users =  fabEquipmentService.findEmailALL("E-0007");
-       }
-       else if(department.get(0).get("department").equals("EK")){
-           users =  fabEquipmentService.findEmailALL("E-0008");
-       }
-       List<String> param = new ArrayList<>();
-        if(!users.isEmpty()){
-            for (Map<String,Object> map:users){
-                param.add((String)map.get("email"));
-            }}
+        List<Map<String, Object>> users = new ArrayList<>();
+        List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
+        if (department.get(0).get("department").equals("YK")) {
+            users = fabEquipmentService.findEmailALL("E-0007");
+        } else if (department.get(0).get("department").equals("EK")) {
+            users = fabEquipmentService.findEmailALL("E-0008");
+        }
+        List<String> param = new ArrayList<>();
+        if (!users.isEmpty()) {
+            for (Map<String, Object> map : users) {
+                param.add((String) map.get("email"));
+            }
+        }
         String[] params = new String[param.size()];
         param.toArray(params);
-        emailSendService.blockSend(params,"RTP_ALARM",msgMap);
-        }
+        emailSendService.blockSend(params, "RTP_ALARM", msgMap);
     }
+}
