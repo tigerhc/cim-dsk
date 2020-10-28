@@ -251,7 +251,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         //循环数据   重新计算批量内连番
         List<EdcDskLogProduction> wrongDataList = new ArrayList<>();
         int j=1;
-        if(wrongDataList.get(0).getEqpId().contains("TRM") ||wrongDataList.get(0).getEqpId().contains("REFLOW")){
+        if(edcDskLogProductionList.get(0).getEqpId().contains("TRM") ||edcDskLogProductionList.get(0).getEqpId().contains("REFLOW")){
             j=12;
             for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
                 if (edcDskLogProduction.getLotYield() != j) {
