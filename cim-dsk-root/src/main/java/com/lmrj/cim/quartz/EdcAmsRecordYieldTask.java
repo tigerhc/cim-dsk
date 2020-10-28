@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,7 @@ public class EdcAmsRecordYieldTask {
         Date startTime = cal.getTime();
         //获取两小时以内所有AmsRecord
         List<EdcAmsRecord> edcAmsRecordList=iEdcAmsRecordService.findAmsRecordByTime(startTime,endTime);
+        List<EdcAmsRecord> edcAmsRecordList1 = new ArrayList<>();
         if(edcAmsRecordList.size()>0){
             for (EdcAmsRecord edcAmsRecord : edcAmsRecordList) {
                 if(edcAmsRecord.getLotNo()!=null){
@@ -44,10 +46,11 @@ public class EdcAmsRecordYieldTask {
                     if(edcDskLogProduction!=null){
                         edcAmsRecord.setLotNo(edcDskLogProduction.getLotNo());
                         edcAmsRecord.setLotYield(edcDskLogProduction.getLotYield());
-                        iEdcAmsRecordService.updateById(edcAmsRecord);
+                        edcAmsRecordList1.add(edcAmsRecord);
                     }
                 }
             }
+            iEdcAmsRecordService.insertBatch(edcAmsRecordList1);
         }
         log.info("EdcAmsRecordYieldTask定时任务开始执行结束");
     }

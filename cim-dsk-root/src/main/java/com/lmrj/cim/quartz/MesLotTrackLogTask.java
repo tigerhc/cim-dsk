@@ -40,7 +40,7 @@ public class MesLotTrackLogTask {
         for (MesLotTrackLog mesLotTrackLog : trackLogList) {
             MesLotTrack mesLotTrack = new MesLotTrack();
             if (mesLotTrackLog.getEqpId().equals("SIM-DM")) {
-                mesLotTrack = iMesLotTrackService.findLotTrack("SIM-DM1", mesLotTrackLog.getLotNo(), mesLotTrackLog.getProductionNo());
+                mesLotTrack = iMesLotTrackService.findLotTrack("SIM-REFLOW1", mesLotTrackLog.getLotNo(), mesLotTrackLog.getProductionNo());
             } else {
                 mesLotTrack = iMesLotTrackService.findLotTrack(mesLotTrackLog.getEqpId(), mesLotTrackLog.getLotNo(), mesLotTrackLog.getProductionNo());
             }
