@@ -37,7 +37,7 @@ public class RptYieldTask {
     public void updateYield() {
         log.info("定时任务开始执行");
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
+        cal.add(Calendar.HOUR_OF_DAY,-8);
         try {
             List<MesLotTrackLog> trackLogList = mesLotTrackLogService.findLatestLotEqp(cal.getTime());
             for (MesLotTrackLog mesLotTrackLog : trackLogList) {
@@ -49,7 +49,7 @@ public class RptYieldTask {
                 if (yield == null) {
                     continue;
                 } else {
-                    boolean updateFlag = rptLotYieldService.updateForSet("lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
+                    boolean updateFlag = rptLotYieldService.updateForSet("lot_yield=" + yield+", lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
                     if (!updateFlag) {
                         RptLotYield rptLotYield = new RptLotYield();
                         rptLotYield.setLotNo(lotNo);

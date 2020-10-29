@@ -33,6 +33,11 @@ public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, Mes
     }
 
     @Override
+    public MesLotTrack findWByYield(String eqpId, String lotNo, String productionNo){
+        return baseMapper.findWByYield(eqpId,lotNo,productionNo);
+    }
+
+    @Override
     public List<MesLotTrack> findIncompleteLotNo(Date startTime, Date endTime) {
         return baseMapper.findIncompleteLotNo(startTime, endTime);
     }

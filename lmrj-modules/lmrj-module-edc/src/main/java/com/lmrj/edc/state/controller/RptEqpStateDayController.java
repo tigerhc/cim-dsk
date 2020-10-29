@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -56,13 +57,34 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
         if(!CollectionUtils.isEmpty(list)) {
             list.forEach(map -> {
                 map.put("periodDate", getTimes((String) map.get("periodDate")));
+                String runTime =String.valueOf(map.get("runTime"));
+                BigDecimal runTimeR =new BigDecimal(runTime);
+                String idleTime =String.valueOf(map.get("idleTime"));
+                BigDecimal idleTimeR =new BigDecimal(idleTime);
+                String downTime =String.valueOf(map.get("downTime"));
+                BigDecimal downTimeR =new BigDecimal(downTime);
+                BigDecimal add =runTimeR.add(idleTimeR);
+                BigDecimal result= add.add(downTimeR);
+                BigDecimal temp =new BigDecimal(24);
+                BigDecimal other =temp.subtract(result);
+                map.put("otherTime",Double.valueOf(other.toString()));
             });
         }
 
         List<Map> list2 = rptEqpStateDayService.findEqpsOee(beginTime, endTime, eqpList);
         if(!CollectionUtils.isEmpty(list2)) {
             list2.forEach(map -> {
-                map.put("periodDate", getTimes((String) map.get("periodDate")));
+                String runTime =String.valueOf(map.get("runTime"));
+                BigDecimal runTimeR =new BigDecimal(runTime);
+                String idleTime =String.valueOf(map.get("idleTime"));
+                BigDecimal idleTimeR =new BigDecimal(idleTime);
+                String downTime =String.valueOf(map.get("downTime"));
+                BigDecimal downTimeR =new BigDecimal(downTime);
+                BigDecimal add =runTimeR.add(idleTimeR);
+                BigDecimal result= add.add(downTimeR);
+                BigDecimal temp =new BigDecimal(24);
+                BigDecimal other =temp.subtract(result);
+                map.put("otherTime",Double.valueOf(other.toString()));
             });
         }
         response.put("count",list.size());

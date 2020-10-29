@@ -65,9 +65,6 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         }else{
             eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
         }
-        for (String s : eqpIdlist) {
-            log.error(s);
-        }
         for (String eqpid : eqpIdlist) {
             //查询一天内该设备的产量，并新建产量数据
             RptLotYieldDay rptLotYieldDay = baseMapper.findDayYield(eqpid,startTime,endTime);
