@@ -129,4 +129,9 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public List<Map> getLineNoOptions() {
         return baseMapper.getLineNoOptions();
     }
+
+    @Override
+    public List<String> getAllProductionNo(String productionNo) {
+        return baseMapper.getAllProductionNo(productionNo);
+    }
 }

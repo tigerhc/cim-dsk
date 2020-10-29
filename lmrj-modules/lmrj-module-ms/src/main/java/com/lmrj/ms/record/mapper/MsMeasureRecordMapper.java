@@ -34,4 +34,6 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
  List<Map> getEqpIds(@Param("lineNo") String lineNo);
 
  List<Map> getLineNoOptions();
+
+ List<String> getAllProductionNo(@Param("productionNo")String productionNo);
 }

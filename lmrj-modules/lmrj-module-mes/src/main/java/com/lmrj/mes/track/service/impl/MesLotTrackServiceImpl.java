@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
+import com.lmrj.edc.quartz.MapUtil;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
@@ -546,11 +547,16 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
             log.info(kongdongDir);
             List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
-            return _handleFileName(files);
+            return _handleFileNameG(files, productionName.replace("J.",""));
         }catch (Exception e){
             log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName);
         }
         return null;
+    }
+
+    @Override
+    public List<String> findAllProName(String proName) {
+        return baseMapper.findAllProName(proName);
     }
 
     @Override
@@ -576,7 +582,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return null;
     }
 
-    private Map<String, Object> _handleFileName(List<Map<String, Object>> files){
+    private Map<String, Object> _handleFileNameG(List<Map<String, Object>> files, String line){
         Map<String, Object> chartOption = new HashMap<>();
         Map<String, Object> allLine = new HashMap<>();
         if(files!=null && files.size()>0){
@@ -607,19 +613,39 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     log.warn("MesLotTrackServiceImpl__handleFileName:fileName is error:"+fileName);
                 }
             }
+            List<Map<String, Object>> allLmt = baseMapper.findkongdongConfig(line);
             List<Map<String, Object>> res = new ArrayList<>();
             List<String> legend = new ArrayList<>();
+            int lineLength = 0;
             for(String key : allLine.keySet()){
                 String datas = MapUtils.getString(allLine, key);
                 datas = datas.substring(5);
                 Map<String, Object> lineItem = new HashMap<>();
                 lineItem.put("type", "line");
                 lineItem.put("name", key);
-
-                lineItem.put("data",str2Double(datas.split(",")));
+                List<Double> lineDate = str2Double(datas.split(","));
+                if(lineLength<lineDate.size()){
+                    lineLength = lineDate.size();
+                }
+                lineItem.put("data",lineDate);
                 res.add(lineItem);
                 legend.add(key);
             }
+            if(allLmt!=null && allLmt.size()>0){
+                for(Map<String, Object> config: allLmt){
+                    Map<String, Object> lmtItem = new HashMap<>();
+                    lmtItem.put("type", "line");
+                    lmtItem.put("name", MapUtils.getString(config, "lineType")+"_lmt");
+                    List<Double> list = new ArrayList<>();
+                    for(int i=0; i<lineLength; i++){
+                        list.add(MapUtils.getDoubleValue(config, "heightLmt"));
+                    }
+                    lmtItem.put("data", list);
+                    res.add(lmtItem);
+                    legend.add(MapUtils.getString(config, "lineType")+"_lmt");
+                }
+            }
+
             chartOption.put("series",res);
             chartOption.put("xAxis", xaxis);
             chartOption.put("legend",legend);

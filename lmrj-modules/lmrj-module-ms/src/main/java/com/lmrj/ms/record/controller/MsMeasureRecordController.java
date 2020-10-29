@@ -256,6 +256,13 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         return res;
     }
 
+    @RequestMapping(value = "/getAllProductionNo", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response getAllProductionNo(@RequestParam String lineNo){
+        Response res = Response.ok();
+        res.putList("productionNoList", msMeasureRecordService.getAllProductionNo(lineNo));
+        return res;
+    }
+
     @RequestMapping(value = "/getEqpIdOptions", method = { RequestMethod.GET, RequestMethod.POST })
     public Response getEqpIdOptions(@RequestParam String lineNo){
         Response res = Response.ok();

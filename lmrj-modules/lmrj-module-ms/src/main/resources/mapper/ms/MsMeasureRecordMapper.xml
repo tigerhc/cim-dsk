@@ -69,11 +69,23 @@
             <if test="endTime!=null and endTime!=''">
                 and dtl.create_date &lt; #{endTime}
             </if>
-            <if test="productionNo!=null and productionNo!=''">
-                and rcd.production_no like concat('%',#{productionNo},'%')
-            </if>
+<!--            <if test="productionNo!=null and productionNo!=''">-->
+<!--                and rcd.production_no like concat('%',#{productionNo},'%')-->
+<!--            </if>-->
+           <if test="productionNo!=null and productionNo!=''">
+               and rcd.production_no=#{productionNo}
+           </if>
             order by dtl.create_date
        </select>
+
+    <select id="getAllProductionNo" parameterType="java.lang.String" resultType="java.lang.String">
+        select distinct rcd.production_no
+        from ms_measure_record_detail dtl
+            LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
+            where dtl.item_code='WEIGHT'
+            and rcd.production_no like concat('%',#{productionNo},'%')
+            order by dtl.create_date
+    </select>
 
     <select id="getEqpIds" parameterType="java.lang.String" resultType="java.util.Map">
         select eqp_id as "eqpId",eqp_name as "eqpName"

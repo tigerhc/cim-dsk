@@ -30,4 +30,6 @@ public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord>
     List<Map> getEqpIdOptions(String eqpId);
 
     List<Map> getLineNoOptions();
+
+    List<String> getAllProductionNo(String productionNo);
 }

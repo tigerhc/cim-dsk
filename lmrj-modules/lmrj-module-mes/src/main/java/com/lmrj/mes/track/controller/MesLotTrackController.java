@@ -288,6 +288,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         return rs;
     }
 
+    @RequestMapping(value="getAllProName", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getAllProName(@RequestParam String productionNo){
+        Response rs = Response.ok();
+        rs.putList("allProName", mesLotTrackService.findAllProName(productionNo));
+        return rs;
+    }
+
     @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})
     public Response kongDongBar(@RequestParam String productionNo, @RequestParam String lotNo,
                                   @RequestParam String startDate, @RequestParam String endDate){

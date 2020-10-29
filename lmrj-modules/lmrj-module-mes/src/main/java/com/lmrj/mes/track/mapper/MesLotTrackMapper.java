@@ -61,4 +61,12 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     @Select(" select  production_name  from aps_plan_pdt_yield " +
             "where production_name like concat('%',#{proName},'%') ORDER BY create_date desc limit 1")
     String findProName(@Param("proName") String proName);
+
+    @Select("SELECT DISTINCT production_name from aps_plan_pdt_yield " +
+            "where production_name like concat('%',#{proName},'%') ORDER BY create_date desc")
+    List<String> findAllProName(@Param("proName") String proName);
+
+    @Select(" select  line_type as 'lineType', height_lmt as 'heightLmt' from mes_kongdong_config " +
+            "where eqp_id=#{eqpId}")
+    List<Map<String,Object>> findkongdongConfig(@Param("eqpId") String eqpId);
 }
