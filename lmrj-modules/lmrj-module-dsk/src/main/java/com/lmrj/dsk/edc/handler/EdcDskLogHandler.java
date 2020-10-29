@@ -19,6 +19,7 @@ import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.fab.log.service.IFabLogService;
@@ -207,6 +208,12 @@ public class EdcDskLogHandler {
             }
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
+            log.info("更新设备状态批次产量");
+            FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+            if(fabStatus!=null){
+                fabStatus.setLotYield(allProList.size());
+                fabEquipmentStatusService.updateById(fabStatus);
+            }
         } catch (Exception e) {
             log.info("00000000000000000000000" + e);
             if (eqpId.contains("GAZO")) {

@@ -119,9 +119,9 @@
     </select>
 
     <select id="selectLotwip" resultType="map">
-        select station_code,count(*) count, count(lot_yield_eqp) lot_yield
+        select station_code,count(*) count, count(*)*4896 lot_yield
         from   mes_lot_wip
-        where  end_time is  null
+        where  end_time is not null
         group by station_code
     </select>
 
