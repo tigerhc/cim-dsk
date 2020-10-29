@@ -33,10 +33,14 @@ public class MesLotWipTask {
                 mesList) {
             MesLotWip mesLotWip1=iMesLotWipService.findStep(mes.getEqpId());
             MesLotWip mesLotWip=new MesLotWip();
+            String eqpId = mes.getEqpId();
+            if(eqpId.contains("WB")){
+                eqpId=eqpId.substring(0,8);
+            }
             mesLotWip.setStepId(mesLotWip1.getStepId());
             mesLotWip.setStepCode(mesLotWip1.getStepCode());
             mesLotWip.setStationCode(mesLotWip1.getStationCode());
-            mesLotWip.setEqpId(mes.getEqpId());
+            mesLotWip.setEqpId(eqpId);
             mesLotWip.setLotNo(mes.getLotNo());
             mesLotWip.setStartTime(mes.getStartTime());
             mesLotWip.setLotYield(mes.getLotYield());
@@ -54,9 +58,16 @@ public class MesLotWipTask {
                 continue;
             } else {
                 mesLotWip=iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
-                mesLotWip.setLotYield(mes.getLotYield());
-                mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
-                mesLotWip.setEqpId(mes.getEqpId());
+                if(eqpId.contains("WB")){
+                    MesLotTrack wbLotTrack = iMesLotWipService.findWByYield(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
+                    mesLotWip.setLotYield(wbLotTrack.getLotYield());
+                    mesLotWip.setLotYieldEqp(wbLotTrack.getLotYieldEqp());
+                }else{
+                    mesLotWip.setLotYield(mes.getLotYield());
+                    mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
+                }
+                mesLotWip.setEndTime(mes.getEndTime());
+                mesLotWip.setEqpId(eqpId);
                 mesLotWip.setStepId(mesLotWip1.getStepId());
                 mesLotWip.setStepCode(mesLotWip1.getStepCode());
                 mesLotWip.setStationCode(mesLotWip1.getStationCode());

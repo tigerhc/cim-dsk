@@ -32,6 +32,9 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
          "group by PRODUCTION_NO,LOT_NO)")*/
     List<MesLotTrack> findIncompleteLotNo(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select sum(lot_yield)lot_yield ,sum(lot_yield_eqp) lot_yield_eqp from mes_lot_track where eqp_id like concat(#{eqpId},'%') and lot_no = #{lotNo} and production_no =#{productionNo}")
+    MesLotTrack findWByYield(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
+
     @Select("select * from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
     MesLotWip finddata(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
