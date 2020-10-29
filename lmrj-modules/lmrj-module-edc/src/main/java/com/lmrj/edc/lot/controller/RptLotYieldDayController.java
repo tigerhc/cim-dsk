@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 
@@ -55,10 +57,42 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         }*/
         if (eqpId == null) {
             List<Map> maps = rptLotYieldDayService.pdtChart(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
-            res.put("yield", maps);
+            List<Map<String,Object>> result = new ArrayList<>();
+            for(Map map: maps){
+                String temp = (String)map.get("period_date");
+                map.put("period_date",temp);
+                BigDecimal multiply = new BigDecimal(1000);
+                Object lot_yield = map.get("lot_yield");
+                BigDecimal ylot_yield = new BigDecimal(String.valueOf(lot_yield));
+                Object lot_yield_eqp =map.get("lot_yield_eqp");
+                BigDecimal ylot_yield_eqp = new BigDecimal(String.valueOf(lot_yield_eqp));
+                Object plan_qty =map.get("plan_qty");
+                BigDecimal bigplan_qty = new BigDecimal(String.valueOf(plan_qty));
+                map.put("plan_qty",bigplan_qty.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                map.put("lot_yield",ylot_yield.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                map.put("lot_yield_eqp",ylot_yield_eqp.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                result.add(map);
+            }
+            res.put("yield",result);
         } else {
             List<Map> maps = rptLotYieldDayService.pdtChart(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode, eqpId);
-            res.put("yield", maps);
+            List<Map<String,Object>> result = new ArrayList<>();
+            for(Map map: maps){
+                String temp = (String)map.get("period_date");
+                map.put("period_date",temp);
+                BigDecimal multiply = new BigDecimal(1000);
+                Object lot_yield = map.get("lot_yield");
+                BigDecimal ylot_yield = new BigDecimal(String.valueOf(lot_yield));
+                Object lot_yield_eqp =map.get("lot_yield_eqp");
+                BigDecimal ylot_yield_eqp = new BigDecimal(String.valueOf(lot_yield_eqp));
+                Object plan_qty =map.get("plan_qty");
+                BigDecimal bigplan_qty = new BigDecimal(String.valueOf(plan_qty));
+                map.put("plan_qty",bigplan_qty.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                map.put("lot_yield",ylot_yield.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                map.put("lot_yield_eqp",ylot_yield_eqp.divide(multiply,3, RoundingMode.HALF_UP).toString());
+                result.add(map);
+            }
+            res.put("yield",result);
         }
         return res;
     }
@@ -75,7 +109,20 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
         }
         String head = year.substring(0, 4);
         String date = head.concat(day);
-        return rptLotYieldDayService.findEqp(lineNo, stationCode, date);
+        List<Map<String,Object>> maps =rptLotYieldDayService.findEqp(lineNo, stationCode, date);
+
+        List<Map<String,Object>> result = new ArrayList<>();
+        for(Map map: maps){
+            BigDecimal multiply = new BigDecimal(1000);
+            Object lot_yield = map.get("lot_yield");
+            BigDecimal ylot_yield = new BigDecimal(String.valueOf(lot_yield));
+            Object lot_yield_eqp =map.get("lot_yield_eqp");
+            BigDecimal ylot_yield_eqp = new BigDecimal(String.valueOf(lot_yield_eqp));
+            map.put("lot_yield",ylot_yield.divide(multiply,2, RoundingMode.HALF_UP).toString());
+            map.put("lot_yield_eqp",ylot_yield_eqp.divide(multiply,2, RoundingMode.HALF_UP).toString());
+            result.add(map);
+        }
+     return  result;
     }
 
     @RequestMapping(value = "/searchStandAndEqp/{lineNo}")
@@ -113,24 +160,36 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     @RequestMapping(value = "/findAllEqp")
     public List<Map<String, Object>> findAllEqp(@RequestParam String stationCode, @RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
         List<Map<String,Object>> temp = rptLotYieldDayService.findAllEqp(beginTime.replace("-", ""), endTime.replace("-", ""), lineNo, stationCode);
-        List<Map<String,Object>> result = new ArrayList<>();
-        for (int i =0;i < temp.size();i++){
-            Map<String,Object> ele = new LinkedHashMap<>();
-            String str = (String) temp.get(i).get("period_date");
-            ele.put("period_date",str.substring(4));
-            ele.put((String) temp.get(i).get("eqp_id")+"-MES产量",temp.get(i).get("lot_yield"));
-            ele.put((String) temp.get(i).get("eqp_id")+"-设备产量",temp.get(i).get("lot_yield_eqp"));
 
-            for (int j =i+1;j < temp.size();j++){
-                if(temp.get(i).get("period_date").equals(temp.get(j).get("period_date"))){
-                    ele.put((String) temp.get(j).get("eqp_id")+"-MES产量",temp.get(j).get("lot_yield"));
-                    ele.put((String) temp.get(j).get("eqp_id")+"-设备产量",temp.get(j).get("lot_yield_eqp"));
+        List<Map<String,Object>> result1 = new ArrayList<>();
+        for(Map map: temp){
+            BigDecimal multiply = new BigDecimal(1000);
+            Object lot_yield = map.get("lot_yield");
+            BigDecimal ylot_yield = new BigDecimal(String.valueOf(lot_yield));
+            Object lot_yield_eqp =map.get("lot_yield_eqp");
+            BigDecimal ylot_yield_eqp = new BigDecimal(String.valueOf(lot_yield_eqp));
+            map.put("lot_yield",ylot_yield.divide(multiply,3, RoundingMode.HALF_UP).toString());
+            map.put("lot_yield_eqp",ylot_yield_eqp.divide(multiply,3, RoundingMode.HALF_UP).toString());
+            result1.add(map);
+        }
+
+        List<Map<String,Object>> result = new ArrayList<>();
+        for (int i =0;i < result1.size();i++){
+            Map<String,Object> ele = new LinkedHashMap<>();
+            String str = (String) result1.get(i).get("period_date");
+            ele.put("period_date",str.substring(4));
+            ele.put((String) result1.get(i).get("eqp_id")+"-MES产量",result1.get(i).get("lot_yield"));
+            ele.put((String) result1.get(i).get("eqp_id")+"-设备产量",result1.get(i).get("lot_yield_eqp"));
+
+            for (int j =i+1;j <result1.size();j++){
+                if(result1.get(i).get("period_date").equals(result1.get(j).get("period_date"))){
+                    ele.put((String) result1.get(j).get("eqp_id")+"-MES产量",result1.get(j).get("lot_yield"));
+                    ele.put((String) result1.get(j).get("eqp_id")+"-设备产量",result1.get(j).get("lot_yield_eqp"));
                     i=j;
                 }
             }
             result.add(ele);
         }
-
         return result;
     }
 }
