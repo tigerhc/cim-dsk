@@ -22,15 +22,13 @@ import net.sf.json.JSONObject;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -65,10 +63,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
     //}
     @RequestMapping("/lotTrackQuery")
-    public Response lotTrackQuery(@RequestParam String lineNo, @RequestParam String beginTime,@RequestParam String endTime,HttpServletRequest request, HttpServletResponse response) {
-        Response res=new Response();
-        List<Map> maps =  mesLotTrackService.lotTrackQuery(lineNo,beginTime,endTime);
-        res.put("lottrack",maps);
+    public Response lotTrackQuery(@RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, HttpServletRequest request, HttpServletResponse response) {
+        Response res = new Response();
+        List<Map> maps = mesLotTrackService.lotTrackQuery(lineNo, beginTime, endTime);
+        res.put("lottrack", maps);
         return res;
     }
 
@@ -76,9 +74,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/dsktrackin/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("dsktrackin :  {}", trackinfo);
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"trackinfo\":\""+trackinfo+"\",\"opId\":\""+opId+"\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"trackinfo\":\"" + trackinfo + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId,"Param6","MesLotTrackController.dskTrackin",eventDesc,trackinfo,"wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskTrackin", eventDesc, trackinfo, "wangdong");//日志记录参数
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";
             }
@@ -91,17 +89,34 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionNo = lotNos[0].substring(0, 7); //5002915
             String lotNo = lotNos[0].substring(7, 12); //0702D
             String orderNo = lotNos[1]; //37368342
+
+
+            String eqpId1 = eqpId;
+            if (eqpId.contains("WB")) {
+                eqpId1 = eqpId + "A";
+            }
+            if (eqpId1.contains("DM")) {
+                eqpId1 = "SIM-DM1";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
+            if (lastLotTrack.getEndTime() == null) {
+                log.error("人员误操作记录，" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+            }
+
+
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.dskTrackin",jo.toString(),trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dskTrackin", jo.toString(), trackinfo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.dskTrackin","有异常",trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskTrackin", "有异常", trackinfo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -109,20 +124,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/findRecipeName/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findRecipeName(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("findRecipeName :  {}", opId);
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"opId\":\""+opId+"\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId,"Param6","MesLotTrackController.findRecipeName",eventDesc,"","wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.findRecipeName", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findRecipeName(eqpId, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.findRecipeName",jo.toString(),"","wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.findRecipeName", jo.toString(), "", "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.findRecipeName","有异常","","wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.findRecipeName", "有异常", "", "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -130,20 +145,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/findTemp/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findTemp(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("findTemp :  {}", opId);
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"opId\":\""+opId+"\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId,"Param6","MesLotTrackController.findTemp",eventDesc,"","wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.findTemp", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findTemp(eqpId, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.findTemp",jo.toString(),"","wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.findTemp", jo.toString(), "", "wangdong");//日志记录参数
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.findTemp","有异常","","wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.findTemp", "有异常", "", "wangdong");//日志记录参数
             return e.getMessage();
         }
     }
@@ -155,21 +170,21 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                             @RequestParam(required = false) String index,
 
                             HttpServletRequest request, HttpServletResponse response) {
-        log.info("findTemp :  {}, {}, {}, {}", opId,lotNo,  productionNo, index);
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"lotNo\":\""+lotNo+"\",\"opId\":\""+opId+"\",\"param\":\""+param+"\",\"productionName\":\""+productionName+"\",\"productionNo\":\""+productionNo+"\",\"index\":\""+index+"\"}";//日志记录参数
+        log.info("findTemp :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo + "\",\"opId\":\"" + opId + "\",\"param\":\"" + param + "\",\"productionName\":\"" + productionName + "\",\"productionNo\":\"" + productionNo + "\",\"index\":\"" + index + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId,"Param6","MesLotTrackController.findParam",eventDesc,lotNo,"wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.findParam", eventDesc, lotNo, "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, productionNo);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.findParam",jo.toString(),lotNo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.findParam", jo.toString(), lotNo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.findParam","有异常",lotNo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.findParam", "有异常", lotNo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -177,9 +192,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"opId\":\""+opId+"\",\"trackinfo\":\""+trackinfo+"\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId,"Param6","MesLotTrackController.dskTrackin2",eventDesc,trackinfo,"wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskTrackin2", eventDesc, trackinfo, "wangdong");//日志记录参数
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";
             }
@@ -194,14 +209,14 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.dskTrackin2",jo.toString(),trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dskTrackin2", jo.toString(), trackinfo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.dskTrackin2","有异常",trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskTrackin2", "有异常", trackinfo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -209,11 +224,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/dsktrackout/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dmTrackout(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
-        String eventDesc = "{\"eqpId\":\""+eqpId+"\",\"opId\":\""+opId+"\",\"trackinfo\":\""+trackinfo+"\",\"yield\":\""+yield+"\"}";//日志记录参数
-        fabLogService.info(eqpId,"Param6","MesLotTrackController.dmTrackout",eventDesc,trackinfo,"wangdong");//日志记录参数
-        if (trackinfo.length() < 30) {
-            return "trackinfo too short";
-        }
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";
@@ -223,20 +235,43 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-
             String productionNo = lotNos[0].substring(0, 7); //5002915
             String lotNo = lotNos[0].substring(7, 12); //0702D
             String orderNo = lotNos[1]; //37368342
+
+
+
+            //对当前批次进行判断，若批次结束时间过快，阻止操做
+            String eqpId1 = eqpId;
+            if (eqpId1.contains("WB")) {
+                eqpId1 = eqpId + "A";
+            }
+            if (eqpId1.contains("DM")) {
+                eqpId1 = "SIM-DM1";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
+            Date nowTime = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nowLotTrack.getStartTime());
+            calendar.add(Calendar.MINUTE, -10);
+            if (nowTime.before(calendar.getTime())) {
+                log.error("操做人员误操作，提前结束批次" + lotNo);
+                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator";
+            }
+
+
+
             MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId,"Result6","MesLotTrackController.dmTrackout",jo.toString(),trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dmTrackout", jo.toString(), trackinfo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return "Y";
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId,"Error6","MesLotTrackController.dmTrackout","有异常",trackinfo,"wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dmTrackout", "有异常", trackinfo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -280,16 +315,16 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     @RequestMapping(value = "/chartKongDong", method = {RequestMethod.GET, RequestMethod.POST})
     public Response chartKongDong(@RequestParam String productionNo,
-            @RequestParam String startDate, @RequestParam String endDate){
-        log.info("MesLotTrackController_chartKongDong : productionNo,"+productionNo);
-        Map<String, Object> data = mesLotTrackService.chartKongDong(productionNo,startDate,endDate);
+                                  @RequestParam String startDate, @RequestParam String endDate) {
+        log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
+        Map<String, Object> data = mesLotTrackService.chartKongDong(productionNo, startDate, endDate);
         Response rs = Response.ok();
         rs.put("kongdong", data);
         return rs;
     }
 
-    @RequestMapping(value="getAllProName", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response getAllProName(@RequestParam String productionNo){
+    @RequestMapping(value = "getAllProName", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getAllProName(@RequestParam String productionNo) {
         Response rs = Response.ok();
         rs.putList("allProName", mesLotTrackService.findAllProName(productionNo));
         return rs;
@@ -297,9 +332,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})
     public Response kongDongBar(@RequestParam String productionNo, @RequestParam String lotNo,
-                                  @RequestParam String startDate, @RequestParam String endDate){
-        log.info("MesLotTrackController_chartKongDong : productionNo,"+productionNo);
-        List data = mesLotTrackService.chartKongDong(lotNo, productionNo,startDate,endDate);
+                                @RequestParam String startDate, @RequestParam String endDate) {
+        log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
+        List data = mesLotTrackService.chartKongDong(lotNo, productionNo, startDate, endDate);
         Response rs = Response.ok();
         rs.putList("kongdong", data);
         return rs;
