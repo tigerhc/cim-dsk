@@ -53,6 +53,10 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
     @Autowired
     IFabEquipmentService iFabEquipmentService;
     @Override
+    public int insertList(List<EdcDskLogOperation> list){
+        return baseMapper.insertList(list);
+    }
+    @Override
     public List<EdcDskLogOperation> findDataByTimeAndEqpId(String eqpId, Date startTime, Date endTime) {
         return baseMapper.findDataByTimeAndEqpId(eqpId, startTime, endTime);
     }

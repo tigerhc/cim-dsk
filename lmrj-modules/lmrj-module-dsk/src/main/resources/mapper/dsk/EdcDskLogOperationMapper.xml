@@ -23,4 +23,10 @@
        t.create_date,
        t.create_by
 	</sql>
+       <insert id="insertList" parameterType="java.util.List">
+               insert into edc_dsk_log_operation ( id, event_id, create_by,create_date) values
+              <foreach collection="list" item="model" index="index" separator=",">
+                     (#{model.id}, #{model.eventId},#{model.createDate},#{model.createBy})
+              </foreach>
+       </insert>
 </mapper>
