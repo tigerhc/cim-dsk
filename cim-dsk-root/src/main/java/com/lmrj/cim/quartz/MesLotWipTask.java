@@ -75,6 +75,7 @@ public class MesLotWipTask {
                         mesLotWip.setLotYield(mes.getLotYield());
                         mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
                     }
+                    mesLotWip.setStartTime(mes.getStartTime());
                     mesLotWip.setEndTime(mes.getEndTime());
                     mesLotWip.setEqpId(eqpId);
                     mesLotWip.setStepId(mesLotWip1.getStepId());

@@ -37,7 +37,7 @@
                     WHERE
                             ( PRODUCTION_NO, LOT_NO )  NOT IN
                             (select
-
+                                    DISTINCT
                                     PRODUCTION_NO,
                                     LOT_NO
                             from
