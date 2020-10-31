@@ -26,7 +26,7 @@ public class MesLotWipTask {
     public void buildWipData() {
         Date endTime = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        calendar.add(Calendar.DAY_OF_MONTH, -2);
         Date startTime = calendar.getTime();
         List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
         for (MesLotTrack mes :
@@ -51,6 +51,11 @@ public class MesLotWipTask {
             mesLotWip.setEndTime(mes.getEndTime());
             if (iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo()) == null) {
                 //向表中新建数据
+                if(eqpId.contains("WB")){
+                    MesLotTrack wbLotTrack = iMesLotWipService.findWByYield(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
+                    mesLotWip.setLotYield(wbLotTrack.getLotYield());
+                    mesLotWip.setLotYieldEqp(wbLotTrack.getLotYieldEqp());
+                }
                 if (iMesLotWipService.insert(mesLotWip)){
                     String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info(mesLotWip.getEqpId(),eventId,"insterWip","批次实时产量更新成功",mesLotWip.getLotNo(),"");
@@ -58,24 +63,29 @@ public class MesLotWipTask {
                 continue;
             } else {
                 mesLotWip=iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
-                if(eqpId.contains("WB")){
-                    MesLotTrack wbLotTrack = iMesLotWipService.findWByYield(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
-                    mesLotWip.setLotYield(wbLotTrack.getLotYield());
-                    mesLotWip.setLotYieldEqp(wbLotTrack.getLotYieldEqp());
-                }else{
-                    mesLotWip.setLotYield(mes.getLotYield());
-                    mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
-                }
-                mesLotWip.setEndTime(mes.getEndTime());
-                mesLotWip.setEqpId(eqpId);
-                mesLotWip.setStepId(mesLotWip1.getStepId());
-                mesLotWip.setStepCode(mesLotWip1.getStepCode());
-                mesLotWip.setStationCode(mesLotWip1.getStationCode());
-                //更新数据
-                if (iMesLotWipService.updateById(mesLotWip)) {
-                    log.info("mes_lot_wip表数据更新成功 批次：" + mesLotWip.getEqpId());
-                    String eventId = StringUtil.randomTimeUUID("RPT");
-                    fabLogService.info(mesLotWip.getEqpId(),eventId,"updateWip","数据更新成功",mesLotWip.getLotNo(),"");
+                //判断设备前后顺序 若新数据站点在已存在数据站点之后 则更新 否则 不更新
+                int oldSortNo = iMesLotWipService.findSortNo(mesLotWip.getEqpId());
+                int newSortNo = iMesLotWipService.findSortNo(mes.getEqpId());
+                if(newSortNo>oldSortNo){
+                    if(eqpId.contains("WB")){
+                        MesLotTrack wbLotTrack = iMesLotWipService.findWByYield(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
+                        mesLotWip.setLotYield(wbLotTrack.getLotYield());
+                        mesLotWip.setLotYieldEqp(wbLotTrack.getLotYieldEqp());
+                    }else{
+                        mesLotWip.setLotYield(mes.getLotYield());
+                        mesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
+                    }
+                    mesLotWip.setEndTime(mes.getEndTime());
+                    mesLotWip.setEqpId(eqpId);
+                    mesLotWip.setStepId(mesLotWip1.getStepId());
+                    mesLotWip.setStepCode(mesLotWip1.getStepCode());
+                    mesLotWip.setStationCode(mesLotWip1.getStationCode());
+                    //更新数据
+                    if (iMesLotWipService.updateById(mesLotWip)) {
+                        log.info("mes_lot_wip表数据更新成功 批次：" + mesLotWip.getEqpId());
+                        String eventId = StringUtil.randomTimeUUID("RPT");
+                        fabLogService.info(mesLotWip.getEqpId(),eventId,"updateWip","数据更新成功",mesLotWip.getLotNo(),"");
+                    }
                 }
             }
         }

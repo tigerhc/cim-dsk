@@ -28,6 +28,10 @@ import java.util.Map;
 @Service("mesLotWipService")
 public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, MesLotWip> implements IMesLotWipService {
     @Override
+    public int findSortNo(String eqpId){
+        return baseMapper.findSortNo(eqpId);
+    }
+    @Override
     public int findDayLotYield( String eqpId, Date startTime, Date endTime){
         return baseMapper.findDayLotYield(eqpId,startTime,endTime);
     }
