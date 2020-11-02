@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -700,6 +701,67 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         return rs;
     }
+
+    @Override
+    public Map<String,Object> getKeyence(String mode,String lotno) {
+        log.info("getKeyence");
+        File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SIM\\SIM(IT).csv");
+        List<String> lines = null;
+        try {
+            lines = FileUtil.readLines(pathfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map<String,Object> maps = new HashMap<>();
+        String[] in = lotno.split("-");
+        String lotNoIn  =in[1];
+        for (int i = 0; i <lines.size() ; i++) {
+            String[] ele = lines.get(i).split(",");
+            String[] ele2 = ele[2].split("-");
+            if(ele2.length==3){
+                if(ele2[1].equals(lotNoIn)){
+                    if (mode.equals("0")){
+                        if (ele[3].equals("0001-1")){
+                            Map<String,String> map = new HashMap<>();
+                            map.put("A",ele[7]);
+                            map.put("B",ele[8]);
+                            map.put("C1",ele[9]);
+                            map.put("C21",ele[29]);
+                            maps.put("1-1",map);
+                            System.out.println("1"+map);
+                        }else if(ele[3].equals("0001-2")){
+                            Map<String,String> map = new HashMap<>();
+                            map.put("A",ele[7]);
+                            map.put("B",ele[8]);
+                            map.put("C1",ele[9]);
+                            map.put("C21",ele[29]);
+                            maps.put("1-2",map);
+                        }
+                    }
+                    if (mode.equals("1")){
+                        if (ele[3].equals("0002-1")){
+                            Map<String,String> map = new LinkedHashMap<>();
+                            map.put("A",ele[7]);
+                            map.put("B",ele[8]);
+                            map.put("C1",ele[9]);
+                            map.put("C21",ele[28]);
+                            maps.put("2-1",map);
+                        }else if(ele[3].equals("0002-2")){
+                            Map<String,String> map = new LinkedHashMap<>();
+                            map.put("A",ele[7]);
+                            map.put("B",ele[8]);
+                            map.put("C1",ele[9]);
+                            map.put("C21",ele[28]);
+                            maps.put("2-2",map);
+                        }
+                    }
+                }
+            }}
+        return maps;
+
+    }
+
+
 
     //public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();

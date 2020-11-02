@@ -58,4 +58,6 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     Map<String, Object> chartKongDong(String productionNo, String startDate, String endDate);
 
     List<String> findAllProName(String proName);
+
+    Map<String,Object> getKeyence(String mode,String lotno);
 }
