@@ -1,22 +1,21 @@
 package com.lmrj.map.tray.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
+import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -76,9 +75,9 @@ public class MapTrayChipMoveController {
         return DateResponse.ok(list);
     }
 
-    @RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
+    /*@RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response pageList() {
         mapTrayChipMoveProcessService.traceData();
         return Response.ok();
-    }
+    }*/
 }

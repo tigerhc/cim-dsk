@@ -61,7 +61,7 @@ public class EdcAmsRptDefineServiceImpl  extends CommonServiceImpl<EdcAmsRptDefi
             for (EdcAmsRptDefineActEmail email : emailList) {
                 email.setRptAlarmId(edcParamRecord.getId());
             }
-            edcAmsRptDefineActEmailService.insertBatch(emailList);
+            edcAmsRptDefineActEmailService.insertBatch(emailList,100);
         }
         //List<EdcAmsRptDefineAct> edcAmsRptDefineActList = edcParamRecord.getEdcAmsRptDefineAct();
         //for (EdcAmsRptDefineAct edcParamRecordDtl : edcAmsRptDefineActList) {

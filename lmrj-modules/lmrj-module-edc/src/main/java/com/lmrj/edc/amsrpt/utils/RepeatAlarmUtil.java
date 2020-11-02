@@ -146,7 +146,7 @@ public class RepeatAlarmUtil {
                     edcAmsRptRecordDtlList.add(edcAmsRptRecordDtl);
                 }
                 //保存一条edcAmsRptRecord记录对应的几条edcAmsRptRecordDtl记录
-                edcAmsRptRecordDtlService.insertBatch(edcAmsRptRecordDtlList);
+                edcAmsRptRecordDtlService.insertBatch(edcAmsRptRecordDtlList,100);
             }else {
                 //否则，将第一个alarm移出集合
                 redisTemplate.opsForList().leftPop(key);

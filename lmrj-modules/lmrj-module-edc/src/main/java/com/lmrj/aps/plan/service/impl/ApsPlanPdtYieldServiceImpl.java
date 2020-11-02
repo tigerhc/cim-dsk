@@ -245,7 +245,7 @@ public class ApsPlanPdtYieldServiceImpl extends CommonServiceImpl<ApsPlanPdtYiel
         //apsPlanPdtYieldService.deleteByPeriod(period);
         //apsPlanPdtYieldService.insert(apsPlanPdtYieldList);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
-        apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
+        apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList,100);
 
 
 

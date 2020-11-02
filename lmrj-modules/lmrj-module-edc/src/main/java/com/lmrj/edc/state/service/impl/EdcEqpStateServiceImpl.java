@@ -115,7 +115,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             return 0;
         } else {
             if (neweqpStateList.size() > 0) {
-                if (this.updateBatchById(neweqpStateList)) {
+                if (this.updateBatchById(neweqpStateList,100)) {
                     log.info("edc_eqp_state更新成功");
                     String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功," + neweqpStateList.size() + "条数据已更新", "", "");
@@ -177,7 +177,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             return 0;
         } else {
             if (neweqpStateList.size() > 0) {
-                if (this.updateBatchById(neweqpStateList)) {
+                if (this.updateBatchById(neweqpStateList,100)) {
                     log.info("edc_eqp_state更正成功");
                     /*String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功,"+neweqpStateList.size()+"条数据已更新", "", "");*/
@@ -248,10 +248,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         String eventId = StringUtil.randomTimeUUID("RPT");
         //先删除day表 按照时间删除 在插入
         if (rptEqpStateDayService.findData(periodDate) == null) {
-            rptEqpStateDayService.insertBatch(rptEqpStateDayList);
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList,100);
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
         } else if (rptEqpStateDayService.findData(periodDate) != null && rptEqpStateDayService.deleteByPeriodData(periodDate)) {
-            rptEqpStateDayService.insertBatch(rptEqpStateDayList);
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList,100);
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
         } else {
             fabLogService.info("", eventId, "OEE计算更新", "数据更新失败", "", "");

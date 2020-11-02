@@ -59,7 +59,7 @@ public class EdcParamRecordServiceImpl  extends CommonServiceImpl<EdcParamRecord
 			//edcParamRecordDtlService.insert(edcParamRecordDtl);
 			//edcParamRecordDtlService.insertBatch()
 		}
-		edcParamRecordDtlService.insertBatch(edcParamRecordDtlList);
+		edcParamRecordDtlService.insertBatch(edcParamRecordDtlList,1000);
 		return true;
 	}
 	

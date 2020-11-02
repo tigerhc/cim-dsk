@@ -79,7 +79,7 @@ public class DataRestore {
                     eqpState.setStateTimes((double) (nextEqpState.getStartTime().getTime() - eqpState.getStartTime().getTime()));
                 }
             }
-            edcEqpStateService.insertBatch(stateList);
+            edcEqpStateService.insertBatch(stateList,100);
         }
     }
 

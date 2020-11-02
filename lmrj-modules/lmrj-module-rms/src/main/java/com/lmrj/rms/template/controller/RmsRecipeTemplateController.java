@@ -50,7 +50,7 @@ public class RmsRecipeTemplateController extends BaseCRUDController<RmsRecipeTem
     public Response update(HttpServletRequest request, HttpServletResponse response) {
         String str=request.getParameter("recipeTemplateList");
         List<RmsRecipeTemplate> recipeTemplateList= JSONObject.parseArray(str, RmsRecipeTemplate.class);
-         iRmsRecipeTemplateService.updateBatchById(recipeTemplateList);
+         iRmsRecipeTemplateService.updateBatchById(recipeTemplateList,100);
         return Response.ok("修改成功");
     }
 

@@ -81,7 +81,7 @@ public class MenuServiceImpl extends TreeCommonServiceImpl<MenuMapper, Menu> imp
 			menu.setProjectId(parentmenu.getProjectId());
 			menuList.add(menu);
 		}
-		insertBatch(menuList);
+		insertBatch(menuList,1000);
 	}
 
 	@Override

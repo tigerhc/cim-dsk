@@ -88,7 +88,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
         for (OvnBatchLotParam ovnBatchLotParam : ovnBatchLotParamList) {
             ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
         }
-        ovnBatchLotParamService.insertBatch(ovnBatchLotParamList);
+        ovnBatchLotParamService.insertBatch(ovnBatchLotParamList,100);
         return true;
     }
 

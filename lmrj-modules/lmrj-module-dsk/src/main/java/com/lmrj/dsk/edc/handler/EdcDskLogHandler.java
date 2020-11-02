@@ -112,8 +112,10 @@ public class EdcDskLogHandler {
         System.out.println("接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
+
         List<EdcDskLogProduction> proList = new ArrayList<>();
         List<EdcDskLogProduction> nextproList = new ArrayList<>();
+
         if (edcDskLogProductionList.size() > 0) {
             EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
             String eqpId = edcDskLogProduction0.getEqpId();
@@ -194,7 +196,7 @@ public class EdcDskLogHandler {
         EdcDskLogProduction lastPro = null;
         boolean updateFlag = false;
         try {
-            if (edcDskLogProductionService.insertBatch(proList)) {
+            if (edcDskLogProductionService.insertBatch(proList,100)) {
                 fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共" + proList.size() + "条", mesLotTrack.getLotNo(), "gxj");
             }
             //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
@@ -272,7 +274,7 @@ public class EdcDskLogHandler {
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
             });
         }
-        edcDskLogOperationService.insertBatch(edcDskLogOperationlist);
+        edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
 
         //插入event或者alarm中
         //(エラーや装置の稼働変化)
@@ -390,10 +392,10 @@ public class EdcDskLogHandler {
             }
         }
         if (edcEvtRecordList.size() != 0) {
-            edcEvtRecordService.insertBatch(edcEvtRecordList);
+            edcEvtRecordService.insertBatch(edcEvtRecordList,100);
         }
         if (edcAmsRecordList.size() != 0) {
-            edcAmsRecordService.insertBatch(edcAmsRecordList);
+            edcAmsRecordService.insertBatch(edcAmsRecordList,100);
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
         // TODO: 2020/8/3 改为发送mq消息处理

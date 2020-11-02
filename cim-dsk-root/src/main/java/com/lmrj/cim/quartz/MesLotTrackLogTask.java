@@ -50,7 +50,7 @@ public class MesLotTrackLogTask {
             }
         }
         if(updateLogList.size()>0){
-            Boolean flag = iMesLotTrackLogService.updateBatchById(updateLogList);
+            Boolean flag = iMesLotTrackLogService.updateBatchById(updateLogList,50);
             if (flag) {
                 String eventId = StringUtil.randomTimeUUID("RPT");
                 fabLogService.info("", "fixLotTrackLogData", "更新表中trackout产量成功，更新条数：" + updateLogList.size(), "", "", "gxj");

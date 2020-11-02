@@ -90,7 +90,7 @@ public class EdcDskLogRecipeServiceImpl  extends CommonServiceImpl<EdcDskLogReci
         for (EdcDskLogRecipeBody edcDskLogRecipeBody : edcDskLogRecipeBodyList) {
             edcDskLogRecipeBody.setRecipeLogId(edcDskLogRecipe.getId());
         }
-        edcDskLogRecipeBodyService.insertBatch(edcDskLogRecipeBodyList);
+        edcDskLogRecipeBodyService.insertBatch(edcDskLogRecipeBodyList,100);
         return true;
     }
     @Override

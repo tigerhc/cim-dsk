@@ -252,7 +252,7 @@ public class UserController extends BaseBeanController<User> {
 				userRole.setRoleId(roleid);
 				userRoleList.add(userRole);
 			}
-			userRoleService.insertBatch(userRoleList);
+			userRoleService.insertBatch(userRoleList,1000);
 		}
 
 		// 删除部门关联
@@ -268,7 +268,7 @@ public class UserController extends BaseBeanController<User> {
 					userOrganization.setOrganizationId(organizationId);
 					userOrganizationList.add(userOrganization);
 				}
-				userOrganizationService.insertBatch(userOrganizationList);
+				userOrganizationService.insertBatch(userOrganizationList,1000);
 			}
 		}
 	}

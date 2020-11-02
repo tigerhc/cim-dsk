@@ -237,9 +237,9 @@ public class ApsPlanImportTask {
             apsPlanPdtYieldDetail.setDayNo(no+"/"+count);
         }
         apsPlanPdtYieldService.deleteByPeriod(period);
-        apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList);
+        apsPlanPdtYieldService.insertBatch(apsPlanPdtYieldList,100);
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
-        apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList);
+        apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList,100);
         //将排程的数据上传到redis中
         for(ApsPlanPdtYieldDetail item : apsPlanPdtYieldDetailList){
             String proNo = item.getProductionNo();

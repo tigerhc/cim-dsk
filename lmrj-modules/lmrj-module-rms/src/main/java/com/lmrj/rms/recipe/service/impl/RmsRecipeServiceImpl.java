@@ -25,7 +25,6 @@ import com.lmrj.rms.recipe.utils.FileUtil;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -188,7 +186,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         for (RmsRecipeBody rmsRecipeBody : rmsRecipeBodyList) {
             rmsRecipeBody.setRecipeId(rmsRecipe.getId());
         }
-        rmsRecipeBodyService.insertBatch(rmsRecipeBodyList);
+        rmsRecipeBodyService.insertBatch(rmsRecipeBodyList,100);
         return true;
     }
 

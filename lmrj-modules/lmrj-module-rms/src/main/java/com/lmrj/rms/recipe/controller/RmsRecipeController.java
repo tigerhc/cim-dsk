@@ -14,7 +14,8 @@ import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.email.service.IEmailSendService;
-import com.lmrj.rms.log.service.IRmsRecipeLogService;
+import com.lmrj.core.excel.ImportExcel;
+import com.lmrj.core.log.LogAspectj;
 import com.lmrj.rms.permit.service.IRmsRecipePermitConfigService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
@@ -22,8 +23,6 @@ import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
 import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.core.log.LogAspectj;
-import com.lmrj.core.excel.ImportExcel;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -151,7 +150,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
 
                 updateList.add(updateParam);
             }
-            commonService.updateBatchById(updateList);
+            commonService.updateBatchById(updateList,50);
 
         } catch (InstantiationException e) {
             e.printStackTrace();

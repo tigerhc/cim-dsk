@@ -246,7 +246,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                     list.add(fabEquipment);
                 }
             }
-            fabEquipmentService.insertBatch(list);
+            fabEquipmentService.insertBatch(list,100);
         } catch (IOException e) {
             e.printStackTrace();
             return Response.error(999998,"导出失败");

@@ -52,7 +52,7 @@ public class MsMeasureConfigServiceImpl  extends CommonServiceImpl<MsMeasureConf
         for (MsMeasureConfigDetail msMeasureConfigDetail : detailList) {
             msMeasureConfigDetail.setMsConfigId(msMeasureConfig.getId());
         }
-        msMeasureConfigDetailService.insertBatch(detailList);
+        msMeasureConfigDetailService.insertBatch(detailList,100);
         return true;
     }
 

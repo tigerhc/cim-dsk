@@ -53,7 +53,7 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
         for (MsMeasureRecordDetail edcParamRecordDtl : edcParamRecordDtlList) {
             edcParamRecordDtl.setMsRecordId(msMeasureRecord.getId());
         }
-        msMeasureRecordDetailService.insertBatch(edcParamRecordDtlList);
+        msMeasureRecordDetailService.insertBatch(edcParamRecordDtlList,1000);
         return true;
     }
 

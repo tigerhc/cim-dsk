@@ -59,7 +59,7 @@ public class EdcAmsDefineServiceImpl  extends CommonServiceImpl<EdcAmsDefineMapp
         for (EdcAmsDefineI18n edcParamRecordDtl : edcParamRecordDtlList) {
             edcParamRecordDtl.setAlarmId(edcParamRecord.getId());
         }
-        edcAmsDefineI18nService.insertBatch(edcParamRecordDtlList);
+        edcAmsDefineI18nService.insertBatch(edcParamRecordDtlList,100);
         return true;
     }
 

@@ -42,7 +42,7 @@
                                     LOT_NO
                             from
                                     mes_lot_track
-                            where eqp_id LIKE '%STM-TRM%' AND END_TIME IS NOT NULL
+                            where eqp_id LIKE '%SIM-TRM%' AND END_TIME IS NOT NULL
                                    and create_date between #{startTime} and #{endTime}
                             )
                     and create_date  between #{startTime} and #{endTime}

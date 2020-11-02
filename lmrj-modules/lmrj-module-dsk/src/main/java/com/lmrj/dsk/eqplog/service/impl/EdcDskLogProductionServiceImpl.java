@@ -237,7 +237,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }
         }
         if (!wrongDataList.isEmpty()) {
-            this.updateBatchById(wrongDataList);
+            this.updateBatchById(wrongDataList,100);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "updateProductionData", "修复品番和批次数据数量：" + wrongDataList.size(), "", "");
         } else {
@@ -280,7 +280,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 mesLotTrack.setLotYieldEqp(edcDskLogProductionList.size());
             }
             iMesLotTrackService.updateTrackLotYeildEqp(mesLotTrack.getEqpId(),mesLotTrack.getLotNo(),edcDskLogProductionList.size());
-            this.updateBatchById(wrongDataList);
+            this.updateBatchById(wrongDataList,100);
             String eventId = StringUtil.randomTimeUUID("RPT");
             fabLogService.info("", eventId, "updateProductionLotYieId", "修正批量内连番数据条数：" + wrongDataList.size(), "", "");
         } else {

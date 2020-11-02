@@ -51,7 +51,7 @@ public class OperationYieldTask {
             }
         });
         if(operationList1.size()>0){
-            edcDskLogOperationService.insertBatch(operationList1);
+            edcDskLogOperationService.insertBatch(operationList1,100);
         }
         log.info("OperationYieldTask定时任务开始执行结束");
     }
