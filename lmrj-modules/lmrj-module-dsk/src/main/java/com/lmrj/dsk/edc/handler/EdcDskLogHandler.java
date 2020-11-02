@@ -144,7 +144,7 @@ public class EdcDskLogHandler {
         }
     }
 
-    //修正数据
+    //修正数据   先把所有数据的批量内连番改为每次加一的顺序 再对特殊设备做特殊处理
     public void fixProData(List<EdcDskLogProduction> proList, MesLotTrack mesLotTrack) {
         int i = 1;
         String eqpId = mesLotTrack.getEqpId();
@@ -162,6 +162,12 @@ public class EdcDskLogHandler {
         if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
             for (EdcDskLogProduction edcDskLogProduction : proList) {
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
+            }
+        }
+        //如果为WB 再乘以6
+        if(eqpId.contains("SIM-WB")){
+            for (EdcDskLogProduction edcDskLogProduction : proList) {
+                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 6);
             }
         }
         if (StringUtil.isNotBlank(eqpId)) {

@@ -37,4 +37,6 @@ public interface IMesLotWipService extends ICommonService<MesLotWip> {
     int findDayLotYield(String eqpId, Date startTime, Date endTime);
 
     MesLotTrack findWByYield(String eqpId, String lotNo, String productionNo);
+
+    int findSortNo(String eqpId);
 }
