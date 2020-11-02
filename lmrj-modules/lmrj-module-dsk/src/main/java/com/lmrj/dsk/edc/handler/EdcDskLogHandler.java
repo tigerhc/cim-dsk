@@ -201,18 +201,15 @@ public class EdcDskLogHandler {
             }
             //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
             List<EdcDskLogProduction> allProList = new ArrayList<>();
-            MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
-            if (lastTrack == null && mesLotTrack.getEndTime() != null) {
-                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), mesLotTrack.getEndTime(), mesLotTrack.getEqpId());
-            } else if (lastTrack == null && mesLotTrack.getEndTime() == null) {
-                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), new Date(), mesLotTrack.getEqpId());
-            } else {
-                allProList = edcDskLogProductionService.findProByTime(mesLotTrack.getStartTime(), lastTrack.getStartTime(), mesLotTrack.getEqpId());
-            }
+            //MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
+            allProList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
             lastPro = proList.get(proList.size() - 1);
             mesLotTrack.setLotYieldEqp(allProList.size());
             if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
                 mesLotTrack.setLotYieldEqp(allProList.size() * 12);
+            }
+            if(eqpId.contains("SIM-WB")){
+                mesLotTrack.setLotYieldEqp(allProList.size() * 6);
             }
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
@@ -392,10 +389,10 @@ public class EdcDskLogHandler {
             }
         }
         if (edcEvtRecordList.size() != 0) {
-            edcEvtRecordService.insertBatch(edcEvtRecordList,100);
+            edcEvtRecordService.insertBatch(edcEvtRecordList,1000);
         }
         if (edcAmsRecordList.size() != 0) {
-            edcAmsRecordService.insertBatch(edcAmsRecordList,100);
+            edcAmsRecordService.insertBatch(edcAmsRecordList,1000);
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
         // TODO: 2020/8/3 改为发送mq消息处理
