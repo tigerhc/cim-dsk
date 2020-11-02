@@ -342,13 +342,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/getKeyence", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response getKeyence(@RequestParam String mode, @RequestParam String lotno
+    public String getKeyence(@RequestParam String mode, @RequestParam String lotNo, @RequestParam String production
     ) throws IOException {
         Response rs = new Response();
-        List<Map> result = mesLotTrackService.getKeyence(mode,lotno);
-        rs = Response.ok();
-        rs.put("result", result);
-        return rs;
+        String result = mesLotTrackService.getKeyence(mode,lotNo,production);
+//        rs = Response.ok();
+//        rs.put("result", result);
+        return result;
     }
 
 

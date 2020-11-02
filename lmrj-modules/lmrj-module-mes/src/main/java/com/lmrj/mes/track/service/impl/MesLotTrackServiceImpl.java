@@ -703,7 +703,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public List<Map> getKeyence(String mode,String lotno) {
+    public String getKeyence(String mode,String lotNo,String production) {
         log.info("getKeyence");
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SIM\\SIM(IT).csv");
         List<String> lines = null;
@@ -713,55 +713,71 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             e.printStackTrace();
         }
         List<Map> maps = new ArrayList<>();
-        String[] in = lotno.split("-");
-        String lotNoIn  =in[1];
+        List<String> str = new ArrayList<>();
         for (int i = 0; i <lines.size() ; i++) {
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if(ele2.length==3){
-                if(ele2[1].equals(lotNoIn)){
+                if(ele2[1].equals(lotNo)&&ele2[0].equals(production)){
                     if (mode.equals("0")){
                         if (ele[3].equals("0001-1")){
                             Map<String,Object> map = new HashMap<>();
-                            map.put("类型","1-1");
-                            map.put("A",ele[7]);
-                            map.put("B",ele[8]);
-                            map.put("C1",ele[9]);
-                            map.put("C21",ele[29]);
-                            maps.add(map);
-                            System.out.println("1"+map);
+//                            map.put("类型","1-1");
+//                            map.put("A",ele[7]);
+//                            map.put("B",ele[8]);
+//                            map.put("C1",ele[9]);
+//                            map.put("C21",ele[29]);
+//                            maps.add(map);
+//                            System.out.println("1"+map);
+                            str.add(ele[7]);
+                            str.add(ele[8]);
+                            str.add(ele[9]);
+                            str.add(ele[29]);
                         }else if(ele[3].equals("0001-2")){
-                            Map<String,Object> map = new HashMap<>();
-                            map.put("类型","1-2");
-                            map.put("A",ele[7]);
-                            map.put("B",ele[8]);
-                            map.put("C1",ele[9]);
-                            map.put("C21",ele[29]);
-                            maps.add(map);
+//                            Map<String,Object> map = new HashMap<>();
+//                            map.put("类型","1-2");
+//                            map.put("A",ele[7]);
+//                            map.put("B",ele[8]);
+//                            map.put("C1",ele[9]);
+//                            map.put("C21",ele[29]);
+//                            maps.add(map);
+                            str.add(ele[7]);
+                            str.add(ele[8]);
+                            str.add(ele[9]);
+                            str.add(ele[29]);
                         }
                     }
                     if (mode.equals("1")){
                         if (ele[3].equals("0002-1")){
-                            Map<String,Object> map = new LinkedHashMap<>();
-                            map.put("类型","2-1");
-                            map.put("A",ele[7]);
-                            map.put("B",ele[8]);
-                            map.put("C1",ele[9]);
-                            map.put("C21",ele[28]);
-                            maps.add(map);
+//                            Map<String,Object> map = new LinkedHashMap<>();
+//                            map.put("类型","2-1");
+//                            map.put("A",ele[7]);
+//                            map.put("B",ele[8]);
+//                            map.put("C1",ele[9]);
+//                            map.put("C21",ele[28]);
+//                            maps.add(map);
+                            str.add(ele[7]);
+                            str.add(ele[8]);
+                            str.add(ele[9]);
+                            str.add(ele[29]);
                         }else if(ele[3].equals("0002-2")){
-                            Map<String,Object> map = new LinkedHashMap<>();
-                            map.put("类型","2-2");
-                            map.put("A",ele[7]);
-                            map.put("B",ele[8]);
-                            map.put("C1",ele[9]);
-                            map.put("C21",ele[28]);
-                            maps.add(map);
+//                            Map<String,Object> map = new LinkedHashMap<>();
+//                            map.put("类型","2-2");
+//                            map.put("A",ele[7]);
+//                            map.put("B",ele[8]);
+//                            map.put("C1",ele[9]);
+//                            map.put("C21",ele[28]);
+//                            maps.add(map);
+                            str.add(ele[7]);
+                            str.add(ele[8]);
+                            str.add(ele[9]);
+                            str.add(ele[29]);
                         }
                     }
                 }
             }}
-        return maps;
+        String result = String.join(",",str);
+        return result;
 
     }
 
