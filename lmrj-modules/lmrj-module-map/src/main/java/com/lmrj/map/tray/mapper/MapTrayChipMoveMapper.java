@@ -3,9 +3,12 @@ package com.lmrj.map.tray.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.map.tray.entity.MapTrayChipMove;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -19,12 +22,21 @@ import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 @Mapper
-public interface MapTrayChipMoveMapper {
+public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     public List<Map<String, Object>> queryChipMove(MapTrayChipMoveQueryVo query);
-    
+
     public int countChipMove(MapTrayChipMoveQueryVo query);
-    
+
     public List<Map<String, Object>> queryChip(String chipId);
 
+    List<MapTrayChipMove> getAllTraceData(Map<String,Object> param);
+
+    void editTraceRs();
+
+    void emptyTraceTemp();
+
+    void insertTraceTemp(@Param("data") List<MapTrayChipMove> data);
+
+    void updateChipIdById(MapTrayChipMove data);
 }

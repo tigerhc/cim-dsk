@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 
+import com.baomidou.mybatisplus.annotations.TableName;
 import lombok.Data;
 
 /**
@@ -17,7 +18,7 @@ import lombok.Data;
  * @date: 2020-08-02 15:31:58
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
-
+@TableName("map_tray_chip_move")
 @Data
 public class MapTrayChipMove {
 
@@ -62,4 +63,7 @@ public class MapTrayChipMove {
     @TableField(value = "start_time")
     private Date startTime;
 
+    private String downEqpId;
+
+    private Short eqpType;
 }

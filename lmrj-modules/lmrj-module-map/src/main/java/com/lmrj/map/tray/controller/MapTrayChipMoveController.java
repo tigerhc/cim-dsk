@@ -3,6 +3,7 @@ package com.lmrj.map.tray.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,8 @@ import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
 @RequiresPathPermission("map:maptraychipmove")
 @LogAspectj(title = "map_tray_chip_move")
 public class MapTrayChipMoveController {
+    @Autowired
+    private IMapTrayChipMoveProcessService mapTrayChipMoveProcessService;
 
     @Autowired
     private MapTrayChipMoveMapper mapper;
@@ -73,4 +76,9 @@ public class MapTrayChipMoveController {
         return DateResponse.ok(list);
     }
 
+    @RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response pageList() {
+        mapTrayChipMoveProcessService.traceData();
+        return Response.ok();
+    }
 }
