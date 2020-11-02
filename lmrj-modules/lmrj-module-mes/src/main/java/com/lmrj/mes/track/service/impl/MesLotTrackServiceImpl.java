@@ -703,7 +703,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public Map<String,Object> getKeyence(String mode,String lotno) {
+    public List<Map> getKeyence(String mode,String lotno) {
         log.info("getKeyence");
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SIM\\SIM(IT).csv");
         List<String> lines = null;
@@ -712,7 +712,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Map<String,Object> maps = new HashMap<>();
+        List<Map> maps = new ArrayList<>();
         String[] in = lotno.split("-");
         String lotNoIn  =in[1];
         for (int i = 0; i <lines.size() ; i++) {
@@ -722,37 +722,41 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 if(ele2[1].equals(lotNoIn)){
                     if (mode.equals("0")){
                         if (ele[3].equals("0001-1")){
-                            Map<String,String> map = new HashMap<>();
+                            Map<String,Object> map = new HashMap<>();
+                            map.put("类型","1-1");
                             map.put("A",ele[7]);
                             map.put("B",ele[8]);
                             map.put("C1",ele[9]);
                             map.put("C21",ele[29]);
-                            maps.put("1-1",map);
+                            maps.add(map);
                             System.out.println("1"+map);
                         }else if(ele[3].equals("0001-2")){
-                            Map<String,String> map = new HashMap<>();
+                            Map<String,Object> map = new HashMap<>();
+                            map.put("类型","1-2");
                             map.put("A",ele[7]);
                             map.put("B",ele[8]);
                             map.put("C1",ele[9]);
                             map.put("C21",ele[29]);
-                            maps.put("1-2",map);
+                            maps.add(map);
                         }
                     }
                     if (mode.equals("1")){
                         if (ele[3].equals("0002-1")){
-                            Map<String,String> map = new LinkedHashMap<>();
+                            Map<String,Object> map = new LinkedHashMap<>();
+                            map.put("类型","2-1");
                             map.put("A",ele[7]);
                             map.put("B",ele[8]);
                             map.put("C1",ele[9]);
                             map.put("C21",ele[28]);
-                            maps.put("2-1",map);
+                            maps.add(map);
                         }else if(ele[3].equals("0002-2")){
-                            Map<String,String> map = new LinkedHashMap<>();
+                            Map<String,Object> map = new LinkedHashMap<>();
+                            map.put("类型","2-2");
                             map.put("A",ele[7]);
                             map.put("B",ele[8]);
                             map.put("C1",ele[9]);
                             map.put("C21",ele[28]);
-                            maps.put("2-2",map);
+                            maps.add(map);
                         }
                     }
                 }
@@ -763,7 +767,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
 
 
-    //public static void main(String[] args) {
+    public static void main(String[] args) {
     //    Map<String , Object> map = Maps.newHashMap();
     //    map.put("1", "2");
     //    map.put("2", "3");
@@ -776,5 +780,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     //    Map map2 = JsonUtil.from(value, new TypeReference<Map<String , Object>>(){});
     //    Map map3 =  JsonUtil.from(value, Map.class);
     //    System.out.println(map2);
+//        MesLotTrackServiceImpl cimCommandHandler = new MesLotTrackServiceImpl();
+//        Map<String,Object> map =cimCommandHandler.getKeyence("1","6812M-0O21A-#2");
+//        System.out.println(map);
+    }
     //}
 }

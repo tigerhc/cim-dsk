@@ -345,7 +345,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     public Response getKeyence(@RequestParam String mode, @RequestParam String lotno
     ) throws IOException {
         Response rs = new Response();
-        Map result = mesLotTrackService.getKeyence(mode,lotno);
+        List<Map> result = mesLotTrackService.getKeyence(mode,lotno);
         rs = Response.ok();
         rs.put("result", result);
         return rs;

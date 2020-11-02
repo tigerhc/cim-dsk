@@ -59,5 +59,5 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     List<String> findAllProName(String proName);
 
-    Map<String,Object> getKeyence(String mode,String lotno);
+    List<Map> getKeyence(String mode,String lotno);
 }
