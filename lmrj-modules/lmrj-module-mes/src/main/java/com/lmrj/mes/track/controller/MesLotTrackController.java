@@ -345,9 +345,11 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/getKeyence", method = {RequestMethod.GET, RequestMethod.POST})
     public String getKeyence(@RequestParam String mode, @RequestParam String lotNo, @RequestParam String production
     ) throws IOException {
+        fabLogService.info("", "", "getKeyence", mode, lotNo, "wangdong");//日志记录
         Response rs = new Response();
         String paramStr = production.substring(3,8);
         String result = mesLotTrackService.getKeyence(mode,lotNo,paramStr);
+        fabLogService.info("", "", "getKeyence.result", result, lotNo, "wangdong");//日志记录
         return result;
     }
 
