@@ -345,11 +345,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     public String getKeyence(@RequestParam String mode, @RequestParam String lotNo, @RequestParam String production
     ) throws IOException {
         Response rs = new Response();
-        String result = mesLotTrackService.getKeyence(mode,lotNo,production);
-//        rs = Response.ok();
-//        rs.put("result", result);
+        String paramStr = production.substring(3,8);
+        String result = mesLotTrackService.getKeyence(mode,lotNo,paramStr);
         return result;
     }
-
 
 }
