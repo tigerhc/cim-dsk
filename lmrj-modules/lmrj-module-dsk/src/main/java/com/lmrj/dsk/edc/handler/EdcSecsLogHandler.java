@@ -134,8 +134,9 @@ public class EdcSecsLogHandler {
             productionLog.setProductionNo(equipmentStatus.getProductionNo()); //作业指示书的品番
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
-            edcDskLogProductionService.insert(productionLog);
             MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
+            productionLog.setOrderNo(mesLotTrack.getOrderNo());
+            edcDskLogProductionService.insert(productionLog);
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
                 mesLotTrack.setLotYieldEqp(proList.size() * 24);

@@ -2,8 +2,10 @@ package com.lmrj.cim.quartz;
 
 import com.lmrj.cim.CimBootApplication;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogRecipeService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,8 @@ public class InsertTest {
     IEdcDskLogProductionService edcDskLogProductionService;
     @Autowired
     IEdcDskLogOperationService iEdcDskLogOperationService;
-
+    @Autowired
+    IEdcDskLogRecipeService iEdcDskLogRecipeService;
     @Test
     public void test() throws Exception{
         log.info("000000");
@@ -52,15 +55,19 @@ public class InsertTest {
     }
     @Test
     public void test1() throws Exception{
-        log.error("000000");
+        /*log.error("000000");
         List<EdcDskLogOperation> list1= new ArrayList<>();
-        for (int i = 1000; i > 0 ; i--) {
+        for (int i = 10; i > 0 ; i--) {
             EdcDskLogOperation edcDskLogOperation = new EdcDskLogOperation();
-//            edcDskLogOperation.setId(StringUtil.randomTimeUUID());
+            edcDskLogOperation.setId(StringUtil.randomTimeUUID());
             edcDskLogOperation.setEventId("0001");
             list1.add(edcDskLogOperation);
         }
-        iEdcDskLogOperationService.insertBatch(list1,1000);
-        log.error("111111");
+        iEdcDskLogOperationService.insertBatch(list1,1000000);
+        //iEdcDskLogOperationService.updateBatchById(list1,10000);
+        log.error("111111");*/
+        EdcDskLogRecipe edcDskLogRecipe=new EdcDskLogRecipe();
+        edcDskLogRecipe.setCreateBy("00");
+        iEdcDskLogRecipeService.insertOrUpdate(edcDskLogRecipe);
     }
 }

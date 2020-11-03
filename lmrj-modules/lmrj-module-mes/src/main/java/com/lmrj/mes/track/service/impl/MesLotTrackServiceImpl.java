@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.entity.MesResult;
-import com.lmrj.edc.quartz.MapUtil;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
@@ -531,7 +530,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public List<Map> lotTrackQuery(String lineNo,String startTime,String endTime){
         return baseMapper.lotTrackQuery(lineNo,startTime,endTime);
     }
-
+    @Override
+    public List<MesLotTrack> findLotsByTime(String eqpId, Date startTime, Date endTime){
+        return baseMapper.findLotsByTime(eqpId,startTime,endTime);
+    }
     @Override
     public Map<String, Object> chartKongDong(String proName, String startDate, String endDate) {
         try {
