@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -79,11 +78,11 @@ public class MesLotWipTask {
                         oldmesLotWip.setLotYield(mes.getLotYield());
                         oldmesLotWip.setLotYieldEqp(mes.getLotYieldEqp());
                     }
-                    if(eqpId.equals("SIM-TRM2") && mesLotWip.getLotNo().equals("0O30E")){
-                        System.out.println(0000);
-                    }
                     oldmesLotWip.setStartTime(mes.getStartTime());
                     oldmesLotWip.setEndTime(mes.getEndTime());
+                    if(mes.getEndTime()==null){
+                        iMesLotWipService.updateEndTime(oldmesLotWip.getId());
+                    }
                     oldmesLotWip.setEqpId(eqpId);
                     oldmesLotWip.setStepId(mesLotWip1.getStepId());
                     oldmesLotWip.setStepCode(mesLotWip1.getStepCode());
@@ -106,27 +105,5 @@ public class MesLotWipTask {
                 fabLogService.info(mesLotWip.getEqpId(), eventId, "Wip表数据更新结束", "删除已结束批次数据", mesLotWip.getLotNo(), "");
             }
         }
-        List<MesLotWip> wipList1 = iMesLotWipService.selectWip();
-        List<MesLotWip> wipList2 = new ArrayList<>();
-        for (MesLotWip mesLotWip : wipList1) {
-            String eqpId = mesLotWip.getEqpId();
-            if(eqpId.equals("SIM-WB-2")){
-                System.out.println(000);
-            }
-            if(eqpId.contains("WB")){
-                eqpId=eqpId+"A";
-            }
-            if(mesLotWip.getEndTime()!=null){
-                MesLotTrack mesLotTrack = iMesLotTrackService.findLotTrack(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
-                if(mesLotTrack.getEndTime()==null){
-                    mesLotWip.setEndTime(null);
-                    wipList2.add(mesLotWip);
-                }else{
-                    mesLotWip.setLotYield(4896);
-                    wipList2.add(mesLotWip);
-                }
-            }
-        }
-        iMesLotWipService.updateBatchById(wipList2,10);
     }
 }

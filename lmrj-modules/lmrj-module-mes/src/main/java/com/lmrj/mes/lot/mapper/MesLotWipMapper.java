@@ -3,10 +3,7 @@ package com.lmrj.mes.lot.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.mes.lot.entity.MesLotWip;
 import com.lmrj.mes.track.entity.MesLotTrack;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
 import java.util.List;
@@ -60,4 +57,7 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
 
    //@Select("select sort_no from fab_equipment where eqp_id = #{eqpId}")
     int findSortNo(@Param("eqpId") String eqpId);
+
+    @Update("update mes_lot_wip set end_time = null where id = #{Id} AND del_flag='0'")
+    Boolean updateEndTime(String Id);
 }
