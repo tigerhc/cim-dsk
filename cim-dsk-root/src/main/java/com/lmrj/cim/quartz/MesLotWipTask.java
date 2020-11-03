@@ -4,11 +4,13 @@ import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.lot.entity.MesLotWip;
 import com.lmrj.mes.lot.service.IMesLotWipService;
 import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +22,15 @@ public class MesLotWipTask {
     private IFabLogService fabLogService;
     @Autowired
     IMesLotWipService iMesLotWipService;
+    @Autowired
+    IMesLotTrackService iMesLotTrackService;
 
     //往mes_lot_wip表中导入数据
     //@Scheduled(cron = "0 10 0 * * ?")
     public void buildWipData() {
         Date endTime = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -2);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
         Date startTime = calendar.getTime();
         List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
         for (MesLotTrack mes :
@@ -102,5 +106,27 @@ public class MesLotWipTask {
                 fabLogService.info(mesLotWip.getEqpId(), eventId, "Wip表数据更新结束", "删除已结束批次数据", mesLotWip.getLotNo(), "");
             }
         }
+        List<MesLotWip> wipList1 = iMesLotWipService.selectWip();
+        List<MesLotWip> wipList2 = new ArrayList<>();
+        for (MesLotWip mesLotWip : wipList1) {
+            String eqpId = mesLotWip.getEqpId();
+            if(eqpId.equals("SIM-WB-2")){
+                System.out.println(000);
+            }
+            if(eqpId.contains("WB")){
+                eqpId=eqpId+"A";
+            }
+            if(mesLotWip.getEndTime()!=null){
+                MesLotTrack mesLotTrack = iMesLotTrackService.findLotTrack(eqpId,mesLotWip.getLotNo(),mesLotWip.getProductionNo());
+                if(mesLotTrack.getEndTime()==null){
+                    mesLotWip.setEndTime(null);
+                    wipList2.add(mesLotWip);
+                }else{
+                    mesLotWip.setLotYield(4896);
+                    wipList2.add(mesLotWip);
+                }
+            }
+        }
+        iMesLotWipService.updateBatchById(wipList2,10);
     }
 }

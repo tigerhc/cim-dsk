@@ -166,12 +166,6 @@ public class EdcDskLogHandler {
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
-        //如果为WB 再乘以6
-        if(eqpId.contains("SIM-WB")){
-            for (EdcDskLogProduction edcDskLogProduction : proList) {
-                edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 6);
-            }
-        }
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             proList.forEach(edcDskLogProduction -> {
@@ -207,9 +201,6 @@ public class EdcDskLogHandler {
             mesLotTrack.setLotYieldEqp(allProList.size());
             if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
                 mesLotTrack.setLotYieldEqp(allProList.size() * 12);
-            }
-            if(eqpId.contains("SIM-WB")){
-                mesLotTrack.setLotYieldEqp(allProList.size() * 6);
             }
             mesLotTrack.setUpdateBy("gxj");
             updateFlag = mesLotTrackService.updateById(mesLotTrack);
