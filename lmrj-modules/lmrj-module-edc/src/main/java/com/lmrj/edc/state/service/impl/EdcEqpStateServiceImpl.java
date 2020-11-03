@@ -129,42 +129,43 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在0点到第一条数据之间新建一条数据
-        if (eqpStateList.get(0).getStartTime().after(startTime)) {
-            EdcEqpState firstData = new EdcEqpState();
-            //当天0点前最后一条数据
-            EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
-            lastData.setEndTime(startTime);
-            Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
-            lastData.setStateTimes(state);
-            this.updateById(lastData);
-            firstData.setStartTime(startTime);
-            firstData.setEndTime(eqpStateList.get(0).getStartTime());
-            Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
-            firstData.setStateTimes(state1);
-            //把第一条数据的状态值设为当天0点前最后一条数据的状态
-            firstData.setState(lastData.getState());
-            firstData.setEqpId(eqpId);
-            this.insert(firstData);
-            log.info("插入记录成功");
-        }
-        EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
-        if (lastEdcEqpState.getEndTime() != null && lastEdcEqpState.getEndTime().after(endTime)) {
-            lastEdcEqpState.setEndTime(endTime);
-            Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
-            lastEdcEqpState.setStateTimes(stateTime1);
-            neweqpStateList.add(lastEdcEqpState);
-        }
-        for (int i = 0; i < eqpStateList.size() - 1; i++) {
-            //给每条没有endTime的数据加endTime和stateTime
-            EdcEqpState edcEqpState = eqpStateList.get(i);
-            EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
-            if (edcEqpState.getStartTime() != nextedcEqpState.getStartTime() && edcEqpState.getEndTime() != nextedcEqpState.getStartTime()) {
-                edcEqpState.setEndTime(nextedcEqpState.getStartTime());
-                Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
-                edcEqpState.setStateTimes(stateTime);
-                neweqpStateList.add(edcEqpState);
+        if(eqpStateList.size()>0){
+            if (eqpStateList.get(0).getStartTime().after(startTime)) {
+                EdcEqpState firstData = new EdcEqpState();
+                //当天0点前最后一条数据
+                EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+                lastData.setEndTime(startTime);
+                Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
+                lastData.setStateTimes(state);
+                this.updateById(lastData);
+                firstData.setStartTime(startTime);
+                firstData.setEndTime(eqpStateList.get(0).getStartTime());
+                Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
+                firstData.setStateTimes(state1);
+                //把第一条数据的状态值设为当天0点前最后一条数据的状态
+                firstData.setState(lastData.getState());
+                firstData.setEqpId(eqpId);
+                this.insert(firstData);
+                log.info("插入记录成功");
             }
-            //如果当前无状态值 将上一条数据状态值赋给它
+            EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
+            if (lastEdcEqpState.getEndTime() != null && lastEdcEqpState.getEndTime().after(endTime)) {
+                lastEdcEqpState.setEndTime(endTime);
+                Double stateTime1 = (double) (endTime.getTime() - lastEdcEqpState.getStartTime().getTime());
+                lastEdcEqpState.setStateTimes(stateTime1);
+                neweqpStateList.add(lastEdcEqpState);
+            }
+            for (int i = 0; i < eqpStateList.size() - 1; i++) {
+                //给每条没有endTime的数据加endTime和stateTime
+                EdcEqpState edcEqpState = eqpStateList.get(i);
+                EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
+                if (edcEqpState.getStartTime() != nextedcEqpState.getStartTime() && edcEqpState.getEndTime() != nextedcEqpState.getStartTime()) {
+                    edcEqpState.setEndTime(nextedcEqpState.getStartTime());
+                    Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+                    edcEqpState.setStateTimes(stateTime);
+                    neweqpStateList.add(edcEqpState);
+                }
+                //如果当前无状态值 将上一条数据状态值赋给它
                 /*if(StringUtil.isBlank(edcEqpState.getState())){
                     if (i>0){
                         edcEqpState.setState(eqpStateList.get(i-1).getState());
@@ -172,18 +173,20 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                         edcEqpState.setState("IDLE");
                     }
                 }*/
-        }
-        if (CollectionUtils.isEmpty(eqpStateList)) {
-            return 0;
-        } else {
-            if (neweqpStateList.size() > 0) {
-                if (this.updateBatchById(neweqpStateList,100)) {
-                    log.info("edc_eqp_state更正成功");
+            }
+            if (CollectionUtils.isEmpty(eqpStateList)) {
+                return 0;
+            } else {
+                if (neweqpStateList.size() > 0) {
+                    if (this.updateBatchById(neweqpStateList,100)) {
+                        log.info("edc_eqp_state更正成功");
                     /*String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功,"+neweqpStateList.size()+"条数据已更新", "", "");*/
+                    }
                 }
             }
         }
+
         return eqpStateList.size();
     }
 
