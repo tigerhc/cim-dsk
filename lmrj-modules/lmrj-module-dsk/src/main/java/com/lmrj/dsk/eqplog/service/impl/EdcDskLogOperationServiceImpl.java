@@ -202,7 +202,12 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
     @Override
     public Boolean exportOperationFile(String eqpId,Date startTime,Date endTime){
         List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId,startTime,endTime);
-
+        try {
+            this.printOperlog(orerationList,"OPERATION");
+        } catch (Exception e) {
+            log.error("TRM Operation日志打印出错");
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -232,8 +237,8 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
             }
             String startTimeString = DateUtil.formatDate(oper.getStartTime(), pattern2);
             //拼写当前行字符串
-            String line = oper.getEqpId() + "," + oper.getEqpModelName() + "," + eqpNo + "," + oper.getRecipeCode() + "," + startTimeString + "," + oper.getDayYield() + "," + oper.getLotYield() + "," +
-                    oper.getDuration() + "," + "," + "," + "," + "," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo() + "," + oper.getEventParams();
+            String line = oper.getEqpId() + "," + oper.getEqpModelName() + "," + eqpNo + "," + oper.getRecipeCode() + "," + oper.getDayYield() + "," + oper.getLotYield() + "," + startTimeString + "," +
+                    oper.getEventId() + "," +oper.getAlarmCode()+ "," +oper.getEventName()+ "," +oper.getEventDetail()+ "," + "," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo() + "," + oper.getEventDetail();
             lines.add(line);
         }
         //创建文件路径

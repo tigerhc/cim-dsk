@@ -2,6 +2,7 @@ package com.lmrj.dsk.eqplog.service.impl;
 
 import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
@@ -104,18 +105,21 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public Boolean exportProductionFile(List<MesLotTrack> lotList) {
-        List<EdcDskLogProduction> proList = new ArrayList<>();
-        for (MesLotTrack mesLotTrack : lotList) {
-            //打印产量日志
-            proList = baseMapper.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
-            try {
-                String fileType = "PRODUCTION";
-                this.printProlog(proList,fileType);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+    public Boolean exportProductionFile(List<MesLotTrack> lotList,String fileType) {
+        if(fileType.equals("PRODUCTION")){
+            List<EdcDskLogProduction> proList = new ArrayList<>();
+            for (MesLotTrack mesLotTrack : lotList) {
+                //打印产量日志
+                proList = baseMapper.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+                try {
+                    this.printProlog(proList,fileType);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
+        }else if(fileType.equals("OPERATION")){
+            List<EdcDskLogOperation> opeList = new ArrayList<>();
         }
         return true;
     }

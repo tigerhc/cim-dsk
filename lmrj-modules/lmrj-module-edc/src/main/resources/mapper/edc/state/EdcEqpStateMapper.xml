@@ -30,6 +30,7 @@
                   edc_eqp_state t
               WHERE
                 start_time between #{startTime} and #{endTime} and eqp_id=#{eqpId}
+                and end_time between #{startTime} and #{endTime}
                 order by start_time
 
        </select>

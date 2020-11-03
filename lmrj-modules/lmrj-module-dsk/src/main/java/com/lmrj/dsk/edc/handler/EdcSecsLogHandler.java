@@ -167,6 +167,7 @@ public class EdcSecsLogHandler {
             edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
             edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
             edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
+            edcDskLogOperation.setProductionNo(equipmentStatus.getProductionNo());
         }
         edcDskLogOperation.setEqpId(eqpId);
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());

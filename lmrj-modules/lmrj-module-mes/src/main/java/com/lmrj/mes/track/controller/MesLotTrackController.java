@@ -101,8 +101,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
-            if (lastLotTrack.getEndTime() == null) {
-                log.error("人员误操作记录，" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+
+            if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
+                log.error("人员误操作记录，"+eqpId1+":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
                 return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
             }
 

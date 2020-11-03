@@ -1,5 +1,6 @@
 package com.lmrj.cim.quartz;
 
+import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
@@ -18,7 +19,8 @@ public class TrmCsvTask {
     EdcDskLogProductionServiceImpl edcDskLogProductionService;
     @Autowired
     IMesLotTrackService mesLotTrackService;
-
+    @Autowired
+    IEdcDskLogOperationService iEdcDskLogOperationService;
     /**
      * 生成TRM前一天的表格
      * 每隔10分钟一次
@@ -37,7 +39,8 @@ public class TrmCsvTask {
         String eqpIds[] = {"SIM-TRM1","SIM-TRM2"};
         for (String eqpId : eqpIds) {
             List<MesLotTrack> lotTrackList = mesLotTrackService.findLotsByTime(eqpId,startTime,endTime);
-            Boolean flag = edcDskLogProductionService.exportProductionFile(lotTrackList);
+            Boolean flag = edcDskLogProductionService.exportProductionFile(lotTrackList,"PRODUCTION");
+            iEdcDskLogOperationService.exportOperationFile(eqpId,startTime,endTime);
         }
     }
 }

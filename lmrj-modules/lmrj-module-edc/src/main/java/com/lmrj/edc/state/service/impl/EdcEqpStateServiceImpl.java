@@ -95,7 +95,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         for (int i = 0; i < eqpStateList.size() - 1; i++) {
             //给每条没有endTime的数据加endTime和stateTime
             EdcEqpState edcEqpState = eqpStateList.get(i);
-            if (edcEqpState.getEndTime() == null || edcEqpState.getStateTimes() == 0) {
+            if (edcEqpState.getEndTime() == null ) {
                 EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
                 edcEqpState.setEndTime(nextedcEqpState.getStartTime());
                 Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
@@ -115,7 +115,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             return 0;
         } else {
             if (neweqpStateList.size() > 0) {
-                if (this.updateBatchById(neweqpStateList,100)) {
+                if (this.updateBatchById(neweqpStateList,1000)) {
                     log.info("edc_eqp_state更新成功");
                     String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功," + neweqpStateList.size() + "条数据已更新", "", "");
