@@ -27,6 +27,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -116,7 +117,11 @@ public class EdcSecsLogHandler {
             productionLog.setEqpId(evtRecord.getEqpId());
             productionLog.setRecipeCode(equipmentStatus.getRecipeCode());
             productionLog.setStartTime(new Date());
-            productionLog.setEndTime(new Date());
+            Date endTime = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND,30);
+            endTime=calendar.getTime();
+            productionLog.setEndTime(endTime);
             productionLog.setEqpModelId(fabEquipment.getModelId());
             productionLog.setEqpModelName(fabEquipment.getModelName());
             productionLog.setEqpNo(fabEquipment.getEqpNo());
