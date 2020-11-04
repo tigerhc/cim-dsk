@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -52,11 +53,11 @@ public class EdcDskLogRecipeController extends BaseCRUDController<EdcDskLogRecip
         return doExport("配方日志记录", queryable,  propertyPreFilterable,  request,  response);
     }
 
-    @RequestMapping(value = "/selectExport", method = {RequestMethod.GET, RequestMethod.POST})
-    public void selectExport(String ids, HttpServletRequest httpServletRequest, HttpServletResponse response)throws IOException {
+    @RequestMapping(value = "/selectExport")
+    public String selectExport(HttpServletRequest httpServletRequest, HttpServletResponse response)throws IOException {
 //        EdcDskLogRecipe edcDskLogRecipe =iEdcDskLogRecipeService.findById("75537dfc1c544ddda51b1ca94dab2004");
 //         return edcDskLogRecipe;
-        String idsw = httpServletRequest.getParameter("ids");
+//        String idsw = httpServletRequest.getParameter("ids");
         //创建一个Excel文件
         HSSFWorkbook wb = new HSSFWorkbook();
         //创建一个sheet
@@ -203,16 +204,31 @@ public class EdcDskLogRecipeController extends BaseCRUDController<EdcDskLogRecip
 //            }
 //        }
 
-
-        OutputStream output = response.getOutputStream();
+        ServletOutputStream  output =  response.getOutputStream();
+//        OutputStream output = response.getOutputStream();
         response.reset();
         response.setHeader("Content-disposition", "attachment;filename=students.xls");
-        response.setContentType("application/vnd.ms-excel");
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
         wb.write(output);
+        response.flushBuffer();
         output.close();
 
+//        response.setCharacterEncoding("UTF-8");
+//        response.setContentType("application/vnd.ms-excel;charset=utf-8");// 设置contentType为excel格式
+//        response.setHeader("Content-disposition", "attachment;filename=aaaaaa.xls" );//默认Excel名称
+//        response.flushBuffer();
+//
+//        wb.write(response.getOutputStream());
+//        output.close();
 
 
+
+
+
+
+
+
+      return "导出";
 //        FileOutputStream fos  = null;
 //        try {
 //            fos = new FileOutputStream(new File("D:\\航班信息表.xls"));
