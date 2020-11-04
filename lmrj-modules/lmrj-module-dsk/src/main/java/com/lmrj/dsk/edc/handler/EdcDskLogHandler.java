@@ -8,6 +8,7 @@ import com.lmrj.core.entity.MesResult;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogRecipeService;
@@ -211,13 +212,6 @@ public class EdcDskLogHandler {
                 fabEquipmentStatusService.updateById(fabStatus);
             }
         } catch (Exception e) {
-            log.info("00000000000000000000000" + e);
-            if (eqpId.contains("GAZO")) {
-                for (EdcDskLogProduction edcDskLogProduction : proList) {
-                    log.info(edcDskLogProduction.getStartTime() + "    " + edcDskLogProduction.toString());
-                }
-                log.info(proList.toString());
-            }
             e.printStackTrace();
             fabLogService.info(eqpId, eventId, "fixProData", "track更新出错" + e + "       ", mesLotTrack.getLotNo(), "gxj");
         }
@@ -277,6 +271,7 @@ public class EdcDskLogHandler {
         //※項目4～7は装置によるため別途協議
         List<EdcEvtRecord> edcEvtRecordList = Lists.newArrayList();
         List<EdcAmsRecord> edcAmsRecordList = Lists.newArrayList();
+        List<EdcEqpState> edcEqpStateList = Lists.newArrayList();
         String status = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
@@ -374,10 +369,14 @@ public class EdcDskLogHandler {
                 }
             }
             edcEqpState.setState(status);
+
             if (StringUtil.isNotBlank(status)) {
-                String stateJson = JsonUtil.toJsonString(edcEqpState);
-                rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                edcEqpStateList.add(edcEqpState);
             }
+        }
+        if(edcEqpStateList.size()>0){
+            String stateListJson = JsonUtil.toJsonString(edcEqpStateList);
+            rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateListJson);
         }
         if (edcEvtRecordList.size() != 0) {
             edcEvtRecordService.insertBatch(edcEvtRecordList,1000);
@@ -415,6 +414,11 @@ public class EdcDskLogHandler {
         }
         //edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
         edcDskLogRecipeList.forEach(edcDskLogRecipe -> {
+            if(edcDskLogRecipe.getEdcDskLogRecipeBodyList().size()>0){
+                for (EdcDskLogRecipeBody recipeBody : edcDskLogRecipe.getEdcDskLogRecipeBodyList()) {
+                    recipeBody.setRecipeLogId(edcDskLogRecipe.getId());
+                }
+            }
             edcDskLogRecipeService.insert(edcDskLogRecipe);
         });
     }
