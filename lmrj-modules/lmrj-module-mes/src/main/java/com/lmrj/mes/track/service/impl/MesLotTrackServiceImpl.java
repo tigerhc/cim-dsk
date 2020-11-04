@@ -466,7 +466,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrack.setLotYield(Integer.parseInt(yield));
         mesLotTrack.setUpdateBy(opId);
         this.insertOrUpdate(mesLotTrack);
-        return MesResult.ok("default");
+        return MesResult.ok("Y");
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
