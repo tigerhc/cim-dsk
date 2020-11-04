@@ -159,4 +159,9 @@ public class EdcDskLogRecipeServiceImpl  extends CommonServiceImpl<EdcDskLogReci
             }
         }
     }
+
+
+   public EdcDskLogRecipe findById(Serializable id){
+      return super.selectById(id);
+    }
 }

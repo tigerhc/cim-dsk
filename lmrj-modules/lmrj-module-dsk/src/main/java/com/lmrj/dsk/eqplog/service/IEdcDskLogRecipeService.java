@@ -3,6 +3,7 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,9 @@ import java.util.Map;
 public interface IEdcDskLogRecipeService extends ICommonService<EdcDskLogRecipe> {
     Boolean exportRecipeFile(String eqpId, Date startTime, Date endTime);
 
-    String findOldData(String eqpId, String startTime,String paramName);
+    String findOldData(String eqpId, String startTime, String paramName);
 
-    List<Map<String,String>> findData(String eqpId, Date startTime, Date endTime);
+    List<Map<String, String>> findData(String eqpId, Date startTime, Date endTime);
+
+    EdcDskLogRecipe findById(Serializable id);
 }
