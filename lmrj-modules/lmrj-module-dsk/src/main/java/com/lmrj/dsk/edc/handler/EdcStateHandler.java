@@ -52,6 +52,8 @@ public class EdcStateHandler {
                 iEdcEqpStateService.insertBatch(eqpStateList);
             }
             fabEquipmentStatusService.updateStatus(edcEqpStateList.get(edcEqpStateList.size()-1).getEqpId(),edcEqpStateList.get(edcEqpStateList.size()-1).getState(), "", "");
+        }else if(edcEqpStateList.size()==1){
+            fabEquipmentStatusService.updateStatus(edcEqpStateList.get(0).getEqpId(),edcEqpStateList.get(0).getState(), "", "");
         }
         //设置上一条数据的结束时间，并计算持续时间
         /*if(!"ALARM".equals(edcEqpState.getState())){
