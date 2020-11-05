@@ -38,7 +38,7 @@
         WHERE
         a.eqp_id = #{eqpId}
         AND a.start_time &lt; #{startTime}
-        AND b.para_name = #{paraName}
+        AND b.para_name = #{paramName}
         ORDER BY
         a.start_time DESC
         LIMIT 1
