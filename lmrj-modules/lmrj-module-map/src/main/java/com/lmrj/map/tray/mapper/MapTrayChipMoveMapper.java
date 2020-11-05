@@ -39,4 +39,20 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     void insertTraceTemp(@Param("data") List<MapTrayChipMove> data);
 
     void updateChipIdById(MapTrayChipMove data);
+
+    List<MapTrayChipMove> getTraceDataByUpper(String eqpId);
+
+    List<MapTrayChipMove> getTraceDataByDown(String eqpId);
+
+    int cntTraceData();
+
+    List<Map<String, Object>> getConfig();
+
+    List<MapTrayChipMove> getStartData();
+
+    List<MapTrayChipMove> getUpperData(MapTrayChipMove param);
+
+    Integer chkRecordCnt(MapTrayChipMove param);
+
+    Integer getChkAttach(Map<String, Object> param);
 }

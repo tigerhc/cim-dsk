@@ -17,8 +17,25 @@ public class TraceDateUtil {
         return defaultStartDate;
     }
 
+    public static String getChkTime(Date date, int diff){
+        Date dBefore = new Date();
+        Calendar calendar = Calendar.getInstance(); //得到日历
+        calendar.setTime(date);//把当前时间赋给日历
+        calendar.add(Calendar.MINUTE, diff);  //设置为前一天
+        dBefore = calendar.getTime();   //得到前一天的时间
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置时间格式
+        String defaultStartDate = sdf.format(dBefore);    //格式化前一天
+        return defaultStartDate;
+    }
+
+    public static String getDateStr(Date date){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置时间格式
+        return sdf.format(date);
+    }
+
     public static void main(String[] args) {
-        String test = getBeforeTime();
+//        String test = getBeforeTime();
+        String test = getChkTime(new Date(), -1);
         System.out.println(test);
     }
 }

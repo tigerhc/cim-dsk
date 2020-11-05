@@ -63,7 +63,12 @@ public class MapTrayChipMove {
     @TableField(value = "start_time")
     private Date startTime;
 
-    private String downEqpId;
+    @TableField(exist = false)
+    private Integer eqpType;
 
-    private Short eqpType;
+    @TableField(value = "map_flag")
+    private Integer mapFlag;
+
+    @TableField(exist = false)
+    private Integer searchFlag;
 }

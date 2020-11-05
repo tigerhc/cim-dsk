@@ -31,12 +31,6 @@ public class MapTrayChipLog extends BaseDataEntity {
     /**执行结束时间*/
     @TableField(value = "end_time")
     private Date endTime;
-    /**执行开始ID*/
-    @TableField(value = "begin_no")
-    private Long beginNo;
-    /**执行结束ID*/
-    @TableField(value = "end_no")
-    private Long endNo;
     /**总数量*/
     @TableField(value = "proc_total")
     private Long procTotal;

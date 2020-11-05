@@ -75,9 +75,9 @@ public class MapTrayChipMoveController {
         return DateResponse.ok(list);
     }
 
-    /*@RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response pageList() {
         mapTrayChipMoveProcessService.traceData();
         return Response.ok();
-    }*/
+    }
 }
