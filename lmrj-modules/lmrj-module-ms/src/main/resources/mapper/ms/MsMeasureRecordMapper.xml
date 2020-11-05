@@ -51,7 +51,7 @@
        </resultMap>
 
        <select id="findWeight" parameterType="java.util.Map" resultType="java.util.Map">
-            SELECT date_format(dtl.create_date,'%Y-%m-%d %H:%i:%s') as "createDate",
+            <!--SELECT date_format(dtl.create_date,'%Y-%m-%d %H:%i:%s') as "createDate",
                     dtl.item_value as "weight",
                     rcd.eqp_id as "eqpId",
                     dtl.limit_min as "limitMin",
@@ -59,7 +59,16 @@
                     rcd.lot_no as "lotNo"
              from ms_measure_record_detail dtl
             LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
-            where dtl.item_code='WEIGHT'
+            where dtl.item_code='WEIGHT'-->
+    SELECT min(dtl.item_value) as "minWeight",
+           max(dtl.item_value) as "maxWeight",
+           CAST(avg(dtl.item_value) AS DECIMAL(10,4)) as "avgWeight",
+           min(dtl.limit_min) as "limitMin",
+           min(dtl.limit_max) as "limitMax",
+           rcd.lot_no as "lotNo"
+           from ms_measure_record_detail dtl
+           LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
+           where dtl.item_code='WEIGHT'
             <if test="lotNo!=null and lotNo!=''">
                 and rcd.lot_no=#{lotNo}
             </if>
@@ -75,6 +84,7 @@
            <if test="productionNo!=null and productionNo!=''">
                and rcd.production_no=#{productionNo}
            </if>
+           GROUP BY rcd.lot_no
             order by dtl.create_date
        </select>
 
