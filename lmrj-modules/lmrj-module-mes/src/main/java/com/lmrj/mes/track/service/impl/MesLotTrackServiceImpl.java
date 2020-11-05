@@ -707,6 +707,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     @Override
     public String getKeyence(String mode,String lotNo,String production) {
         log.info("getKeyence");
+        int one=0;
+        int two=0;
+        int three=0;
+        int four=0;
+
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SIM\\SIM(IT).csv");
         List<String> lines = null;
         try {
@@ -722,7 +727,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if(ele2.length==3){
                 if(ele2[1].equals(lotNo)&&ele2[0].equals(production)){
                     if (mode.equals("0")){
-                        if (ele[3].equals("0001-1")){
+                        if (ele[3].equals("0001-1")&&one==0){
                             Map<String,Object> map = new HashMap<>();
 //                            map.put("类型","1-1");
 //                            map.put("A",ele[7]);
@@ -735,7 +740,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
-                        }else if(ele[3].equals("0001-2")){
+                            one=1;
+                        }else if(ele[3].equals("0001-2")&&two==0){
 //                            Map<String,Object> map = new HashMap<>();
 //                            map.put("类型","1-2");
 //                            map.put("A",ele[7]);
@@ -747,10 +753,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
+                            two=1;
                         }
                     }
                     if (mode.equals("1")){
-                        if (ele[3].equals("0002-1")){
+                        if (ele[3].equals("0002-1")&&three==0){
 //                            Map<String,Object> map = new LinkedHashMap<>();
 //                            map.put("类型","2-1");
 //                            map.put("A",ele[7]);
@@ -762,7 +769,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
-                        }else if(ele[3].equals("0002-2")){
+                            three=1;
+                        }else if(ele[3].equals("0002-2")&&four==0){
 //                            Map<String,Object> map = new LinkedHashMap<>();
 //                            map.put("类型","2-2");
 //                            map.put("A",ele[7]);
@@ -774,6 +782,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
+                            four=1;
                         }
                     }
                 }

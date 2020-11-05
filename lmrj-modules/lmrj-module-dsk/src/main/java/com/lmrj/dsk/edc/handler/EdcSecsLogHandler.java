@@ -108,6 +108,7 @@ public class EdcSecsLogHandler {
         String eqpId = evtRecord.getEqpId();
         String[] ceids = {"11201", "11202", "11203"};
         String ceid = evtRecord.getEventId();
+        MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
         if (ArrayUtil.contains(ceids, ceid)) {
             fabEquipmentStatusService.increaseYield(eqpId, 24);
             FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
@@ -116,7 +117,8 @@ public class EdcSecsLogHandler {
             EdcDskLogProduction productionLog = new EdcDskLogProduction();
             productionLog.setEqpId(evtRecord.getEqpId());
             productionLog.setRecipeCode(equipmentStatus.getRecipeCode());
-            productionLog.setStartTime(new Date());
+            Date startTime = new Date();
+            productionLog.setStartTime(startTime);
             Date endTime = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND,30);
@@ -139,8 +141,10 @@ public class EdcSecsLogHandler {
             productionLog.setProductionNo(equipmentStatus.getProductionNo()); //作业指示书的品番
             String eventParams = evtRecord.getEventParams();
             productionLog.setParamValue(eventParams);
-            MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
+
             productionLog.setOrderNo(mesLotTrack.getOrderNo());
+            Double duration = (double)(endTime.getTime()-startTime.getTime())/100;
+            productionLog.setDuration(duration);
             edcDskLogProductionService.insert(productionLog);
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
@@ -174,6 +178,7 @@ public class EdcSecsLogHandler {
             edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
             edcDskLogOperation.setProductionNo(equipmentStatus.getProductionNo());
         }
+        edcDskLogOperation.setOrderNo(mesLotTrack.getOrderNo());
         edcDskLogOperation.setEqpId(eqpId);
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
         edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
