@@ -94,6 +94,9 @@ public class EdcDskLogRecipeController extends BaseCRUDController<EdcDskLogRecip
                     ele.put("1",edcDskLogRecipeBody.getParaName());
                     ele.put("2",edcDskLogRecipeBody.getSetValue());
                     ele.put("3",oldValue);
+                    if (!edcDskLogRecipeBody.getSetValue().equals(oldValue)){
+                        ele.put("4","改变");
+                    }
                     dataList.add(ele);
                 }
                 data = new HashMap<>() ;
@@ -109,6 +112,8 @@ public class EdcDskLogRecipeController extends BaseCRUDController<EdcDskLogRecip
             keyList.add(key2);
             ExcelExportEntity key3 = new ExcelExportEntity("Old value","3");
             keyList.add(key3);
+            ExcelExportEntity key4 = new ExcelExportEntity("设定值是否改变","4");
+            keyList.add(key4);
             Workbook book = ExcelExportUtil.exportExcel(new ExportParams("配方日志记录","量测详细信息"),keyList,dataList);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
