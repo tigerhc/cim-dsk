@@ -203,28 +203,28 @@ public class EdcSecsLogHandler {
         }
         edcDskLogOperationService.insert(edcDskLogOperation);
 
-        //新建TRM状态数据
+        //新建TRM状态数据+
         EdcEqpState edcEqpState = new EdcEqpState();
         edcEqpState.setEqpId(evtRecord.getEqpId());
         edcEqpState.setStartTime(evtRecord.getStartDate());
-        if(evtRecord.getEventParams().equals("3")){
-            edcEqpState.setState("RUN");
-        }else if(evtRecord.getEventParams().equals("1")){
-            edcEqpState.setState("DOWN");
-        }else if(evtRecord.getEventParams().equals("0")){
-            edcEqpState.setState("ALARM");
-        }else if(evtRecord.getEventParams().equals("5")){
-            edcEqpState.setState("IDLE");
+        if(evtRecord.getEventParams()!= null){
+            if(evtRecord.getEventParams().equals("3")){
+                edcEqpState.setState("RUN");
+            }else if(evtRecord.getEventParams().equals("1")){
+                edcEqpState.setState("DOWN");
+            }else if(evtRecord.getEventParams().equals("0")){
+                edcEqpState.setState("ALARM");
+            }else if(evtRecord.getEventParams().equals("5")){
+                edcEqpState.setState("IDLE");
+            }
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
+            oldEdcEqpState.setEndTime(evtRecord.getStartDate());
+            Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+            oldEdcEqpState.setStateTimes(state);
+            iEdcEqpStateService.updateById(oldEdcEqpState);
+            iEdcEqpStateService.insert(edcEqpState);
+            equipmentStatus.setEqpStatus(edcEqpState.getState());
+            fabEquipmentStatusService.updateById(equipmentStatus);
         }
-        EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
-        oldEdcEqpState.setEndTime(evtRecord.getStartDate());
-        Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
-        oldEdcEqpState.setStateTimes(state);
-        iEdcEqpStateService.updateById(oldEdcEqpState);
-        iEdcEqpStateService.insert(edcEqpState);
-        equipmentStatus.setEqpStatus(edcEqpState.getState());
-        fabEquipmentStatusService.updateById(equipmentStatus);
-
-
     }
 }
