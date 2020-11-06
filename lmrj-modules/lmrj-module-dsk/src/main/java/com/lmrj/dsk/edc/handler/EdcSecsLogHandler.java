@@ -11,6 +11,8 @@ import com.lmrj.edc.evt.entity.EdcEvtDefine;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtDefineService;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
+import com.lmrj.edc.state.entity.EdcEqpState;
+import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
@@ -22,6 +24,7 @@ import com.lmrj.util.lang.ArrayUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,10 @@ public class EdcSecsLogHandler {
     private IEdcDskLogOperationService edcDskLogOperationService;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
+    @Autowired
+    IEdcEqpStateService iEdcEqpStateService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -92,6 +99,8 @@ public class EdcSecsLogHandler {
             edcEvtRecordService.insert(edcEvtRecord);
             //Mold单独处理
             if ("TRM".equals(fabEquipment.getStepCode())) {
+
+
                 handleMoldYield(edcEvtRecord, fabEquipment);
             }
         } catch (Exception e) {
@@ -105,6 +114,7 @@ public class EdcSecsLogHandler {
     //处理Mold产量特殊事件
     //通过track in获取设备开始shotcount数
     public void handleMoldYield(EdcEvtRecord evtRecord, FabEquipment fabEquipment) {
+
         String eqpId = evtRecord.getEqpId();
         String[] ceids = {"11201", "11202", "11203"};
         String ceid = evtRecord.getEventId();
@@ -192,5 +202,29 @@ public class EdcSecsLogHandler {
             edcDskLogOperation.setEventDetail(edcEvtDefine.getEventDesc());
         }
         edcDskLogOperationService.insert(edcDskLogOperation);
+
+        //新建TRM状态数据
+        EdcEqpState edcEqpState = new EdcEqpState();
+        edcEqpState.setEqpId(evtRecord.getEqpId());
+        edcEqpState.setStartTime(evtRecord.getStartDate());
+        if(evtRecord.getEventParams().equals("3")){
+            edcEqpState.setState("RUN");
+        }else if(evtRecord.getEventParams().equals("1")){
+            edcEqpState.setState("DOWN");
+        }else if(evtRecord.getEventParams().equals("0")){
+            edcEqpState.setState("ALARM");
+        }else if(evtRecord.getEventParams().equals("5")){
+            edcEqpState.setState("IDLE");
+        }
+        EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
+        oldEdcEqpState.setEndTime(evtRecord.getStartDate());
+        Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+        oldEdcEqpState.setStateTimes(state);
+        iEdcEqpStateService.updateById(oldEdcEqpState);
+        iEdcEqpStateService.insert(edcEqpState);
+        equipmentStatus.setEqpStatus(edcEqpState.getState());
+        fabEquipmentStatusService.updateById(equipmentStatus);
+
+
     }
 }
