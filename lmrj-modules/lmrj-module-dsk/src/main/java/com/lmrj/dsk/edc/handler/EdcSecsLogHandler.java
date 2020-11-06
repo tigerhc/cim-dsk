@@ -217,14 +217,16 @@ public class EdcSecsLogHandler {
             }else if(evtRecord.getEventParams().equals("5")){
                 edcEqpState.setState("IDLE");
             }
-            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
-            oldEdcEqpState.setEndTime(evtRecord.getStartDate());
-            Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
-            oldEdcEqpState.setStateTimes(state);
-            iEdcEqpStateService.updateById(oldEdcEqpState);
-            iEdcEqpStateService.insert(edcEqpState);
-            equipmentStatus.setEqpStatus(edcEqpState.getState());
-            fabEquipmentStatusService.updateById(equipmentStatus);
+            if(edcEqpState.getState()!=null){
+                EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
+                oldEdcEqpState.setEndTime(evtRecord.getStartDate());
+                Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+                oldEdcEqpState.setStateTimes(state);
+                iEdcEqpStateService.updateById(oldEdcEqpState);
+                iEdcEqpStateService.insert(edcEqpState);
+                equipmentStatus.setEqpStatus(edcEqpState.getState());
+                fabEquipmentStatusService.updateById(equipmentStatus);
+            }
         }
     }
 }
