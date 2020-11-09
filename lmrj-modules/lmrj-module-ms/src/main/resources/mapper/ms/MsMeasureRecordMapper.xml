@@ -82,18 +82,19 @@
 <!--                and rcd.production_no like concat('%',#{productionNo},'%')-->
 <!--            </if>-->
            <if test="productionNo!=null and productionNo!=''">
-               and rcd.production_no=#{productionNo}
+               and rcd.production_name=#{productionNo}
            </if>
            GROUP BY rcd.lot_no
             order by dtl.create_date
        </select>
 
     <select id="getAllProductionNo" parameterType="java.lang.String" resultType="java.lang.String">
-        select distinct rcd.production_no
+        select distinct rcd.production_Name
         from ms_measure_record_detail dtl
             LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
             where dtl.item_code='WEIGHT'
-            and rcd.production_no like concat('%',#{productionNo},'%')
+            and rcd.production_Name like concat('%',#{productionNo},'%')
+            and rcd.production_Name is not null
             order by dtl.create_date
     </select>
 
