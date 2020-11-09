@@ -136,7 +136,11 @@ public class EdcSecsLogHandler {
             productionLog.setEqpNo(fabEquipment.getEqpNo());
             productionLog.setJudgeResult("y");
             EdcDskLogProduction pro= edcDskLogProductionService.findLastYield(eqpId,new Date());
-            productionLog.setDayYield(pro.getDayYield()+24);
+            if(pro==null){
+                productionLog.setDayYield(24);
+            }else{
+                productionLog.setDayYield(pro.getDayYield()+24);
+            }
             productionLog.setLotYield(equipmentStatus.getLotYield());
             productionLog.setDuration(0D);
             //productionLog.setMaterialNo(columns[columnNo++]); //制品的序列号
@@ -152,6 +156,7 @@ public class EdcSecsLogHandler {
             productionLog.setOrderNo(mesLotTrack.getOrderNo());
             Double duration = (double)(endTime.getTime()-startTime.getTime())/100;
             productionLog.setDuration(duration);
+            log.info("持续时间"+productionLog.getDuration());
             edcDskLogProductionService.insert(productionLog);
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
