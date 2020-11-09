@@ -450,6 +450,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public MesResult doTrackout(FabEquipment fabEquipment, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
         String eqpId = fabEquipment.getEqpId();
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo).eq("production_no", productionNo));
+        if(eqpId.contains("WB")){
+            String eqpid = eqpId+"A";
+            mesLotTrackList=this.selectList(new EntityWrapper().eq("EQP_ID", eqpid).eq("lot_no", lotNo).eq("production_no", productionNo));
+        }
         if (mesLotTrackList.size() == 0) {
             return MesResult.error("please track in first");
         }
