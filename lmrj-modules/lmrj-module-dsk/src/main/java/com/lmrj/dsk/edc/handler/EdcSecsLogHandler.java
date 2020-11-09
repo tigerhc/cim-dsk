@@ -99,8 +99,6 @@ public class EdcSecsLogHandler {
             edcEvtRecordService.insert(edcEvtRecord);
             //Mold单独处理
             if ("TRM".equals(fabEquipment.getStepCode())) {
-
-
                 handleMoldYield(edcEvtRecord, fabEquipment);
             }
         } catch (Exception e) {
@@ -114,7 +112,6 @@ public class EdcSecsLogHandler {
     //处理Mold产量特殊事件
     //通过track in获取设备开始shotcount数
     public void handleMoldYield(EdcEvtRecord evtRecord, FabEquipment fabEquipment) {
-
         String eqpId = evtRecord.getEqpId();
         String[] ceids = {"11201", "11202", "11203"};
         String ceid = evtRecord.getEventId();
@@ -208,13 +205,13 @@ public class EdcSecsLogHandler {
         edcEqpState.setEqpId(evtRecord.getEqpId());
         edcEqpState.setStartTime(evtRecord.getStartDate());
         if(evtRecord.getEventParams()!= null){
-            if(evtRecord.getEventParams().equals("3")){
+            if(evtRecord.getEventId().equals("11201")){
                 edcEqpState.setState("RUN");
             }else if(evtRecord.getEventParams().equals("1")){
                 edcEqpState.setState("DOWN");
-            }else if(evtRecord.getEventParams().equals("0")){
+            }else if(evtRecord.getEventId().startsWith("21")){
                 edcEqpState.setState("ALARM");
-            }else if(evtRecord.getEventParams().equals("5")){
+            }else if(evtRecord.getEventId().equals("23")){
                 edcEqpState.setState("IDLE");
             }
             if(edcEqpState.getState()!=null){
