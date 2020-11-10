@@ -256,7 +256,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             Date nowTime = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(nowLotTrack.getStartTime());
-            calendar.add(Calendar.MINUTE, -10);
+            calendar.add(Calendar.MINUTE, +5);
             if (nowTime.before(calendar.getTime())) {
                 log.error("操做人员误操作，提前结束批次" + lotNo);
                 return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator";

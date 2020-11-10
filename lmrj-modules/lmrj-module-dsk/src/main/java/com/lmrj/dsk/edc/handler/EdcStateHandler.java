@@ -1,7 +1,5 @@
 package com.lmrj.dsk.edc.handler;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.Lists;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
@@ -12,8 +10,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -34,6 +30,7 @@ public class EdcStateHandler {
     @RabbitListener(queues = {"C2S.Q.STATE.DATA"})
     public void handleAlarm(String msg) {
         log.info("C2S.Q.STATE.DATA接收到的消息" + msg);
+        /*
         List<EdcEqpState> edcEqpStateList = JsonUtil.from(msg,new TypeReference<List<EdcEqpState>>() {
         });
         if(edcEqpStateList.size()>1){
@@ -55,14 +52,27 @@ public class EdcStateHandler {
         }else if(edcEqpStateList.size()==1){
             fabEquipmentStatusService.updateStatus(edcEqpStateList.get(0).getEqpId(),edcEqpStateList.get(0).getState(), "", "");
         }
+        */
         //设置上一条数据的结束时间，并计算持续时间
-        /*if(!"ALARM".equals(edcEqpState.getState())){
+        EdcEqpState edcEqpState = JsonUtil.from(msg,EdcEqpState.class);
+        if(!"ALARM".equals(edcEqpState.getState())){
             EdcEqpState lastedcEqpState = iEdcEqpStateService.findLastData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
-            lastedcEqpState.setEndTime(edcEqpState.getStartTime());
-            Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
-            lastedcEqpState.setStateTimes(state);
-            edcEqpStateService.updateById(lastedcEqpState);
-        }*/
+            if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
+
+            }else{
+                lastedcEqpState.setEndTime(edcEqpState.getStartTime());
+                Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                lastedcEqpState.setStateTimes(state);
+                try {
+                    edcEqpStateService.updateById(lastedcEqpState);
+                    iEdcEqpStateService.insert(edcEqpState);
+                } catch (Exception e) {
+                    log.error("状态更新出错，edcEqpState数据新建或更新失败"+e);
+                    e.printStackTrace();
+                }
+            }
+        }
+        fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
         //修改设备实时状态
     }
 }

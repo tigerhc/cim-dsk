@@ -371,13 +371,19 @@ public class EdcDskLogHandler {
             edcEqpState.setState(status);
 
             if (StringUtil.isNotBlank(status)) {
-                edcEqpStateList.add(edcEqpState);
+                /*edcEqpStateList.add(edcEqpState);
+                if(edcEqpStateList.size()>0){
+                    String stateListJson = JsonUtil.toJsonString(edcEqpStateList);
+                    rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateListJson);
+                }*/
+                String stateJson = JsonUtil.toJsonString(edcEqpState);
+                rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
             }
         }
-        if(edcEqpStateList.size()>0){
+        /*if(edcEqpStateList.size()>0){
             String stateListJson = JsonUtil.toJsonString(edcEqpStateList);
             rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateListJson);
-        }
+        }*/
         if (edcEvtRecordList.size() != 0) {
             edcEvtRecordService.insertBatch(edcEvtRecordList,1000);
         }
