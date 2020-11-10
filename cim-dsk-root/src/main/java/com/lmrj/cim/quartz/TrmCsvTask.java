@@ -40,11 +40,11 @@ public class TrmCsvTask {
         for (String eqpId : eqpIds) {
             List<MesLotTrack> lotTrackList = mesLotTrackService.findLotsByTime(eqpId,startTime,endTime);
             Boolean flag = edcDskLogProductionService.exportProductionFile(lotTrackList,"PRODUCTION");
-            if(!flag){
+            if(flag){
                 log.info("TRM Production日志生成完毕");
             }
             Boolean flag1 = iEdcDskLogOperationService.exportOperationFile(eqpId,startTime,endTime);
-            if(!flag1){
+            if(flag1){
                 log.info("TRM Operation日志生成完毕");
             }
         }
