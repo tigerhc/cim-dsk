@@ -567,7 +567,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public List<Map<String, Object>> chartKongDong(String lotNo,String proName, String startDate, String endDate) {
+    public List<Map<String, Object>> kongDongBar(String lotNo,String proName, String startDate, String endDate) {
         try {
 //            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
             String productionName = baseMapper.findProName(proName);
@@ -598,8 +598,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 String fileName = MapUtils.getString(item, "fileName");
                 if(_chkFileName(fileName)){
                     String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
-                    String fileLotNo = fileName.substring(0,fileName.indexOf(" "));
-                    String fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
+                    String fileLotNo = "";
+                    String fileNo = "";
+                    if("5GI".equals(line)||"6GI".equals(line)){
+                        fileLotNo = fileName.substring(0,fileName.indexOf("-"));
+                        fileNo = "D-AP";
+                    }else{
+                        fileLotNo = fileName.substring(0,fileName.indexOf(" "));
+                        fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
+                    }
                     String fileData = MapUtils.getString(allLine, fileNo);
                     fileData = fileData + "," +kongdongVal;
                     allLine.put(fileNo,fileData);
