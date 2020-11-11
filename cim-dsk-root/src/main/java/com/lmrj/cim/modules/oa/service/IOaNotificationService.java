@@ -3,6 +3,9 @@ package com.lmrj.cim.modules.oa.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.cim.modules.oa.entity.OaNotification;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Title: 通知公告
  * @Description: 通知公告
@@ -12,6 +15,6 @@ import com.lmrj.cim.modules.oa.entity.OaNotification;
  *
  */
 public interface IOaNotificationService extends ICommonService<OaNotification> {
-
+    List<Map<String,Object>> findList();
 }
 
