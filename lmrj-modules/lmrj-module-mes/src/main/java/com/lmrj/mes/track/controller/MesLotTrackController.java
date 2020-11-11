@@ -337,8 +337,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                                 @RequestParam String startDate, @RequestParam String endDate) {
         log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
         List data = mesLotTrackService.kongDongBar(lotNo, productionNo, startDate, endDate);
+        List config = mesLotTrackService.getkongDongConfig(productionNo.replace("J.",""));
         Response rs = Response.ok();
         rs.putList("kongdong", data);
+        rs.putList("config", config);
         return rs;
     }
 

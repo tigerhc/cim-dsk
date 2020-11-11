@@ -556,9 +556,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
             return _handleFileNameG(files, productionName.replace("J.",""));
         }catch (Exception e){
+            e.printStackTrace();
             log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName);
         }
         return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> getkongDongConfig(String productionNo) {
+        return baseMapper.findkongdongConfig(productionNo);
     }
 
     @Override
@@ -582,7 +588,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
             log.info(kongdongDir);
             List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
-            return _handleFileName(files, lotNo);
+            return _handleFileName(files, lotNo, line);
         }catch (Exception e){
             log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName+",lotNo:"+lotNo);
         }
@@ -596,14 +602,16 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             List<String> xaxis = new ArrayList<>();
             for(Map<String, Object> item : files){
                 String fileName = MapUtils.getString(item, "fileName");
-                if(_chkFileName(fileName)){
-                    String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
+                if(_chkFileNameLine(fileName, line)){
+                    String kongdongVal = "";
                     String fileLotNo = "";
                     String fileNo = "";
-                    if("5GI".equals(line)||"6GI".equals(line)){
+                    if(line.contains("5GI")||line.contains("6GI")){
+                        kongdongVal = fileName.substring(fileName.indexOf("-")+1,fileName.indexOf("%"));
                         fileLotNo = fileName.substring(0,fileName.indexOf("-"));
-                        fileNo = "D-AP";
+                        fileNo = "IGBT";
                     }else{
+                        kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
                         fileLotNo = fileName.substring(0,fileName.indexOf(" "));
                         fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
                     }
@@ -668,18 +676,27 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return null;
     }
 
-    private List<Map<String, Object>> _handleFileName(List<Map<String, Object>> files, String lotNo){
+    private List<Map<String, Object>> _handleFileName(List<Map<String, Object>> files, String lotNo, String line){
         if(files!=null && files.size()>0){
             List<Map<String, Object>> res = new ArrayList<>();
             for(Map<String, Object> item : files){
                 String fileName = MapUtils.getString(item, "fileName");
-                if(_chkFileName(fileName)){
-                    String kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
-                    String fileLotNo = fileName.substring(0,fileName.indexOf(" "));
-                    String xAxis = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
+                if(_chkFileNameLine(fileName, line)){
+                    String kongdongVal = "";
+                    String fileLotNo = "";
+                    String fileNo = "";
+                    if(line.contains("5GI")||line.contains("6GI")){
+                        kongdongVal = fileName.substring(fileName.indexOf("-")+1,fileName.indexOf("%"));
+                        fileLotNo = fileName.substring(0,fileName.indexOf("-"));
+                        fileNo = "IGBT";
+                    }else{
+                        kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
+                        fileLotNo = fileName.substring(0,fileName.indexOf(" "));
+                        fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
+                    }
                     item.put("lotNo", fileLotNo);
                     item.put("kongdongVal", kongdongVal);
-                    item.put("xAxis", xAxis);
+                    item.put("xAxis", fileNo);
                     if(StringUtil.isEmpty(lotNo)||fileLotNo.equals(lotNo)){
                         res.add(item);
                     }
@@ -692,15 +709,17 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return files;
     }
 
-    private boolean _chkFileName(String fileName){
-        if(fileName.indexOf(" ")<=0){
-            return false;
-        }
-        if(fileName.indexOf("%")<=0){
-            return false;
-        }
-        if(fileName.indexOf("-")<=0){
-            return false;
+    private boolean _chkFileNameLine(String fileName, String line){
+        if(!line.contains("5GI")&& !line.contains("6GI")){
+            if(fileName.indexOf(" ")<=0){
+                return false;
+            }
+            if(fileName.indexOf("%")<=0){
+                return false;
+            }
+            if(fileName.indexOf("-")<=0){
+                return false;
+            }
         }
         return true;
     }
