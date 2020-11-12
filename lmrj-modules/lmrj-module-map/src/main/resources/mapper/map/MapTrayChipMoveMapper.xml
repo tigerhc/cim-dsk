@@ -199,6 +199,16 @@
 		order by m.start_time
 	</select>
 
+	<select id="getStartErrorData" resultMap="TrayMap">
+		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time
+				,m.lot_no,c.eqp_type, 0 as search_flag
+		from map_tray_chip_move m
+	left join map_equipment_config c on c.eqp_id=m.eqp_id
+		where (m.map_flag > 1 and m.map_flag &lt;99)
+		and c.eqp_type=8 and c.eqp_id like 'APJ%'
+		order by m.start_time
+	</select>
+
 	<select id="getUpperData" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time
 				,m.lot_no,c.eqp_type, 0 as search_flag
@@ -207,22 +217,37 @@
 	 	where c.down_eqp_id=#{eqpId} and m.lot_no=#{lotNo}
 	 	and ( (m.to_tray_id=#{fromTrayId} and m.to_x=#{fromX} and m.to_y=#{fromY}) or((m.to_tray_id=#{toTrayId} and m.to_x=#{toX} and m.to_y=#{toY})))
 	 	and m.start_time &lt;= #{startTime} and m.map_flag=0
+	 	<if test="lmtTime!=null and lmtTime!=''">
+			and m.start_time >= #{lmtTime}
+		</if>
 	</select>
 
-	<select id="getChkAttach" parameterType="java.util.Map" resultType="java.lang.Integer">
-		select count(1)
-			from map_tray_chip_move m
-		LEFT JOIN map_equipment_config c on c.eqp_id=m.eqp_id
-	 	where  m.lot_no=#{lotNo}
-	 	and (m.eqp_id=#{eqpId} or c.down_eqp_id=#{eqpId})
-	 	and m.to_tray_id=#{toTrayId} and m.to_x=#{toX} and m.to_y=#{toY}
-	 	and m.start_time >= #{startTime} and m.start_time &lt;= #{endTime} and m.map_flag=0
-	</select>
-
-	<select id="chkRecordCnt" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultType="java.lang.Integer">
-		select record_cnt from map_eqp_pro_config c
+	<select id="chkRecordCnt" resultType="java.util.Map">
+		select DISTINCT record_cnt as "recordCnt",plan.lot_no as "lotNo",c.eqp_id as "eqpId" from map_eqp_pro_config c
 		left join aps_plan_pdt_yield_detail plan on plan.production_name=c.production_name
-		where plan.lot_no=#{lotNo} and c.eqp_id=#{eqpId}
-		limit 1
+		where plan.lot_no in (SELECT DISTINCT lot_no from map_tray_chip_move
+													where chip_id is not null and map_flag!=1)
+	</select>
+
+	<update id="updateChipIdBatch">
+		insert into temp_chip_id(id, chip_id)values
+		<foreach collection="ids" item="item" separator=",">
+			(#{item.id}, #{item.chipId})
+		</foreach>
+	</update>
+	<delete id="emptyTemp">
+		delete from temp_chip_id
+	</delete>
+
+	<update id="updateChipIds">
+		update map_tray_chip_move mv, temp_chip_id tmp set mv.chip_id=tmp.chip_id, mv.map_flag=1 where mv.id=tmp.id
+	</update>
+
+	<select id="chkProcessRunning" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(1) from map_tray_chip_log
+		where end_time is null
+		<if test="beginTime!=null and beginTime!=''">
+			and begin_time > #{beginTime}
+		</if>
 	</select>
 </mapper>

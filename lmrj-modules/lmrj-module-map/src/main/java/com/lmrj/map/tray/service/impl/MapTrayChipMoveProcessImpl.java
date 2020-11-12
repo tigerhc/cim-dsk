@@ -1,15 +1,17 @@
 package com.lmrj.map.tray.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.map.tray.entity.MapTrayChipLog;
+import com.lmrj.map.tray.entity.MapTrayChipLogDetail;
 import com.lmrj.map.tray.entity.MapTrayChipMove;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
+import com.lmrj.map.tray.service.IMapTrayChipLogDetailService;
+import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
-import com.lmrj.util.calendar.DateUtil;
-import net.sf.json.JSONObject;
+import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,7 +19,10 @@ import java.util.*;
 
 @Service
 public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMoveMapper,MapTrayChipMove> implements IMapTrayChipMoveProcessService {
-
+    @Autowired
+    private IMapTrayChipLogService mpTrayChipLogService;
+    @Autowired
+    private IMapTrayChipLogDetailService mapTrayChipLogDetailService;
 //    @Override
 //    public void traceDataNeedSpace() {
 //        List<MapTrayChipMove> traceDatas = new ArrayList<>();
@@ -327,83 +332,130 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
 //        }
 //    }
 
+    /**追溯
+     * @param traceLog ：作为参数的原因是为了避免被事务控制而影响 chkRunning 的判断
+     * @param processFlag ： 是正常追溯，还是追溯异常的数据
+     */
     @Override
-    public void traceData() {
-        MapTrayChipLog traceLog = new MapTrayChipLog();
-        traceLog.setBeginTime(new Date());
+    public void traceData(MapTrayChipLog traceLog, String processFlag) {
+//        baseMapper.emptyTemp();
         //获得所有打码机上报的记录作为起点
-        List<MapTrayChipMove> startData = baseMapper.getStartData();
+        List<Map<String, Object>> tieHe = baseMapper.chkRecordCnt();
+        List<MapTrayChipMove> startData ;
+        if(IMapTrayChipMoveProcessService.processErrDataFlag.equals(processFlag)){
+            startData = baseMapper.getStartErrorData();
+            traceLog.setRemarks("追溯异常的数据");
+        } else {
+            startData = baseMapper.getStartData();
+            traceLog.setRemarks("追溯正常的数据");
+        }
         traceLog.setProcTotal(Long.valueOf(startData.size()));
+        List<MapTrayChipLogDetail> errDetailList = new ArrayList<>();
         long error = 0;
-        if(startData!=null && startData.size()>0){
+        long suc = 0;
+        String errorLotNo = "";
+        if(startData.size()>0){
             //每个芯片的完整记录，换芯片时会放到waitTrace中，然后清空
-            List<MapTrayChipMove> buff = new ArrayList();
+            List<MapTrayChipMove> buff = new ArrayList<>();
             for(MapTrayChipMove startItem : startData){
                 List<MapTrayChipMove> traceList = new ArrayList<>();
                 traceList.add(startItem);
                 buff.add(startItem);
-                while(traceList.size()>0){
-                    MapTrayChipMove item = traceList.get(0);
-                    if(item.getEqpType()==4){
-                        Map<String, Object> chkParam = new HashMap<>();
-                        chkParam.put("lotNo", item.getLotNo());
-                        chkParam.put("toTrayId", item.getToTrayId());
-                        chkParam.put("toX", item.getToX());
-                        chkParam.put("toY", item.getToY());
-                        chkParam.put("eqpId", item.getEqpId());
-                        chkParam.put("startTime",TraceDateUtil.getChkTime(item.getStartTime(), -2));
-                        chkParam.put("endTime", TraceDateUtil.getChkTime(item.getStartTime(), 2));
-                        Integer chkCnt = baseMapper.getChkAttach(chkParam);
-                        Integer chk = baseMapper.chkRecordCnt(item);//null 配置有误
-                        if(chk== null || chkCnt== null || chkCnt!=chk){
+                if(!startItem.getLotNo().equals(errorLotNo)){
+                    while(traceList.size()>0){
+                        MapTrayChipMove item = traceList.get(0);
+                        if(item.getEqpType()==4){
+                            item.setLmtTime(TraceDateUtil.getChkTime(item.getStartTime(), -5));//贴合数据的前后不超过5分钟
+                        }
+                        List<MapTrayChipMove> upperData = baseMapper.getUpperData(item);
+                        if(item.getEqpType()==4){
+                            int recordCnt = 0;
+                            for(Map<String, Object> thItem : tieHe){
+                                if(MapUtils.getString(thItem, "lotNo").equals(item.getLotNo())
+                                    && MapUtils.getString(thItem, "eqpId").equals(item.getEqpId())){
+                                    recordCnt = MapUtils.getIntValue(thItem, "recordCnt");
+                                    break;
+                                }
+                            }
+                            //检查配置是否不正确
+                            if(tieHe.size()<1 || recordCnt==0){
+                                buff.clear();
+                                traceList.clear();
+                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+                                errDetail.setWarnDtl("贴合的配置没有找到.eqpId:"+item.getEqpId()+",lotNo:"+item.getLotNo());
+                                errDetail.setWarnId(item.getId());
+                                errDetail.setCreateDate(new Date());
+                                errDetailList.add(errDetail);
+                                errorLotNo = item.getLotNo();
+                                break;
+                            }else if(upperData.size()!=recordCnt){
+                                clearBuff(buff, 2);
+                                error++;
+                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+                                errDetail.setWarnDtl("贴合的数量不正确，正确的数量："+recordCnt+",实际数量"+upperData.size()+",复查json："+ JsonUtil.toJsonString(item));
+                                errDetail.setWarnId(item.getId());
+                                errDetail.setCreateDate(new Date());
+                                errDetailList.add(errDetail);
+                                break;
+                            }
+                        }
+                        if(upperData!=null && upperData.size()>0){
+                            for(MapTrayChipMove upperItem : upperData){
+                                if(StringUtils.isEmpty(upperItem.getChipId())){
+                                    upperItem.setChipId(item.getChipId());
+                                }
+                                traceList.add(0,upperItem);
+                                buff.add(upperItem);
+                            }
+                        }else if(item.getEqpType()!=1){//没有找到记录，并且非开始设备
                             clearBuff(buff, 2);
                             error++;
-                            break;
-                        }
-                    }
-                    List<MapTrayChipMove> upperData = baseMapper.getUpperData(item);
-                    if(upperData!=null && upperData.size()>0){
-                        for(MapTrayChipMove upperItem : upperData){
-                            if(StringUtils.isEmpty(upperItem.getChipId())){
-                                upperItem.setChipId(item.getChipId());
+                            MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+                            errDetail.setWarnDtl("缺少上游数据，当前的数据是:"+JsonUtil.toJsonString(item));
+                            errDetail.setWarnId(item.getId());
+                            errDetail.setCreateDate(new Date());
+                            errDetailList.add(errDetail);
+                            for(MapTrayChipMove errorItem : buff){
+                                traceList.remove(errorItem);
                             }
-                            traceList.add(0,upperItem);
-                            buff.add(upperItem);
                         }
-                    }else if(item.getEqpType()!=1){//没有找到记录，并且非开始设备
-                        clearBuff(buff, 2);
-                        error++;
-                        for(MapTrayChipMove errorItem : buff){
-                            traceList.remove(errorItem);
-                        }
+                        traceList.remove(item);
                     }
-                    traceList.remove(item);
                 }
                 if(buff.size()>0){
+                    suc++;
                     clearBuff(buff, 1);
                 }
             }
         }
         traceLog.setProcWarn(error);
+        traceLog.setProcSuc(suc);
         traceLog.setEndTime(new Date());
+        //追溯补全log中只有开始时间没有结束时间的记录，以此标志着此次追溯完毕
+        mpTrayChipLogService.updateById(traceLog);
+        if(errDetailList.size()>0){
+            mapTrayChipLogDetailService.insertBatch(errDetailList, 500);
+        }
+//        baseMapper.updateChipIds();
     }
-
     public void clearBuff(List<MapTrayChipMove> buff, int mapFlag){
         if(buff!=null && buff.size()>0){
-            if(mapFlag==2){
+            if(mapFlag>1){
                 MapTrayChipMove module = null;
                 for(MapTrayChipMove item : buff){
                     if(item.getEqpType()==8){
                         module=item;
                     }
                 }
-                module.setMapFlag(2);
+                mapFlag = module.getMapFlag();
+                module.setMapFlag(++mapFlag);
                 updateById(module);
             }else{
                 for(MapTrayChipMove item : buff){
                     item.setMapFlag(mapFlag);
                 }
-                updateBatchById(buff,100);
+                updateBatchById(buff,500);
+//                baseMapper.updateChipIdBatch(buff);
             }
             buff.clear();
         }

@@ -5,8 +5,11 @@ import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
+import com.lmrj.map.tray.entity.MapTrayChipLog;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
+import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
+import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +45,8 @@ public class MapTrayChipMoveController {
     @Autowired
     private MapTrayChipMoveMapper mapper;
 
+    @Autowired
+    private IMapTrayChipLogService mpTrayChipLogService;
     /**
      * 根据页码和每页记录数，以及查询条件动态加载数据
      *
@@ -77,7 +83,21 @@ public class MapTrayChipMoveController {
 
     @RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response pageList() {
-        mapTrayChipMoveProcessService.traceData();
+        MapTrayChipLog traceLog = new MapTrayChipLog();
+        try{
+            //是否正在追溯中【正在追溯中的特点是，在log表中有一条记录只有开始时间，没有结束时间】
+            Integer chkRunning = mapper.chkProcessRunning(TraceDateUtil.getChkTime(new Date(), -5));
+            if(chkRunning == null || chkRunning==0){
+                //设置为追溯中，即向log表中添加一个只有开始时间没有结束的时间的记录
+                traceLog.setBeginTime(new Date());
+                mpTrayChipLogService.insert(traceLog);
+                mapTrayChipMoveProcessService.traceData(traceLog, IMapTrayChipMoveProcessService.processErrDataFlag);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            traceLog.setEndTime(new Date());
+            mpTrayChipLogService.updateById(traceLog);
+        }
         return Response.ok();
     }
 }

@@ -71,4 +71,7 @@ public class MapTrayChipMove {
 
     @TableField(exist = false)
     private Integer searchFlag;
+
+    @TableField(exist = false)
+    private String lmtTime;
 }
