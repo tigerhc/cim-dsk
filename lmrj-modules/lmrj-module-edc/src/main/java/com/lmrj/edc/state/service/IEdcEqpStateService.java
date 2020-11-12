@@ -29,5 +29,5 @@ public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
 
     List<EdcEqpState> findWrongEqpList(String eqpId,Date startTime,Date endTime);
 
-    EdcEqpState findNextData(Date startTime,String eqpId);
+    EdcEqpState findNewData(Date startTime,String eqpId);
 }

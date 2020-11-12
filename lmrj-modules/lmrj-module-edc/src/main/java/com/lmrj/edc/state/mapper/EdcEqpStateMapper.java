@@ -29,5 +29,5 @@ public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
     @Select("select DISTINCT eqp_id from edc_eqp_state where start_time BETWEEN #{startTime} and #{endTime}")
     List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     List<EdcEqpState> findWrongEqpList(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    EdcEqpState findNextData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
+    EdcEqpState findNewData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
 }

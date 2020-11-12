@@ -4,8 +4,12 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.cim.modules.oa.entity.OaNotification;
 import com.lmrj.cim.modules.oa.mapper.OaNotificationMapper;
 import com.lmrj.cim.modules.oa.service.IOaNotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Title: 通知公告
@@ -18,5 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("oaNotificationService")
 public class OaNotificationServiceImpl  extends CommonServiceImpl<OaNotificationMapper,OaNotification> implements IOaNotificationService {
-
+    @Override
+    public  List<Map<String,Object>> findList() {
+        return baseMapper.findList();
+    }
 }

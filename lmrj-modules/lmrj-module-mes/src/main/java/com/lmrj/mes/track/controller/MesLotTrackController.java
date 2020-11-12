@@ -278,6 +278,37 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
+    @RequestMapping(value = "/dsktrackout2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String dmTrackout2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout2", eventDesc, trackinfo, "wangdong");//日志记录参数
+        try {
+            if (trackinfo.length() < 30) {
+                return "trackinfo too short";
+            }
+            String[] trackinfos = trackinfo.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1].trim();
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+            String lotNo = lotNos[lotNos.length - 1].substring(0, 5);
+            String orderNo = lotNos[0].substring(0, 8);
+            String productionNo = lotNos[lotNos.length - 1].substring(5, 12); //5002915
+            MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dsktrackout2", jo.toString(), trackinfo, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return "Y";
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dsktrackout2", "有异常", trackinfo, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
     //@RequestMapping(value = "/trackout/{eqpId}/{lotNo}", method = { RequestMethod.GET, RequestMethod.POST })
     //public MesResult trackout(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
     //    return mesLotTrackService.trackOut( eqpId,   lotNo,   recipeCode,   opId);

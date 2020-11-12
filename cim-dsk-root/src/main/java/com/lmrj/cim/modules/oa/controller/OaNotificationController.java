@@ -1,13 +1,24 @@
 package com.lmrj.cim.modules.oa.controller;
 
 
+import com.lmrj.cim.modules.oa.service.IOaNotificationService;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.cim.modules.oa.entity.OaNotification;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @Title: 通知公告
@@ -17,10 +28,26 @@ import com.lmrj.cim.modules.oa.entity.OaNotification;
  * @version V1.0
  *
  */
-@Controller
+@RestController
 @RequestMapping("oa/oanotification")
 @ViewPrefix("modules/oa/oanotification")
 @RequiresPathPermission("oa:oanotification")
+
 public class OaNotificationController extends BaseCRUDController<OaNotification> {
+    @Autowired
+    private IOaNotificationService iOaNotificationService;
+    @RequestMapping("/findList")
+    public List<Map<String,Object>> findList(){
+        List<Map<String,Object>> result = iOaNotificationService.findList();
+       for(Map map:result){
+           Date time =(Date)map.get("create_date");
+//           Date date =new Date(time);
+           SimpleDateFormat df =new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+           String temp =df.format(time);
+           map.put("create_date",temp);
+       }
+        return result;
+    }
+
 
 }
