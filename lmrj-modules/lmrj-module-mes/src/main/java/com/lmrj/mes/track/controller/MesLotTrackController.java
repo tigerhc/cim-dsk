@@ -282,7 +282,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     public String dmTrackout2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
-        fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
+        fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout2", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";

@@ -399,7 +399,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         List<MesLotTrack> mesLotTrackList = this.selectList(new EntityWrapper().eq("EQP_ID", eqpId).eq("lot_no", lotNo).eq("production_no", productionNo));
         MesLotTrack mesLotTrack = new MesLotTrack();
         if (mesLotTrackList.size() > 0) {
-            return MesResult.error(eqpId +" : "+lotNo+"trackin has been completed");
+            if(fabEquipment.getEqpId().contains("AOI")){
+                MesResult mesResult1 = new MesResult();
+                mesResult1.setFlag("Y");
+                return mesResult1;
+            }else{
+                return MesResult.error(eqpId +" : "+lotNo+"trackin has been completed");
+            }
             //mesLotTrack = mesLotTrackList.get(0);
         }else {
             Calendar cal = Calendar.getInstance();
@@ -459,7 +465,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         MesLotTrack mesLotTrack = mesLotTrackList.get(0);
         if(mesLotTrack.getEndTime()!=null){
-            return MesResult.error(eqpId+" : "+ lotNo +"trackout has been completed");
+            if(!mesLotTrack.getEqpId().contains("AOI")){
+                return MesResult.error(eqpId+" : "+ lotNo +"trackout has been completed");
+            }
         }
         MesLotTrack postTrack = baseMapper.findLastTrack(eqpId, lotNo, mesLotTrack.getStartTime());
         if (postTrack == null) {
