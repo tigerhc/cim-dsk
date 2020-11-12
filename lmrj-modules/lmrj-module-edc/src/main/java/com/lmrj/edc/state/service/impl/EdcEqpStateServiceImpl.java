@@ -273,8 +273,8 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     }
 
     @Override
-    public EdcEqpState findNextData(Date startTime, String eqpId) {
-        return baseMapper.findNextData(startTime, eqpId);
+    public EdcEqpState findNewData(Date startTime, String eqpId) {
+        return baseMapper.findNewData(startTime, eqpId);
     }
 
 }

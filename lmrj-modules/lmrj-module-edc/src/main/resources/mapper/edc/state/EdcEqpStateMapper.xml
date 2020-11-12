@@ -52,10 +52,11 @@
         where end_time is null  and eqp_id=#{eqpId} and start_time between #{startTime} and #{endTime}
         order by start_time
     </select>
-    <select id="findNextData" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+    <select id="findNewData" resultType="com.lmrj.edc.state.entity.EdcEqpState">
         select * from edc_eqp_state
-        where start_time &gt; #{startTime} and eqp_id=#{eqpId}
-        order by start_time
+        where start_time &lt;= #{startTime} and eqp_id=#{eqpId}
+        and state != 'ALARM'
+        order by start_time desc
         limit 1
     </select>
 </mapper>

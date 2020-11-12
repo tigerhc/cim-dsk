@@ -56,23 +56,29 @@ public class EdcStateHandler {
         //设置上一条数据的结束时间，并计算持续时间
         EdcEqpState edcEqpState = JsonUtil.from(msg,EdcEqpState.class);
         if(!"ALARM".equals(edcEqpState.getState())){
-            EdcEqpState lastedcEqpState = iEdcEqpStateService.findLastData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
+            EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
             if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
-
+                log.info("edcEqpState数据重复："+edcEqpState);
             }else{
                 lastedcEqpState.setEndTime(edcEqpState.getStartTime());
                 Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
                 lastedcEqpState.setStateTimes(state);
                 try {
                     edcEqpStateService.updateById(lastedcEqpState);
-                    iEdcEqpStateService.insert(edcEqpState);
+
                 } catch (Exception e) {
-                    log.error("状态更新出错，edcEqpState数据新建或更新失败"+e);
+                    log.error("状态更新出错，edcEqpState数据更新失败"+e);
                     e.printStackTrace();
                 }
+                try {
+                    iEdcEqpStateService.insert(edcEqpState);
+                } catch (Exception e) {
+                    log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                    e.printStackTrace();
+                }
+                //修改设备实时状态
+                fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
             }
         }
-        fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
-        //修改设备实时状态
     }
 }
