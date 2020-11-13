@@ -48,7 +48,8 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     List<Map<String, Object>> getConfig();
 
-    List<MapTrayChipMove> getStartData();
+    //可以异步的获得追溯打码机数据
+    List<MapTrayChipMove> getStartData(@Param("startTime") String startTime);
 
     List<MapTrayChipMove> getStartErrorData();
 
@@ -65,4 +66,7 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     void updateChipIds();
 
     Integer chkProcessRunning(@Param("beginTime") String beginTime);
+
+    //获得日志中最后一次开始时间
+    String getLastStartTime();
 }

@@ -341,12 +341,17 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
 //        baseMapper.emptyTemp();
         //获得所有打码机上报的记录作为起点
         List<Map<String, Object>> tieHe = baseMapper.chkRecordCnt();
-        List<MapTrayChipMove> startData ;
+        List<MapTrayChipMove> startData;
         if(IMapTrayChipMoveProcessService.processErrDataFlag.equals(processFlag)){
             startData = baseMapper.getStartErrorData();
             traceLog.setRemarks("追溯异常的数据");
-        } else {
-            startData = baseMapper.getStartData();
+        }else if(IMapTrayChipMoveProcessService.processAsynchronous.equals(processFlag)){
+            String startTime = baseMapper.getLastStartTime();
+            //通过上次开始执行的时间可算出在这个时间之后有多少数据
+            startData = baseMapper.getStartData(startTime);
+            traceLog.setRemarks("异步的追溯异数据,startTime:"+startTime);
+        }else{
+            startData = baseMapper.getStartData("");
             traceLog.setRemarks("追溯正常的数据");
         }
         traceLog.setProcTotal(Long.valueOf(startData.size()));

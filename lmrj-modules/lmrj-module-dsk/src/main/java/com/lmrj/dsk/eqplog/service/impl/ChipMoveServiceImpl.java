@@ -4,7 +4,6 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.dsk.eqplog.entity.ChipMove;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
-import com.lmrj.edc.quartz.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import java.util.Map;
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
-        List<ChipMove> mapperList = new ArrayList<ChipMove>();
+        List<ChipMove> mapperList = new ArrayList<>();
         try{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(Map<String, Object> item : dataList){
