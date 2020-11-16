@@ -65,6 +65,8 @@
            CAST(avg(dtl.item_value*1000) AS DECIMAL(10,2)) as "avgWeight",
            CAST(min(dtl.limit_min)*1000 AS DECIMAL(10,2)) as "limitMin",
            CAST(min(dtl.limit_max)*1000 AS DECIMAL(10,2)) as "limitMax",
+           CAST(((min(dtl.limit_min)+min(dtl.limit_max))/2+(min(dtl.limit_max)-min(dtl.limit_min))/2*0.9)*1000 AS DECIMAL(10,2)) as "limit90",
+           CAST(((min(dtl.limit_min)+min(dtl.limit_max))/2-(min(dtl.limit_max)-min(dtl.limit_min))/2*0.9)*1000 AS DECIMAL(10,2)) as "limit11",
            rcd.lot_no as "lotNo"
            from ms_measure_record_detail dtl
            LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
