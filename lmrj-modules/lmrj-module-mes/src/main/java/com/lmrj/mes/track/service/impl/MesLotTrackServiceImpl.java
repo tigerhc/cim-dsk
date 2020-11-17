@@ -830,6 +830,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     }
                 }
             }}
+        log.info("————————————————基恩士测试结束————————————————————————————————");
         String result = String.join(",",str);
         return result;
 
