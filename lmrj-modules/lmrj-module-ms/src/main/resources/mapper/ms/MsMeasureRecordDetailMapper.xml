@@ -28,5 +28,6 @@
               select *
               from ms_measure_record_detail
               where ms_record_id = #{id}
+              order by sort_no
        </select>
 </mapper>

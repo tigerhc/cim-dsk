@@ -189,7 +189,6 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
     @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
     public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
         String title = "量测信息详情";
-        String title1 = "量测信息";
         Response res = Response.ok("导出成功");
 
         try {
@@ -198,33 +197,37 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             Map<String, String> data = null;
             List<ExcelExportEntity> keyList= new LinkedList<>();
             if(records.size() != 0){
-                for (MsMeasureRecordDetail msMeasureRecordDetail: records.get(0).getDetail()) {
+                List<MsMeasureRecordDetail> msMeasureRecordDetailList = records.get(0).getDetail();
+                for (int i = 0; i  < msMeasureRecordDetailList.size(); i++) {
                     data = new HashMap<>();
-                    String itemName = msMeasureRecordDetail.getItemName();
-                    String itemValue = msMeasureRecordDetail.getItemValue();
+                    ExcelExportEntity index = new ExcelExportEntity("#", "index");
+                    if (!keyList.contains(index)){
+                        keyList.add(index);
+                    }
+                    data.put("index", i + 1 + "");
+                    String itemName = msMeasureRecordDetailList.get(i).getItemName();
+                    String itemValue = msMeasureRecordDetailList.get(i).getItemValue();
                     String[] items = itemName.split(",");
                     String[] values = itemValue.split(",");
-                    for (int i = 0; i < values.length; i++) {
-                        ExcelExportEntity key = new ExcelExportEntity(items[i], items[i]);
+                    for (int j = 0; j < values.length; j++) {
+                        ExcelExportEntity key = new ExcelExportEntity(items[j], items[j]);
+                        key.setWidth(20.0D);
                         if (!keyList.contains(key)){
                             keyList.add(key);
                         }
-                        data.put(items[i],values[i]);
+                        data.put(items[j],values[j]);
                     }
                     dataList.add(data);
                 }
             }
             Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测详细信息","量测详细信息"),keyList,dataList);
-            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
-            book.write(fos);
-            fos.close();
-//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//            book.write(bos);
-//            byte[] bytes = bos.toByteArray();
-//            String bytesRes = StringUtil.bytesToHexString2(bytes);
-//            title = title + "-" + DateUtil.getDateTime();
-//            res.put("bytes", bytesRes);
-//            res.put("title", title);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
             return res;
         } catch (Exception var16) {
             var16.printStackTrace();
