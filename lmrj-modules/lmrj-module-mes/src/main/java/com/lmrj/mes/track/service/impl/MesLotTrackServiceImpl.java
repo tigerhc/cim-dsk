@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.SimpleFormatter;
 
 
 /**
@@ -760,6 +762,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
         for (int i = 0; i <lines.size() ; i++) {
+            SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            log.info("基恩士测试当前时间为"+ft.format(new Date().getTime()));
+            log.info("基恩士:"+lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if(ele2.length==3){
