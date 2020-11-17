@@ -386,4 +386,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         return result;
     }
 
+    @RequestMapping(value = "/findGI", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findGI(@RequestParam String category, @RequestParam String lotNo, @RequestParam String production
+    ) throws IOException {
+        Response rs = new Response();
+        String result = null;
+        if (category.equals("5GI")){
+            fabLogService.info("", "", "find5GI", production,lotNo, "jiafuxing");//日志记录
+            result = mesLotTrackService.find5GI(lotNo,production);
+        }else if (category.equals("6GI")){
+            fabLogService.info("", "", "find6GI", production,lotNo, "jiafuxing");//日志记录
+            result = mesLotTrackService.find6GI(lotNo,production);
+        }
+        fabLogService.info("", "", "find5GI.result", result, lotNo, "jiafuxing");//日志记录
+        return result;
+    }
+
 }

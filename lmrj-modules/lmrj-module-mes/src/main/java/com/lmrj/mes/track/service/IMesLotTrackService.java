@@ -62,5 +62,9 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     String getKeyence(String mode,String lotNo,String production);
 
+    String find5GI(String lotNo,String production);
+
+    String find6GI(String lotNo,String production);
+
     List<MesLotTrack> findLotsByTime(String eqpId, Date startTime, Date endTime);
 }

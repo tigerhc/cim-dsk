@@ -761,9 +761,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        log.info("基恩士测试当前时间为"+ft.format(new Date().getTime()));
         for (int i = 0; i <lines.size() ; i++) {
-            SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            log.info("基恩士测试当前时间为"+ft.format(new Date().getTime()));
             log.info("基恩士:"+lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
@@ -807,6 +807,66 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
+
+    public String find5GI(String lotNo,String production) {
+        String [] temp = production.split("-");
+        String pro = temp[1].substring(0,4);
+        String proOther = temp[1].substring(0,5);
+        File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\5GI\\5GI(IT)\\5GI(IT).csv");
+        List<String> lines = null;
+        try {
+            lines = FileUtil.readLines(pathfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<String> str = new ArrayList<>();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        log.info("5GI测试当前时间为 : "+ft.format(new Date().getTime()));
+        for (int i = 0; i <lines.size() ; i++) {
+            log.info("5GI当前行数据 : "+lines.get(i));
+            String[] ele = lines.get(i).split(",");
+            String[] ele2 = ele[2].split("-");
+            if(ele2.length==3){
+                if(ele2[1].equals(lotNo)&&(ele2[0].equals(pro)||ele2[0].equals(proOther))){
+                    for (int j = 7; j <ele.length ; j++) {
+                        str.add(ele[j]);
+                    }
+                }
+            }}
+        log.info("————————————————find5GI-测试结束————————————————————————————————");
+        String result = String.join(",",str);
+        return result;
+    }
+
+    public String find6GI(String lotNo,String production) {
+        String [] temp = production.split("-");
+        String pro = temp[1].substring(0,4);
+        File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\6GI\\6GI(IT)\\6GI(IT).csv");
+        List<String> lines = null;
+        try {
+            lines = FileUtil.readLines(pathfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Map> maps = new ArrayList<>();
+        List<String> str = new ArrayList<>();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        log.info("6GI测试当前时间为 : "+ft.format(new Date().getTime()));
+        for (int i = 0; i <lines.size() ; i++) {
+            log.info("6GI当前行数据 : "+lines.get(i));
+            String[] ele = lines.get(i).split(",");
+            String[] ele2 = ele[2].split("-");
+            if(ele2.length==3){
+                if(ele2[1].equals(lotNo)&&ele2[0].equals(pro)){
+                    for (int j = 7; j <ele.length ; j++) {
+                        str.add(ele[j]);
+                    }
+                }
+            }}
+        log.info("————————————————find6GI-测试结束————————————————————————————————");
+        String result = String.join(",",str);
+        return result;
+    }
 
 
     public static void main(String[] args) {
