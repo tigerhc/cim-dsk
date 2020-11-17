@@ -772,26 +772,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     if (mode.equals("0")){
                         if (ele[3].equals("0001-1")&&one==0){
                             Map<String,Object> map = new HashMap<>();
-//                            map.put("类型","1-1");
-//                            map.put("A",ele[7]);
-//                            map.put("B",ele[8]);
-//                            map.put("C1",ele[9]);
-//                            map.put("C21",ele[29]);
-//                            maps.add(map);
-//                            System.out.println("1"+map);
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             one=1;
                         }else if(ele[3].equals("0001-2")&&two==0){
-//                            Map<String,Object> map = new HashMap<>();
-//                            map.put("类型","1-2");
-//                            map.put("A",ele[7]);
-//                            map.put("B",ele[8]);
-//                            map.put("C1",ele[9]);
-//                            map.put("C21",ele[29]);
-//                            maps.add(map);
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
@@ -801,26 +787,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     }
                     if (mode.equals("1")){
                         if (ele[3].equals("0002-1")&&three==0){
-//                            Map<String,Object> map = new LinkedHashMap<>();
-//                            map.put("类型","2-1");
-//                            map.put("A",ele[7]);
-//                            map.put("B",ele[8]);
-//                            map.put("C1",ele[9]);
-//                            map.put("C21",ele[28]);
-//                            maps.add(map);
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             three=1;
                         }else if(ele[3].equals("0002-2")&&four==0){
-//                            Map<String,Object> map = new LinkedHashMap<>();
-//                            map.put("类型","2-2");
-//                            map.put("A",ele[7]);
-//                            map.put("B",ele[8]);
-//                            map.put("C1",ele[9]);
-//                            map.put("C21",ele[28]);
-//                            maps.add(map);
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
@@ -833,7 +805,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         log.info("————————————————基恩士测试结束————————————————————————————————");
         String result = String.join(",",str);
         return result;
-
     }
 
 
