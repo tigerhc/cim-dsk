@@ -295,9 +295,9 @@ public class EdcDskLogHandler {
                     users = fabEquipmentService.findEmailALL("WBAlarm");
                     Map<String, Object> msgMap = new HashMap<>();
                     if ("34014801".equals(alarmCode)) {
-                        msgMap.put("ALARM_CODE", "フレームプッシュエラー");
+                        msgMap.put("ALARM_CODE", "框架推送错误");
                     } else {
-                        msgMap.put("ALARM_CODE", "連結機 搬送過負荷エラー");
+                        msgMap.put("ALARM_CODE", "联接机搬运过载错误");
                     }
                     msgMap.put("EQP_ID", eqpId);
                     List<String> param = new ArrayList<>();
