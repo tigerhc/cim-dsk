@@ -398,7 +398,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             fabLogService.info("", "", "find6GI", production,lotNo, "jiafuxing");//日志记录
             result = mesLotTrackService.find6GI(lotNo,production);
         }
-        fabLogService.info("", "", "find5GI.result", result, lotNo, "jiafuxing");//日志记录
+        fabLogService.info("", "", "findGI.result", result, lotNo, "jiafuxing");//日志记录
         return result;
     }
 

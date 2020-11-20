@@ -856,7 +856,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             log.info("6GI当前行数据 : "+lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
-            if(ele2.length==3){
+            if(ele2.length>=2){
                 if(ele2[1].equals(lotNo)&&ele2[0].equals(pro)){
                     for (int j = 7; j <ele.length ; j++) {
                         str.add(ele[j]);
