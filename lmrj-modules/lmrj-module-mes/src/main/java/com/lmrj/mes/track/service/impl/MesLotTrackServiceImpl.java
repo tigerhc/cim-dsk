@@ -272,13 +272,17 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
             }
             kongdongStr = StringUtil.join(kongdongVal, ",");
-            if(kongdongList.size()>0){
-                try {
-                    iMsMeasureKongdongService.insertBatch(kongdongList,10);
-                } catch (Exception e) {
-                    log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
-                    e.printStackTrace();
+            int count = 0;
+            try {
+                count = iMsMeasureKongdongService.findKongdongData(line,productionName,lotNo);
+                if(count==0){
+                    if(kongdongList.size()>0){
+                        iMsMeasureKongdongService.insertBatch(kongdongList,10);
+                    }
                 }
+            } catch (Exception e) {
+                log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
+                e.printStackTrace();
             }
         }
         if ("5GI".equals(line) ||"6GI".equals(line)) {
@@ -296,7 +300,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 msMeasureKongdong.setVoidRatio(Double.parseDouble(kongdongStr));
                 msMeasureKongdong.setProductionName(productionName);
                 msMeasureKongdong.setLotNo(lotNo);
-                iMsMeasureKongdongService.insert(msMeasureKongdong);
+                int count = iMsMeasureKongdongService.findKongdongData(line,productionName,lotNo);
+                if(count==0){
+                    iMsMeasureKongdongService.insert(msMeasureKongdong);
+                }
             } catch (Exception e) {
                 log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
                 e.printStackTrace();

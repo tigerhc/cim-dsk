@@ -15,5 +15,5 @@ import com.lmrj.mes.track.kongdong.entity.MsMeasureKongdong;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongdong> {
-
+    int findKongdongData(String lineNo, String productionName, String lotNo);
 }

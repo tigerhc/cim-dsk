@@ -3,6 +3,8 @@ package com.lmrj.mes.track.kongdong.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.mes.track.kongdong.entity.MsMeasureKongdong;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -17,5 +19,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
-
+    @Select("select count(*) from ms_measure_kongdong where line_no = #{lineNo} and production_name = #{productionName} and lot_no =#{lotNo}")
+    int findKongdongData(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo);
 }

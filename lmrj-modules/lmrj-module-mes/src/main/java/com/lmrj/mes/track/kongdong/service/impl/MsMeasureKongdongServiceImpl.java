@@ -11,4 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("msMeasureKongdongService")
 public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKongdongMapper, MsMeasureKongdong> implements IMsMeasureKongdongService {
 
+    @Override
+    public int findKongdongData(String lineNo, String productionName, String lotNo){
+        return baseMapper.findKongdongData(lineNo,productionName,lotNo);
+    }
 }
