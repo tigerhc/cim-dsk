@@ -338,7 +338,8 @@ public class EdcDskLogHandler {
                             datas.put("PARAM_CODE", eventParams);
                             datas.put("OLD_VAL", "");
                             datas.put("NEW_VAL", "");
-                            emailSendService.send(emails, "PARAM_CHANGE", datas);
+                            emailSendService.blockSend(emails,"PARAM_CHANGE",datas);
+                            //emailSendService.send(emails, "PARAM_CHANGE", datas);
                             break;
                         }
                     }
