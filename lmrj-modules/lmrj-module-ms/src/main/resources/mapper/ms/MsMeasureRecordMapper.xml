@@ -86,6 +86,9 @@
            <if test="productionNo!=null and productionNo!=''">
                and rcd.production_name=#{productionNo}
            </if>
+           <if test="detailOption!=null and detailOption!=''">
+               and row_name=#{detailOption}
+           </if>
            and dtl.item_value between dtl.limit_min  and dtl.limit_max
            GROUP BY rcd.lot_no
             order by dtl.create_date

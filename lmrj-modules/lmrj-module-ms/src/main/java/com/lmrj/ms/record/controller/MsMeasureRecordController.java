@@ -239,7 +239,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
      * @return 可以直接在echart中展示的重量数据
      */
     @RequestMapping(value = "/weightChart", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response weightChart(@RequestParam String productionNo,@RequestParam String lotNo,
+    public Response weightChart(@RequestParam String productionNo,@RequestParam String lotNo,@RequestParam String detailOption,
                                   @RequestParam String startTime,@RequestParam String endTime){
         if(StringUtil.isEmpty(startTime)&&!StringUtil.isEmpty(endTime)){
             return Response.error("请选择开始时间");
@@ -250,6 +250,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         Map<String, Object> param = new HashMap<>();
         param.put("productionNo",productionNo);
         param.put("lotNo", lotNo);
+        param.put("detailOption", detailOption);
         if(!StringUtil.isEmpty(startTime)){
             param.put("startTime",startTime);
             param.put("endTime",endTime);
