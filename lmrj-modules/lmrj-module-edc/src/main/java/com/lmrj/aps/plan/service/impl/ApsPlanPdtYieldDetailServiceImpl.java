@@ -54,7 +54,8 @@ public class ApsPlanPdtYieldDetailServiceImpl extends CommonServiceImpl<ApsPlanP
      */
     @Override
     public int findCurrentDayPlan(String productionNo,String planDate) {
-        return baseMapper.findCurrentDayPlan(productionNo, planDate);
+        Integer rs = baseMapper.findCurrentDayPlan(productionNo, planDate);
+        return rs==null?0:rs;
     }
 
 

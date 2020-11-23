@@ -36,7 +36,7 @@ public interface ApsPlanPdtYieldDetailMapper extends BaseMapper<ApsPlanPdtYieldD
 
     @Select("SELECT sum(plan_qty) FROM aps_plan_pdt_yield_detail " +
             "WHERE production_no=#{productionNo} AND plan_date=#{planDate}")
-    int findCurrentDayPlan(@Param("productionNo") String productionNo, @Param("planDate")  String planDate);
+    Integer findCurrentDayPlan(@Param("productionNo") String productionNo, @Param("planDate")  String planDate);
 
 
 }
