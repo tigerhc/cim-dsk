@@ -11,6 +11,8 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
+import com.lmrj.mes.track.kongdong.entity.MsMeasureKongdong;
+import com.lmrj.mes.track.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
@@ -30,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
 
 
 /**
@@ -61,7 +62,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IMesLotTrackService iMesLotTrackService;
     @Autowired
     IApsPlanPdtYieldService apsPlanPdtYieldService;
-
+    @Autowired
+    IMsMeasureKongdongService iMsMeasureKongdongService;
     /**
      * 按照eqp和line获取recipe
      * 当前line写死
@@ -239,6 +241,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         String kongdongStr="";
         if ("SIM".equals(line) || "SX".equals(line)) {
+            List<MsMeasureKongdong> kongdongList = new ArrayList<>();
             if(lotNoFile.size() == 1){
                 return "ERROR:  file quantity need > 1,but found " + lotNoFile.size() + " for " + lotNo;
             }
@@ -246,18 +249,37 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if("SX".equals(line)){
                 kongdongVal = new String[8];
             }
+            MsMeasureKongdong msMeasureKongdong = new MsMeasureKongdong();
             for (File file : lotNoFile) {
                 String[] fileNames = file.getName().split("-");
                 String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
                 String index = fileNames[fileNames.length - 1].replace(".bmp", "");
+                String type = file.getName().split("%-")[1].replace(".bmp","");
                 if(Integer.parseInt(index)>8){
                     kongdongVal[Integer.parseInt(index) - 9] = value;
                 }else{
                     kongdongVal[Integer.parseInt(index) - 1] = value;
                 }
+                try {
+                    msMeasureKongdong.setProductionName(productionName);
+                    msMeasureKongdong.setLineNo(line);
+                    msMeasureKongdong.setVoidRatio(Double.parseDouble(value));
+                    msMeasureKongdong.setLotNo(lotNo);
+                    msMeasureKongdong.setType(type);
+                    kongdongList.add(msMeasureKongdong);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             kongdongStr = StringUtil.join(kongdongVal, ",");
-
+            if(kongdongList.size()>0){
+                try {
+                    iMsMeasureKongdongService.insertBatch(kongdongList,10);
+                } catch (Exception e) {
+                    log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
+                    e.printStackTrace();
+                }
+            }
         }
         if ("5GI".equals(line) ||"6GI".equals(line)) {
             log.info("file name: {}", lotNoFile.get(0).getName());
@@ -266,6 +288,19 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             }
             String[] fileNames = lotNoFile.get(0).getName().split("%");
             kongdongStr = fileNames[0].split("-")[1].trim();
+
+            MsMeasureKongdong msMeasureKongdong = null;
+            try {
+                msMeasureKongdong = new MsMeasureKongdong();
+                msMeasureKongdong.setLineNo(line);
+                msMeasureKongdong.setVoidRatio(Double.parseDouble(kongdongStr));
+                msMeasureKongdong.setProductionName(productionName);
+                msMeasureKongdong.setLotNo(lotNo);
+                iMsMeasureKongdongService.insert(msMeasureKongdong);
+            } catch (Exception e) {
+                log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
+                e.printStackTrace();
+            }
         }
         return kongdongStr;
     }
