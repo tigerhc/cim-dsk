@@ -249,18 +249,18 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if("SX".equals(line)){
                 kongdongVal = new String[8];
             }
-            MsMeasureKongdong msMeasureKongdong = new MsMeasureKongdong();
             for (File file : lotNoFile) {
                 String[] fileNames = file.getName().split("-");
                 String value = fileNames[0].replace(lotNo, "").replace("%", "").trim();
                 String index = fileNames[fileNames.length - 1].replace(".bmp", "");
-                String type = file.getName().split("%-")[1].replace(".bmp","");
                 if(Integer.parseInt(index)>8){
                     kongdongVal[Integer.parseInt(index) - 9] = value;
                 }else{
                     kongdongVal[Integer.parseInt(index) - 1] = value;
                 }
                 try {
+                    MsMeasureKongdong msMeasureKongdong = new MsMeasureKongdong();
+                    String type = file.getName().split("%-")[1].replace(".bmp","");
                     msMeasureKongdong.setProductionName(productionName);
                     msMeasureKongdong.setLineNo(line);
                     msMeasureKongdong.setVoidRatio(Double.parseDouble(value));
@@ -271,19 +271,19 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     e.printStackTrace();
                 }
             }
-            kongdongStr = StringUtil.join(kongdongVal, ",");
-            int count = 0;
+
             try {
-                count = iMsMeasureKongdongService.findKongdongData(line,productionName,lotNo);
+                int count = iMsMeasureKongdongService.findKongdongData(line,productionName,lotNo);
                 if(count==0){
                     if(kongdongList.size()>0){
-                        iMsMeasureKongdongService.insertBatch(kongdongList,10);
+                        iMsMeasureKongdongService.insertBatch(kongdongList,100);
                     }
                 }
             } catch (Exception e) {
                 log.error("空洞数据插入失败"+line+"  "+ productionName +"  "+lotNo);
                 e.printStackTrace();
             }
+            kongdongStr = StringUtil.join(kongdongVal, ",");
         }
         if ("5GI".equals(line) ||"6GI".equals(line)) {
             log.info("file name: {}", lotNoFile.get(0).getName());

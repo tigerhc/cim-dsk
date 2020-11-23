@@ -20,5 +20,5 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
     @Select("select count(*) from ms_measure_kongdong where line_no = #{lineNo} and production_name = #{productionName} and lot_no =#{lotNo}")
-    int findKongdongData(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo);
+    Integer findKongdongData(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo);
 }

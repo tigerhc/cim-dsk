@@ -13,6 +13,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
 
     @Override
     public int findKongdongData(String lineNo, String productionName, String lotNo){
-        return baseMapper.findKongdongData(lineNo,productionName,lotNo);
+        Integer rs = baseMapper.findKongdongData(lineNo,productionName,lotNo);
+        return rs==null?0:rs;
     }
 }
