@@ -1,4 +1,4 @@
-package com.lmrj.mes.track.kongdong.entity;
+package com.lmrj.mes.kongdong.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;

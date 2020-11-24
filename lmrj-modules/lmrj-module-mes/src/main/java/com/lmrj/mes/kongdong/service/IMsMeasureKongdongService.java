@@ -1,7 +1,7 @@
-package com.lmrj.mes.track.kongdong.service;
+package com.lmrj.mes.kongdong.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
-import com.lmrj.mes.track.kongdong.entity.MsMeasureKongdong;
+import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com

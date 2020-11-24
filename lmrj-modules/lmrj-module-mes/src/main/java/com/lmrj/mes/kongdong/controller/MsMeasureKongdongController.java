@@ -1,10 +1,10 @@
-package com.lmrj.mes.track.kongdong.controller;
+package com.lmrj.mes.kongdong.controller;
 
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
-import com.lmrj.mes.track.kongdong.entity.MsMeasureKongdong;
+import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
- * @package com.lmrj.mes.track.kongdong.controller
+ * @package com.lmrj.mes.kongdong.controller
  * @title: ms_measure_kogndong控制器
  * @description: ms_measure_kogndong控制器
  * @author: 张伟江
