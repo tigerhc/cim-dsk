@@ -3,6 +3,9 @@ package com.lmrj.mes.kongdong.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -16,4 +19,8 @@ import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 */
 public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongdong> {
     int findKongdongData(String lineNo, String productionName, String lotNo);
+
+    List<MsMeasureKongdong> saveBeforeFile(int index);
+
+    List<MsMeasureKongdong> getKongdong(Map<String, Object> param);
 }

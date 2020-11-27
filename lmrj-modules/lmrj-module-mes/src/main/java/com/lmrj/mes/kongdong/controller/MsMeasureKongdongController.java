@@ -8,7 +8,6 @@ import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -27,5 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiresPathPermission("ms:msmeasurekongdong")
 @LogAspectj(title = "ms_measure_kongdong")
 public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKongdong> {
+//    @Autowired
+//    private IMsMeasureKongdongService kongdongService;
 
+//    @RequestMapping(value = "saveBeforeKongdong",method = {RequestMethod.GET, RequestMethod.POST})
+//    public Response saveBeforeKongdong(@RequestParam("filePath") int index){
+//        Response rs = Response.ok();
+//        rs.putList("data",kongdongService.saveBeforeFile(index));
+//        return rs;
+//    }
 }

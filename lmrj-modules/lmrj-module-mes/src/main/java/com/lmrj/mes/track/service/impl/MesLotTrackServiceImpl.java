@@ -591,22 +591,26 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return baseMapper.findLotsByTime(eqpId,startTime,endTime);
     }
     @Override
-    public Map<String, Object> chartKongDong(String proName, String startDate, String endDate) {
+    public Map<String, Object> chartKongDong(String lineNo, String proName, String startDate, String endDate) {
         try {
-//            String productionName = apsPlanPdtYieldService.findProductionName(productionNo);
-            String productionName = baseMapper.findProName(proName);
-            String line = productionName.split("-")[0].replace("J.","");
-            if(line.length()>3){
-                line = line.substring(0,3);
-            }
-            if(line.startsWith("SX")){
-                line = "SX";
-            }
-//            String kongdongDir = "d:\\backup\\"+line+"\\" + productionName.replace("J.",""); //本地测试
-            String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
-            log.info(kongdongDir);
-            List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
-            return _handleFileNameG(files, productionName.replace("J.",""));
+//            String productionName = baseMapper.findProName(proName);
+//            String line = productionName.split("-")[0].replace("J.","");
+//            if(line.length()>3){
+//                line = line.substring(0,3);
+//            }
+//            if(line.startsWith("SX")){
+//                line = "SX";
+//            }
+//            String kongdongDir = "D:\\DSK1\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率\\"+line+"\\" + productionName.replace("J.","");
+//            log.info(kongdongDir);
+//            List<Map<String, Object>> files = FileUtils.getFileInfos(kongdongDir, startDate, endDate);
+//            return _handleFileNameG(files, productionName.replace("J.",""));
+            Map<String, Object> param = new HashMap<>();
+            param.put("productionName", proName);
+            param.put("startTime", startDate);
+            param.put("endTime", endDate);
+            List<MsMeasureKongdong> data = iMsMeasureKongdongService.getKongdong(param);
+            return _handleFileNameG(data, lineNo);
         }catch (Exception e){
             e.printStackTrace();
             log.error("MesLotTrackServiceImpl_chartKongDong:error proName:"+proName);
@@ -647,85 +651,45 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return null;
     }
 
-    private Map<String, Object> _handleFileNameG(List<Map<String, Object>> files, String line){
+    private Map<String, Object> _handleFileNameG(List<MsMeasureKongdong> data, String line){
         Map<String, Object> chartOption = new HashMap<>();
-        Map<String, Object> allLine = new HashMap<>();
-        if(files!=null && files.size()>0){
-            List<String> xaxis = new ArrayList<>();
-            for(Map<String, Object> item : files){
-                String fileName = MapUtils.getString(item, "fileName");
-                if(_chkFileNameLine(fileName, line)){
-                    String kongdongVal = "";
-                    String fileLotNo = "";
-                    String fileNo = "";
-                    if(line.contains("5GI")||line.contains("6GI")){
-                        kongdongVal = fileName.substring(fileName.indexOf("-")+1,fileName.indexOf("%"));
-                        fileLotNo = fileName.substring(0,fileName.indexOf("-"));
-                        fileNo = "IGBT";
-                    }else{
-                        kongdongVal = fileName.substring(fileName.indexOf(" ")+1,fileName.indexOf("%"));
-                        fileLotNo = fileName.substring(0,fileName.indexOf(" "));
-                        fileNo = fileName.substring(fileName.indexOf("-")+1,fileName.lastIndexOf("."));
-                    }
-                    String fileData = MapUtils.getString(allLine, fileNo);
-                    fileData = fileData + "," +kongdongVal;
-                    allLine.put(fileNo,fileData);
-
-                    boolean chkFlag = true;
-                    if(xaxis.size()>0){
-                        for(String chkLotNo : xaxis){
-                            if(chkLotNo.equals(fileLotNo)){
-                                chkFlag = false;
-                                break;
-                            }
-                        }
-                    }
-                    if(chkFlag){
-                        xaxis.add(fileLotNo);
-                    }
-                }else{
-                    log.warn("MesLotTrackServiceImpl__handleFileName:fileName is error:"+fileName);
-                }
-            }
+        if(data!=null && data.size()>0){
             List<Map<String, Object>> allLmt = baseMapper.findkongdongConfig(line);
-            List<Map<String, Object>> res = new ArrayList<>();
-            List<String> legend = new ArrayList<>();
-            int lineLength = 0;
-            for(String key : allLine.keySet()){
-                String datas = MapUtils.getString(allLine, key);
-                datas = datas.substring(5);
-                Map<String, Object> lineItem = new HashMap<>();
-                lineItem.put("type", "line");
-                lineItem.put("name", key);
-                List<Double> lineDate = str2Double(datas.split(","));
-                if(lineLength<lineDate.size()){
-                    lineLength = lineDate.size();
+            chartOption.put("Lmt",allLmt);
+            Map<String, String> series = new HashMap<>();//type, double,double,
+            List<String> xasix = new ArrayList<>();
+            String asixStr = "";
+            for(MsMeasureKongdong item : data){
+                if(!asixStr.equals(item.getLotNo())){
+                    xasix.add(item.getLotNo());
+                    asixStr=item.getLotNo();
                 }
-                lineItem.put("data",lineDate);
-                res.add(lineItem);
+                String voidRatio = MapUtils.getString(series, item.getType());
+                voidRatio = voidRatio==null ? "":voidRatio;
+                series.put(item.getType(), voidRatio + ","+item.getVoidRatio());
+            }
+            Map<String, Object> seriesItem = new HashMap<>();
+            List<String> legend = new ArrayList<>();
+            for(String key : series.keySet()){
+                String doubleRatioStr = MapUtils.getString(series, key);
+                doubleRatioStr = doubleRatioStr.substring(1);//删除最开头的逗号
+                String[] doubleRatio = doubleRatioStr.split(",");
+                List<Double> douItem = new ArrayList<>();
+                for(String d : doubleRatio){
+                    if(StringUtil.isEmpty(d)){
+                        douItem.add(null);
+                    }else{
+                        douItem.add(Double.parseDouble(d));
+                    }
+                }
+                seriesItem.put(key, douItem);
                 legend.add(key);
             }
-            if(allLmt!=null && allLmt.size()>0){
-                for(Map<String, Object> config: allLmt){
-                    Map<String, Object> lmtItem = new HashMap<>();
-                    lmtItem.put("type", "line");
-                    lmtItem.put("name", MapUtils.getString(config, "lineType")+"_lmt");
-                    List<Double> list = new ArrayList<>();
-                    for(int i=0; i<lineLength; i++){
-                        list.add(MapUtils.getDoubleValue(config, "heightLmt"));
-                    }
-                    lmtItem.put("data", list);
-                    res.add(lmtItem);
-                    legend.add(MapUtils.getString(config, "lineType")+"_lmt");
-                }
-            }
-
-            chartOption.put("series",res);
-            chartOption.put("xAxis", xaxis);
+            chartOption.put("data", seriesItem);
+            chartOption.put("xAxis",xasix);
             chartOption.put("legend",legend);
-            return chartOption;
         }
-        return null;
+        return chartOption;
     }
 
     private List<Map<String, Object>> _handleFileName(List<Map<String, Object>> files, String lotNo, String line){

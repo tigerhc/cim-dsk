@@ -6,6 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -21,4 +24,6 @@ import org.apache.ibatis.annotations.Select;
 public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
     @Select("select count(*) from ms_measure_kongdong where line_no = #{lineNo} and production_name = #{productionName} and lot_no =#{lotNo}")
     Integer findKongdongData(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo);
+
+    List<MsMeasureKongdong> getKongdong(Map<String, Object> param);
 }
