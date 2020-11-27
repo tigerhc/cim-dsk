@@ -261,6 +261,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 try {
                     MsMeasureKongdong msMeasureKongdong = new MsMeasureKongdong();
                     String type = file.getName().split("%-")[1].replace(".bmp","");
+                    msMeasureKongdong.setProductionNo(productionNo);
                     msMeasureKongdong.setProductionName(productionName);
                     msMeasureKongdong.setLineNo(line);
                     msMeasureKongdong.setVoidRatio(Double.parseDouble(value));
@@ -298,6 +299,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 msMeasureKongdong = new MsMeasureKongdong();
                 msMeasureKongdong.setLineNo(line);
                 msMeasureKongdong.setVoidRatio(Double.parseDouble(kongdongStr));
+                msMeasureKongdong.setProductionNo(productionNo);
                 msMeasureKongdong.setProductionName(productionName);
                 msMeasureKongdong.setLotNo(lotNo);
                 int count = iMsMeasureKongdongService.findKongdongData(line,productionName,lotNo);
