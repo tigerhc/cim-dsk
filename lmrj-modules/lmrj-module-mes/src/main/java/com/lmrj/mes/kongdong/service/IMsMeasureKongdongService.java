@@ -23,4 +23,6 @@ public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongd
     List<MsMeasureKongdong> saveBeforeFile(int index);
 
     List<MsMeasureKongdong> getKongdong(Map<String, Object> param);
+
+    Map<String, Object> kongdongChart(Map<String, Object> param);
 }

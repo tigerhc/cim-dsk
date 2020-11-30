@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,6 +128,47 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     @Override
     public List<MsMeasureKongdong> getKongdong(Map<String, Object> param) {
         return baseMapper.getKongdong(param);
+    }
+
+    @Override
+    public Map<String, Object> kongdongChart(Map<String, Object> param) {
+        List<String> legends = baseMapper.getLegend(param);
+        List<Map<String, Object>> series = new ArrayList<>();
+        List<Map<String, Double>> configLine = baseMapper.getConfig(MapUtils.getString(param, "productionName"));
+        List<String> xasix = baseMapper.getXasix(param);
+        int dataLength = 0;
+        if(legends.size()>0){
+            for(String legend : legends){
+                Map<String, Object> lineItem = new HashMap<>();
+                lineItem.put("type", "line");
+                lineItem.put("name", legend);
+                param.put("lineType", legend);
+                List<Double> data = baseMapper.getData(param);
+                dataLength = data.size();
+                lineItem.put("data", data);
+                series.add(lineItem);
+            }
+        }
+        if(configLine.size()>0){
+            for(Map<String, Double> configItem : configLine){
+                Map<String, Object> lineItem = new HashMap<>();
+                lineItem.put("type", "line");
+                lineItem.put("name", MapUtils.getString(configItem, "lineType"));
+                legends.add(MapUtils.getString(configItem, "lineType"));
+                List<Double> data = new ArrayList<>();
+                for(int i=0; i<dataLength; i++){
+                    data.add(MapUtils.getDouble(configItem, "lmt"));
+                }
+                lineItem.put("data", data);
+                lineItem.put("color", "red");
+                series.add(lineItem);
+            }
+        }
+        Map<String, Object> rs = new HashMap<>();
+        rs.put("legend",legends);
+        rs.put("series",series);
+        rs.put("xAxis",xasix);
+        return rs;
     }
 
     private boolean _chkFileNameLine(String fileName){

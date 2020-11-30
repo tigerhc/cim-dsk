@@ -17,4 +17,40 @@
         </if>
         order by lot_no
     </select>
+
+    <select id="getLegend" resultType="java.lang.String" parameterType="java.util.Map">
+        select distinct type as 'lineType' from ms_measure_kongdong where production_name=concat('J.',#{productionName})
+        <if test="startTime!=null and startTime!=''">
+            and create_date>#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and create_date &lt; #{endTime}
+        </if>
+    </select>
+
+    <select id="getData" parameterType="java.util.Map" resultType="java.lang.Double">
+        select void_ratio from ms_measure_kongdong where production_name=concat('J.',#{productionName}) and type=#{lineType}
+        <if test="startTime!=null and startTime!=''">
+            and create_date>#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and create_date &lt; #{endTime}
+        </if>
+        order by lot_no
+    </select>
+
+    <select id="getConfig" parameterType="java.lang.String" resultType="java.util.Map">
+        select line_type as "lineType", height_lmt as "lmt" from mes_kongdong_config where eqp_id=#{productionName}
+    </select>
+
+    <select id="getXasix" parameterType="java.util.Map" resultType="java.lang.String">
+        select distinct lot_no from ms_measure_kongdong where production_name=concat('J.',#{productionName})
+        <if test="startTime!=null and startTime!=''">
+            and create_date>#{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            and create_date &lt; #{endTime}
+        </if>
+        order by lot_no
+    </select>
 </mapper>
