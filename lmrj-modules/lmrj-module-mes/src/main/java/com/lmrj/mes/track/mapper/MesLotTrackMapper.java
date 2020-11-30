@@ -62,7 +62,7 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
             "where production_name like concat('%',#{proName},'%') ORDER BY create_date desc limit 1")
     String findProName(@Param("proName") String proName);
 
-    @Select("SELECT DISTINCT production_name from aps_plan_pdt_yield " +
+    @Select("SELECT DISTINCT production_name from ms_measure_kongdong " +
             "where production_name like concat('%',#{proName},'%') ORDER BY create_date desc")
     List<String> findAllProName(@Param("proName") String proName);
 

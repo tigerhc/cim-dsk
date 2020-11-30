@@ -144,7 +144,9 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 lineItem.put("name", legend);
                 param.put("lineType", legend);
                 List<Double> data = baseMapper.getData(param);
-                dataLength = data.size();
+                if(data.size()>dataLength){
+                    dataLength = data.size();
+                }
                 lineItem.put("data", data);
                 series.add(lineItem);
             }
