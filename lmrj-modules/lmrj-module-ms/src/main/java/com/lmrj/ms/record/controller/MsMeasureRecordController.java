@@ -185,7 +185,6 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         }
     }
 
-
     @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
     public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
         String title = "量测信息详情";
@@ -220,7 +219,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
                     dataList.add(data);
                 }
             }
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测详细信息","量测详细信息"),keyList,dataList);
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测详细信息","量测详细信息", ExcelType.XSSF),keyList,dataList);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             book.write(bos);
             byte[] bytes = bos.toByteArray();
