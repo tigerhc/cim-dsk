@@ -25,4 +25,6 @@ public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongd
     List<MsMeasureKongdong> getKongdong(Map<String, Object> param);
 
     Map<String, Object> kongdongChart(Map<String, Object> param);
+
+    Map<String, Object> kongDongBar(Map<String, Object> param);
 }
