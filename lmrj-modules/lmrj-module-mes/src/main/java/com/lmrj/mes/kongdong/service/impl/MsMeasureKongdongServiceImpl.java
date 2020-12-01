@@ -147,7 +147,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 for(String line : legends){
                     boolean findFlag = true;
                     for(Map<String, Object>  data : datas){
-                        if(line.equals(MapUtils.getString(data,"lineType"))){
+                        if(line.equals(MapUtils.getString(data,"lineType")) && asix.equals(MapUtils.getString(data, "lotNo"))){
                             LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
                             findFlag = false;
                         }
@@ -173,7 +173,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 Map<String, Object> lineItem = new HashMap<>();
                 lineItem.put("type", "line");
                 lineItem.put("name", "limit-"+MapUtils.getString(configItem, "lineType"));
-                legends.add(MapUtils.getString(configItem, "lineType"));
+                legends.add("limit-"+MapUtils.getString(configItem, "lineType"));
                 List<Double> data = new ArrayList<>();
                 for(int i=0; i<xasix.size(); i++){
                     data.add(MapUtils.getDouble(configItem, "lmt"));
