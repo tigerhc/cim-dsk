@@ -28,8 +28,9 @@
         </if>
     </select>
 
-    <select id="getData" parameterType="java.util.Map" resultType="java.lang.Double">
-        select void_ratio from ms_measure_kongdong where production_name=concat('J.',#{productionName}) and type=#{lineType}
+    <select id="getData" parameterType="java.util.Map" resultType="java.util.Map">
+        select void_ratio as "voidRatio", lot_no as "lotNo", type as "lineType"
+        from ms_measure_kongdong where production_name=concat('J.',#{productionName})
         <if test="startTime!=null and startTime!=''">
             and create_date>#{startTime}
         </if>
@@ -37,6 +38,11 @@
             and create_date &lt; #{endTime}
         </if>
         order by lot_no
+    </select>
+    <select id="getBar" parameterType="java.util.Map" resultType="java.util.Map">
+        select void_ratio as "voidRatio", lot_no as "lotNo", type as "lineType"
+        from ms_measure_kongdong where production_name=concat('J.',#{productionName})
+        and lot_no=#{lotNo}
     </select>
 
     <select id="getConfig" parameterType="java.lang.String" resultType="java.util.Map">

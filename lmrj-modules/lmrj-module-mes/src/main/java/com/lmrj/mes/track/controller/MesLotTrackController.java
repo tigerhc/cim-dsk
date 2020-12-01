@@ -346,15 +346,16 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         return response;
     }
 
-    @RequestMapping(value = "/chartKongDong", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response chartKongDong(@RequestParam String productionNo,@RequestParam String lineNo,
-                                  @RequestParam String startDate, @RequestParam String endDate) {
-        log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
-        Map<String, Object> data = mesLotTrackService.chartKongDong(lineNo, productionNo, startDate, endDate);
-        Response rs = Response.ok();
-        rs.put("kongdong", data);
-        return rs;
-    }
+    //2020-11-30
+//    @RequestMapping(value = "/chartKongDong", method = {RequestMethod.GET, RequestMethod.POST})
+//    public Response chartKongDong(@RequestParam String productionNo,@RequestParam String lineNo,
+//                                  @RequestParam String startDate, @RequestParam String endDate) {
+//        log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
+//        Map<String, Object> data = mesLotTrackService.chartKongDong(lineNo, productionNo, startDate, endDate);
+//        Response rs = Response.ok();
+//        rs.put("kongdong", data);
+//        return rs;
+//    }
 
     @RequestMapping(value = "getAllProName", method = {RequestMethod.GET, RequestMethod.POST})
     public Response getAllProName(@RequestParam String productionNo) {

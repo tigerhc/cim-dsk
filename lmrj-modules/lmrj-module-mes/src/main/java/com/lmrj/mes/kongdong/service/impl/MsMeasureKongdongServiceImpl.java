@@ -133,43 +133,68 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     @Override
     public Map<String, Object> kongdongChart(Map<String, Object> param) {
         List<String> legends = baseMapper.getLegend(param);
-        List<Map<String, Object>> series = new ArrayList<>();
         List<Map<String, Double>> configLine = baseMapper.getConfig(MapUtils.getString(param, "productionName"));
         List<String> xasix = baseMapper.getXasix(param);
-        int dataLength = 0;
+        Map<String, List<Double>> LinesData = new HashMap<>();
+        //初始化series 各个线的数组
         if(legends.size()>0){
             for(String legend : legends){
-                Map<String, Object> lineItem = new HashMap<>();
-                lineItem.put("type", "line");
-                lineItem.put("name", legend);
-                param.put("lineType", legend);
-                List<Double> data = baseMapper.getData(param);
-                if(data.size()>dataLength){
-                    dataLength = data.size();
+                LinesData.put(legend, new ArrayList<>());
+            }
+            List<Map<String, Object>> datas = baseMapper.getData(param);
+            for(String asix : xasix){
+                //根据横轴坐标补充该坐标上所有线对应的值，没有补空
+                for(String line : legends){
+                    boolean findFlag = true;
+                    for(Map<String, Object>  data : datas){
+                        if(line.equals(MapUtils.getString(data,"lineType"))){
+                            LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
+                            findFlag = false;
+                        }
+                    }
+                    if(findFlag){
+                        LinesData.get(line).add(null);
+                    }
                 }
-                lineItem.put("data", data);
-                series.add(lineItem);
             }
         }
+        //添加数据对应的折线
+        List<Object> seriesArr = new ArrayList<>();
+        for (String legend : legends){
+            Map<String,  Object> lineItem = new HashMap<>();
+            lineItem.put("name", legend);
+            lineItem.put("type", "line");
+            lineItem.put("data", LinesData.get(legend));
+            seriesArr.add(lineItem);
+        }
+        //添加上限对应的折线
         if(configLine.size()>0){
             for(Map<String, Double> configItem : configLine){
                 Map<String, Object> lineItem = new HashMap<>();
                 lineItem.put("type", "line");
-                lineItem.put("name", MapUtils.getString(configItem, "lineType"));
+                lineItem.put("name", "limit-"+MapUtils.getString(configItem, "lineType"));
                 legends.add(MapUtils.getString(configItem, "lineType"));
                 List<Double> data = new ArrayList<>();
-                for(int i=0; i<dataLength; i++){
+                for(int i=0; i<xasix.size(); i++){
                     data.add(MapUtils.getDouble(configItem, "lmt"));
                 }
                 lineItem.put("data", data);
                 lineItem.put("color", "red");
-                series.add(lineItem);
+                seriesArr.add(lineItem);
             }
         }
         Map<String, Object> rs = new HashMap<>();
         rs.put("legend",legends);
-        rs.put("series",series);
+        rs.put("series",seriesArr);
         rs.put("xAxis",xasix);
+        return rs;
+    }
+
+    @Override
+    public Map<String, Object> kongDongBar(Map<String, Object> param) {
+        Map<String, Object> rs = new HashMap<>();
+        rs.put("barData", baseMapper.getBar(param));
+        rs.put("configData", baseMapper.getConfig(MapUtils.getString(param, "productionName")));
         return rs;
     }
 

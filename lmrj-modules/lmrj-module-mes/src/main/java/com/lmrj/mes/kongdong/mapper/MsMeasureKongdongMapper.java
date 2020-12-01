@@ -29,7 +29,9 @@ public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
 
     List<String> getLegend(Map<String, Object> param);
 
-    List<Double> getData(Map<String, Object> param);
+    List<Map<String,Object>> getData(Map<String, Object> param);
+
+    List<Map<String,Object>> getBar(Map<String, Object> param);
 
     List<Map<String, Double>> getConfig(String productionName);
 

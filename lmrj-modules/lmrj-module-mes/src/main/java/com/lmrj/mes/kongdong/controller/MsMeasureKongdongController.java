@@ -54,4 +54,14 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
         rs.put("data",kongdongService.kongdongChart(param));
         return rs;
     }
+
+    @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response kongDongBar(@RequestParam String productionName, @RequestParam String lotNo) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("productionName", productionName.replace("J.", ""));
+        param.put("lotNo", lotNo);
+        Response rs = Response.ok();
+        rs.put("kongdong", kongdongService.kongDongBar(param));
+        return rs;
+    }
 }
