@@ -9,10 +9,11 @@ import com.lmrj.core.entity.MesResult;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
-import com.lmrj.mes.track.entity.MesLotTrack;
-import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
+import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
+import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
@@ -261,6 +262,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 try {
                     MsMeasureKongdong msMeasureKongdong = new MsMeasureKongdong();
                     String type = file.getName().split("%-")[1].replace(".bmp","");
+                    if(MsMeasureKongdongServiceImpl.typeMap.get(type)!=null){
+                        type = MsMeasureKongdongServiceImpl.typeMap.get(type);
+                    }
                     msMeasureKongdong.setProductionNo(productionNo);
                     msMeasureKongdong.setProductionName(productionName);
                     msMeasureKongdong.setLineNo(line);

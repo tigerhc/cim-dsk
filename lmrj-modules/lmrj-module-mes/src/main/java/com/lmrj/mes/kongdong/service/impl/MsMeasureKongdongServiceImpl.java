@@ -20,7 +20,17 @@ import java.util.Map;
 @Service("msMeasureKongdongService")
 @Slf4j
 public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKongdongMapper, MsMeasureKongdong> implements IMsMeasureKongdongService {
-
+    static public Map<String,String> typeMap= new HashMap<>();
+    static {
+        typeMap.put("DI-9","DI-1");
+        typeMap.put("DI-10","DI-2");
+        typeMap.put("MOS-11","MOS-3");
+        typeMap.put("MOS-12","MOS-4");
+        typeMap.put("MOS-13","MOS-5");
+        typeMap.put("JP-14","JP-6");
+        typeMap.put("MIC-D-15","MIC-D-7");
+        typeMap.put("MIC-16","MIC-8");
+    }
     @Override
     public int findKongdongData(String lineNo, String productionName, String lotNo){
         Integer rs = baseMapper.findKongdongData(lineNo,productionName,lotNo);
