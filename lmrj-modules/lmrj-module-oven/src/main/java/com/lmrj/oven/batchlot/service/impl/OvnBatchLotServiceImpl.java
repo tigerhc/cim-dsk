@@ -10,6 +10,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.mapper.OvnBatchLotMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
@@ -227,7 +228,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     @Override
     public List<Map> findDetailBytime(String beginTime, String endTime,String eqpId) {
         int count = baseMapper.findCountBytime(eqpId,  beginTime,  endTime);
-        if(count>100000){
+        if(count>1000000){
             return null;
         }else{
             List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
@@ -240,7 +241,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if (timeFlag > 24*3600*1000*7){
+            if (timeFlag > 24*3600*1000*7&& !ObjectUtil.isNullOrEmpty(detail.get(0).get("other_temps_value"))){
                 int flag = 0;
             List<Map> result =new ArrayList<>();
             Map<String,Object> temp = new HashMap<>();
