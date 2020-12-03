@@ -134,19 +134,22 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 EdcEqpState firstData = new EdcEqpState();
                 //当天0点前最后一条数据
                 EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
-                lastData.setEndTime(startTime);
-                Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
-                lastData.setStateTimes(state);
-                this.updateById(lastData);
-                firstData.setStartTime(startTime);
-                firstData.setEndTime(eqpStateList.get(0).getStartTime());
-                Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
-                firstData.setStateTimes(state1);
-                //把第一条数据的状态值设为当天0点前最后一条数据的状态
-                firstData.setState(lastData.getState());
-                firstData.setEqpId(eqpId);
-                this.insert(firstData);
-                log.info("插入记录成功");
+                if(lastData!=null){
+                    lastData.setEndTime(startTime);
+                    Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
+                    lastData.setStateTimes(state);
+                    this.updateById(lastData);
+                    firstData.setStartTime(startTime);
+                    firstData.setEndTime(eqpStateList.get(0).getStartTime());
+                    Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
+                    firstData.setStateTimes(state1);
+                    //把第一条数据的状态值设为当天0点前最后一条数据的状态
+                    firstData.setState(lastData.getState());
+                    firstData.setEqpId(eqpId);
+                    this.insert(firstData);
+                    log.info("插入记录成功");
+                }
+
             }
             EdcEqpState lastEdcEqpState = eqpStateList.get(eqpStateList.size() - 1);
             if (lastEdcEqpState.getEndTime() != null && lastEdcEqpState.getEndTime().after(endTime)) {
