@@ -1,5 +1,6 @@
 package com.lmrj.dsk.edc.handler;
 
+import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
@@ -20,6 +21,10 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.ArrayUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -30,6 +35,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -63,6 +69,10 @@ public class EdcSecsLogHandler {
     private AmqpTemplate rabbitTemplate;
     @Autowired
     IEdcEqpStateService iEdcEqpStateService;
+    @Autowired
+    IOvnBatchLotService iOvnBatchLotService;
+    @Autowired
+    IOvnBatchLotParamService iOvnBatchLotParamService;
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -158,6 +168,35 @@ public class EdcSecsLogHandler {
             productionLog.setDuration(duration);
             log.info("持续时间"+productionLog.getDuration());
             edcDskLogProductionService.insert(productionLog);
+
+            //生成TRM温度数据
+            List<OvnBatchLotParam> paramList = new ArrayList<>();
+            Date stime = pro.getStartTime();
+            OvnBatchLot ovnBatchLot = new OvnBatchLot();
+            ovnBatchLot.setId(UUIDUtil.createUUID());
+            ovnBatchLot.setEqpId(eqpId);
+            ovnBatchLot.setStartTime(stime);
+            ovnBatchLot.setEndTime(pro.getEndTime());
+            ovnBatchLot.setOtherTempsTitle("温度");
+            String[] a = pro.getParamValue().split(",");
+            int j = 1;
+            for (int i = 3; i < a.length-1; i++) {
+                Long create =  stime.getTime()+(1000*j++);
+                Date createTime = new Date(create);
+                String temp = a[i];
+                OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
+                ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
+                ovnBatchLotParam.setTempPv(temp);
+                ovnBatchLotParam.setCreateDate(createTime);
+                ovnBatchLotParam.setTempMax("0");
+                ovnBatchLotParam.setTempMin("0");
+                ovnBatchLotParam.setTempSp("0");
+                paramList.add(ovnBatchLotParam);
+            }
+            //ovnBatchLot.setOvnBatchLotParamList(paramList);
+            iOvnBatchLotService.insert(ovnBatchLot);
+            iOvnBatchLotParamService.insertBatch(paramList,25);
+
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
                 mesLotTrack.setLotYieldEqp(proList.size() * 24);
