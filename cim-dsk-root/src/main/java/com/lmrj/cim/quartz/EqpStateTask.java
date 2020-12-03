@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -55,18 +56,15 @@ public class EqpStateTask {
      * 每天八点执行
      */
     //@Scheduled(cron = "0 0 8 * * ?")
-    public void  fixeqpState(){
-        Date endTime = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND,0);
-        endTime = cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
-        Date startTime = cal.getTime();
+    public void  fixeqpState(Date startTime , Date endTime){
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-        List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+        //List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+        List<String> eqpIdList= new ArrayList<>();
+        eqpIdList.add("SIM-WB-3A");
+        eqpIdList.add("SIM-WB-4B");
+        eqpIdList.add("SIM-WB-5A");
+        eqpIdList.add("SIM-WB-5B");
+        eqpIdList.add("SIM-WB-6A");
         for (String eqpId : eqpIdList) {
             edcEqpStateServiceImpl.syncOldEqpSate(startTime, endTime,eqpId);
         }

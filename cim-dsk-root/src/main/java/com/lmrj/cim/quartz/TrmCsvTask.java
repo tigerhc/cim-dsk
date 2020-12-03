@@ -39,13 +39,32 @@ public class TrmCsvTask {
         String eqpIds[] = {"SIM-TRM1","SIM-TRM2"};
         for (String eqpId : eqpIds) {
             List<MesLotTrack> lotTrackList = mesLotTrackService.findLotsByTime(eqpId,startTime,endTime);
-            Boolean flag = edcDskLogProductionService.exportProductionFile(lotTrackList,"PRODUCTION");
-            if(flag){
+            Boolean proFlag = edcDskLogProductionService.exportTrmProductionFile(lotTrackList,"PRODUCTION");
+            if(proFlag){
                 log.info("TRM Production日志生成完毕");
             }
-            Boolean flag1 = iEdcDskLogOperationService.exportOperationFile(eqpId,startTime,endTime);
-            if(flag1){
+            Boolean operFlag = iEdcDskLogOperationService.exportTrmOperationFile(eqpId,startTime,endTime);
+            if(operFlag){
                 log.info("TRM Operation日志生成完毕");
+            }
+            Boolean tempFlag = edcDskLogProductionService.exportTrmTempHlogFile(startTime,endTime,eqpId);
+            if(tempFlag){
+                log.info("TRM TempHlog日志生成完毕");
+            }
+        }
+    }
+    public void tempTest(Date startTime , Date endTime){
+        log.info("TRM日志生成定时任务开始执行");
+        String eqpIds[] = {"SIM-TRM1","SIM-TRM2"};
+        for (String eqpId : eqpIds) {
+            List<MesLotTrack> lotTrackList = mesLotTrackService.findLotsByTime(eqpId,startTime,endTime);
+            Boolean proFlag = edcDskLogProductionService.exportTrmProductionFile(lotTrackList,"PRODUCTION");
+            if(proFlag){
+                log.info("TRM Production日志生成完毕");
+            }
+            Boolean tempFlag = edcDskLogProductionService.exportTrmTempHlogFile(startTime,endTime,eqpId);
+            if(tempFlag){
+                log.info("TRM TempHlog日志生成完毕");
             }
         }
     }

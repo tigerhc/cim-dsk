@@ -200,7 +200,7 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         fancha(file.getName(),mesLotTrack.getLotNo(),newlines);
     }*/
     @Override
-    public Boolean exportOperationFile(String eqpId,Date startTime,Date endTime){
+    public Boolean exportTrmOperationFile(String eqpId,Date startTime,Date endTime){
         List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId,startTime,endTime);
         try {
             this.printOperlog(orerationList,"OPERATION");
