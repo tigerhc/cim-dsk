@@ -34,7 +34,7 @@
         group by period_date
     </select>
     <select id="findEqpsOee" resultType="map">
-        select eqp_id eqpId, max(period_date) periodDate,
+        select eqp_id eqpId, max(period_date) periodDate,count(*) countDay,
         round(sum(run_time)/3600,2) runTime,
         round(sum(idle_time)/3600,2) idleTime,
         round(sum(down_time)/3600,2) downTime,

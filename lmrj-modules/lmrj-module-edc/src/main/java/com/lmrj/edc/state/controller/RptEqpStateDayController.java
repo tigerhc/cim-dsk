@@ -82,8 +82,12 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
                 BigDecimal downTimeR =new BigDecimal(downTime);
                 BigDecimal add =runTimeR.add(idleTimeR);
                 BigDecimal result= add.add(downTimeR);
-                BigDecimal temp =new BigDecimal(24);
+                long countDay =(long)map.get("countDay");
+                BigDecimal temp =new BigDecimal(24 * countDay);
                 BigDecimal other =temp.subtract(result);
+                if(Double.valueOf(other.toString())<0){
+                        other =new BigDecimal(0);
+                }
                 map.put("otherTime",Double.valueOf(other.toString()));
             });
         }
