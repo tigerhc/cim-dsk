@@ -60,9 +60,9 @@ public class FileExportController {
         //首先查询当天批次
         List<MesLotTrack> lotList = iMesLotTrackService.selectList(new EntityWrapper<MesLotTrack>().eq("eqp_id", eqpId).between("start_time",startTime,endTime).orderBy("start_time"));
         //打印产量日志
-        iEdcDskLogProductionService.exportProductionFile(lotList,"");
+        iEdcDskLogProductionService.exportTrmProductionFile(lotList,"PRODUCTION");
         //打印时间日志
-        iEdcDskLogOperationService.exportOperationFile(eqpId,startTime,endTime);
+        iEdcDskLogOperationService.exportTrmOperationFile(eqpId,startTime,endTime);
         //打印配方日志
         iEdcDskLogRecipeService.exportRecipeFile(eqpId,startTime,endTime);
     }

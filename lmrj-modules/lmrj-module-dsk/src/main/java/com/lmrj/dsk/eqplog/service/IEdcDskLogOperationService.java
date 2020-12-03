@@ -22,7 +22,7 @@ public interface IEdcDskLogOperationService extends ICommonService<EdcDskLogOper
 
     List<String> findEqpId(Date startTime,Date endTime);
 
-    Boolean exportOperationFile(String eqpId,Date startTime,Date endTime);
+    Boolean exportTrmOperationFile(String eqpId,Date startTime,Date endTime);
 
     int insertList(List<EdcDskLogOperation> list);
 }

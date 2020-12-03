@@ -2,7 +2,6 @@ package com.lmrj.dsk.eqplog.service.impl;
 
 import com.google.common.collect.Maps;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionHis;
 import com.lmrj.dsk.eqplog.mapper.EdcDskLogProductionMapper;
@@ -105,7 +104,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
     }
 
     @Override
-    public Boolean exportProductionFile(List<MesLotTrack> lotList,String fileType) {
+    public Boolean exportTrmProductionFile(List<MesLotTrack> lotList,String fileType) {
         if(fileType.equals("PRODUCTION")){
             List<EdcDskLogProduction> proList = new ArrayList<>();
             for (MesLotTrack mesLotTrack : lotList) {
@@ -118,8 +117,19 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                     return false;
                 }
             }
-        }else if(fileType.equals("OPERATION")){
-            List<EdcDskLogOperation> opeList = new ArrayList<>();
+
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean exportTrmTempHlogFile(Date startTime , Date endTime , String eqpId){
+        List<EdcDskLogProduction> proList = baseMapper.findProByTime(startTime,endTime,eqpId);
+        try {
+            this.printTemplog(proList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
         return true;
     }
@@ -396,5 +406,54 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 }
             }
         }
+    }
+    public void printTemplog(List<EdcDskLogProduction> prolist)  throws Exception{
+        String eqpNo = "";
+        List<String> lines = new ArrayList<>();
+        String filename = null;
+        EdcDskLogProduction pro;
+        String pattern1 = "yyyyMMddHHmm999";
+        String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
+        String filePath = null;
+        String fileBackUpPath = null;
+        //获取表格title添加到lines中
+        lines.add(FileUtil.csvBom + "事件发生时刻,,,,芯片1温度,芯片2温度,芯片3温度,芯片4温度,芯片5温度,芯片6温度,芯片7温度,芯片8温度,芯片9温度,芯片10温度,芯片11温度,芯片12温度,芯片13温度,芯片14温度,芯片15温度,芯片16温度,芯片17温度,芯片18温度,芯片19温度,芯片20温度,芯片21温度,芯片22温度,芯片23温度,芯片24温度,,");
+        for (int i = 0; i < prolist.size(); i++) {
+            pro = prolist.get(i);
+            //拼写文件存储路径及备份路径
+            if (i == 0) {
+                String createTimeString = DateUtil.formatDate(pro.getCreateDate(), pattern1);
+                filename = "DSK_" + pro.getEqpId() + "_" + createTimeString + "_TempHlog.csv";
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(pro.getEqpId());
+                filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth();
+                fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + pro.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
+                filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
+                fileBackUpPath = new String(fileBackUpPath.getBytes("GBK"), "iso-8859-1");
+            }
+            String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
+            //拼写当前行字符串
+            String line = startTimeString+","+pro.getParamValue();
+            lines.add(line);
+        }
+        //创建文件路径
+        if(fileBackUpPath!=null && filePath!=null){
+            FileUtil.mkDir(fileBackUpPath);
+            File newFile = new File(filePath + "\\" + filename);
+            FileUtil.writeLines(newFile, "UTF-8", lines);
+            String eventId = StringUtil.randomTimeUUID("RPT");
+            fabLogService.info(filename.split("_")[1], eventId, "printTemplog", "生成TRM温度文件", filename.split("_")[2], "");
+        }
+
+        //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
+        /*List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
+        for (File file : fileList) {
+            if (file.getName().contains("TempHlog.csv")) {
+                //DSK_SIM-REFLOW1_202011301245258_TempHlog
+                if (file.getName().split("_")[1].equals(filename.split("_")[1]) &&
+                        file.getName().split("_")[2].equals(filename.split("_")[2])) {
+                    FileUtil.move(filePath + "\\" + file.getName(), fileBackUpPath + "\\" + file.getName(), false);
+                }
+            }
+        }*/
     }
 }
