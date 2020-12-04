@@ -149,7 +149,18 @@ public class EdcSecsLogHandler {
             if(pro==null){
                 productionLog.setDayYield(24);
             }else{
-                productionLog.setDayYield(pro.getDayYield()+24);
+                Date time= new Date();
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.HOUR_OF_DAY, 8);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND,0);
+                time = cal.getTime();
+                if(pro.getStartTime().before(time) && startTime.after(time)){
+                    productionLog.setDayYield(24);
+                }else{
+                    productionLog.setDayYield(pro.getDayYield()+24);
+                }
             }
             productionLog.setLotYield(equipmentStatus.getLotYield());
             productionLog.setDuration(0D);
@@ -172,12 +183,12 @@ public class EdcSecsLogHandler {
             //生成TRM温度数据
             try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
-                Date stime = pro.getStartTime();
+                Date stime = productionLog.getStartTime();
                 OvnBatchLot ovnBatchLot = new OvnBatchLot();
                 ovnBatchLot.setId(UUIDUtil.createUUID());
                 ovnBatchLot.setEqpId(eqpId);
                 ovnBatchLot.setStartTime(stime);
-                ovnBatchLot.setEndTime(pro.getEndTime());
+                ovnBatchLot.setEndTime(productionLog.getEndTime());
                 ovnBatchLot.setOtherTempsTitle("温度");
                 String[] a = pro.getParamValue().split(",");
                 int j = 1;
@@ -195,11 +206,13 @@ public class EdcSecsLogHandler {
                     paramList.add(ovnBatchLotParam);
                 }
                 //ovnBatchLot.setOvnBatchLotParamList(paramList);
-                iOvnBatchLotService.insert(ovnBatchLot);
-                iOvnBatchLotParamService.insertBatch(paramList,25);
+                if(paramList.size()>0){
+                    ovnBatchLot.setOvnBatchLotParamList(paramList);
+                    iOvnBatchLotService.insert(ovnBatchLot);
+                }
             } catch (Exception e) {
+                log.error("TRM温度数据插入出错"+ pro.getEqpId()+"  "+pro.getLotNo()+"  "+e.getMessage());
                 e.printStackTrace();
-                log.error("TRM温度数据插入失败"+ pro.getEqpId()+"  "+pro.getLotNo());
             }
 
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
@@ -210,6 +223,7 @@ public class EdcSecsLogHandler {
             }
             boolean updateFlag = mesLotTrackService.updateById(mesLotTrack);
             if (!updateFlag) {
+                log.error("TRM设备MesLotTrack批次产量更新出错："+eqpId+"  "+mesLotTrack.getLotNo());
                 mesLotTrack.setStartTime(new Date());
                 mesLotTrack.setCreateBy("EQP");
                 mesLotTrackService.insert(mesLotTrack);
