@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,6 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     List<Map<String, Object>> findTodayEqpIds();
 
     boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp);
+
+    OvnBatchLot findBatchData(String eqpId , Date startTime);
 }

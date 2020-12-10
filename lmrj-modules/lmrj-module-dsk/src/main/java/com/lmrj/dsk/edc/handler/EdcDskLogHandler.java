@@ -29,6 +29,7 @@ import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -69,6 +70,8 @@ public class EdcDskLogHandler {
     IFabEquipmentStatusService fabEquipmentStatusService;
     @Autowired
     IOvnBatchLotService ovnBatchLotService;
+    @Autowired
+    IOvnBatchLotParamService iOvnBatchLotParamService;
     @Autowired
     IFabEquipmentService fabEquipmentService;
     @Autowired
@@ -435,16 +438,28 @@ public class EdcDskLogHandler {
     public void parseTempHlog(String msg) {
         log.info("recieved message 开始解析{}温度曲线文件 : {} " + msg);
         OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
-        if (ovnBatchLot == null) {
-            return;
-        }
         String eqpId = ovnBatchLot.getEqpId();
         if (StringUtil.isNotBlank(eqpId)) {
-            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-            ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
-            List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
-            ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
-            ovnBatchLotService.insert(ovnBatchLot);
+            if(!eqpId.equals("")){
+                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+                ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
+            }
+            Long time = ovnBatchLot.getEndTime().getTime()-24*60*60*1000;
+            Date startTime = new Date(time);
+            OvnBatchLot ovnBatchLot1 = ovnBatchLotService.findBatchData(eqpId,startTime);
+            if(ovnBatchLot1!=null){
+                List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                ovnBatchLotService.updateById(ovnBatchLot1);
+                for (OvnBatchLotParam ovnBatchLotParam : OvnBatchLotParamList) {
+                    ovnBatchLotParam.setBatchId(ovnBatchLot1.getId());
+                }
+                iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
+            }else{
+                List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                ovnBatchLotService.insert(ovnBatchLot);
+            }
         }
     }
 
