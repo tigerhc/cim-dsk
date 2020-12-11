@@ -5,7 +5,9 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,4 +40,7 @@ public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
     int saveEqp(@Param("eqps")List<Map<String,Object>> eqps);
 
     int saveTempParam(@Param("temps")List<Map<String,Object>> temps);
+
+    @Select("select * from ovn_batch_lot where eqp_id = #{eqpId} and start_time > #{startTime}")
+    OvnBatchLot findBatchData(String eqpId , Date startTime);
 }

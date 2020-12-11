@@ -1,6 +1,5 @@
 package com.lmrj.dsk.edc.handler;
 
-import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
@@ -21,8 +20,6 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
-import com.lmrj.oven.batchlot.entity.OvnBatchLot;
-import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.ArrayUtil;
@@ -35,7 +32,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -181,7 +177,7 @@ public class EdcSecsLogHandler {
             edcDskLogProductionService.insert(productionLog);
 
             //生成TRM温度数据
-            try {
+            /*try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
                 Date stime = productionLog.getStartTime();
                 OvnBatchLot ovnBatchLot = new OvnBatchLot();
@@ -213,7 +209,7 @@ public class EdcSecsLogHandler {
             } catch (Exception e) {
                 log.error("TRM温度数据插入出错"+ pro.getEqpId()+"  "+pro.getLotNo()+"  "+e.getMessage());
                 e.printStackTrace();
-            }
+            }*/
 
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {

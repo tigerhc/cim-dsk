@@ -51,6 +51,10 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
 
     @Override
+    public OvnBatchLot findBatchData(String eqpId , Date startTime){
+        return baseMapper.findBatchData(eqpId,startTime);
+    }
+    @Override
     public OvnBatchLot selectById(Serializable id) {
         OvnBatchLot ovnBatchLot = super.selectById(id);
         EntityWrapper<OvnBatchLotParam> entityWrapper = new EntityWrapper<OvnBatchLotParam>();
