@@ -367,7 +367,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         String filePath = null;
         String fileBackUpPath = null;
         //获取表格title添加到lines中
-        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType));
+        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType)+",模腔1 LF预热器温度L,模腔2 LF预热器温度L,模腔3 LF预热器温度L,模腔1 LF预热器温度R,模腔2 LF预热器温度R,模腔3 LF预热器温度R,模腔1夹持位置,模腔2夹持位置,模腔3夹持位置,模腔1夹持压力,模腔2夹持压力,模腔3夹持压力");
         for (int i = 0; i < prolist.size(); i++) {
             eqpNo = iFabEquipmentService.findeqpNoInfab(prolist.get(i).getEqpId());
             pro = prolist.get(i);
@@ -417,7 +417,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         String filePath = null;
         String fileBackUpPath = null;
         //获取表格title添加到lines中
-        lines.add(FileUtil.csvBom + "事件发生时刻,,,,芯片1温度,芯片2温度,芯片3温度,芯片4温度,芯片5温度,芯片6温度,芯片7温度,芯片8温度,芯片9温度,芯片10温度,芯片11温度,芯片12温度,芯片13温度,芯片14温度,芯片15温度,芯片16温度,芯片17温度,芯片18温度,芯片19温度,芯片20温度,芯片21温度,芯片22温度,芯片23温度,芯片24温度,,");
+        lines.add(FileUtil.csvBom + "事件发生时刻模腔1 LF预热器温度L,模腔2 LF预热器温度L,模腔3 LF预热器温度L,模腔1 LF预热器温度R,模腔2 LF预热器温度R,模腔3 LF预热器温度R,模腔1夹持位置,模腔2夹持位置,模腔3夹持位置,模腔1夹持压力,模腔2夹持压力,模腔3夹持压力");
         for (int i = 0; i < prolist.size(); i++) {
             pro = prolist.get(i);
             //拼写文件存储路径及备份路径
