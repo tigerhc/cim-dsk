@@ -1,5 +1,6 @@
 package com.lmrj.dsk.edc.handler;
 
+import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
@@ -20,6 +21,8 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.ArrayUtil;
@@ -32,6 +35,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -177,7 +181,7 @@ public class EdcSecsLogHandler {
             edcDskLogProductionService.insert(productionLog);
 
             //生成TRM温度数据
-            /*try {
+            try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
                 Date stime = productionLog.getStartTime();
                 OvnBatchLot ovnBatchLot = new OvnBatchLot();
@@ -185,31 +189,44 @@ public class EdcSecsLogHandler {
                 ovnBatchLot.setEqpId(eqpId);
                 ovnBatchLot.setStartTime(stime);
                 ovnBatchLot.setEndTime(productionLog.getEndTime());
-                ovnBatchLot.setOtherTempsTitle("温度");
+                ovnBatchLot.setOtherTempsTitle(",模腔2预热器L温度当前值,模腔3预热器L温度当前值,模腔1预热器R温度当前值,模腔2预热器R温度当前值,模腔3预热器R温度当前值");
                 String[] a = pro.getParamValue().split(",");
-                int j = 1;
-                for (int i = 3; i < a.length-1; i++) {
-                    Long create =  stime.getTime()+(1000*j++);
-                    Date createTime = new Date(create);
-                    String temp = a[i];
-                    OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
-                    ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
-                    ovnBatchLotParam.setTempPv(temp);
-                    ovnBatchLotParam.setCreateDate(createTime);
-                    ovnBatchLotParam.setTempMax("0");
-                    ovnBatchLotParam.setTempMin("0");
-                    ovnBatchLotParam.setTempSp("0");
-                    paramList.add(ovnBatchLotParam);
+                Long create =  stime.getTime()+(1000);
+                String temp = null;
+                for (int i = 4; i < 9; i++) {
+                    if(i == 4 ){
+                        temp = a[4]+",0,0,0";
+                    }else{
+                        temp = temp +","+ a[i] +",0,0,0";
+                    }
                 }
-                //ovnBatchLot.setOvnBatchLotParamList(paramList);
-                if(paramList.size()>0){
-                    ovnBatchLot.setOvnBatchLotParamList(paramList);
+                Date createTime = new Date(create);
+                OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
+                ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
+                ovnBatchLotParam.setTempPv(a[3]);
+                ovnBatchLotParam.setCreateDate(createTime);
+                ovnBatchLotParam.setTempMax("0");
+                ovnBatchLotParam.setTempMin("0");
+                ovnBatchLotParam.setTempSp("0");
+                ovnBatchLotParam.setOtherTempsValue(temp);
+                paramList.add(ovnBatchLotParam);
+                ovnBatchLot.setOvnBatchLotParamList(paramList);
+                OvnBatchLot ovnBatchLot1 = iOvnBatchLotService.findBatchData(eqpId,stime);
+                if(ovnBatchLot1!=null){
+                    List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                    ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                    iOvnBatchLotService.updateById(ovnBatchLot1);
+                    for (OvnBatchLotParam batchLotParam : OvnBatchLotParamList) {
+                        batchLotParam.setBatchId(ovnBatchLot1.getId());
+                    }
+                    iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
+                }else{
                     iOvnBatchLotService.insert(ovnBatchLot);
                 }
             } catch (Exception e) {
                 log.error("TRM温度数据插入出错"+ pro.getEqpId()+"  "+pro.getLotNo()+"  "+e.getMessage());
                 e.printStackTrace();
-            }*/
+            }
 
             List<EdcDskLogProduction> proList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
             if (proList.size() > 0) {
