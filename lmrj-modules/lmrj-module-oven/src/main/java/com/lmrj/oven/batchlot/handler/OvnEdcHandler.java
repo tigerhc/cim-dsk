@@ -1,16 +1,11 @@
 package com.lmrj.oven.batchlot.handler;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
-import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.core.entity.MesResult;
-import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
-import com.lmrj.util.lang.StringUtil;
-import com.lmrj.util.mapper.JsonUtil;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
 import com.lmrj.edc.param.entity.EdcParamRecord;
@@ -20,6 +15,8 @@ import com.lmrj.edc.param.service.IEdcParamRecordService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.lang.StringUtil;
+import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

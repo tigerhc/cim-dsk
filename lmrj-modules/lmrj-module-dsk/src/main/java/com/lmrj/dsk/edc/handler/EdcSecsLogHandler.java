@@ -1,6 +1,5 @@
 package com.lmrj.dsk.edc.handler;
 
-import com.lmrj.cim.utils.UUIDUtil;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
