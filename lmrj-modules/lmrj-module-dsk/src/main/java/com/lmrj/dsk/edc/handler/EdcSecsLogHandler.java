@@ -185,7 +185,7 @@ public class EdcSecsLogHandler {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
                 Date stime = productionLog.getStartTime();
                 OvnBatchLot ovnBatchLot = new OvnBatchLot();
-                ovnBatchLot.setId(UUIDUtil.createUUID());
+                ovnBatchLot.setId(StringUtil.randomTimeUUID());
                 ovnBatchLot.setEqpId(eqpId);
                 ovnBatchLot.setStartTime(stime);
                 ovnBatchLot.setEndTime(productionLog.getEndTime());

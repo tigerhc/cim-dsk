@@ -185,7 +185,7 @@ public class OvnEdcHandler {
                 for(Map<String, Object> item : dataList){
                     Map<String, Object> dataItem = new HashMap<String, Object>();
                     dataItem.put("tempPv", MapUtils.getString(item,"tempValue"));
-                    dataItem.put("id", UUIDUtil.createUUID());
+                    dataItem.put("id", StringUtil.randomTimeUUID());
                     dataItem.put("sendTime", MapUtils.getString(item,"sendTime"));
 
                     String eqpId = MapUtils.getString(item,"eqpId");
@@ -199,7 +199,7 @@ public class OvnEdcHandler {
                         }
                     }
                     if(findFlag){
-                        String id = UUIDUtil.createUUID();
+                        String id = StringUtil.randomTimeUUID();
                         dataItem.put("batchId",id);
                         Map<String, Object> eqpDataItem = new HashMap<>();
                         eqpDataItem.put("id",id);
