@@ -142,8 +142,9 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
 
     @Override
     public Map<String, Object> kongdongChart(Map<String, Object> param) {
+        String productionName = MapUtils.getString(param, "productionName");
         List<String> legends = baseMapper.getLegend(param);
-        List<Map<String, Double>> configLine = baseMapper.getConfig(MapUtils.getString(param, "productionName"));
+        List<Map<String, Double>> configLine = baseMapper.getConfig(productionName);
         List<String> xasix = baseMapper.getXasix(param);
         Map<String, List<Double>> LinesData = new HashMap<>();
         //初始化series 各个线的数组
@@ -157,9 +158,16 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 for(String line : legends){
                     boolean findFlag = true;
                     for(Map<String, Object>  data : datas){
-                        if(line.equals(MapUtils.getString(data,"lineType")) && asix.equals(MapUtils.getString(data, "lotNo"))){
-                            LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
-                            findFlag = false;
+                        if(productionName.contains("5GI")||productionName.contains("6GI")){
+                            if(asix.equals(MapUtils.getString(data, "lotNo"))){
+                                LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
+                                findFlag = false;
+                            }
+                        }else{
+                            if(line.equals(MapUtils.getString(data,"lineType")) && asix.equals(MapUtils.getString(data, "lotNo"))){
+                                LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
+                                findFlag = false;
+                            }
                         }
                     }
                     if(findFlag){
