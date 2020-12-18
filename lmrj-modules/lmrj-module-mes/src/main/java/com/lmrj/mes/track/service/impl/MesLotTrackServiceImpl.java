@@ -469,7 +469,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         mesLotTrack.setProductionName(productionName);
         mesLotTrack.setProductionNo(productionNo);
         mesLotTrack.setOrderNo(orderNo);
-        this.insertOrUpdate(mesLotTrack);
+
 
         //发送至EAP客户端 Map
         if ("1".equals(fabEquipment.getClientFlag())) {
@@ -488,6 +488,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
                 if (replyMsg != null) {
                     result = JsonUtil.from(replyMsg, MesResult.class);
+                    //客户端修改成功后插入数据库
+                    this.insertOrUpdate(mesLotTrack);
                     if ("Y".equals(result.getFlag())) {
                     }
                 } else {
