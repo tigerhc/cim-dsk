@@ -367,7 +367,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         String filePath = null;
         String fileBackUpPath = null;
         //获取表格title添加到lines中
-        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType)+",模腔1计数,模腔2计数,模腔3计数,模腔1 LF预热器温度L,模腔2 LF预热器温度L,模腔3 LF预热器温度L,模腔1 LF预热器温度R,模腔2 LF预热器温度R,模腔3 LF预热器温度R,模腔1夹持位置,模腔2夹持位置,模腔3夹持位置,模腔1夹持压力,模腔2夹持压力,模腔3夹持压力");
+        lines.add(FileUtil.csvBom + edcConfigFileCsvService.findTitle(prolist.get(0).getEqpId(), fileType)+",模腔1计数,模腔2计数,模腔3计数,模腔1 LF预热器温度L,模腔2 LF预热器温度L,模腔3 LF预热器温度L,模腔1 LF预热器温度R,模腔2 LF预热器温度R,模腔3 LF预热器温度R,模具1温度上型,模具2温度上型,模具3温度上型,模具1温度下型,模具2温度下型,模具3温度下型,模腔1夹持位置,模腔2夹持位置,模腔3夹持位置,模腔1夹持压力,模腔2夹持压力,模腔3夹持压力,模腔1合模时间,模腔2合模时间,模腔3合模时间");
         for (int i = 0; i < prolist.size(); i++) {
             eqpNo = iFabEquipmentService.findeqpNoInfab(prolist.get(i).getEqpId());
             pro = prolist.get(i);

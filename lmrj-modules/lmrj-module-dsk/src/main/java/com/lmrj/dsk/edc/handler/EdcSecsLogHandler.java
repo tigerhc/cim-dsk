@@ -188,11 +188,11 @@ public class EdcSecsLogHandler {
                 ovnBatchLot.setEqpId(eqpId);
                 ovnBatchLot.setStartTime(stime);
                 ovnBatchLot.setEndTime(productionLog.getEndTime());
-                ovnBatchLot.setOtherTempsTitle(",模腔2预热器L温度当前值,模腔3预热器L温度当前值,模腔1预热器R温度当前值,模腔2预热器R温度当前值,模腔3预热器R温度当前值");
+                ovnBatchLot.setOtherTempsTitle(",模腔2预热器L温度当前值,模腔3预热器L温度当前值,模腔1预热器R温度当前值,模腔2预热器R温度当前值,模腔3预热器R温度当前值,模具1温度上型,模具2温度上型,模具3温度上型,模具1温度下型,模具2温度下型,模具3温度下型");
                 String[] a = pro.getParamValue().split(",");
                 Long create =  stime.getTime()+(1000);
                 String temp = null;
-                for (int i = 4; i < 9; i++) {
+                for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
                         temp = a[4]+",0,0,0";
                     }else{
