@@ -194,9 +194,11 @@ public class EdcSecsLogHandler {
                 String temp = null;
                 for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
-                        temp = a[4]+",0,0,0";
+                        temp = a[4]+",145,150,155";
+                    }else if(i>4 && i<9){
+                        temp = temp +","+ a[i] +",145,150,155";
                     }else{
-                        temp = temp +","+ a[i] +",0,0,0";
+                        temp = temp +","+ a[i] +",180,185,190";
                     }
                 }
                 Date createTime = new Date(create);
@@ -204,9 +206,9 @@ public class EdcSecsLogHandler {
                 ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
                 ovnBatchLotParam.setTempPv(a[3]);
                 ovnBatchLotParam.setCreateDate(createTime);
-                ovnBatchLotParam.setTempMax("0");
-                ovnBatchLotParam.setTempMin("0");
-                ovnBatchLotParam.setTempSp("0");
+                ovnBatchLotParam.setTempMax("145");
+                ovnBatchLotParam.setTempMin("150");
+                ovnBatchLotParam.setTempSp("155");
                 ovnBatchLotParam.setOtherTempsValue(temp);
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
