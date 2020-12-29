@@ -782,7 +782,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if(ele2.length==3){
-                if(ele2[1].equals(lotNo)&&ele2[0].equals(production)){
+                if(ele2[1].equals(lotNo)&&ele2[0].equals(production)&&ele[4].equals("OK")){
                     if (mode.equals("0")){
                         if (ele[3].equals("0001-1")&&one==0){
                             Map<String,Object> map = new HashMap<>();
