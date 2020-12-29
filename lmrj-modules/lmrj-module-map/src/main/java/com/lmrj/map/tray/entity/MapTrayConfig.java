@@ -45,6 +45,12 @@ public class MapTrayConfig extends BaseDataEntity {
     /**冻结时间,分钟*/
     @TableField(value = "freeze_time")
     private Integer freezeTime;
+    /**治具，托盘*/
+    @TableField(value = "tray_type")
+    private String trayType;
+    /**治具的种类*/
+    @TableField(value = "tray_model")
+    private String trayModel;
     /**排序号*/
     @TableField(value = "sort_no")
     private Integer sortNo;
