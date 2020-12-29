@@ -841,7 +841,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if(ele2.length==3){
-                if(ele2[1].equals(lotNo)&&(ele2[0].equals(pro)||ele2[0].equals(proOther))){
+                if(ele[4].equals("OK")&&ele2[1].equals(lotNo)&&(ele2[0].equals(pro)||ele2[0].equals(proOther))){
                     for (int j = 7; j <ele.length ; j++) {
                         str.add(ele[j]);
                     }
@@ -871,7 +871,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if(ele2.length>=2){
-                if(ele2[1].equals(lotNo)&&ele2[0].equals(pro)){
+                if(ele2[1].equals(lotNo)&&ele2[0].equals(pro)&&ele[4].equals("OK")){
                     for (int j = 7; j <ele.length ; j++) {
                         str.add(ele[j]);
                     }
