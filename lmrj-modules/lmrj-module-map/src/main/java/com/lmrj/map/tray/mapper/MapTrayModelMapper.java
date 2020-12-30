@@ -3,6 +3,9 @@ package com.lmrj.map.tray.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.map.tray.entity.MapTrayModel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -17,5 +20,6 @@ import org.apache.ibatis.annotations.Mapper;
 */
 @Mapper
 public interface MapTrayModelMapper extends BaseMapper<MapTrayModel> {
-
+    @Select("select * from map_tray_model")
+    List<MapTrayModel> getBySelect();
 }

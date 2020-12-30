@@ -1,10 +1,13 @@
 package com.lmrj.map.tray.controller;
 
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.map.tray.entity.MapTrayModel;
+import com.lmrj.map.tray.service.IMapTrayModelService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiresPathPermission("map:maptraytype")
 @LogAspectj(title = "map_tray_type")
 public class MapTrayModelController extends BaseCRUDController<MapTrayModel> {
+    @Autowired
+    private IMapTrayModelService trayModelService;
 
+    @RequestMapping("getModelsBySelect")
+    public Response getModelsBySelect(){
+        Response rs = Response.ok();
+        rs.putList("models", trayModelService.getBySelect());
+        return rs;
+    }
 }

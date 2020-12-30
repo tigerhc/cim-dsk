@@ -7,6 +7,8 @@ import com.lmrj.map.tray.service.IMapTrayModelService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -23,4 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("mapTrayModelService")
 public class MapTrayModelServiceImpl extends CommonServiceImpl<MapTrayModelMapper, MapTrayModel> implements IMapTrayModelService {
 
+    @Override
+    public List<MapTrayModel> getBySelect() {
+        return baseMapper.getBySelect();
+    }
 }
