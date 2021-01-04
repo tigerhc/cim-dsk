@@ -5,11 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.core.entity.MesResult;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipe;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogRecipeBody;
+import com.lmrj.dsk.eqplog.entity.*;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionDefectiveService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogRecipeService;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
@@ -34,6 +32,7 @@ import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -92,6 +91,8 @@ public class EdcDskLogHandler {
     private AmqpTemplate rabbitTemplate;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
+    @Autowired
+    IEdcDskLogProductionDefectiveService iEdcDskLogProductionDefectiveService;
 
 
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
@@ -160,9 +161,14 @@ public class EdcDskLogHandler {
             i = productionList.size() + 1;
         }
         for (EdcDskLogProduction edcDskLogProduction : proList) {
-            edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
-            edcDskLogProduction.setLotYield(i);
-            i++;
+            if("1".equals(edcDskLogProduction.getJudgeResult())){
+                edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                edcDskLogProduction.setLotYield(i);
+            }else{
+                edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
+                edcDskLogProduction.setLotYield(i);
+                i++;
+            }
         }
         //如果为REFLOW 或 PRINTER 再乘以12
         if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
@@ -189,19 +195,31 @@ public class EdcDskLogHandler {
                     it.remove();
             }
         }
+        List<EdcDskLogProductionDefective> defectiveProList = new ArrayList<>();
+        List<EdcDskLogProduction> goodPro = new ArrayList<>();
+        for (EdcDskLogProduction edcDskLogProduction : proList) {
+            if("1".equals(edcDskLogProduction.getJudgeResult())){
+                JSONObject json = JSONObject.fromObject(edcDskLogProduction);
+                EdcDskLogProductionDefective defectivePro = JsonUtil.from(json.toString(),EdcDskLogProductionDefective.class);
+                defectiveProList.add(defectivePro);
+            }else{
+                goodPro.add(edcDskLogProduction);
+            }
+        }
+        iEdcDskLogProductionDefectiveService.insertBatch(defectiveProList,100);
         String eventId = null;
         eventId = StringUtil.randomTimeUUID("RPT");
         EdcDskLogProduction lastPro = null;
         boolean updateFlag = false;
         try {
-            if (edcDskLogProductionService.insertBatch(proList,100)) {
+            if (edcDskLogProductionService.insertBatch(goodPro,100)) {
                 fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共" + proList.size() + "条", mesLotTrack.getLotNo(), "gxj");
             }
             //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
             List<EdcDskLogProduction> allProList = new ArrayList<>();
             //MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
             allProList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
-            lastPro = proList.get(proList.size() - 1);
+            lastPro = goodPro.get(goodPro.size() - 1);
             mesLotTrack.setLotYieldEqp(allProList.size());
             if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
                 mesLotTrack.setLotYieldEqp(allProList.size() * 12);
