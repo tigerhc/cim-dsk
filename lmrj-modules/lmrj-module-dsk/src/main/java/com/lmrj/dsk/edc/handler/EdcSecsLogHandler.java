@@ -182,15 +182,14 @@ public class EdcSecsLogHandler {
             //生成TRM温度数据
             try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
-                Date stime = productionLog.getStartTime();
                 OvnBatchLot ovnBatchLot = new OvnBatchLot();
                 ovnBatchLot.setId(StringUtil.randomTimeUUID());
                 ovnBatchLot.setEqpId(eqpId);
-                ovnBatchLot.setStartTime(stime);
+                ovnBatchLot.setStartTime(productionLog.getStartTime());
                 ovnBatchLot.setEndTime(productionLog.getEndTime());
                 ovnBatchLot.setOtherTempsTitle("模腔2预热器L温度当前值,模腔3预热器L温度当前值,模腔1预热器R温度当前值,模腔2预热器R温度当前值,模腔3预热器R温度当前值,模具1温度上型当前值,模具2温度上型当前值,模具3温度上型当前值,模具1温度下型当前值,模具2温度下型当前值,模具3温度下型当前值");
                 String[] a = pro.getParamValue().split(",");
-                Long create =  stime.getTime()+(1000);
+                Long create =  productionLog.getStartTime().getTime()+(1000);
                 String temp = null;
                 for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
@@ -212,6 +211,9 @@ public class EdcSecsLogHandler {
                 ovnBatchLotParam.setOtherTempsValue(temp);
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
+                //实现主表一天内只有一条数据
+                Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
+                Date stime = new Date(time);
                 OvnBatchLot ovnBatchLot1 = iOvnBatchLotService.findBatchData(eqpId,stime);
                 if(ovnBatchLot1!=null){
                     List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
@@ -220,6 +222,7 @@ public class EdcSecsLogHandler {
                     for (OvnBatchLotParam batchLotParam : OvnBatchLotParamList) {
                         batchLotParam.setBatchId(ovnBatchLot1.getId());
                     }
+                    log.info("TRM 温度数据插入ovnBatchLot1 成功");
                     iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
                 }else{
                     iOvnBatchLotService.insert(ovnBatchLot);

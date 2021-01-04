@@ -161,7 +161,7 @@ public class EdcDskLogHandler {
             i = productionList.size() + 1;
         }
         for (EdcDskLogProduction edcDskLogProduction : proList) {
-            if("1".equals(edcDskLogProduction.getJudgeResult())){
+            if("N".equals(edcDskLogProduction.getJudgeResult())){
                 edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
                 edcDskLogProduction.setLotYield(i);
             }else{
@@ -182,7 +182,9 @@ public class EdcDskLogHandler {
                 edcDskLogProduction.setEqpNo(fabEquipment.getEqpNo());
                 edcDskLogProduction.setEqpModelId(fabEquipment.getModelId());
                 edcDskLogProduction.setEqpModelName(fabEquipment.getModelName());
-                edcDskLogProduction.setJudgeResult("Y");
+                if(!"N".equals(edcDskLogProduction.getJudgeResult())){
+                    edcDskLogProduction.setJudgeResult("Y");
+                }
             });
         }
         //将重复数据去除
@@ -198,7 +200,7 @@ public class EdcDskLogHandler {
         List<EdcDskLogProductionDefective> defectiveProList = new ArrayList<>();
         List<EdcDskLogProduction> goodPro = new ArrayList<>();
         for (EdcDskLogProduction edcDskLogProduction : proList) {
-            if("1".equals(edcDskLogProduction.getJudgeResult())){
+            if("N".equals(edcDskLogProduction.getJudgeResult())){
                 JSONObject json = JSONObject.fromObject(edcDskLogProduction);
                 EdcDskLogProductionDefective defectivePro = JsonUtil.from(json.toString(),EdcDskLogProductionDefective.class);
                 defectiveProList.add(defectivePro);
@@ -206,7 +208,9 @@ public class EdcDskLogHandler {
                 goodPro.add(edcDskLogProduction);
             }
         }
-        iEdcDskLogProductionDefectiveService.insertBatch(defectiveProList,100);
+        if(defectiveProList.size()>0){
+            iEdcDskLogProductionDefectiveService.insertBatch(defectiveProList,100);
+        }
         String eventId = null;
         eventId = StringUtil.randomTimeUUID("RPT");
         EdcDskLogProduction lastPro = null;
