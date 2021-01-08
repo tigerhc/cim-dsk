@@ -348,7 +348,8 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
         }else if(IMapTrayChipMoveProcessService.processAsynchronous.equals(processFlag)){
             String startTime = baseMapper.getLastStartTime();
             //通过上次开始执行的时间可算出在这个时间之后有多少数据
-            startData = baseMapper.getStartData(startTime);
+//            startData = baseMapper.getStartData(startTime);
+            startData = baseMapper.getStartData("");
             traceLog.setRemarks("异步的追溯异数据,startTime:"+startTime);
         }else{
             startData = baseMapper.getStartData("");

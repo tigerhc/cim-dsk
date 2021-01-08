@@ -91,7 +91,8 @@ public class MapTrayChipMoveController {
                 //设置为追溯中，即向log表中添加一个只有开始时间没有结束的时间的记录
                 traceLog.setBeginTime(new Date());
                 mpTrayChipLogService.insert(traceLog);
-                mapTrayChipMoveProcessService.traceData(traceLog, IMapTrayChipMoveProcessService.processErrDataFlag);
+//                mapTrayChipMoveProcessService.traceData(traceLog, IMapTrayChipMoveProcessService.processErrDataFlag);
+                mapTrayChipMoveProcessService.traceData(traceLog, IMapTrayChipMoveProcessService.processAsynchronous);
             }
         } catch (Exception e){
             e.printStackTrace();
