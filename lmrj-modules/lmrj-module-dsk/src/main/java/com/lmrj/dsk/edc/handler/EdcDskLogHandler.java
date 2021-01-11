@@ -33,6 +33,8 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
+import org.junit.Test;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -93,6 +95,14 @@ public class EdcDskLogHandler {
     IFabEquipmentService iFabEquipmentService;
     @Autowired
     IEdcDskLogProductionDefectiveService iEdcDskLogProductionDefectiveService;
+    @Autowired
+    IOvnBatchLotService iOvnBatchLotService;
+
+
+    @Autowired
+    IEdcDskLogProductionService iEdcDskLogProductionService;
+
+
 
 
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
@@ -146,9 +156,17 @@ public class EdcDskLogHandler {
                     fixProData(nextproList, nextLotTrack);
                 }
             }
+            log.error("前后画像当前的设备为"+edcDskLogProductionList.get(0).getEqpId());
+            if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
+                log.error("前后画像当前的设备为"+edcDskLogProductionList.get(0).getEqpId());
+                this.temperatureList(edcDskLogProductionList);}
         } else {
 
         }
+
+
+
+
     }
 
     //修正数据   先把所有数据的批量内连番改为每次加一的顺序 再对特殊设备做特殊处理
@@ -251,6 +269,101 @@ public class EdcDskLogHandler {
         }
         fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为：" + mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
     }
+
+
+
+
+
+    public void temperatureList(List<EdcDskLogProduction> proList) {
+        try {
+            List<OvnBatchLotParam> paramList = new ArrayList<>();
+
+            OvnBatchLot ovnBatchLot = new OvnBatchLot();
+            ovnBatchLot.setId(StringUtil.randomTimeUUID());
+            ovnBatchLot.setEqpId(proList.get(0).getEqpId());
+            ovnBatchLot.setStartTime(proList.get(0).getStartTime());
+            ovnBatchLot.setEndTime(proList.get(proList.size()-1).getEndTime());
+            ovnBatchLot.setOtherTempsTitle("0002相似度当前值,0002相似度SET,0002相似度MIN,0002相似度MAX,0003相似度当前值,0003相似度SET,0003相似度MIN,0003相似度MAX,0004相似度当前值,0004相似度SET,0004相似度MIN,0004相似度MAX,0005相似度当前值,0005相似度SET,0005相似度MIN,0005相似度MAX,0006相似度当前值,0006相似度SET,0006相似度MIN,0006相似度MAX,0007相似度当前值,0007相似度SET,0007相似度MIN,0007相似度MAX,0008相似度当前值,0008相似度SET,0008相似度MIN,0008相似度MAX,0009相似度当前值,0009相似度SET,0009相似度MIN,0009相似度MAX,0010相似度当前值,0010相似度SET,0010相似度MIN,0010相似度MAX,0011相似度当前值,0011相似度SET,0011相似度MIN,0011相似度MAX,0012相似度当前值,0012相似度SET,0012相似度MIN,0012相似度MAX,0013相似度当前值,0013相似度SET,0013相似度MIN,0013相似度MAX,0014相似度当前值,0014相似度SET,0014相似度MIN,0014相似度MAX,0015相似度当前值,0015相似度SET,0015相似度MIN,0015相似度MAX,0015相似度当前值,0015相似度SET,0015相似度MIN,0015相似度MAX,0016相似度当前值,0016相似度SET,0016相似度MIN,0016相似度MAX,0017相似度当前值,0017相似度SET,0017相似度MIN,0017相似度MAX,0018相似度当前值,0018相似度SET,0018相似度MIN,0018相似度MAX,0019相似度当前值,0019相似度SET,0019相似度MIN,0019相似度MAX,0020相似度当前值,0020相似度SET,0020相似度MIN,0020相似度MAX,0021相似度当前值,0021相似度SET,0021相似度MIN,0021相似度MAX,0022相似度当前值,0022相似度SET,0022相似度MIN,0022相似度MAX,0023相似度当前值,0023相似度SET,0023相似度MIN,0023相似度MAX,0024相似度当前值,0024相似度SET,0024相似度MIN,0025相似度MAX,0026相似度当前值,0026相似度SET,0026相似度MIN,0026相似度MAX,0027相似度当前值,0027相似度SET,0027相似度MIN,0027相似度MAX,0028相似度当前值,0028相似度SET,0028相似度MIN,0028相似度MAX,0029相似度当前值,0029相似度SET,0029相似度MIN,0029相似度MAX,0030相似度当前值,0030相似度SET,0030相似度MIN,0030相似度MAX,0031相似度当前值,0031相似度SET,0031相似度MIN,0031相似度MAX,,");
+//            log.error("当前的主表数据为 : "+ovnBatchLot);
+            for (EdcDskLogProduction edcDskLogProduction:proList){
+                OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
+
+                String[] a = edcDskLogProduction.getParamValue().split(",");
+
+                Long create =  edcDskLogProduction.getStartTime().getTime()+(1000);
+                StringBuilder temp = new StringBuilder();
+                for (int i = 0; i < 116; i++) {
+                    if (i>=116){
+                        break;
+                    }
+                    if (i<8){
+                        temp.append(a[6]+",0,"+a[7]+",0,") ;
+                        i=7;
+                    }else {
+                        temp.append(a[i+1]+","+a[i+2]+",0,"+a[i+3]+",") ;
+                        i+=3;
+                    }
+                }
+                Date createTime = new Date(create);
+                ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
+                ovnBatchLotParam.setTempPv(a[3]);
+                ovnBatchLotParam.setCreateDate(createTime);
+                ovnBatchLotParam.setTempMax("0");
+                ovnBatchLotParam.setTempMin(a[4]);
+                ovnBatchLotParam.setTempSp("0");
+                ovnBatchLotParam.setOtherTempsValue(temp.toString());
+
+//                log.error("当前的系表数据为 : "+ovnBatchLotParam);
+                paramList.add(ovnBatchLotParam);
+
+            }
+
+            ovnBatchLot.setOvnBatchLotParamList(paramList);
+
+
+//            log.error("前后画像的主系数据为"+ovnBatchLot.toString());
+//            log.error("前后画像的主系数据为--------------------------------------------");
+//            log.error( JsonUtil.toJsonString(ovnBatchLot));
+
+
+//            log.error("当前的系表数据为----------------------------------------------------------------");
+
+
+
+
+
+
+            //实现主表一天内只有一条数据
+            Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
+            Date stime = new Date(time);
+            OvnBatchLot ovnBatchLot1 = iOvnBatchLotService.findBatchData(ovnBatchLot.getEqpId(),stime);
+            if(ovnBatchLot1!=null){
+                List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                iOvnBatchLotService.updateById(ovnBatchLot1);
+                for (OvnBatchLotParam batchLotParam : OvnBatchLotParamList) {
+                    batchLotParam.setBatchId(ovnBatchLot1.getId());
+                }
+                iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
+            }else{
+                iOvnBatchLotService.insert(ovnBatchLot);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
