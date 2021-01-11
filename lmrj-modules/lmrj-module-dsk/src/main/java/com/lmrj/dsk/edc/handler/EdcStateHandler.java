@@ -57,27 +57,32 @@ public class EdcStateHandler {
         EdcEqpState edcEqpState = JsonUtil.from(msg,EdcEqpState.class);
         if(!"ALARM".equals(edcEqpState.getState())){
             EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
-            if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
-                log.info("edcEqpState数据重复："+edcEqpState);
-            }else{
-                lastedcEqpState.setEndTime(edcEqpState.getStartTime());
-                Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
-                lastedcEqpState.setStateTimes(state);
-                try {
-                    edcEqpStateService.updateById(lastedcEqpState);
-
-                } catch (Exception e) {
-                    log.error("状态更新出错，edcEqpState数据更新失败"+e);
-                    e.printStackTrace();
-                }
-                try {
-                    iEdcEqpStateService.insert(edcEqpState);
-                } catch (Exception e) {
-                    log.error("状态插入出错，edcEqpState数据新建失败"+e);
-                    e.printStackTrace();
-                }
-                //修改设备实时状态
+            if(lastedcEqpState==null){
+                edcEqpStateService.insert(edcEqpState);
                 fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
+            }else{
+                if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
+                    log.info("edcEqpState数据重复："+edcEqpState);
+                }else{
+                    lastedcEqpState.setEndTime(edcEqpState.getStartTime());
+                    Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                    lastedcEqpState.setStateTimes(state);
+                    try {
+                        edcEqpStateService.updateById(lastedcEqpState);
+
+                    } catch (Exception e) {
+                        log.error("状态更新出错，edcEqpState数据更新失败"+e);
+                        e.printStackTrace();
+                    }
+                    try {
+                        iEdcEqpStateService.insert(edcEqpState);
+                    } catch (Exception e) {
+                        log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                        e.printStackTrace();
+                    }
+                    //修改设备实时状态
+                    fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
+                }
             }
         }
     }
