@@ -378,8 +378,6 @@ public class EdcDskLogHandler {
                     status = "RUN";
                 } else if ("3".equals(eventId)) {
                     status = "IDLE";
-                }else if("2".equals(eventId)){
-                    status = "ALARM";
                 }
             }
             EdcEqpState edcEqpState = new EdcEqpState();
