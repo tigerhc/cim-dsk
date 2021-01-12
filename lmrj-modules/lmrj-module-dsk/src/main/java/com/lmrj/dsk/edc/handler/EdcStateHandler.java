@@ -58,7 +58,13 @@ public class EdcStateHandler {
         if(!"ALARM".equals(edcEqpState.getState())){
             EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
             if(lastedcEqpState==null){
-                edcEqpStateService.insert(edcEqpState);
+                log.info("edcEqpState数据开始插入" + edcEqpState);
+                try {
+                    edcEqpStateService.insert(edcEqpState);
+                } catch (Exception e) {
+                    log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                    e.printStackTrace();
+                }
                 fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
             }else{
                 if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){

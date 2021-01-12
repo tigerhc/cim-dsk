@@ -33,8 +33,6 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
-import net.sf.json.util.JSONUtils;
-import org.junit.Test;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -561,17 +559,19 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventParams(eventParams);
                 edcEvtRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcEvtRecordList.add(edcEvtRecord);
-                if ("0".equals(eventId) || "7".equals(eventId)) {
-                    status = "DOWN";
-                } else if ("1".equals(eventId) || "6".equals(eventId)) {
-                    status = "RUN";
-                } else if ("3".equals(eventId)) {
-                    status = "IDLE";
-                }
             }
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
             edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
+            if ("0".equals(eventId) || "7".equals(eventId)) {
+                status = "DOWN";
+            } else if ("1".equals(eventId) || "6".equals(eventId)) {
+                status = "RUN";
+            } else if ("3".equals(eventId)) {
+                status = "IDLE";
+            } else if ("2".equals(eventId)) {
+                status = "ALARM";
+            }
             if (eqpId.contains("WB")) {
                 if (edcDskLogOperation.getEventName().equals("2")) {
                     status = "DOWN";
