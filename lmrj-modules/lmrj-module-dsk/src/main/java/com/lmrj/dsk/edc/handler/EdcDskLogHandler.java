@@ -222,8 +222,15 @@ public class EdcDskLogHandler {
         List<EdcDskLogProduction> goodPro = new ArrayList<>();
         for (EdcDskLogProduction edcDskLogProduction : proList) {
             if("N".equals(edcDskLogProduction.getJudgeResult())){
+                Date startTime = edcDskLogProduction.getStartTime();
+                Date endTime = edcDskLogProduction.getEndTime();
+                edcDskLogProduction.setStartTime(null);
+                edcDskLogProduction.setEndTime(null);
                 JSONObject json = JSONObject.fromObject(edcDskLogProduction);
                 EdcDskLogProductionDefective defectivePro = JsonUtil.from(json.toString(),EdcDskLogProductionDefective.class);
+                defectivePro.setStartTime(startTime);
+                defectivePro.setEndTime(endTime);
+                defectivePro.setId(null);
                 defectiveProList.add(defectivePro);
             }else{
                 goodPro.add(edcDskLogProduction);
