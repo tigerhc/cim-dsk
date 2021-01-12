@@ -126,10 +126,11 @@ public class EdcDskLogHandler {
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
 
-
+        log.error("当前设备-------------"+edcDskLogProductionList.get(0).getEqpId());
         if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-YGAZO1")){
             this.temperatureList2(edcDskLogProductionList);}
-
+        if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
+            this.temperatureList(edcDskLogProductionList);}
 
 
         List<EdcDskLogProduction> proList = new ArrayList<>();
@@ -160,8 +161,7 @@ public class EdcDskLogHandler {
                     fixProData(nextproList, nextLotTrack);
                 }
             }
-            if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
-                this.temperatureList(edcDskLogProductionList);}
+            log.error("当前设备"+edcDskLogProductionList.get(0).getEqpId());
 
         } else {
 
