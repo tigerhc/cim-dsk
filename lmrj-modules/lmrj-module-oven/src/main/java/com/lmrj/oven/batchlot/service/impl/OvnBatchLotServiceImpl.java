@@ -236,116 +236,116 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             return null;
         }else{
             List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
-            long timeFlag = 0;
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                Date begin = format.parse(beginTime);
-                Date end = format.parse(endTime);
-                 timeFlag = end.getTime()-begin.getTime();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if (timeFlag > 24*3600*1000*7&& !ObjectUtil.isNullOrEmpty(detail.get(0).get("other_temps_value"))){
-                int flag = 0;
-            List<Map> result =new ArrayList<>();
-            Map<String,Object> temp = new HashMap<>();
-            BigDecimal pv = new BigDecimal(0);
-            String resultArr = (String) detail.get(0).get("other_temps_value");
-            String[] strResultArr = resultArr.split(",");
-            Double[] Other = new Double[strResultArr.length];
-            for (int j = 0; j < strResultArr.length ; j++) {
-
-                if (j==0||j%4 == 0){
-                    Other[j]= Double.valueOf(0);
-                } else {
-                    Other[j]=(Double.valueOf(strResultArr[j]));
-                }
-            }
-            for (int i = 0; i <detail.size() ; i++) {
-                if((i!=0&&flag==60)||(i==(detail.size()-1))){
-                    if (i==(detail.size()-1)){
-                        String convert = String.valueOf(detail.get(i).get("temp_pv"));
-                        BigDecimal pv_temp = new BigDecimal(convert);
-                        pv = pv.add( pv_temp);
-                        String str = (String) detail.get(i).get("other_temps_value");
-                        String[] strArr = str.split(",");
-                        Double[] doubleArr = new Double[strArr.length];
-                        for (int j = 0; j <strArr.length ; j++) {
-                            doubleArr[j]=(Double.valueOf(strArr[j]));
-                        }
-                        for (int j = 0; j <doubleArr.length ; j++) {
-                            if (j==0||j%4 == 0){
-                                BigDecimal first = BigDecimal.valueOf(Other[j]);
-                                BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
-                                Other[j] = Double.valueOf(first.add(second).toString());
-                            }
-                        }
-                    }
-                    for (int j = 0; j <Other.length ; j++) {
-                        if (j==0||j%4 == 0){
-                            BigDecimal first = BigDecimal.valueOf(Other[j]);
-                            BigDecimal multiply = new BigDecimal(60);
-                            if((detail.size()%60!=0)&&i==detail.size()-1){
-                                multiply = new BigDecimal(detail.size()%60);
-                            }
-                            Other[j] =Double.valueOf(first.divide(multiply,2, RoundingMode.HALF_UP).toString());
-                        }
-                    }
-                    Map<String,Object> element = new HashMap<>();
-                    String[] stringArr = new String[Other.length];
-                    for (int j = 0; j <Other.length ; j++) {
-                        stringArr[j] = Other[j].toString();
-                    }
-                    BigDecimal multiplyTwo = new BigDecimal(60);
-                    if((detail.size()%60!=0)&&i==detail.size()-1){
-                        multiplyTwo = new BigDecimal(detail.size()%60);
-                    }
-                    element.put("temp_pv",Double.valueOf(pv.divide(multiplyTwo,2,RoundingMode.HALF_UP).toString()));
-                    element.put("temp_min",detail.get(i).get("temp_min"));
-                    element.put("temp_sp",detail.get(i).get("temp_sp"));
-                    element.put("temp_max",detail.get(i).get("temp_max"));
-                    element.put("create_date",detail.get(i).get("create_date"));
-                    element.put("other_temps_value", StringUtil.join(stringArr,","));
-                    result.add(element);
-                    pv = new BigDecimal(0);
-                    String str = (String) detail.get(i).get("other_temps_value");
-                    String[] strArr = str.split(",");
-                    Double[] doubleArr = new Double[strArr.length];
-                    for (int j = 0; j <strArr.length ; j++) {
-                        if (j==0||j%4 == 0){
-                            doubleArr[j]= Double.valueOf(0);
-                        }else {
-                            doubleArr[j]=(Double.valueOf(strArr[j]));
-                        }
-                    }
-                    Other = doubleArr;
-                    flag=0;
-                }
-                String convert = String.valueOf(detail.get(i).get("temp_pv"));
-                BigDecimal pv_temp = new BigDecimal(convert);
-                pv = pv.add( pv_temp);
-                String str = (String) detail.get(i).get("other_temps_value");
-                String[] strArr = str.split(",");
-                Double[] doubleArr = new Double[strArr.length];
-                for (int j = 0; j <strArr.length ; j++) {
-                    doubleArr[j]=(Double.valueOf(strArr[j]));
-                }
-                for (int j = 0; j <doubleArr.length ; j++) {
-                    if (j==0||j%4 == 0){
-                        BigDecimal first = BigDecimal.valueOf(Other[j]);
-                        BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
-                        Other[j] = Double.valueOf(first.add(second).toString());
-                    }
-                }
-           flag+=1;
-            }
-
-
-
-                  result.remove(result.size()-1);
-                return  result;
-
-            }
+//            long timeFlag = 0;
+//            try {
+//                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//                Date begin = format.parse(beginTime);
+//                Date end = format.parse(endTime);
+//                 timeFlag = end.getTime()-begin.getTime();
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//            if (timeFlag > 24*3600*1000*7&& !ObjectUtil.isNullOrEmpty(detail.get(0).get("other_temps_value"))){
+//                int flag = 0;
+//            List<Map> result =new ArrayList<>();
+//            Map<String,Object> temp = new HashMap<>();
+//            BigDecimal pv = new BigDecimal(0);
+//            String resultArr = (String) detail.get(0).get("other_temps_value");
+//            String[] strResultArr = resultArr.split(",");
+//            Double[] Other = new Double[strResultArr.length];
+//            for (int j = 0; j < strResultArr.length ; j++) {
+//
+//                if (j==0||j%4 == 0){
+//                    Other[j]= Double.valueOf(0);
+//                } else {
+//                    Other[j]=(Double.valueOf(strResultArr[j]));
+//                }
+//            }
+//            for (int i = 0; i <detail.size() ; i++) {
+//                if((i!=0&&flag==60)||(i==(detail.size()-1))){
+//                    if (i==(detail.size()-1)){
+//                        String convert = String.valueOf(detail.get(i).get("temp_pv"));
+//                        BigDecimal pv_temp = new BigDecimal(convert);
+//                        pv = pv.add( pv_temp);
+//                        String str = (String) detail.get(i).get("other_temps_value");
+//                        String[] strArr = str.split(",");
+//                        Double[] doubleArr = new Double[strArr.length];
+//                        for (int j = 0; j <strArr.length ; j++) {
+//                            doubleArr[j]=(Double.valueOf(strArr[j]));
+//                        }
+//                        for (int j = 0; j <doubleArr.length ; j++) {
+//                            if (j==0||j%4 == 0){
+//                                BigDecimal first = BigDecimal.valueOf(Other[j]);
+//                                BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
+//                                Other[j] = Double.valueOf(first.add(second).toString());
+//                            }
+//                        }
+//                    }
+//                    for (int j = 0; j <Other.length ; j++) {
+//                        if (j==0||j%4 == 0){
+//                            BigDecimal first = BigDecimal.valueOf(Other[j]);
+//                            BigDecimal multiply = new BigDecimal(60);
+//                            if((detail.size()%60!=0)&&i==detail.size()-1){
+//                                multiply = new BigDecimal(detail.size()%60);
+//                            }
+//                            Other[j] =Double.valueOf(first.divide(multiply,2, RoundingMode.HALF_UP).toString());
+//                        }
+//                    }
+//                    Map<String,Object> element = new HashMap<>();
+//                    String[] stringArr = new String[Other.length];
+//                    for (int j = 0; j <Other.length ; j++) {
+//                        stringArr[j] = Other[j].toString();
+//                    }
+//                    BigDecimal multiplyTwo = new BigDecimal(60);
+//                    if((detail.size()%60!=0)&&i==detail.size()-1){
+//                        multiplyTwo = new BigDecimal(detail.size()%60);
+//                    }
+//                    element.put("temp_pv",Double.valueOf(pv.divide(multiplyTwo,2,RoundingMode.HALF_UP).toString()));
+//                    element.put("temp_min",detail.get(i).get("temp_min"));
+//                    element.put("temp_sp",detail.get(i).get("temp_sp"));
+//                    element.put("temp_max",detail.get(i).get("temp_max"));
+//                    element.put("create_date",detail.get(i).get("create_date"));
+//                    element.put("other_temps_value", StringUtil.join(stringArr,","));
+//                    result.add(element);
+//                    pv = new BigDecimal(0);
+//                    String str = (String) detail.get(i).get("other_temps_value");
+//                    String[] strArr = str.split(",");
+//                    Double[] doubleArr = new Double[strArr.length];
+//                    for (int j = 0; j <strArr.length ; j++) {
+//                        if (j==0||j%4 == 0){
+//                            doubleArr[j]= Double.valueOf(0);
+//                        }else {
+//                            doubleArr[j]=(Double.valueOf(strArr[j]));
+//                        }
+//                    }
+//                    Other = doubleArr;
+//                    flag=0;
+//                }
+//                String convert = String.valueOf(detail.get(i).get("temp_pv"));
+//                BigDecimal pv_temp = new BigDecimal(convert);
+//                pv = pv.add( pv_temp);
+//                String str = (String) detail.get(i).get("other_temps_value");
+//                String[] strArr = str.split(",");
+//                Double[] doubleArr = new Double[strArr.length];
+//                for (int j = 0; j <strArr.length ; j++) {
+//                    doubleArr[j]=(Double.valueOf(strArr[j]));
+//                }
+//                for (int j = 0; j <doubleArr.length ; j++) {
+//                    if (j==0||j%4 == 0){
+//                        BigDecimal first = BigDecimal.valueOf(Other[j]);
+//                        BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
+//                        Other[j] = Double.valueOf(first.add(second).toString());
+//                    }
+//                }
+//           flag+=1;
+//            }
+//
+//
+//
+//                  result.remove(result.size()-1);
+//                return  result;
+//
+//            }
             return detail;
         }
     }
