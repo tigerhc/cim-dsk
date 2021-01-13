@@ -316,6 +316,7 @@ public class EdcDskLogHandler {
                 ovnBatchLotParam.setTempMax("0");
                 ovnBatchLotParam.setTempMin(a[4]);
                 ovnBatchLotParam.setTempSp("0");
+                ovnBatchLotParam.setRemarks(a[1]);
                 ovnBatchLotParam.setOtherTempsValue(temp.toString());
 
                 paramList.add(ovnBatchLotParam);
@@ -378,6 +379,7 @@ public class EdcDskLogHandler {
                 ovnBatchLotParam.setTempMax(a[5]);
                 ovnBatchLotParam.setTempMin(a[4]);
                 ovnBatchLotParam.setTempSp("0");
+                ovnBatchLotParam.setRemarks(a[1]);
                 ovnBatchLotParam.setOtherTempsValue(temp.toString());
 
                 paramList.add(ovnBatchLotParam);
