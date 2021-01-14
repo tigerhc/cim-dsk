@@ -103,7 +103,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
 
             if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
-                log.error("人员误操作记录，"+eqpId1+":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
                 return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
             }
 
@@ -242,7 +242,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String orderNo = lotNos[1]; //37368342
 
 
-
             //对当前批次进行判断，若批次结束时间过快，阻止操做
             String eqpId1 = eqpId;
             if (eqpId1.contains("WB")) {
@@ -261,7 +260,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("操做人员误操作，提前结束批次" + lotNo);
                 return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator";
             }
-
 
 
             MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
@@ -369,7 +367,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                                 @RequestParam String startDate, @RequestParam String endDate) {
         log.info("MesLotTrackController_chartKongDong : productionNo," + productionNo);
         List data = mesLotTrackService.kongDongBar(lotNo, productionNo, startDate, endDate);
-        List config = mesLotTrackService.getkongDongConfig(productionNo.replace("J.",""));
+        List config = mesLotTrackService.getkongDongConfig(productionNo.replace("J.", ""));
         Response rs = Response.ok();
         rs.putList("kongdong", data);
         rs.putList("config", config);
@@ -379,10 +377,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/getKeyence", method = {RequestMethod.GET, RequestMethod.POST})
     public String getKeyence(@RequestParam String mode, @RequestParam String lotNo, @RequestParam String production
     ) throws IOException {
-        fabLogService.info("", "", "getKeyence", mode+"+"+production, lotNo, "wangdong");//日志记录
+        fabLogService.info("", "", "getKeyence", mode + "+" + production, lotNo, "wangdong");//日志记录
         Response rs = new Response();
-        String paramStr = production.substring(3,8);
-        String result = mesLotTrackService.getKeyence(mode,lotNo,paramStr);
+        String paramStr = production.substring(3, 8);
+        String result = mesLotTrackService.getKeyence(mode, lotNo, paramStr);
         fabLogService.info("", "", "getKeyence.result", result, lotNo, "wangdong");//日志记录
         return result;
     }
@@ -392,15 +390,25 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     ) throws IOException {
         Response rs = new Response();
         String result = null;
-        if (category.equals("5GI")){
-            fabLogService.info("", "", "find5GI", production,lotNo, "jiafuxing");//日志记录
-            result = mesLotTrackService.find5GI(lotNo,production);
-        }else if (category.equals("6GI")){
-            fabLogService.info("", "", "find6GI", production,lotNo, "jiafuxing");//日志记录
-            result = mesLotTrackService.find6GI(lotNo,production);
+        if (category.equals("5GI")) {
+            fabLogService.info("", "", "find5GI", production, lotNo, "jiafuxing");//日志记录
+            result = mesLotTrackService.find5GI(lotNo, production);
+        } else if (category.equals("6GI")) {
+            fabLogService.info("", "", "find6GI", production, lotNo, "jiafuxing");//日志记录
+            result = mesLotTrackService.find6GI(lotNo, production);
         }
         fabLogService.info("", "", "findGI.result", result, lotNo, "jiafuxing");//日志记录
         return result;
     }
 
+    @RequestMapping(value = "/findSX", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findSX(@RequestParam String production ,@RequestParam String lotNo,@RequestParam String num
+    ) throws IOException {
+        return mesLotTrackService.findSX(production,lotNo,num);
+
+    }
+
 }
+
+
+
