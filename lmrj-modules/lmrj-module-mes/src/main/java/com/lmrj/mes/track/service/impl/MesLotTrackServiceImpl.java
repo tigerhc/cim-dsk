@@ -898,9 +898,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @SuppressWarnings("unchecked")
-    public String findSX(String production, String lotNo,String num) {
+    public String findSX(String production, String lotNo) {
         List<String> lines = null;
-        String result = new String();
+        StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX.csv");
 
         try {
@@ -919,13 +919,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         for (String rowString : lines){
             String[] row = rowString.split(",");
             String[] colum2 = row[2].split("-");
-            if(production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK") && num.equals(row[3].replaceFirst("^0*", ""))){
-              result= row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12];
-              break;
+            if(production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK") ){
+              result.append(row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12]+",");
 
             }
         }
-        return  result;
+        return  result.toString();
     }
 
 
