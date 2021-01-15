@@ -52,14 +52,22 @@ public class EdcDskLogProduction extends AbstractEntity {
     @TableField(value = "recipe_code")
     @Excel(name = "配方名", orderNum = "1", width = 30)
     private String recipeCode;
-    /**日投入数*/
+    /**日产量*/
     @TableField(value = "day_yield")
     @Excel(name = "日产量", orderNum = "1", width = 20)
     private Integer dayYield;
-    /**批量投入数*/
+    /**批次产量*/
     @TableField(value = "lot_yield")
     @Excel(name = "批次产量", orderNum = "1", width = 20)
     private Integer lotYield;
+    /**日投入数*/
+    @TableField(value = "day_input")
+    @Excel(name = "日产量", orderNum = "1", width = 20)
+    private Integer dayInput;
+    /**批量投入数*/
+    @TableField(value = "lot_input")
+    @Excel(name = "批次产量", orderNum = "1", width = 20)
+    private Integer lotInput;
     /**制品的批号*/
     @TableField(value = "material_lot_no")
     private String materialLotNo;

@@ -53,6 +53,10 @@ public class MesLotTrack extends BaseDataEntity {
     @Excel(name = "设备产量", orderNum = "5")
     @TableField(value = "lot_yield_eqp")
     private Integer lotYieldEqp;
+    /**批次投入*/
+    @Excel(name = "产量", orderNum = "5")
+    @TableField(value = "lot_input")
+    private Integer lotInput;
     /**开始时间*/
     @Excel(name = "开始时间", orderNum = "6")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")

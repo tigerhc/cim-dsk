@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.lmrj.common.mvc.entity.AbstractEntity;
-import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -50,6 +49,12 @@ public class EdcDskLogProductionHis extends AbstractEntity {
     /**批次产量*/
     @TableField(value = "lot_yield")
     private Integer lotYield;
+    /**日投入数*/
+    @TableField(value = "day_input")
+    private Integer dayInput;
+    /**批量投入数*/
+    @TableField(value = "lot_input")
+    private Integer lotInput;
     /**制品的批号*/
     @TableField(value = "material_lot_no")
     private String materialLotNo;

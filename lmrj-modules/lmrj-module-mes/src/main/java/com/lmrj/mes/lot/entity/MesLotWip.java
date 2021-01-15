@@ -45,6 +45,9 @@ public class MesLotWip extends BaseDataEntity {
     /**批次设备产量*/
     @TableField(value = "lot_yield_eqp")
     private Integer lotYieldEqp;
+    /**批次投入数*/
+    @TableField(value = "lot_input")
+    private Integer lotInput;
     /**开始时间*/
     @TableField(value = "start_time")
     private Date startTime;
