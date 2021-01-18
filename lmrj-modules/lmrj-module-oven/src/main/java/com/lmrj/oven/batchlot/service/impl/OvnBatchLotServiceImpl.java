@@ -2,16 +2,14 @@ package com.lmrj.oven.batchlot.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.util.calendar.DateUtil;
-import com.lmrj.util.file.FtpUtil;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.mapper.OvnBatchLotMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
-import com.lmrj.util.lang.ObjectUtil;
-import com.lmrj.util.lang.StringUtil;
+import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.file.FtpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -19,16 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -53,6 +46,10 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     @Override
     public OvnBatchLot findBatchData(String eqpId , Date startTime){
         return baseMapper.findBatchData(eqpId,startTime);
+    }
+    @Override
+    public  OvnBatchLot findBatchDataByLot(String eqpId , String lotNo){
+        return baseMapper.findBatchDataByLot(eqpId,lotNo);
     }
     @Override
     public OvnBatchLot selectById(Serializable id) {

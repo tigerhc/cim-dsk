@@ -43,4 +43,7 @@ public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
 
     @Select("select * from ovn_batch_lot where eqp_id = #{eqpId} and start_time > #{startTime} ORDER BY create_date desc limit 1")
     OvnBatchLot findBatchData(String eqpId , Date startTime);
+
+    @Select("select * from ovn_batch_lot where eqp_id = #{eqpId} and lot_id = #{lotNo} ORDER BY create_date desc limit 1")
+    OvnBatchLot findBatchDataByLot(String eqpId , String lotNo);
 }

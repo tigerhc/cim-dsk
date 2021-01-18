@@ -40,4 +40,6 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp);
 
     OvnBatchLot findBatchData(String eqpId , Date startTime);
+
+    OvnBatchLot findBatchDataByLot(String eqpId , String lotNo);
 }
