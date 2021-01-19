@@ -143,6 +143,9 @@ public class EdcDskLogHandler {
             //同一批次
             if (nextLotTrack == null) {
                 fixProData(edcDskLogProductionList, lotTrack);
+                if(eqpId.equals("SIM-YGAZO1")){
+                    this.temperatureList2(edcDskLogProductionList,lotTrack.getLotNo());
+                }
                 //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
             } else {
                 for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
@@ -161,7 +164,6 @@ public class EdcDskLogHandler {
             }
             if(eqpId.equals("SIM-YGAZO1")){
                 if(proList.size() > 0){
-
                     this.temperatureList2(proList,lotTrack.getLotNo());
                 }
                 if (nextproList.size() > 0) {
@@ -296,7 +298,7 @@ public class EdcDskLogHandler {
             ovnBatchLot.setId(StringUtil.randomTimeUUID());
             ovnBatchLot.setEqpId(proList.get(0).getEqpId());
             ovnBatchLot.setStartTime(proList.get(0).getStartTime());
-            ovnBatchLot.setEndTime(proList.get(proList.size()-1).getEndTime());
+            ovnBatchLot.setEndTime(proList.get(proList.size()-1).getStartTime());
             ovnBatchLot.setOtherTempsTitle("0003相似度当前值,0003相似度SET,0003相似度MIN,0003相似度MAX,0005相似度当前值,0005相似度SET,0005相似度MIN,0005相似度MAX,0006相似度当前值,0006相似度SET,0006相似度MIN,0006相似度MAX,0007相似度当前值,0007相似度SET,0007相似度MIN,0007相似度MAX,0008相似度当前值,0008相似度SET,0008相似度MIN,0008相似度MAX,0009相似度当前值,0009相似度SET,0009相似度MIN,0009相似度MAX,0010相似度当前值,0010相似度SET,0010相似度MIN,0010相似度MAX,0011相似度当前值,0011相似度SET,0011相似度MIN,0011相似度MAX,0012相似度当前值,0012相似度SET,0012相似度MIN,0012相似度MAX,0013相似度当前值,0013相似度SET,0013相似度MIN,0013相似度MAX,0014相似度当前值,0014相似度SET,0014相似度MIN,0014相似度MAX,0015相似度当前值,0015相似度SET,0015相似度MIN,0015相似度MAX,0016相似度当前值,0016相似度SET,0016相似度MIN,0016相似度MAX,0017相似度当前值,0017相似度SET,0017相似度MIN,0017相似度MAX,0018相似度当前值,0018相似度SET,0018相似度MIN,0018相似度MAX,0019相似度当前值,0019相似度SET,0019相似度MIN,0019相似度MAX,0020相似度当前值,0020相似度SET,0020相似度MIN,0020相似度MAX,0021相似度当前值,0021相似度SET,0021相似度MIN,0021相似度MAX,0022相似度当前值,0022相似度SET,0022相似度MIN,0022相似度MAX,0023相似度当前值,0023相似度SET,0023相似度MIN,0023相似度MAX,0024相似度当前值,0024相似度SET,0024相似度MIN,0024相似度MAX,0025相似度当前值,0025相似度SET,0025相似度MIN,0025相似度MAX,0026相似度当前值,0026相似度SET,0026相似度MIN,0026相似度MAX,0027相似度当前值,0027相似度SET,0027相似度MIN,0027相似度MAX,0028相似度当前值,0028相似度SET,0028相似度MIN,0028相似度MAX,0029相似度当前值,0029相似度SET,0029相似度MIN,0029相似度MAX,0030相似度当前值,0030相似度SET,0030相似度MIN,0030相似度MAX,0031相似度当前值,0031相似度SET,0031相似度MIN,0031相似度MAX,,");
             for (EdcDskLogProduction edcDskLogProduction:proList){
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
@@ -356,12 +358,15 @@ public class EdcDskLogHandler {
             ovnBatchLot.setEqpId(proList.get(0).getEqpId());
             ovnBatchLot.setStartTime(proList.get(0).getStartTime());
             ovnBatchLot.setLotId(lotNo);
-            ovnBatchLot.setEndTime(proList.get(proList.size()-1).getEndTime());
+            ovnBatchLot.setEndTime(proList.get(proList.size()-1).getStartTime());
             ovnBatchLot.setOtherTempsTitle("T102面积当前值,T102面积SET,T102面积MIN,T102面积MAX,T103面积当前值,T103面积SET,T103面积MIN,T103面积MAX,T104面积当前值,T105面积SET,T105面积MIN,T105面积MAX,T106面积当前值,T106面积SET,T106面积MIN,T106面积MAX,T107面积当前值,T107面积SET,T107面积MIN,T107面积MAX,T108面积当前值,T108面积SET,T108面积MIN,T108面积MAX,T109面积当前值,T109面积SET,T109面积MIN,T109面积MAX,T110面积当前值,T110面积SET,T110面积MIN,T110面积MAX,T111面积当前值,T111面积SET,T111面积MIN,T111面积MAX,T112面积当前值,T112面积SET,T112面积MIN,T112面积MAX,T113面积当前值,T113面积SET,T113面积MIN,T113面积MAX,T114面积当前值,T114面积SET,T114面积MIN,T114面积MAX,T115面积当前值,T115面积SET,T115面积MIN,T115面积MAX,T116面积当前值,T116面积SET,T116面积MIN,T116面积MAX,T117面积当前值,T117面积SET,T117面积MIN,T117面积MAX,T118面积当前值,T118面积SET,T118面积MIN,T118面积MAX,T119面积当前值,T119面积SET,T119面积MIN,T119面积MAX,T120面积当前值,T120面积SET,T120面积MIN,T120面积MAX,T121面积当前值,T121面积SET,T121面积MIN,T121面积MAX,T122面积当前值,T122面积SET,T122面积MIN,T122面积MAX,T123面积当前值,T123面积SET,T123面积MIN,T123面积MAX,T124面积当前值,T124面积SET,T124面积MIN,T124面积MAX,T125面积当前值,T125面积SET,T125面积MIN,T125面积MAX,T126面积当前值,T126面积SET,T126面积MIN,T126面积MAX,T127面积当前值,T127面积SET,T127面积MIN,T127面积MAX,T128面积当前值,T128面积SET,T128面积MIN,T128面积MAX,T129面积当前值,T129面积SET,T129面积MIN,T129面积MAX,,");
             for (EdcDskLogProduction edcDskLogProduction:proList){
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
                 String[] a = edcDskLogProduction.getParamValue().split(",");
-                Long create =  edcDskLogProduction.getStartTime().getTime()+(1000);
+                Long create = new Date().getTime();
+                if(edcDskLogProduction.getStartTime()!=null){
+                    create =  edcDskLogProduction.getStartTime().getTime()+(1000);
+                }
                 StringBuilder temp = new StringBuilder();
                 for (int i = 6; i < a.length; i++) {
                     temp.append(a[i+1]+",0,"+a[i+2]+","+a[i+3]+",") ;
@@ -395,7 +400,7 @@ public class EdcDskLogHandler {
             }
         } catch (Exception e) {
             log.error("SIM-YGAZO1温度数据插入失败！");
-            log.error(""+e);
+            log.error("",e);
             e.printStackTrace();
         }
 
