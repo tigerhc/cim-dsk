@@ -7,6 +7,7 @@ import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
 import com.lmrj.util.ExcelUtil;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,8 @@ public class ApsPlanImportTask {
     public void rundskAps() {
         log.info("定时任务开始执行");
         String[] extensions = {"xls"};
+        String year = DateUtil.getYear().substring(2,4);
+        dir = dir+"日次計画"+year+"年\\";
         List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
         if(files.size() == 0){
             return;
