@@ -35,6 +35,8 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
 
     List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
 
+    List<Map> findDetailBytimeOther(String eqpId,String lotNO);
+
     List<Map<String, Object>> findTodayEqpIds();
 
     boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp);
