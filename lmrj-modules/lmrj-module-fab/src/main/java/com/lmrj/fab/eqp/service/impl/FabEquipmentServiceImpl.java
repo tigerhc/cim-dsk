@@ -31,6 +31,7 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     public List<FabEquipment> findWbEqp(String eqpId){
         return baseMapper.findWbEqp(eqpId);
     }
+
     @Override
     public List<String> findStationCodeByLineNo(String lineNo) {
         return baseMapper.findStationCodeByLineNo(lineNo);
@@ -88,5 +89,10 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     public List<Map<String,Object>> findEmailALL (String  code){
         List<Map<String,Object>> result = baseMapper.findEmailALL(code);
         return result;
+    }
+
+    @Override
+    public List<FabEquipment> getTempEqpList() {
+        return baseMapper.findTempEqpList();
     }
 }

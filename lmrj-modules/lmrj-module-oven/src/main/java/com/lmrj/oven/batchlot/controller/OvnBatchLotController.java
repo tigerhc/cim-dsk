@@ -14,6 +14,7 @@ import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
@@ -55,6 +56,9 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
 
     @Autowired
     private IOvnBatchLotService ovnBatchLotService;
+
+    @Autowired
+    private IFabEquipmentService eqpService;
 
     @Autowired
     private AmqpTemplate rabbitTemplate;
@@ -138,6 +142,13 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         String content = JSON.toJSONString(fabEquipmentOvenStatusList);
         ServletUtils.printJson(response, content);
         //FastJsonUtils.print(fabEquipmentOvenStatusList);
+    }
+
+    @RequestMapping("tempEqpList")
+    public Response tempEqpList(){
+        Response rs = Response.ok();
+        rs.put("eqpId", eqpService.getTempEqpList());
+        return rs;
     }
 
     @GetMapping("chart")

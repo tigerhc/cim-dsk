@@ -43,4 +43,6 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     List<Map<String,Object>> findEmailALL (String code);
 
     List<FabEquipment> findWbEqp(String eqpId);
+
+    List<FabEquipment> getTempEqpList();
 }
