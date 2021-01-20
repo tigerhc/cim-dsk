@@ -25,6 +25,10 @@ import lombok.Data;
 @Data
 public class MapTrayChipLog extends BaseDataEntity {
 
+
+    /**追溯程序标识*/
+    @TableField(value = "tray_code")
+    private String trayCode;
     /**执行开始时间*/
     @TableField(value = "begin_time")
     private Date beginTime;

@@ -6,7 +6,9 @@ import com.lmrj.map.tray.entity.MapTrayChipMove;
 
 public interface IMapTrayChipMoveProcessService extends ICommonService<MapTrayChipMove> {
 //    void traceDataNeedSpace();
-    String processErrDataFlag = "err";
-    String processAsynchronous = "asynchronous";
+    String processErrDataFlag = "ERR_TRAY";
+    String processAsynchronous = "DATA_TRAY";
+    String processNgDataFlag = "NG_TRAY";
+
     void traceData(MapTrayChipLog traceLog, String flag);
 }

@@ -62,7 +62,9 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 data.setChipId(chipId);
                 mapperList.add(data);
             }
-            return baseMapper.insertMoveLog(mapperList);
+            if(mapperList.size()>0){
+                return baseMapper.insertMoveLog(mapperList);
+            }
         } catch (Exception e){
             e.printStackTrace();
         }

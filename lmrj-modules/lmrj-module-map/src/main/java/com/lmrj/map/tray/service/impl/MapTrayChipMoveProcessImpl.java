@@ -9,6 +9,7 @@ import com.lmrj.map.tray.service.IMapTrayChipLogDetailService;
 import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -340,17 +341,26 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
     public void traceData(MapTrayChipLog traceLog, String processFlag) {
 //        baseMapper.emptyTemp();
         //获得所有打码机上报的记录作为起点
-        List<Map<String, Object>> tieHe = baseMapper.chkRecordCnt();
+//        List<Map<String, Object>> tieHe = baseMapper.chkRecordCnt();
         List<MapTrayChipMove> startData;
-        if(IMapTrayChipMoveProcessService.processErrDataFlag.equals(processFlag)){
-            startData = baseMapper.getStartErrorData();
-            traceLog.setRemarks("追溯异常的数据");
-        }else if(IMapTrayChipMoveProcessService.processAsynchronous.equals(processFlag)){
-            String startTime = baseMapper.getLastStartTime();
-            //通过上次开始执行的时间可算出在这个时间之后有多少数据
-//            startData = baseMapper.getStartData(startTime);
-            startData = baseMapper.getStartData("");
-            traceLog.setRemarks("异步的追溯异数据,startTime:"+startTime);
+
+        //处理日志表
+        String startTime = baseMapper.getLastStartTime(processFlag);
+        if(StringUtil.isEmpty(startTime)){
+            traceLog.setBeginTime(new Date());
+            mpTrayChipLogService.insert(traceLog);
+        }
+
+        //根据processFlag取对应的开头数据
+        if(processErrDataFlag.equals(processFlag)){
+            startData = baseMapper.getStartErrorData(startTime);
+            traceLog.setRemarks("追溯异常的数据"+startTime);
+        }else if(processAsynchronous.equals(processFlag)){
+            startData = baseMapper.getStartData(startTime);
+            traceLog.setRemarks("追溯正常数据,startTime:"+startTime);
+        }else if(processNgDataFlag.equals(processFlag)){
+            startData = baseMapper.getNGStart(startTime);
+            traceLog.setRemarks("追溯NG数据,startTime:"+startTime);
         }else{
             startData = baseMapper.getStartData("");
             traceLog.setRemarks("追溯正常的数据");
@@ -370,41 +380,41 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 if(!startItem.getLotNo().equals(errorLotNo)){
                     while(traceList.size()>0){
                         MapTrayChipMove item = traceList.get(0);
-                        if(item.getEqpType()==4){
-                            item.setLmtTime(TraceDateUtil.getChkTime(item.getStartTime(), -5));//贴合数据的前后不超过5分钟
-                        }
+//                        if(item.getEqpType()==4){
+//                            item.setLmtTime(TraceDateUtil.getChkTime(item.getStartTime(), -5));//贴合数据的前后不超过5分钟
+//                        }
                         List<MapTrayChipMove> upperData = baseMapper.getUpperData(item);
-                        if(item.getEqpType()==4){
-                            int recordCnt = 0;
-                            for(Map<String, Object> thItem : tieHe){
-                                if(MapUtils.getString(thItem, "lotNo").equals(item.getLotNo())
-                                    && MapUtils.getString(thItem, "eqpId").equals(item.getEqpId())){
-                                    recordCnt = MapUtils.getIntValue(thItem, "recordCnt");
-                                    break;
-                                }
-                            }
-                            //检查配置是否不正确
-                            if(tieHe.size()<1 || recordCnt==0){
-                                buff.clear();
-                                traceList.clear();
-                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
-                                errDetail.setWarnDtl("贴合的配置没有找到.eqpId:"+item.getEqpId()+",lotNo:"+item.getLotNo());
-                                errDetail.setWarnId(item.getId());
-                                errDetail.setCreateDate(new Date());
-                                errDetailList.add(errDetail);
-                                errorLotNo = item.getLotNo();
-                                break;
-                            }else if(upperData.size()!=recordCnt){
-                                clearBuff(buff, 2);
-                                error++;
-                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
-                                errDetail.setWarnDtl("贴合的数量不正确，正确的数量："+recordCnt+",实际数量"+upperData.size()+",复查json："+ JsonUtil.toJsonString(item));
-                                errDetail.setWarnId(item.getId());
-                                errDetail.setCreateDate(new Date());
-                                errDetailList.add(errDetail);
-                                break;
-                            }
-                        }
+//                        if(item.getEqpType()==4){
+//                            int recordCnt = 0;
+//                            for(Map<String, Object> thItem : tieHe){
+//                                if(MapUtils.getString(thItem, "lotNo").equals(item.getLotNo())
+//                                    && MapUtils.getString(thItem, "eqpId").equals(item.getEqpId())){
+//                                    recordCnt = MapUtils.getIntValue(thItem, "recordCnt");
+//                                    break;
+//                                }
+//                            }
+//                            //检查配置是否不正确
+//                            if(tieHe.size()<1 || recordCnt==0){
+//                                buff.clear();
+//                                traceList.clear();
+//                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+//                                errDetail.setWarnDtl("贴合的配置没有找到.eqpId:"+item.getEqpId()+",lotNo:"+item.getLotNo());
+//                                errDetail.setWarnId(item.getId());
+//                                errDetail.setCreateDate(new Date());
+//                                errDetailList.add(errDetail);
+//                                errorLotNo = item.getLotNo();
+//                                break;
+//                            }else if(upperData.size()!=recordCnt){
+//                                clearBuff(buff, 2);
+//                                error++;
+//                                MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+//                                errDetail.setWarnDtl("贴合的数量不正确，正确的数量："+recordCnt+",实际数量"+upperData.size()+",复查json："+ JsonUtil.toJsonString(item));
+//                                errDetail.setWarnId(item.getId());
+//                                errDetail.setCreateDate(new Date());
+//                                errDetailList.add(errDetail);
+//                                break;
+//                            }
+//                        }
                         if(upperData!=null && upperData.size()>0){
                             for(MapTrayChipMove upperItem : upperData){
                                 if(StringUtils.isEmpty(upperItem.getChipId())){
