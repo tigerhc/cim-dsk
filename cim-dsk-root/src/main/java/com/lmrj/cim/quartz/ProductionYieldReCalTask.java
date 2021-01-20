@@ -50,7 +50,7 @@ public class ProductionYieldReCalTask {
         Collections.sort(filenewList, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
-                if (o2.lastModified() > o1.lastModified()) {
+                if (o2.lastModified() < o1.lastModified()) {
                     return 1;
                 } else {
                     return -1;
