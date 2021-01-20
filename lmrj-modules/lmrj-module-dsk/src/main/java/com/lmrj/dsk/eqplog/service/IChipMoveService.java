@@ -8,4 +8,6 @@ import java.util.Map;
 
 public interface IChipMoveService extends ICommonService<ChipMove> {
     int insertData(List<Map<String, Object>> dataList);
+
+    int insertChipIdData(List<Map<String, Object>> dataList);
 }

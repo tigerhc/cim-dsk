@@ -22,10 +22,23 @@ public class WaffleHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.CHIP_MOVE"})
     public void parseWaffleMove(String dataJson) {
-        log.info("WaffleHandler_parseWaffleMove:find data in queue");
         try {
             List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
+            log.info("WaffleHandler_parseWaffleMove:find data in queue,count:"+dataList.size());
             int count = mapTrayChipMoveService.insertData(dataList);
+            log.info("WaffleHandler_parseWaffleMove:count:"+count);
+        }catch(Exception e){
+            log.error("WaffleHandler_parseWaffleMove:find an error");
+        }
+    }
+
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.CHIP_ID_DATA"})
+    public void saveChipIdData(String dataJson) {
+        try {
+            List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
+            log.info("WaffleHandler_parseWaffleMove:find data in queue,count:"+dataList.size());
+            int count = mapTrayChipMoveService.insertChipIdData(dataList);
             log.info("WaffleHandler_parseWaffleMove:count:"+count);
         }catch(Exception e){
             log.error("WaffleHandler_parseWaffleMove:find an error");
