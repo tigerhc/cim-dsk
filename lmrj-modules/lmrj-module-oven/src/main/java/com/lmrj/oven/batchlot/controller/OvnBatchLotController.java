@@ -198,6 +198,21 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         ServletUtils.printJson(response, content);
     }
 
+    @RequestMapping(value = "/tempbytimeOther", method = {RequestMethod.GET, RequestMethod.POST})
+    public void rptMsRecordByTimeOther(@RequestParam String lotNo,
+                                       HttpServletRequest request, HttpServletResponse response) {
+        List<Map> maps = ovnBatchLotService.findDetailBytimeOther("SIM-YGAZO1",lotNo);
+        String content = "";
+        if (maps == null) {
+            content = JSON.toJSONString(DateResponse.error("请缩短时间范围"));
+        } else {
+            OvnBatchLot ovnBatchLot = ovnBatchLotService.selectOne(new EntityWrapper<OvnBatchLot>().eq("eqp_id", "SIM-YGAZO1"));
+            Response res = DateResponse.ok(maps);
+            res.put("title", ovnBatchLot.getOtherTempsTitle());
+            content = JSON.toJSONStringWithDateFormat(res, JSON.DEFFAULT_DATE_FORMAT);
+        }
+        ServletUtils.printJson(response, content);
+    }
 
     @RequestMapping(value = "/tempCharbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public Map tempMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,

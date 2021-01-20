@@ -348,6 +348,17 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     }
 
     @Override
+    public List<Map> findDetailBytimeOther(String eqpId,String lotNo) {
+
+        List<Map> detail =  baseMapper.findDetailBytimeOther(eqpId,lotNo);
+
+        return detail;
+
+    }
+
+
+
+    @Override
     public List<Map<String, Object>> findTodayEqpIds() {
         String timeStr = DateUtil.getDate();
         return baseMapper.findToEqpId(timeStr);

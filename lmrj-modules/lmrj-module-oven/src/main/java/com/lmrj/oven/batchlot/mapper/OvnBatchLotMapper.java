@@ -35,6 +35,8 @@ public interface OvnBatchLotMapper extends BaseMapper<OvnBatchLot> {
 
     List<Map> findDetailBytime(@Param("eqpId") String eqpId,@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
+    List<Map> findDetailBytimeOther(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo);
+
     List<Map<String, Object>> findToEqpId(@Param("dateStr")String dateStr);
 
     int saveEqp(@Param("eqps")List<Map<String,Object>> eqps);
