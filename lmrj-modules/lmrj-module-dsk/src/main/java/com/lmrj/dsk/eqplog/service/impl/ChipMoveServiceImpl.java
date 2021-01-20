@@ -29,34 +29,27 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
-                if(!StringUtil.isEmpty(chipId)){
-                    data.setFromTrayId(MapUtils.getString(item, "toTrayId"));
+                data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
+                String fromRow = MapUtils.getString(item, "fromRow");
+                if(StringUtil.isEmpty(fromRow)){
+                    data.setFromX(null);
                 }else{
-                    data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
+                    data.setFromX(Integer.parseInt(fromRow));
                 }
-                if(!StringUtil.isEmpty(chipId)){
-                    data.setFromX(MapUtils.getIntValue(item, "toRow"));
+                String fromCol = MapUtils.getString(item, "fromCol");
+                if(StringUtil.isEmpty(fromCol)){
+                    data.setFromY(null);
                 }else{
-                    String fromRow = MapUtils.getString(item, "fromRow");
-                    if(StringUtil.isEmpty(fromRow)){
-                        data.setFromX(null);
-                    }else{
-                        data.setFromX(Integer.parseInt(fromRow));
-                    }
-                }
-                if(!StringUtil.isEmpty(chipId)){
-                    data.setFromY(MapUtils.getIntValue(item, "toCol"));
-                }else{
-                    String fromCol = MapUtils.getString(item, "fromCol");
-                    if(StringUtil.isEmpty(fromCol)){
-                        data.setFromY(null);
-                    }else{
-                        data.setFromY(Integer.parseInt(fromCol));
-                    }
+                    data.setFromY(Integer.parseInt(fromCol));
                 }
                 data.setToTrayId(MapUtils.getString(item, "toTrayId"));
-                data.setToX(MapUtils.getIntValue(item, "toRow"));
-                data.setToY(MapUtils.getIntValue(item, "toCol"));
+                if("APJ-HB2-SORT2".equals(data.getEqpId())){
+                    data.setToX(1);
+                    data.setToY(1);
+                }else{
+                    data.setToX(MapUtils.getIntValue(item, "toRow"));
+                    data.setToY(MapUtils.getIntValue(item, "toCol"));
+                }
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
                 data.setChipId(chipId);
