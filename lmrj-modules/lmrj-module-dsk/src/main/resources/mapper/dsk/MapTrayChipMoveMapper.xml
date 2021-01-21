@@ -25,13 +25,10 @@
                     #{item.startTime},now(),#{item.chipId})
              </foreach>
     </insert>
-    <insert id="insertSingleChip" parameterType="com.lmrj.dsk.eqplog.entity.ChipSingle">
-        insert into map_tray_chip_single(eqp_id,chip_id,production_no,lot_no,from_tray_id,from_x,from_y,to_tray_id,to_x,to_y,judge_result,
-            start_time,create_date,box_cnt)values
+    <insert id="insertChipBox" parameterType="com.lmrj.dsk.eqplog.entity.ChipBox">
+        insert into map_tray_chip_single(eqp_id,production_no,lot_no,to_tray_id,start_time,create_date)values
             <foreach collection="dataList" item="item" separator=",">
-                (#{item.eqpId},#{item.chipId},#{item.productionNo},#{item.lotNo},#{item.fromTrayId},#{item.fromX}
-                ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.judgeResult},
-                #{item.startTime},now(),#{boxCnt})
+                (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.toTrayId},#{item.startTime},now())
             </foreach>
     </insert>
 </mapper>

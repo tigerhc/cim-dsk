@@ -7,15 +7,12 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName("map_tray_chip_move")
+@TableName("map_tray_chip_box")
 @SuppressWarnings("serial")
 @Data
-public class ChipSingle {
+public class ChipBox {
     @TableId(value = "id")
     protected String id;
-    /**芯片ID*/
-    @TableField(value = "chip_id")
-    private String chipId;
     /**设备号*/
     @TableField(value = "eqp_id")
     private String eqpId;
@@ -25,24 +22,9 @@ public class ChipSingle {
     /**批次号*/
     @TableField(value = "lot_no")
     private String lotNo;
-    /**起始托盘ID*/
-    @TableField(value = "from_tray_id")
-    private String fromTrayId;
-    /**起始托盘X*/
-    @TableField(value = "from_x")
-    private Integer fromX;
-    /**起始托盘Y*/
-    @TableField(value = "from_y")
-    private Integer fromY;
     /**目标托盘ID*/
     @TableField(value = "to_tray_id")
     private String toTrayId;
-    /**目标托盘X*/
-    @TableField(value = "to_x")
-    private Integer toX;
-    /**目标托盘Y*/
-    @TableField(value = "to_y")
-    private Integer toY;
     /**判定结果*/
     @TableField(value = "judge_result")
     private String judgeResult;
@@ -52,6 +34,6 @@ public class ChipSingle {
     /**创建日期*/
     @TableField(value = "create_date")
     private Date createDate;
-    @TableField(value = "box_cnt")
-    private Integer boxCnt;
+    @TableField(value = "map_flag")
+    private Integer mapFlag;
 }

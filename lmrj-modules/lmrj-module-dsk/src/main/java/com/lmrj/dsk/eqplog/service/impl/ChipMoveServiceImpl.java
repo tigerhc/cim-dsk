@@ -1,8 +1,9 @@
 package com.lmrj.dsk.eqplog.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
+import com.lmrj.dsk.constant.EqpNameConstant;
 import com.lmrj.dsk.eqplog.entity.ChipMove;
-import com.lmrj.dsk.eqplog.entity.ChipSingle;
+import com.lmrj.dsk.eqplog.entity.ChipBox;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
 import com.lmrj.util.lang.StringUtil;
@@ -47,7 +48,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setFromY(Integer.parseInt(fromCol));
                 }
                 data.setToTrayId(MapUtils.getString(item, "toTrayId"));
-                if("APJ-HB2-SORT2".equals(data.getEqpId())){
+                if(EqpNameConstant.EQP_LAST_SORT.equals(data.getEqpId())){
                     data.setToX(1);
                     data.setToY(1);
                 }else{
@@ -70,30 +71,47 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
 
     @Override
     public int insertChipIdData(List<Map<String, Object>> dataList) {
-        List<ChipSingle> mapperList = new ArrayList<>();
+        List<ChipBox> mapperList = new ArrayList<>();
+        List<ChipMove> moveList = new ArrayList<>();
         try {
             for(Map<String, Object> item : dataList){
-                ChipSingle data = new ChipSingle();
-                String chipId = MapUtils.getString(item, "chipId");
-                if(StringUtil.isEmpty(chipId)||"null".equals(chipId)||"NULL".equals(chipId)){
-                    chipId = null;
+                String eqpId = MapUtils.getString(item, "eqpId");
+                if(EqpNameConstant.EQP_CLEAN_US.equals(eqpId)||EqpNameConstant.EQP_JET.equals(eqpId)){
+                    ChipBox data = new ChipBox();
+                    data.setEqpId(eqpId);
+                    data.setProductionNo(MapUtils.getString(item, "productionNo"));
+                    data.setLotNo(MapUtils.getString(item, "lotNo"));
+                    data.setToTrayId(MapUtils.getString(item, "toTrayId"));
+                    data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
+                    data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                    mapperList.add(data);
+                }else if(EqpNameConstant.EQP_TRM.equals(eqpId)){
+                    //速风机需要将洗净机的日志补全
+                    ChipMove data = new ChipMove();
+                    String chipId = MapUtils.getString(item, "chipId");
+
+                }else{
+                    ChipMove data = new ChipMove();
+                    data.setEqpId(MapUtils.getString(item, "eqpId"));
+                    data.setProductionNo(MapUtils.getString(item, "productionNo"));
+                    data.setLotNo(MapUtils.getString(item, "lotNo"));
+                    data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
+                    data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                    data.setChipId(MapUtils.getString(item, "chipId"));
+                    String toTrayId = MapUtils.getString(item, "toTrayId");
+                    if(!StringUtil.isEmpty(toTrayId)){
+                        data.setToTrayId(toTrayId);
+                        data.setToX(1);
+                        data.setToY(1);
+                    }
+                    moveList.add(data);
                 }
-                data.setEqpId(MapUtils.getString(item, "eqpId"));
-                data.setProductionNo(MapUtils.getString(item, "productionNo"));
-                data.setLotNo(MapUtils.getString(item, "lotNo"));
-                data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
-                data.setToTrayId(MapUtils.getString(item, "toTrayId"));
-                data.setFromX(StringUtil.isEmpty(data.getFromTrayId())?null:1);
-                data.setFromY(StringUtil.isEmpty(data.getFromTrayId())?null:1);
-                data.setToX(StringUtil.isEmpty(data.getToTrayId())?null:1);
-                data.setToY(StringUtil.isEmpty(data.getToTrayId())?null:1);
-                data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
-                data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
-                data.setChipId(chipId);
-                mapperList.add(data);
             }
             if(mapperList.size()>0){
-                return baseMapper.insertSingleChip(mapperList);
+                baseMapper.insertChipBox(mapperList);
+            }
+            if(moveList.size()>0){
+                baseMapper.insertMoveLog(moveList);
             }
         } catch (Exception e){
             log.error("保存追溯的后半段数据有误", e);
