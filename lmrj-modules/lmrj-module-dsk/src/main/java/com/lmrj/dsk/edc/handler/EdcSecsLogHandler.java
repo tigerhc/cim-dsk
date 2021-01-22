@@ -205,9 +205,9 @@ public class EdcSecsLogHandler {
                 ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
                 ovnBatchLotParam.setTempPv(a[3]);
                 ovnBatchLotParam.setCreateDate(createTime);
-                ovnBatchLotParam.setTempMax("145");
-                ovnBatchLotParam.setTempMin("150");
-                ovnBatchLotParam.setTempSp("155");
+                ovnBatchLotParam.setTempMax("155");
+                ovnBatchLotParam.setTempMin("145");
+                ovnBatchLotParam.setTempSp("150");
                 ovnBatchLotParam.setOtherTempsValue(temp);
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
