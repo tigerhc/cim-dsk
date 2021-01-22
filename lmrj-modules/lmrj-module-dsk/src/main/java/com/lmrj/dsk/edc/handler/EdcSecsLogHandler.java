@@ -193,11 +193,11 @@ public class EdcSecsLogHandler {
                 String temp = null;
                 for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
-                        temp = a[4]+",145,150,155";
+                        temp = a[4]+",150,145,155";
                     }else if(i>4 && i<9){
-                        temp = temp +","+ a[i] +",145,150,155";
+                        temp = temp +","+ a[i] +",150,145,155";
                     }else{
-                        temp = temp +","+ a[i] +",180,185,190";
+                        temp = temp +","+ a[i] +",185,180,190";
                     }
                 }
                 Date createTime = new Date(create);
