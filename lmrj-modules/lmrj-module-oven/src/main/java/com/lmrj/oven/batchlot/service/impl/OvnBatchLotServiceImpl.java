@@ -349,8 +349,18 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
 
     @Override
     public List<Map> findDetailBytimeOther(String eqpId,String lotNo) {
-
-        List<Map> detail =  baseMapper.findDetailBytimeOther(eqpId,lotNo);
+        StringBuffer sb = new StringBuffer();
+        if(lotNo != null) {
+            for(int i = 0; i < lotNo.length(); i++) {
+                char c = lotNo.charAt(i);
+                if(Character.isLowerCase(c)) {
+                    sb.append(Character.toUpperCase(c));
+                }else {
+                    sb.append(c);
+                }
+            }
+        }
+        List<Map> detail =  baseMapper.findDetailBytimeOther(eqpId,sb.toString());
 
         return detail;
 
