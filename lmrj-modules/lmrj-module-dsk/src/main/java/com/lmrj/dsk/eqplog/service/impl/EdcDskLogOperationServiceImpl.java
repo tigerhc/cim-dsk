@@ -202,11 +202,13 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
     @Override
     public Boolean exportTrmOperationFile(String eqpId,Date startTime,Date endTime){
         List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId,startTime,endTime);
-        try {
-            this.printOperlog(orerationList,"OPERATION");
-        } catch (Exception e) {
-            log.error("TRM Operation日志打印出错");
-            e.printStackTrace();
+        if(orerationList.size()>0){
+            try {
+                this.printOperlog(orerationList,"OPERATION");
+            } catch (Exception e) {
+                log.error("TRM Operation日志打印出错",e);
+                e.printStackTrace();
+            }
         }
         return true;
     }
