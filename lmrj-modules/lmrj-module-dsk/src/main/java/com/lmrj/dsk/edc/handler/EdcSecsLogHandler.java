@@ -1,5 +1,6 @@
 package com.lmrj.dsk.edc.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogOperation;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProduction;
@@ -285,25 +286,13 @@ public class EdcSecsLogHandler {
                     if(i == 4 ){
                         temp = a[4]+",150,145,155";
                         //判断温度是否超过范围，超过则发送邮件报警
-                        /*int tempvalue = Integer.parseInt(a[4]);
-                        if(tempvalue>155 || tempvalue<145){
-                            JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("EQP_ID", eqpId);
-                            jsonObject.put("ALARM_CODE", ":网络断开连接!");
-                            String jsonString = jsonObject.toJSONString();
-                            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-                            try {
-                                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-                            } catch (Exception e) {
-                                log.error("Exception:", e);
-                            }
-                        }*/
+                        sendAlarmEmail(eqpId,a[4],155,145);
                     }else if(i>4 && i<9){
                         temp = temp +","+ a[i] +",150,145,155";
-
+                        sendAlarmEmail(eqpId,a[i],155,145);
                     }else{
                         temp = temp +","+ a[i] +",185,180,190";
-
+                        sendAlarmEmail(eqpId,a[i],190,180);
                     }
                 }
                 Date createTime = new Date(create);
@@ -314,19 +303,7 @@ public class EdcSecsLogHandler {
                 ovnBatchLotParam.setTempMax("155");
                 ovnBatchLotParam.setTempMin("145");
                 ovnBatchLotParam.setTempSp("150");
-                /*int tempvalue = Integer.parseInt(a[4]);
-                if(tempvalue>155 || tempvalue<145){
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("EQP_ID", eqpId);
-                    jsonObject.put("ALARM_CODE", ":网络断开连接!");
-                    String jsonString = jsonObject.toJSONString();
-                    log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-                    try {
-                        rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-                    } catch (Exception e) {
-                        log.error("Exception:", e);
-                    }
-                }*/
+                sendAlarmEmail(eqpId,a[3],155,145);
                 ovnBatchLotParam.setOtherTempsValue(temp);
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
@@ -424,5 +401,23 @@ public class EdcSecsLogHandler {
                 fabEquipmentStatusService.updateById(equipmentStatus);
             }
         }
+    }
+    public Boolean sendAlarmEmail(String eqpId,String tempPv,int tempMax,int tempMin){
+        Boolean flag = false;
+        double temp = Double.parseDouble(tempPv);
+        if(temp < tempMin || temp > tempMax){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("EQP_ID", eqpId);
+            jsonObject.put("ALARM_CODE", "E-0009");
+            String jsonString = jsonObject.toJSONString();
+            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
+            try {
+                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+            } catch (Exception e) {
+                log.error("Exception:", e);
+            }
+            flag = true;
+        }
+        return flag;
     }
 }
