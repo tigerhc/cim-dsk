@@ -6,6 +6,7 @@ import com.lmrj.dsk.eqplog.entity.ChipMove;
 import com.lmrj.dsk.eqplog.entity.ChipBox;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
+import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,8 @@ import java.util.Map;
 @Slf4j
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String trmTrayId = "";
+    private int trmCount = 0;
 
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
@@ -88,8 +92,75 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 }else if(EqpNameConstant.EQP_TRM.equals(eqpId)){
                     //速风机需要将洗净机的日志补全
                     ChipMove data = new ChipMove();
-                    String chipId = MapUtils.getString(item, "chipId");
+                    data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
+                    data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                    data.setEqpId(eqpId);
+                    data.setProductionNo(MapUtils.getString(item, "productionNo"));
+                    data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
+                    data.setLotNo(MapUtils.getString(item, "lotNo"));
+                    data.setChipId(MapUtils.getString(item, "chipId"));
+                    data.setFromX(1);
+                    data.setFromY(1);
+                    moveList.add(data);
 
+                    boolean shiftTrayFlag = false;
+                    if(trmTrayId.equals(data.getFromTrayId())){
+                        trmCount = trmCount + 1;
+                    }else{
+                        trmTrayId = data.getFromTrayId();
+                        trmCount = 1;
+                        shiftTrayFlag = true;
+                    }
+
+                    //查询需要得参数
+                    Map<String, Object> param = new HashMap<>();
+                    param.put("eqpId", EqpNameConstant.EQP_CLEAN_US);
+                    param.put("startTime", MapUtils.getString(item, "startTime"));
+                    param.put("toTrayId", data.getFromTrayId());
+                    //超音波洗净机
+                    ChipMove usData = new ChipMove();
+                    usData.setEqpId(EqpNameConstant.EQP_CLEAN_US);
+                    usData.setToTrayId(data.getFromTrayId());
+                    usData.setToX(1);
+                    usData.setToY(1);
+                    Map<String, Object> usTime = baseMapper.findChipBoxStartTime(param);
+                    if(usTime!=null){
+                        String usStartTime = MapUtil.getString(usTime, "startTime");
+                        usData.setStartTime(sdf.parse(usStartTime));
+                        usTime.put("copyCount", trmCount);
+                        if(shiftTrayFlag){
+                            usTime.put("mapFlag", 1);
+                        }
+                        baseMapper.updateChipBox(param);
+                    }
+                    usData.setProductionNo(data.getProductionNo());
+                    usData.setJudgeResult("Y");
+                    usData.setLotNo(data.getLotNo());
+                    usData.setChipId(data.getChipId());
+                    moveList.add(usData);
+                    //JET
+                    param.put("eqpId", EqpNameConstant.EQP_JET);
+                    ChipMove jetData = new ChipMove();
+                    jetData.setEqpId(EqpNameConstant.EQP_JET);
+                    jetData.setToTrayId(data.getFromTrayId());
+                    jetData.setToX(1);
+                    jetData.setToY(1);
+                    Map<String, Object> jetTime = baseMapper.findChipBoxStartTime(param);
+                    if(jetTime!=null){
+                        String jetStartTime = MapUtil.getString(jetTime, "startTime");
+                        jetData.setStartTime(sdf.parse(jetStartTime));
+                        //处理jet的数据，
+                        jetTime.put("copyCount", trmCount);
+                        if(shiftTrayFlag){
+                            jetTime.put("mapFlag", 1);
+                        }
+                        baseMapper.updateChipBox(param);
+                    }
+                    jetData.setProductionNo(data.getProductionNo());
+                    jetData.setJudgeResult("Y");
+                    jetData.setLotNo(data.getLotNo());
+                    jetData.setChipId(data.getChipId());
+                    moveList.add(jetData);
                 }else{
                     ChipMove data = new ChipMove();
                     data.setEqpId(MapUtils.getString(item, "eqpId"));
