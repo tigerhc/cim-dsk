@@ -97,8 +97,8 @@ public class EdcSecsLogHandler {
         alarmMap.put("A0181","压力机1前上侧的安全盖已打开");
         alarmMap.put("A0182","压力机1后上侧的安全盖已打开");
         alarmMap.put("A0183","压力机2前上侧的安全盖已打开");
-        alarmMap.put("A0184","压力机2后上侧的安全盖已打开。");
-        alarmMap.put("A0185","压力机3前上侧的安全盖已打开。");
+        alarmMap.put("A0184","压力机2后上侧的安全盖已打开");
+        alarmMap.put("A0185","压力机3前上侧的安全盖已打开");
         alarmMap.put("A0186","压力机3后上侧的安全盖已打开");
         alarmMap.put("A0189","引线框入料口安全盖打开");
         alarmMap.put("A0190","引线框下料口安全盖打开");
@@ -146,14 +146,29 @@ public class EdcSecsLogHandler {
         alarmMap.put("E0323","气压过低");
         alarmMap.put("E0805","预热器上升和下降超时");
         alarmMap.put("E0834","预热器的加热器温度控制错误");
-        /*
-        待添加
-        alarmMap.put("","");
-        alarmMap.put("","");
-        alarmMap.put("","");
-        alarmMap.put("","");
-        alarmMap.put("","");
-        alarmMap.put("","");*/
+        alarmMap.put("A0270","14 F-M UNIT 超出系统预设范围");
+        alarmMap.put("A0179","TABLET 安全盖打开");
+        alarmMap.put("A0644"," P-3(04) 预热器关闭");
+        alarmMap.put("A0785"," PH2(01) 预热器关闭");
+        alarmMap.put("A0801"," PH3(01) 预热器关闭");
+        alarmMap.put("E0002","CLAMPER超时");
+        alarmMap.put("E0033","夹持进给服务电机错误");
+        alarmMap.put("E0049","ALIGNMENT SERVO MOTOR超时");
+        alarmMap.put("E0129","TABLET SEPARATOR超时");
+        alarmMap.put("E0162","下料机电机错误");
+        alarmMap.put("E0166","下料机未吸附");
+        alarmMap.put("E0196","DEGATE超时");
+        alarmMap.put("E0210","PICK&PLACE HEAD 1超时");
+        alarmMap.put("E0211","PICK&PLACE HEAD 2超时");
+        alarmMap.put("E0530","P-1 预热器温度控制错误");
+        alarmMap.put("E0594","P-2 预热器温度控制错误");
+        alarmMap.put("E0596","P-2 预热器导线断开");
+        alarmMap.put("E0658","P-3 预热器温度控制错误");
+        alarmMap.put("E0660","P-3 预热器导线断开");
+        alarmMap.put("E0802","PH-2 预热器温度控制错误");
+        alarmMap.put("E0803","PH-2 温度异常");
+        alarmMap.put("E0804","PH-2 预热器断丝");
+        alarmMap.put("E0836","PH-3 预热器断丝");
     }
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
