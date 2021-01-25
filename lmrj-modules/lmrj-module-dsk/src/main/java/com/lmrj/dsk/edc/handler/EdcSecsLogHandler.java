@@ -34,10 +34,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -72,6 +69,91 @@ public class EdcSecsLogHandler {
     IOvnBatchLotService iOvnBatchLotService;
     @Autowired
     IOvnBatchLotParamService iOvnBatchLotParamService;
+    static Map<String,String> alarmMap = new HashMap<>();
+    static {
+        alarmMap.put("A0001","引线框架库空通知");
+        alarmMap.put("A0002","引线框架库为空");
+        alarmMap.put("A0003","空引线框已满");
+        alarmMap.put("A0017","奇数引线框架");
+        alarmMap.put("A0018","引线框架消除请求");
+        alarmMap.put("A0049"," TABLET为空通知");
+        alarmMap.put("A0050","TABLET为空");
+        alarmMap.put("A0081","无消隐盒");
+        alarmMap.put("A0097","引线框1未准备");
+        alarmMap.put("A0098","引线框2未准备");
+        alarmMap.put("A0099","引线框1已满");
+        alarmMap.put("A0100","引线框2已满");
+        alarmMap.put("A0103","引线框检查");
+        alarmMap.put("A0129","批量结束");
+        alarmMap.put("A0130","批量结束警告开始");
+        alarmMap.put("A0145","装载机待机关闭");
+        alarmMap.put("A0146","装载机待机关闭");
+        alarmMap.put("A0147","卸载机备用关闭");
+        alarmMap.put("A0148","清洁剂备用关闭");
+        alarmMap.put("A0149","线路自动待机关闭");
+        alarmMap.put("A0178","正面安全门2打开");
+        alarmMap.put("A0180","系统外侧的安全盖已打开");
+        alarmMap.put("A0181","压力机1前上侧的安全盖已打开");
+        alarmMap.put("A0182","压力机1后上侧的安全盖已打开");
+        alarmMap.put("A0183","压力机2前上侧的安全盖已打开");
+        alarmMap.put("A0184","压力机2后上侧的安全盖已打开。");
+        alarmMap.put("A0185","压力机3前上侧的安全盖已打开。");
+        alarmMap.put("A0186","压力机3后上侧的安全盖已打开");
+        alarmMap.put("A0189","引线框入料口安全盖打开");
+        alarmMap.put("A0190","引线框下料口安全盖打开");
+        alarmMap.put("A0225","库内升降机服务电机关闭");
+        alarmMap.put("A0226","校准伺服电机关闭");
+        alarmMap.put("A0227","装载机LW/RW的服务电机关闭");
+        alarmMap.put("A0228","装载机FW/BW的服务电机关闭");
+        alarmMap.put("A0229","下料机LW/RW的服务电机关闭");
+        alarmMap.put("A0230","下料机FW/BW的服务电机关闭");
+        alarmMap.put("A0231","托架服务电机关闭");
+        alarmMap.put("A0232","压片机服务电机关闭");
+        alarmMap.put("A0235","夹持进给服务电机关闭");
+        alarmMap.put("A0268","超出机器监视器屏幕上预设除尘器的报警限值");
+        alarmMap.put("A0513","P-1的待机模式已关闭");
+        alarmMap.put("A0514","P-1 ORG关闭");
+        alarmMap.put("A0515","P-1 SERVO关闭");
+        alarmMap.put("A0521","P-1 F-M的待机模式已关闭");
+        alarmMap.put("A0577","P-2 待机模式已关闭");
+        alarmMap.put("A0578","P-2 ORG 关闭");
+        alarmMap.put("A0579","P-2 SERVO关闭");
+        alarmMap.put("A0585","P-2 F-M的待机模式已关闭");
+        alarmMap.put("A0641","P-3 待机模式已关闭");
+        alarmMap.put("A0642","P-3 ORG 关闭");
+        alarmMap.put("A0643","P-3 SERVO关闭");
+        alarmMap.put("A0649","P-3 F-M的待机模式已关闭");
+        alarmMap.put("E0003","IN MAGAZINE SEPARETOR超时错误");
+        alarmMap.put("E0009","引线框架推进器或过载超时错误");
+        alarmMap.put("E0018","引线框架对齐错误");
+        alarmMap.put("E0019","引线框架方向错误");
+        alarmMap.put("E0050","引线框架对齐错误");
+        alarmMap.put("E0097","装载机上升/下降超时错误");
+        alarmMap.put("E0098","装载机LW/RW服务电机错误");
+        alarmMap.put("E0099","装载机FW/BW服务电机错误");
+        alarmMap.put("E0100","装载机引线框架夹持器超时错误");
+        alarmMap.put("E0101","装载机 TABLET SHUTTER超时错误");
+        alarmMap.put("E0104","引线框架位置错误");
+        alarmMap.put("E0105","引线框架丢失");
+        alarmMap.put("E0131","TABLET FEED超时");
+        alarmMap.put("E0137","TABLET CHUTE LIFTER超时");
+        alarmMap.put("E0139","TABLET PUSHER超时");
+        alarmMap.put("E0140","TABLET CLOG堵塞");
+        alarmMap.put("E0141","TABLET PARTS FEEDER超时");
+        alarmMap.put("E0142","TABLET HOPPER错误");
+        alarmMap.put("E0170","UNLOADER CLEANER BRUSH UP/DOWN超时");
+        alarmMap.put("E0323","气压过低");
+        alarmMap.put("E0805","预热器上升和下降超时");
+        alarmMap.put("E0834","预热器的加热器温度控制错误");
+        /*
+        待添加
+        alarmMap.put("","");
+        alarmMap.put("","");
+        alarmMap.put("","");
+        alarmMap.put("","");
+        alarmMap.put("","");
+        alarmMap.put("","");*/
+    }
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARM.DATA"})
     public void handleAlarm(String msg) {
@@ -89,7 +171,10 @@ public class EdcSecsLogHandler {
             alarmCode = "E0"+alarmCode.substring(1,alarmCode.length());
         }
         edcAmsRecord.setAlarmCode(alarmCode);
-
+        String alarmName = alarmMap.get(alarmCode);
+        if(alarmName!=null && !alarmName.equals("")){
+            edcAmsRecord.setAlarmName(alarmName);
+        }
         edcAmsRecordService.insert(edcAmsRecord);
     }
 
