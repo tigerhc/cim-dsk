@@ -41,14 +41,16 @@ public class ImageMoveTask {
                 String destPath = path1+ "\\"+line + "\\" + now.get(Calendar.YEAR)+ "年" + "\\" + (now.get(Calendar.MONTH) + 1)+ "月"+ "\\"+productionName;
                 FileUtil.mkDir(destPath );
                 Image img = ImageIO.read(file);
-                BufferedImage tag = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-                tag.getGraphics().drawImage(img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_SMOOTH), 0, 0, null);
-                //FileOutputStream out =
-                //        new FileOutputStream(destPath + file.getName().replace("bmp", "jpg"));
-                //JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-                //encoder.encode(tag);
-                ImageIO.write(tag, "jpg",  new File(destPath + "\\" + file.getName().replace("bmp", "jpg")) /* target */ );
-                file.delete();
+                if(img!=null){
+                    BufferedImage tag = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                    tag.getGraphics().drawImage(img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_SMOOTH), 0, 0, null);
+                    //FileOutputStream out =
+                    //        new FileOutputStream(destPath + file.getName().replace("bmp", "jpg"));
+                    //JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+                    //encoder.encode(tag);
+                    ImageIO.write(tag, "jpg",  new File(destPath + "\\" + file.getName().replace("bmp", "jpg")) /* target */ );
+                    file.delete();
+                }
                 log.info("完成处理图片"+file.getAbsolutePath());
             }
         }
