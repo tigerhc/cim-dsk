@@ -240,7 +240,13 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
             String startTimeString = DateUtil.formatDate(oper.getStartTime(), pattern2);
             //拼写当前行字符串
             String line = oper.getEqpId() + "," + oper.getEqpModelName() + "," + eqpNo + "," + oper.getRecipeCode() + "," + oper.getDayYield() + "," + oper.getLotYield() + "," + startTimeString + "," +
-                    oper.getEventId() + "," +oper.getAlarmCode()+ "," +oper.getEventName()+ "," +oper.getEventParams().replace(",","、")+ ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
+                    oper.getEventId() + "," +oper.getAlarmCode()+ "," +oper.getEventName()+ ",";
+            if(oper.getEventParams()!=null){
+                line = line+oper.getEventParams().replaceAll(",",";")+ ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
+            }else{
+                line = line+oper.getEventParams()+ ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
+            }
+            line = line ;
             lines.add(line);
         }
         //创建文件路径

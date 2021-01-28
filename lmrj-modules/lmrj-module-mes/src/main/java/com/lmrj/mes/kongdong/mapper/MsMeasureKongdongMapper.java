@@ -36,4 +36,8 @@ public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
     List<Map<String, Double>> getConfig(String productionName);
 
     List<String> getXasix(Map<String, Object> param);
+
+
+    @Select("select IFNULL(COUNT(1),0) from ms_measure_kongdong where line_no = #{lineNo} and production_name = #{productionName} and lot_no =#{lotNo} and type = #{type}")
+    Integer findKongdongExist(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo,@Param("type") String type);
 }

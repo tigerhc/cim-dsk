@@ -27,4 +27,6 @@ public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongd
     Map<String, Object> kongdongChart(Map<String, Object> param);
 
     Map<String, Object> kongDongBar(Map<String, Object> param);
+
+    Integer findKongdongExist(String lineNo, String productionName, String lotNo, String type);
 }

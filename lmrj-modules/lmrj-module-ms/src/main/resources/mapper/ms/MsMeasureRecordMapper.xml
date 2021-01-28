@@ -115,4 +115,16 @@
           from fab_equipment
           where sub_line_no is not null
     </select>
+
+    <select id="finddataexist" resultType="java.lang.Integer">
+        SELECT IFNULL(COUNT(1),0)
+           from ms_measure_record_detail dtl
+           LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
+           where dtl.item_code='WEIGHT'
+            and rcd.eqp_id=#{eqpId}
+            and rcd.production_no=#{productionNo}
+            and rcd.lot_no=#{lotNo}
+            and dtl.row_name=#{rowName}
+            and dtl.item_value = #{itemValue}
+    </select>
 </mapper>
