@@ -31,7 +31,7 @@
                 AND end_time &lt; #{endTime})
                 OR
                 (start_time &gt; #{startTime}
-                AND start_time &lt; #{endTiem}})
+                AND start_time &lt; #{endTiem})
                 OR
                 (start_time &lt; #{startTime}
                 AND end_time &gt; #{endTime}
