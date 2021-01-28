@@ -363,6 +363,9 @@ public class EdcDskLogHandler {
             for (EdcDskLogProduction edcDskLogProduction:proList){
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
                 String[] a = edcDskLogProduction.getParamValue().split(",");
+                if(a.length<20){
+                    continue;
+                }
                 Long create = new Date().getTime();
                 if(edcDskLogProduction.getStartTime()!=null){
                     create =  edcDskLogProduction.getStartTime().getTime()+(1000);
