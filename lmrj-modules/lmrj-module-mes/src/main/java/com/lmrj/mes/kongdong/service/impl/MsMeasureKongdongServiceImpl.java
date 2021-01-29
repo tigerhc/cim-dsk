@@ -198,6 +198,8 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 }
                 lineItem.put("data", data);
                 lineItem.put("color", "red");
+                //加虚线折线箭头
+                lineItem.put("markLine",getMarkLine("最大数据"));
                 seriesArr.add(lineItem);
             }
         }
@@ -205,6 +207,25 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
         rs.put("legend",legends);
         rs.put("series",seriesArr);
         rs.put("xAxis",xasix);
+        return rs;
+    }
+
+    /**
+     *markLine: {
+     *               data: [
+     *                 { type: 'max', name: '最大数据' }
+     *               ]
+     *             }
+     */
+    private Map<String, Object> getMarkLine(String name){
+        Map<String, Object> dataItem = new HashMap<>();
+        dataItem.put("type","max");
+        dataItem.put("name",name);
+        List<Map<String, Object>> arr = new ArrayList<>();
+        arr.add(dataItem);
+
+        Map<String, Object> rs = new HashMap<>();
+        rs.put("data", arr);
         return rs;
     }
 
