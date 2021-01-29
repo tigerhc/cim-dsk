@@ -380,7 +380,16 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setEqpId(eqpId);
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
         edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
-        edcDskLogOperation.setEventId(evtRecord.getEventId());
+        String eventId = "";
+        if(evtRecord.getEventId().startsWith("11")){
+            eventId = "1";
+        }else if(evtRecord.getEventId().length()==1){
+            eventId = "0";
+        } else if(evtRecord.getEventId().startsWith("23") || evtRecord.getEventId().startsWith("21")){
+            eventId = "3";
+        }
+
+        edcDskLogOperation.setEventId(eventId);
         edcDskLogOperation.setCreateDate(new Date());
         edcDskLogOperation.setStartTime(evtRecord.getStartDate());
         edcDskLogOperation.setEventParams(evtRecord.getEventParams());
@@ -398,11 +407,9 @@ public class EdcSecsLogHandler {
         if(evtRecord.getEventParams()!= null){
             if(evtRecord.getEventId().equals("11201")){
                 edcEqpState.setState("RUN");
-            }else if(evtRecord.getEventParams().equals("1")){
+            }else if(evtRecord.getEventParams().length()==1){
                 edcEqpState.setState("DOWN");
-            }else if(evtRecord.getEventId().startsWith("21")){
-                edcEqpState.setState("ALARM");
-            }else if(evtRecord.getEventId().equals("23")){
+            }else if(evtRecord.getEventId().startsWith("23")){
                 edcEqpState.setState("IDLE");
             }
             if(edcEqpState.getState()!=null){

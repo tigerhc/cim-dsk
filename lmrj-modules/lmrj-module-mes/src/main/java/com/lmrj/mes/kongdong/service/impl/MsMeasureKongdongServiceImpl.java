@@ -36,7 +36,10 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
         Integer rs = baseMapper.findKongdongData(lineNo,productionName,lotNo);
         return rs==null?0:rs;
     }
-
+    @Override
+    public Integer findKongdongExist(String lineNo, String productionName, String lotNo, String type){
+        return baseMapper.findKongdongExist(lineNo,productionName,lotNo,type);
+    }
     @Override
     public List<MsMeasureKongdong> saveBeforeFile(int index) {
         List<String> pathArr = new ArrayList<>();

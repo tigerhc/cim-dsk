@@ -36,4 +36,6 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
  List<Map> getLineNoOptions();
 
  List<String> getAllProductionNo(@Param("productionNo")String productionNo);
+
+ int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue);
 }

@@ -2,7 +2,6 @@ package com.lmrj.ms.record.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
-import com.lmrj.ms.record.entity.MsMeasureRecordDetail;
 
 import java.util.List;
 import java.util.Map;
@@ -32,4 +31,6 @@ public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord>
     List<Map> getLineNoOptions();
 
     List<String> getAllProductionNo(String productionNo);
+
+    int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue);
 }

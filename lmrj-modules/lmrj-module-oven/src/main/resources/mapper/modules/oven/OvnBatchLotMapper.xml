@@ -95,7 +95,14 @@
                    t.temp_max,t.other_temps_value,t.create_date
         from ovn_batch_lot r left join ovn_batch_lot_param t on t.batch_id = r.id
         where r.eqp_id = #{eqpId}
-          and r.end_time between #{beginTime} and #{endTime}
+          and (
+                (r.end_time &gt; #{beginTime}
+                AND r.end_time &lt; #{endTime})
+                OR
+                (r.start_time &gt; #{beginTime}
+                AND r.start_time &lt; #{endTime})
+              )
+          and t.create_date between #{beginTime} and #{endTime}
         order by t.create_date, t.batch_id
     </select>
 

@@ -29,22 +29,24 @@ public class EdcMeasureHandler {
         if(msMeasureRecord == null){
             return;
         }
-
-        String productionName=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
-        msMeasureRecord.setProductionName(productionName);
-        String recordId = StringUtil.randomTimeUUID("MS");
-        msMeasureRecord.setRecordId(recordId);
-        msMeasureRecord.setApproveResult("Y");
-        if(StringUtil.isBlank(msMeasureRecord.getStatus())){
-            msMeasureRecord.setStatus("1");
-        }
-        for (MsMeasureRecordDetail msMeasureRecordDetail : msMeasureRecord.getDetail()) {
-            if(msMeasureRecordDetail.getItemResult().contains("N")){
-                msMeasureRecord.setApproveResult("N");
-                break;
+        int flag = msMeasureRecordService.finddataexist(msMeasureRecord.getEqpId(),msMeasureRecord.getLotNo(),msMeasureRecord.getProductionNo(),msMeasureRecord.getDetail().get(0).getRowName(),msMeasureRecord.getDetail().get(0).getItemValue());
+        if(flag==0){
+            String productionName=apsPlanPdtYieldService.findProductionName(msMeasureRecord.getProductionNo());
+            msMeasureRecord.setProductionName(productionName);
+            String recordId = StringUtil.randomTimeUUID("MS");
+            msMeasureRecord.setRecordId(recordId);
+            msMeasureRecord.setApproveResult("Y");
+            if(StringUtil.isBlank(msMeasureRecord.getStatus())){
+                msMeasureRecord.setStatus("1");
             }
+            for (MsMeasureRecordDetail msMeasureRecordDetail : msMeasureRecord.getDetail()) {
+                if(msMeasureRecordDetail.getItemResult().contains("N")){
+                    msMeasureRecord.setApproveResult("N");
+                    break;
+                }
+            }
+            msMeasureRecordService.insert(msMeasureRecord);
         }
-        msMeasureRecordService.insert(msMeasureRecord);
     }
 
 }

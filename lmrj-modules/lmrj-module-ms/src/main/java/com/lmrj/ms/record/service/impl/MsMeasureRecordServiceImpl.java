@@ -37,6 +37,10 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     private IMsMeasureRecordDetailService msMeasureRecordDetailService;
 
     @Override
+    public int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue){
+        return baseMapper.finddataexist(eqpId,lotNo,productionNo,rowName,itemValue);
+    }
+    @Override
     public MsMeasureRecord selectById(Serializable id){
         MsMeasureRecord msMeasureRecord = super.selectById(id);
         List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id",id).orderBy("sort_no"));
