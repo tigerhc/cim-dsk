@@ -64,7 +64,7 @@ public class RptYieldTask {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("updateYield():执行异常");
+            log.error("updateYield():执行异常",e);
         }
         String eventId = StringUtil.randomTimeUUID("RPT");
         fabLogService.info("",eventId,"updateYield","更新批次产量","","");
