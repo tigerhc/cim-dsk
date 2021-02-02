@@ -651,6 +651,19 @@ public class EdcDskLogHandler {
                 ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
                 ovnBatchLotService.insert(ovnBatchLot);
             }
+            if(eqpId.contains("APJ")){
+                List<OvnBatchLotParam> paramList = ovnBatchLot.getOvnBatchLotParamList();
+                for (OvnBatchLotParam ovnBatchLotParam : paramList) {
+                    sendAlarmEmail(eqpId,ovnBatchLotParam.getTempPv());
+                    String temp = ovnBatchLotParam.getOtherTempsValue();
+                    String  temps[] = temp.split(",");
+                    for (int i = 0; i < temps.length; i+=4) {
+                        String nowTemp = temps[i];
+                        sendAlarmEmail(eqpId,nowTemp);
+                    }
+                }
+            }
+
         }
     }
 
@@ -683,5 +696,26 @@ public class EdcDskLogHandler {
         String[] params = new String[param.size()];
         param.toArray(params);
         emailSendService.blockSend(params, code, msgMap);
+    }
+
+
+
+    public Boolean sendAlarmEmail(String eqpId,String tempPv){
+        Boolean flag = false;
+        double temp = Double.parseDouble(tempPv);
+        if(temp > 500){
+            com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+            jsonObject.put("EQP_ID", eqpId+"  温度："+tempPv);
+            jsonObject.put("ALARM_CODE", "E-1000");
+            String jsonString = jsonObject.toJSONString();
+            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
+            try {
+                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+            } catch (Exception e) {
+                log.error("Exception:", e);
+            }
+            flag = true;
+        }
+        return flag;
     }
 }
