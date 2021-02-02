@@ -191,6 +191,11 @@ public class EdcSecsLogHandler {
         if(alarmName!=null && !alarmName.equals("")){
             edcAmsRecord.setAlarmName(alarmName);
         }
+        MesLotTrack lotTrack = mesLotTrackService.findLotNo1(edcAmsRecord.getEqpId(),edcAmsRecord.getStartDate());
+        if(lotTrack!=null){
+            edcAmsRecord.setLotNo(lotTrack.getLotNo());
+            edcAmsRecord.setLotYield(lotTrack.getLotYieldEqp());
+        }
         edcAmsRecordService.insert(edcAmsRecord);
     }
 
