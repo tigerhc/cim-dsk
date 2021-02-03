@@ -43,6 +43,8 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
 
     @RequestMapping("/selectAlarmCountByLine")
     public Response selectAlarmCountByLine(@RequestParam String lineNo, @RequestParam String beginTime, @RequestParam String endTime, @RequestParam String stationCode, HttpServletRequest request, HttpServletResponse response) {
+        beginTime = beginTime+" 00:00:00";
+        endTime = endTime+" 23:59:59";
         Response res = new Response();
         if (StringUtil.isEmpty(stationCode)) {
             List<Map> maps = iEdcAmsRecordService.selectAlarmCountByLine(beginTime, endTime, lineNo);
