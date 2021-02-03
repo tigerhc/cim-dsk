@@ -637,11 +637,15 @@ public class EdcDskLogHandler {
             }
             Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
             Date startTime = new Date(time);
+            if(eqpId.equals("SIM-PRINTER1")){
+                ovnBatchLot.setOtherTempsTitle("温度,湿度");
+            }
             OvnBatchLot ovnBatchLot1 = ovnBatchLotService.findBatchData(eqpId,startTime);
             if(ovnBatchLot1!=null){
                 List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
                 ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
                 ovnBatchLotService.updateById(ovnBatchLot1);
+
                 for (OvnBatchLotParam ovnBatchLotParam : OvnBatchLotParamList) {
                     ovnBatchLotParam.setBatchId(ovnBatchLot1.getId());
                 }
