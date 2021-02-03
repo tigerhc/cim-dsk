@@ -97,6 +97,7 @@
         <!--<if test="dbName == 'oracle'">#{nodeId}||'%' or t.id=#{nodeId})</if>-->
         <!--<if test="dbName == 'mssql'">'%'+#{id}+'%'</if>-->
         <!--<if test="dbName == 'mysql'">concat(#{nodeId},'%') or t.id=#{nodeId})</if>-->
+        and t.del_flag='0'
         ORDER BY sort
     </select>
 
