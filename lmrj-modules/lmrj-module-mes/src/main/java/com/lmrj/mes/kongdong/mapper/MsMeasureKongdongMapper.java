@@ -33,11 +33,14 @@ public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
 
     List<Map<String,Object>> getBar(Map<String, Object> param);
 
-    List<Map<String, Double>> getConfig(String productionName);
+    List<Map<String, Double>> getConfig(Map<String, Object> param);
 
     List<String> getXasix(Map<String, Object> param);
 
 
     @Select("select IFNULL(COUNT(1),0) from ms_measure_kongdong where line_no = #{lineNo} and production_name = #{productionName} and lot_no =#{lotNo} and type = #{type}")
     Integer findKongdongExist(@Param("lineNo")String lineNo, @Param("productionName") String productionName,@Param("lotNo") String lotNo,@Param("type") String type);
+
+    @Select("select line_type from mes_kongdong_config where eqp_id = #{eqpId} and del_flag='2' order by line_type")
+    List<String> getPositionSelect(String eqpId);
 }

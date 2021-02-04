@@ -40,6 +40,12 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     public Integer findKongdongExist(String lineNo, String productionName, String lotNo, String type){
         return baseMapper.findKongdongExist(lineNo,productionName,lotNo,type);
     }
+
+    @Override
+    public List<String> getPositionSelect(String eqpId) {
+        return baseMapper.getPositionSelect(eqpId);
+    }
+
     @Override
     public List<MsMeasureKongdong> saveBeforeFile(int index) {
         List<String> pathArr = new ArrayList<>();
@@ -147,7 +153,10 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     public Map<String, Object> kongdongChart(Map<String, Object> param) {
         String productionName = MapUtils.getString(param, "productionName");
         List<String> legends = baseMapper.getLegend(param);
-        List<Map<String, Double>> configLine = baseMapper.getConfig(productionName);
+        Map<String,Object> configParam = new HashMap<>();
+        configParam.put("productionName", productionName);
+        configParam.put("lineType", MapUtils.getString(param, "lineType"));
+        List<Map<String, Double>> configLine = baseMapper.getConfig(configParam);
         List<String> xasix = baseMapper.getXasix(param);
         Map<String, List<Double>> LinesData = new HashMap<>();
         //初始化series 各个线的数组
@@ -236,7 +245,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     public Map<String, Object> kongDongBar(Map<String, Object> param) {
         Map<String, Object> rs = new HashMap<>();
         rs.put("barData", baseMapper.getBar(param));
-        rs.put("configData", baseMapper.getConfig(MapUtils.getString(param, "productionName")));
+        rs.put("configData", baseMapper.getConfig(param));
         return rs;
     }
 

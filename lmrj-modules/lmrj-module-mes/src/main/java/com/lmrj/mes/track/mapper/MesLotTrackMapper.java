@@ -67,7 +67,7 @@ public interface MesLotTrackMapper extends BaseMapper<MesLotTrack> {
     List<String> findAllProName(@Param("proName") String proName);
 
     @Select(" select  line_type as 'lineType', height_lmt as 'heightLmt' from mes_kongdong_config " +
-            "where eqp_id=#{eqpId}")
+            "where eqp_id=#{eqpId} and del_flag='0'")
     List<Map<String,Object>> findkongdongConfig(@Param("eqpId") String eqpId);
     @Select("select * from mes_lot_track where eqp_id=#{eqpId} and end_time between #{startTime} and #{endTime} order by start_time ")
     List<MesLotTrack> findLotsByTime(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);

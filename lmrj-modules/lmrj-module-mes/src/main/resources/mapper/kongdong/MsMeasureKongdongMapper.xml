@@ -26,6 +26,9 @@
         <if test="endTime!=null and endTime!=''">
             and create_date &lt; #{endTime}
         </if>
+        <if test="lineType!=null and lineType!=''">
+            and type=#{lineType}
+        </if>
     </select>
 
     <select id="getData" parameterType="java.util.Map" resultType="java.util.Map">
@@ -37,16 +40,25 @@
         <if test="endTime!=null and endTime!=''">
             and create_date &lt; #{endTime}
         </if>
+        <if test="lineType!=null and lineType!=''">
+            and type=#{lineType}
+        </if>
         order by lot_no
     </select>
     <select id="getBar" parameterType="java.util.Map" resultType="java.util.Map">
         select void_ratio as "voidRatio", lot_no as "lotNo", type as "lineType"
         from ms_measure_kongdong where production_name=concat('J.',#{productionName})
+        <if test="lineType!=null and lineType!=''">
+            and type=#{lineType}
+        </if>
         and lot_no=#{lotNo}
     </select>
 
-    <select id="getConfig" parameterType="java.lang.String" resultType="java.util.Map">
-        select line_type as "lineType", height_lmt as "lmt" from mes_kongdong_config where eqp_id=#{productionName}
+    <select id="getConfig" parameterType="java.util.Map" resultType="java.util.Map">
+        select line_type as "lineType", height_lmt as "lmt" from mes_kongdong_config where eqp_id=#{productionName} and del_flag='0'
+        <if test="lineType!=null and lineType!=''">
+            and locate(line_type,#{lineType})>0
+        </if>
     </select>
 
     <select id="getXasix" parameterType="java.util.Map" resultType="java.lang.String">
@@ -56,6 +68,9 @@
         </if>
         <if test="endTime!=null and endTime!=''">
             and create_date &lt; #{endTime}
+        </if>
+        <if test="lineType!=null and lineType!=''">
+            and type=#{lineType}
         </if>
         order by lot_no
     </select>

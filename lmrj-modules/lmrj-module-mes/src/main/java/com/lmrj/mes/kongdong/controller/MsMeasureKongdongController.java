@@ -45,23 +45,32 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
 //    }
 
     @RequestMapping(value = "kongdongChart",method = {RequestMethod.GET, RequestMethod.POST})
-    public Response kongdongChart(@RequestParam String productionName, @RequestParam String startDate, @RequestParam String endDate){
+    public Response kongdongChart(@RequestParam String productionName, @RequestParam String startDate, @RequestParam String endDate, @RequestParam String lineType){
         Map<String, Object> param = new HashMap<>();
         param.put("productionName", productionName.replace("J.",""));
         param.put("startTime", startDate);
         param.put("endTime", endDate);
+        param.put("lineType", lineType);
         Response rs = Response.ok();
         rs.put("data",kongdongService.kongdongChart(param));
         return rs;
     }
 
     @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response kongDongBar(@RequestParam String productionName, @RequestParam String lotNo) {
+    public Response kongDongBar(@RequestParam String productionName, @RequestParam String lotNo, @RequestParam String lineType) {
         Map<String, Object> param = new HashMap<>();
         param.put("productionName", productionName.replace("J.", ""));
         param.put("lotNo", lotNo);
+        param.put("lineType", lineType);
         Response rs = Response.ok();
         rs.put("kongdong", kongdongService.kongDongBar(param));
+        return rs;
+    }
+
+    @RequestMapping(value = "getPositionSelect", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getPositionSelect(@RequestParam String productionName) {
+        Response rs = Response.ok();
+        rs.putList("positionList", kongdongService.getPositionSelect(productionName));
         return rs;
     }
 }
