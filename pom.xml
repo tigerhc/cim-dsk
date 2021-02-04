@@ -75,6 +75,7 @@
         <module>lmrj-modules</module>
         <module>cim-dsk-root</module>
         <module>cim-zsx-root</module>
+        <module>cim-zhls-root</module>
     </modules>
 
     <build>
