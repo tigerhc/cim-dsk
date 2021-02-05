@@ -74,4 +74,10 @@
         </if>
         order by lot_no
     </select>
+
+    <select id="chkKongdongData" parameterType="java.util.Map" resultType="java.util.Map">
+        select lot_no as "lotNo",production_name as "productionName", type as "lineType",date_format(create_date, '%Y-%m-%d') as "crtDt"
+        from ms_measure_kongdong where create_date > #{startTime} and create_date &lt; #{endTime}
+        order by production_name,lot_no
+    </select>
 </mapper>

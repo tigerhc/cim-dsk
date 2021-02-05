@@ -43,4 +43,6 @@ public interface MsMeasureKongdongMapper extends BaseMapper<MsMeasureKongdong> {
 
     @Select("select line_type from mes_kongdong_config where eqp_id = #{eqpId} and del_flag='2' order by line_type")
     List<String> getPositionSelect(String eqpId);
+
+    List<Map<String, Object>> chkKongdongData(Map<String, Object> param);
 }

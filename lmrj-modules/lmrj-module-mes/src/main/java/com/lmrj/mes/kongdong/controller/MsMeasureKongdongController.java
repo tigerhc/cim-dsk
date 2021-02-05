@@ -73,4 +73,14 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
         rs.putList("positionList", kongdongService.getPositionSelect(productionName));
         return rs;
     }
+
+    @RequestMapping(value = "chkDataDefect", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response chkDataDefect(@RequestParam String startTime, @RequestParam String endTime) {
+        Map<String, Object> chkParam = new HashMap<>();
+        chkParam.put("startTime",startTime);
+        chkParam.put("endTime",endTime);
+        Response rs = Response.ok();
+        rs.put("chkMsg",kongdongService.chkDataDefect(chkParam));
+        return rs;
+    }
 }

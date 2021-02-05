@@ -31,4 +31,6 @@ public interface IMsMeasureKongdongService extends ICommonService<MsMeasureKongd
     Integer findKongdongExist(String lineNo, String productionName, String lotNo, String type);
 
     List<String> getPositionSelect(String eqpId);
+
+    Map<String, Object> chkDataDefect(Map<String, Object> chkParam);
 }

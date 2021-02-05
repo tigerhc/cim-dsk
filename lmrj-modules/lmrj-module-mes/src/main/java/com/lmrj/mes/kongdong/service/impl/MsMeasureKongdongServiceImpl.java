@@ -8,6 +8,7 @@ import com.lmrj.util.FileUtils;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,91 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     @Override
     public List<String> getPositionSelect(String eqpId) {
         return baseMapper.getPositionSelect(eqpId);
+    }
+
+    @Override
+    public Map<String, Object> chkDataDefect(Map<String, Object> chkParam) {
+        Map<String, Object> chkRs = new HashMap<>();
+        List<Map<String, Object>> dataList = baseMapper.chkKongdongData(chkParam);
+        if(dataList.size()>0){
+            try {
+                String productionName = MapUtils.getString(dataList.get(0), "productionName");
+                String type = "";
+                String time = MapUtils.getString(dataList.get(0), "crtDt");
+                String lotNo = MapUtils.getString(dataList.get(0), "lotNo");
+                StringBuffer msg = new StringBuffer();
+                for(long index =0; index<dataList.size();index++){
+                    Map<String, Object> dataItem = dataList.get((int)index);
+                    String dataItemProductionName = MapUtils.getString(dataItem, "productionName");
+                    String dataItemLotNo = MapUtils.getString(dataItem, "lotNo");
+                    String dataItemType = MapUtils.getString(dataItem, "lineType");
+                    String dataItemTime = MapUtils.getString(dataItem, "crtDt");
+                    if(index == dataList.size()-1 && !dataItemProductionName.contains("5GI-") && !dataItemProductionName.contains("6GI-")){//最后一个批次
+                        type = type + "," + dataItemType ;
+                        String errType = getUnhaveData(productionName, type);
+                        if (!StringUtils.isEmpty(errType)) {
+                            msg.append(","+ lotNo +"_"+ errType);
+                            chkRs.put(productionName, msg.toString());
+                        }
+                    } else if(!dataItemProductionName.contains("5GI-") && !dataItemProductionName.contains("6GI-")){
+                        if(productionName.equals(dataItemProductionName) && lotNo.equals(dataItemLotNo)){
+                            if (time.equals(dataItemTime)) {
+                                type = type + "," + dataItemType ;
+                            } else {
+                                msg.append(productionName + "_" + lotNo + "的时间不一致,");
+                            }
+                        }else{
+                            String errType = getUnhaveData(productionName, type);
+                            if (!StringUtils.isEmpty(errType)) {
+                                msg.append("," + lotNo +"_"+ errType);
+                            }
+                            if(!productionName.equals(dataItemProductionName) ){
+                                if(!StringUtils.isEmpty(msg.toString())){
+                                    chkRs.put(productionName + "", msg.toString());
+                                    msg = new StringBuffer();
+                                }
+                                productionName = dataItemProductionName;
+                            }
+                            lotNo = dataItemLotNo;
+                            time = dataItemTime;
+                            type = dataItemType;//放置第一个元素
+                        }
+                    }
+                }
+            }catch (Exception e){
+                log.error("空洞自定义检测接口报错",e);
+            }
+        }
+        return chkRs;
+    }
+
+    /**获得缺少的数据的type，空字符串视为没有问题*/
+    private String getUnhaveData(String productionName, String datas){
+        String simTitle = "DI-1,DI-2,MIC-7,MIC-D-6,MOS-3,MOS-4,MOS-5";
+        String smaTitle = "DI-1,MIC-5,MIC-D-3,MOS-2,MOS-3-4";
+        String sx680Title = "DI-1,DI-2,MIC-8,MIC-D-7,MOS-3,MOS-4,MOS-5";
+        String sx681Title = "DI-1,DI-2,JP-6,MIC-8,MIC-D-7,MOS-3,MOS-4,MOS-5";
+        String[] types;
+        if(productionName.contains("SIM")){
+            types = simTitle.split(",");
+        } else if(productionName.contains("SMA")){
+            types = smaTitle.split(",");
+        } else if(productionName.contains("SX680")){
+            types = sx680Title.split(",");
+        } else if(productionName.contains("SX681")){
+            types = sx681Title.split(",");
+        } else if(productionName.contains("5GI-") || productionName.contains("6GI-")){
+            return "";//不处理5、6GI
+        }else {
+            return "请配置新的先别:" + productionName;
+        }
+        String unhaveType = "";
+        for(String type : types){
+            if(!datas.contains(type)){
+                unhaveType = type + ",";
+            }
+        }
+        return unhaveType.equals("")?unhaveType:"缺少："+ unhaveType;
     }
 
     @Override
