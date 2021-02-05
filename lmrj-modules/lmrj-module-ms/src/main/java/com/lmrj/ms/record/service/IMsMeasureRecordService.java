@@ -33,4 +33,6 @@ public interface IMsMeasureRecordService extends ICommonService<MsMeasureRecord>
     List<String> getAllProductionNo(String productionNo);
 
     int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue);
+
+    List<Map<String, Object>> chkWeight(String startTime, String endTime);
 }

@@ -127,4 +127,11 @@
             and dtl.row_name=#{rowName}
             and dtl.item_value = #{itemValue}
     </select>
+
+    <select id="chkWeight" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT production_name,lot_no, create_date, plan_date from aps_plan_pdt_yield_detail plan where plan_date > #{startTime}
+        and plan_date &lt; #{endTime}
+        and not EXISTS (SELECT 1 from ms_measure_record weight where weight.production_name=plan.production_name and plan.lot_no=weight.lot_no)
+        ORDER BY production_name,create_date
+    </select>
 </mapper>

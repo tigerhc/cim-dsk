@@ -38,4 +38,6 @@ public interface MsMeasureRecordMapper extends BaseMapper<MsMeasureRecord> {
  List<String> getAllProductionNo(@Param("productionNo")String productionNo);
 
  int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue);
+
+ List<Map<String, Object>> chkWeight(Map<String, Object> param);
 }

@@ -266,6 +266,13 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         return res;
     }
 
+    @RequestMapping(value = "/chkWeightData", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response chkWeightData(@RequestParam String startTime, @RequestParam String endTime){
+        Response res = Response.ok();
+        res.putList("weight", msMeasureRecordService.chkWeight(startTime, endTime));
+        return res;
+    }
+
     @RequestMapping(value = "/getEqpIdOptions", method = { RequestMethod.GET, RequestMethod.POST })
     public Response getEqpIdOptions(@RequestParam String lineNo){
         Response res = Response.ok();

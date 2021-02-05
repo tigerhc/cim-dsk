@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,15 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public int finddataexist(String eqpId,String lotNo,String productionNo,String rowName,String itemValue){
         return baseMapper.finddataexist(eqpId,lotNo,productionNo,rowName,itemValue);
     }
+
+    @Override
+    public List<Map<String, Object>> chkWeight(String startTime, String endTime) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("startTime", startTime);
+        param.put("endTime", endTime);
+        return baseMapper.chkWeight(param);
+    }
+
     @Override
     public MsMeasureRecord selectById(Serializable id){
         MsMeasureRecord msMeasureRecord = super.selectById(id);
