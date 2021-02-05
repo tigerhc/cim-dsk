@@ -21,7 +21,7 @@ public class CheckWeightScheduler {
 
     DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
-    @Scheduled(cron = "0 0 0/1 * * ?") //凌晨1点跑一次
+    @Scheduled(cron = "0 0 1 * * ?") //凌晨1点跑一次
     public void chkDataDefect(){
         String yesterday = getYesterDay();
         log.error("每日检测重量的结果:"+ JsonUtil.toJsonString(msMeasureRecordService.chkWeight(yesterday + " 00:00:00", yesterday + " 23:59:59")));

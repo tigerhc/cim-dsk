@@ -23,7 +23,7 @@ public class KongDongChkScheduler {
 
     DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
 
-    @Scheduled(cron = "0 0 0/1 * * ?") //凌晨1点跑一次
+    @Scheduled(cron = "0 0 1 * * ?") //凌晨1点跑一次
     public void chkDataDefect(){
         String yesterday = getYesterDay();
         Map<String, Object> chkParam = new HashMap<>();
