@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.lmrj</groupId>
             <artifactId>lmrj-common-mybatismvc</artifactId>
-            <version>1.0.5.RELEASE</version>
+            <version>1.0.5-SNAPSHOT</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>com.lmrj</groupId>-->
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.lmrj</groupId>
             <artifactId>lmrj-common-email</artifactId>
-            <version>1.0.5.RELEASE</version>
+            <version>1.0.5-SNAPSHOT</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>com.lmrj</groupId>-->

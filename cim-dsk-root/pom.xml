@@ -11,7 +11,7 @@
     <groupId>com.lmrj</groupId>
     <artifactId>cim-dsk-root</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.5.RELEASE</version>
+    <version>1.0.5-SNAPSHOT</version>
     <url>http://www.lmrj.com</url>
     <properties>
         <bitwalker.version>1.19</bitwalker.version>
@@ -76,27 +76,27 @@
         <!--<dependency>-->
             <!--<groupId>com.lmrj</groupId>-->
             <!--<artifactId>lmrj-common-mybatismvc</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+            <!--<version>1.0.5-SNAPSHOT</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
         <!--<groupId>com.lmrj</groupId>-->
         <!--<artifactId>lmrj-common-oss</artifactId>-->
-        <!--<version>1.0.5.RELEASE</version>-->
+        <!--<version>1.0.5-SNAPSHOT</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.lmrj</groupId>
             <artifactId>lmrj-common-quartz</artifactId>
-            <version>1.0.5.RELEASE</version>
+            <version>1.0.5-SNAPSHOT</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>com.lmrj</groupId>-->
         <!--<artifactId>lmrj-common-sms</artifactId>-->
-        <!--<version>1.0.5.RELEASE</version>-->
+        <!--<version>1.0.5-SNAPSHOT</version>-->
         <!--</dependency>-->
         <!--<dependency>-->
             <!--<groupId>com.lmrj</groupId>-->
             <!--<artifactId>lmrj-common-email</artifactId>-->
-            <!--<version>1.0.5.RELEASE</version>-->
+            <!--<version>1.0.5-SNAPSHOT</version>-->
         <!--</dependency>-->
             <!--<dependency>-->
                 <!--<groupId>com.lmrj</groupId>-->

@@ -24,9 +24,7 @@ public class ResolverConfig  implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new QueryMethodArgumentResolver());
-        PageableMethodArgumentResolver pageableMethodArgumentResolver = new PageableMethodArgumentResolver();
-        pageableMethodArgumentResolver.setMaxPageSize(1000);
-        argumentResolvers.add(pageableMethodArgumentResolver);
+        argumentResolvers.add(new PageableMethodArgumentResolver());
         argumentResolvers.add(new FormModelMethodArgumentResolver());
         argumentResolvers.add(new RequestJsonParamMethodArgumentResolver());
         argumentResolvers.add(new PropertyPreFilterMethodArgumentResolver());
