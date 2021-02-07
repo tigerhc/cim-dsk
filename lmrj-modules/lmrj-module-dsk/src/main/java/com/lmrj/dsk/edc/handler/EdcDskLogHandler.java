@@ -684,7 +684,9 @@ public class EdcDskLogHandler {
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if(!alarmCode.equals(":网络断开连接!")){
             users = fabEquipmentService.findEmailALL(alarmCode);
-            code = alarmCode;
+            if("E-0009".equals(alarmCode)){
+                code = alarmCode;
+            }
         }else if (department.get(0).get("department").equals("YK")) {
             users = fabEquipmentService.findEmailALL("E-0007");
         } else if (department.get(0).get("department").equals("EK")) {

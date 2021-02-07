@@ -158,9 +158,22 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 if ("Y".equals(result.getFlag())) {
                     value = (String) result.getContent();
                 }
+                if("ERROR: NOT FOUND".equals(value)){
+                    com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+                    jsonObject.put("EQP_ID", eqpId+":重量获取失败 批量："+lotNo+"  品番："+productionNo);
+                    jsonObject.put("ALARM_CODE", "E-9999");
+                    String jsonString = jsonObject.toJSONString();
+                    log.info(eqpId+"重量数据获取失败!将发送邮件通知管理人员");
+                    try {
+                        rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+                    } catch (Exception e) {
+                        log.error("Exception:", e);
+                    }
+                }
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
+
             //if("10200,10201".equals(param)){
             //    weight = "111.1,222.1";
             //}
