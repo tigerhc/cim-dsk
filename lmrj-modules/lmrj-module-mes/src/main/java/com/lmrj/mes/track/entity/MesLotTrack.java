@@ -58,7 +58,7 @@ public class MesLotTrack extends BaseDataEntity {
     @TableField(value = "lot_input")
     private Integer lotInput;
     /**开始时间*/
-    @Excel(name = "开始时间", orderNum = "6")
+    @Excel(name = "开始时间", orderNum = "6",format="yyyy-MM-dd HH:mm:ss")
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")
