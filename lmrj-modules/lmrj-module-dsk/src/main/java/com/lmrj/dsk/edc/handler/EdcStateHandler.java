@@ -65,7 +65,6 @@ public class EdcStateHandler {
                     log.error("状态插入出错，edcEqpState数据新建失败"+e);
                     e.printStackTrace();
                 }
-                fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
             }else{
                 if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
                     log.info("edcEqpState数据重复："+edcEqpState);
@@ -86,10 +85,10 @@ public class EdcStateHandler {
                         log.error("状态插入出错，edcEqpState数据新建失败"+e);
                         e.printStackTrace();
                     }
-                    //修改设备实时状态
-                    fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
                 }
             }
+            //修改设备实时状态
+            fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
         }
     }
 }
