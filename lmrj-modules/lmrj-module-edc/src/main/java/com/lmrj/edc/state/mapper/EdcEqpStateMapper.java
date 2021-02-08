@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -30,4 +31,5 @@ public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
     List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     List<EdcEqpState> findWrongEqpList(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     EdcEqpState findNewData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
+    List<HashMap<String, Object>> eqpStateTime(@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("arr")String[] arr);
 }

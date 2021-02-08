@@ -59,4 +59,14 @@
         order by start_time desc
         limit 1
     </select>
+
+    <select id="eqpStateTime" resultType="java.util.HashMap">
+        select eqp_id,state,start_time,end_time from edc_eqp_state
+        where eqp_id in
+        <foreach collection="arr" item="name" index="index" open="(" close=")" separator=",">
+        #{name}
+       </foreach>
+        and del_flag = '0'
+        and start_time between #{startTime} and #{endTime}
+    </select>
 </mapper>

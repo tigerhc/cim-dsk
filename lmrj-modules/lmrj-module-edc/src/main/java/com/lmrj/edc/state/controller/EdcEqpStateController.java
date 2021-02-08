@@ -9,13 +9,10 @@ import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.util.calendar.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 
 /**
@@ -56,5 +53,11 @@ public class EdcEqpStateController extends BaseCRUDController<EdcEqpState> {
 
         int size=edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
         return Response.ok(String.valueOf(size));
+    }
+
+    @RequestMapping(value = "/eqpStateTime", method = {RequestMethod.GET, RequestMethod.POST})
+    public List<Map<String, Object>> eqpStateTime(@RequestParam String startTime, @RequestParam String endTime, @RequestParam String eqpId){
+        List<Map<String, Object>> list =edcEqpStateService.eqpStateTime(startTime,endTime,eqpId);
+        return list;
     }
 }
