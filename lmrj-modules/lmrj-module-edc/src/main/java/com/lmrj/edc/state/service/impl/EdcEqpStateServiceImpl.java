@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -280,4 +281,40 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         return baseMapper.findNewData(startTime, eqpId);
     }
 
+    @Override
+    public List<Map<String, Object>>  eqpStateTime(String startTime,String endTime,String eqpId) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        startTime = startTime+" 00:00:00";
+        endTime = endTime+" 23:59:59";
+        String[] arr = eqpId.split(",");
+        List<HashMap<String, Object>> list =edcEqpStateMapper.eqpStateTime(startTime,endTime,arr);
+        List result = new ArrayList();
+        for (Map map:list){
+            Map element = new HashMap();
+            element.put("name",map.get("state"));
+            element.put("id",map.get("eqp_id"));
+            List element2 = new ArrayList();
+            for (int i = 0; i <arr.length ; i++) {
+                if (map.get("eqp_id").equals(arr[i])){
+                    element2.add(i);
+                    break;
+                }
+            }
+            element2.add(DateUtil.formatDate((Date) map.get("start_time"),"yyyy-MM-dd HH:mm:ss.SSS"));
+            element2.add(DateUtil.formatDate((Date) map.get("end_time"),"yyyy-MM-dd HH:mm:ss.SSS"));
+            element.put("value",element2);
+            Map normal = new HashMap();
+            Map color = new HashMap();
+            if (map.get("state").equals("RUN")){
+                color.put("color","#32CD32");
+            }else if(map.get("state").equals("DOWN")){
+                color.put("color","#B22222");
+            }else
+                color.put("color","#FFA500");
+            normal.put("normal",color);
+            element.put("itemStyle",normal);
+            result.add(element);
+        }
+        return result;
+    }
 }

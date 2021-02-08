@@ -4,7 +4,9 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.state.entity.EdcEqpState;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -30,4 +32,6 @@ public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
     List<EdcEqpState> findWrongEqpList(String eqpId,Date startTime,Date endTime);
 
     EdcEqpState findNewData(Date startTime,String eqpId);
+
+    List<Map<String, Object>> eqpStateTime(String startTime, String endTime, String eqpId);
 }
