@@ -32,7 +32,7 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
     @Select("select sum(lot_yield)lot_yield ,sum(lot_yield_eqp) lot_yield_eqp from mes_lot_track where eqp_id like concat(#{eqpId},'%') and lot_no = #{lotNo} and production_no =#{productionNo}")
     MesLotTrack findWByYield(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
-    @Select("select * from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
+    @Select("select * from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo} limit 1")
     MesLotWip finddata(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
     @Select("select * from mes_lot_wip")
