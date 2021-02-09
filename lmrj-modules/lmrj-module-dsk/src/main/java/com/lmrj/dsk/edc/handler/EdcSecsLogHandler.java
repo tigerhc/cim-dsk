@@ -410,24 +410,30 @@ public class EdcSecsLogHandler {
         EdcEqpState edcEqpState = new EdcEqpState();
         edcEqpState.setEqpId(evtRecord.getEqpId());
         edcEqpState.setStartTime(evtRecord.getStartDate());
-        if(evtRecord.getEventParams()!= null){
-            if(evtRecord.getEventId().equals("11201")){
-                edcEqpState.setState("RUN");
-            }else if(evtRecord.getEventParams().length()==1){
+        if(evtRecord.getEventDesc().equals("ProcessStateChg_EVENT")){
+            if(evtRecord.getEventId().equals("0")){
                 edcEqpState.setState("DOWN");
-            }else if(evtRecord.getEventId().startsWith("23")){
+            }else if(evtRecord.getEventId().equals("3")){
+                edcEqpState.setState("RUN");
+            }
+        }
+        if(evtRecord.getEventId().equals("21049") || evtRecord.getEventId().startsWith("20")){
+            edcEqpState.setState("RUN");
+        }
+        if(evtRecord.getEventParams()!= null){
+            if(evtRecord.getEventId().startsWith("23")){
                 edcEqpState.setState("IDLE");
             }
-            if(edcEqpState.getState()!=null){
-                EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
-                oldEdcEqpState.setEndTime(evtRecord.getStartDate());
-                Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
-                oldEdcEqpState.setStateTimes(state);
-                iEdcEqpStateService.updateById(oldEdcEqpState);
-                iEdcEqpStateService.insert(edcEqpState);
-                equipmentStatus.setEqpStatus(edcEqpState.getState());
-                fabEquipmentStatusService.updateById(equipmentStatus);
-            }
+        }
+        equipmentStatus.setEqpStatus(edcEqpState.getState());
+        fabEquipmentStatusService.updateById(equipmentStatus);
+        if(edcEqpState.getState()!=null){
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
+            oldEdcEqpState.setEndTime(evtRecord.getStartDate());
+            Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+            oldEdcEqpState.setStateTimes(state);
+            iEdcEqpStateService.updateById(oldEdcEqpState);
+            iEdcEqpStateService.insert(edcEqpState);
         }
     }
     public Boolean sendAlarmEmail(String eqpId,String tempPv,int tempMax,int tempMin){
