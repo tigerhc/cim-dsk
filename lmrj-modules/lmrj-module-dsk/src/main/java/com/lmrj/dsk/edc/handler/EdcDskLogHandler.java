@@ -33,6 +33,7 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -95,13 +96,11 @@ public class EdcDskLogHandler {
     IEdcDskLogProductionDefectiveService iEdcDskLogProductionDefectiveService;
     @Autowired
     IOvnBatchLotService iOvnBatchLotService;
-
-
     @Autowired
     IEdcDskLogProductionService iEdcDskLogProductionService;
 
-
-
+    StringBuffer alarmEmailLog = new StringBuffer();//当温度数据异常时，记录发送邮件情况 TODO
+    long lastSendMailTime = 0L;//最后一次发送邮件的时间
 
     String[] paramEdit = {"Pick up pos  Z", "取晶位置 Z",
             "Pick up press level", "取晶位置下压量",
@@ -662,19 +661,7 @@ public class EdcDskLogHandler {
                 ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
                 ovnBatchLotService.insert(ovnBatchLot);
             }
-            if(eqpId.contains("APJ")){
-                List<OvnBatchLotParam> paramList = ovnBatchLot.getOvnBatchLotParamList();
-                for (OvnBatchLotParam ovnBatchLotParam : paramList) {
-                    sendAlarmEmail(eqpId,ovnBatchLotParam.getTempPv());
-                    String temp = ovnBatchLotParam.getOtherTempsValue();
-                    String  temps[] = temp.split(",");
-                    for (int i = 0; i < temps.length; i+=4) {
-                        String nowTemp = temps[i];
-                        sendAlarmEmail(eqpId,nowTemp);
-                    }
-                }
-            }
-
+            tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
         }
     }
 
@@ -711,24 +698,119 @@ public class EdcDskLogHandler {
         emailSendService.blockSend(params, code, msgMap);
     }
 
-
-
-    public Boolean sendAlarmEmail(String eqpId,String tempPv){
-        Boolean flag = false;
-        double temp = Double.parseDouble(tempPv);
-        if(temp > 500){
-            com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
-            jsonObject.put("EQP_ID", eqpId+"  温度："+tempPv);
-            jsonObject.put("ALARM_CODE", "E-1000");
-            String jsonString = jsonObject.toJSONString();
-            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-            try {
-                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-            } catch (Exception e) {
-                log.error("Exception:", e);
+    //检测客户端传来的温度数据
+    private void tempFilter(OvnBatchLot ovnBatchLot, String dataMsg){
+        if(ovnBatchLot!=null && ovnBatchLot.getOvnBatchLotParamList()!=null){
+            String eqpId = ovnBatchLot.getEqpId();
+            List<OvnBatchLotParam> paramList = ovnBatchLot.getOvnBatchLotParamList();
+            for (OvnBatchLotParam ovnBatchLotParam : paramList) {
+                //首个温度的判断
+                double tempPv = Double.parseDouble(ovnBatchLotParam.getTempPv());
+                double tempMax = Double.parseDouble(ovnBatchLotParam.getTempMax());
+                double tempMin = Double.parseDouble(ovnBatchLotParam.getTempMin());
+                boolean sendFlag = false;
+                boolean tempFlag = true;
+                if(tempPv>tempMin&&tempPv<tempMax){
+                    _handleEmailLog(eqpId, "NORMAL");
+                }else if(tempPv > tempMax){
+                    tempFlag = false;
+                    sendFlag = _handleEmailLog(eqpId, "HEIGHT");
+                }else if(tempPv < tempMin){
+                    tempFlag = false;
+                    if(!sendFlag){
+                        sendFlag = _handleEmailLog(eqpId, "LOW");
+                    }
+                }
+                if(tempFlag){//检测除首个温度外的其他温度
+                    String temp = ovnBatchLotParam.getOtherTempsValue();
+                    String  temps[] = temp.split(",");
+                    for (int i = 0; i < temps.length; i+=4) {
+                        double tempOtherPv = Double.parseDouble(temps[i]);
+                        double tempOtherMin = Double.parseDouble(temps[i+1]);
+                        double tempOtherMax = Double.parseDouble(temps[i+3]);
+                        if(tempOtherPv > tempOtherMin && tempOtherPv < tempOtherMax){
+                            _handleEmailLog(eqpId, "NORMAL");
+                        }else if(tempOtherPv < tempOtherMin){
+                            if(sendFlag){
+                                break;
+                            } else {
+                                sendFlag = _handleEmailLog(eqpId, "LOW");
+                            }
+                        }else if(tempOtherPv < tempOtherMax){
+                            if(sendFlag){
+                                break;
+                            } else {
+                                sendFlag = _handleEmailLog(eqpId, "HEIGHT");
+                            }
+                        }
+                    }
+                }
+                if(sendFlag){
+                    _sendTempAlarmEmail(eqpId, dataMsg);
+                    break;
+                }
             }
-            flag = true;
         }
-        return flag;
     }
+
+    /** 处理记录温度痕迹的变量
+     *  当温度 的状态没有发生变化时，无论高温低温还是正常温度都不处理，正常时抹去当前有关该设备的记录
+     *  当温度的状态发生起伏时，或高或低都要记录设备与状态
+     * @return true 温度的状态发生了起伏，并且不在设定范围，需要发送邮件
+     */
+    private boolean _handleEmailLog(String eqpId, String status){
+        String sendLogFlag = alarmEmailLog.toString();
+        String[] eqpIds = sendLogFlag.split("@");
+        String findLogStatus = "";
+        for(String eqpMsg : eqpIds){
+            String[] item = eqpMsg.split(",");
+            if(item[0].equals(eqpId)){
+                findLogStatus = item[1];
+            }
+        }
+        if("NORMAL".equals(status) || status.equals(findLogStatus)){
+            if(!StringUtils.isEmpty(findLogStatus) && "NORMAL".equals(status)){
+                sendLogFlag = sendLogFlag.replace(eqpId+","+findLogStatus+"@","");
+                alarmEmailLog.setLength(0);
+                alarmEmailLog.append(sendLogFlag);
+            }
+            return false;
+        } else {
+            sendLogFlag = sendLogFlag.replace(eqpId+","+findLogStatus+"@","");
+            alarmEmailLog.setLength(0);
+            alarmEmailLog.append(sendLogFlag);
+            alarmEmailLog.append(eqpId+","+status+"@");
+            return true;
+        }
+    }
+
+    //发送温度异常的邮件
+    private void _sendTempAlarmEmail(String eqpId, String mqDataMsg){
+        long compareTime = before30Minute();//30分钟前
+        if(compareTime > lastSendMailTime){//距上次发送邮件的时间已超过半小时
+            lastSendMailTime = new Date().getTime();
+            Map<String, Object> mailMsg = new HashMap<>();
+            mailMsg.put("EQP_ID","当前检测温度异常的设备是"+eqpId+",目前温度异常的设备有"+alarmEmailLog.toString()+"。mq原始数据温度：" + mqDataMsg);
+            mailMsg.put("ALARM_CODE", "E-1000");
+//            System.out.println(JSONObject.fromObject(mailMsg).toString()); TODO 配合下方的main 测试
+            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", JSONObject.fromObject(mailMsg).toString());
+        }
+    }
+
+    //获得半小时前的时间点
+    public long before30Minute(){
+        Date startTime;
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -30);
+        startTime = cal.getTime();
+        return startTime.getTime();
+    }
+
+//    public static void main(String[] args) {
+//        String dataMsg = "{\"createDate\":\"2021-02-09 08:34:00 107\",\"delFlag\":\"0\",\"eqpId\":\"APJ-AT1\",\"startTime\":\"2021-02-09 08:34:00\",\"otherTempsTitle\":\",,,,,,,,,下1(1)下2(2)下3(3)下4(4)下5(5)下6(6)下7(7)下8(8)下9(9)下10(10)\",\"ovnBatchLotParamList\":[{\"createDate\":\"2021-02-09 08:34:00 107\",\"delFlag\":\"0\",\"tempPv\":\"1000.0\",\"tempSp\":\"150\",\"tempMin\":\"145\",\"tempMax\":\"155\",\"otherTempsValue\":\"1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,1000.0,150,145,155,\"}]}";
+//        OvnBatchLot ovnBatchLot = JsonUtil.from(dataMsg, OvnBatchLot.class);
+//        tempFilter(ovnBatchLot, dataMsg);
+//        System.out.println("2");
+//        tempFilter(ovnBatchLot, dataMsg);
+//    }
 }
