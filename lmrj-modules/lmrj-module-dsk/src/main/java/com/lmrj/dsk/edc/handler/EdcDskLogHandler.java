@@ -551,7 +551,7 @@ public class EdcDskLogHandler {
             } else if ("2".equals(eventId)) {
                 status = "ALARM";
             }
-            if (eqpId.contains("WB")) {
+            /*if (eqpId.contains("WB")) {
                 if (edcDskLogOperation.getEventName().equals("2")) {
                     status = "DOWN";
                 } else if (edcDskLogOperation.getEventName().equals("4")) {
@@ -561,7 +561,7 @@ public class EdcDskLogHandler {
                 } else if (edcDskLogOperation.getEventName().equals("16") || edcDskLogOperation.getEventName().equals("32")) {
                     status = "IDLE";
                 }
-            }
+            }*/
             edcEqpState.setState(status);
 
             if (StringUtil.isNotBlank(status)) {
