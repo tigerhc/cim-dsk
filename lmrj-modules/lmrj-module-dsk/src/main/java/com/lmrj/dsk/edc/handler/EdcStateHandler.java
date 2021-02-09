@@ -87,8 +87,6 @@ public class EdcStateHandler {
                     }
                 }
             }
-            //修改设备实时状态
-            fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
         }
     }
 }

@@ -590,6 +590,13 @@ public class EdcDskLogHandler {
         /*if(StringUtil.isNotBlank(status)){
             fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
         }*/
+        FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+        //DM会有频繁报警的现象，但是报警与报警之间没有恢复事件，会导致设备状态显示长时间alarm 为避免对报警事件的状态进行修改
+        if(eqpId.contains("SIM-DM") && equipmentStatus.getEqpStatus().equals("ALARM")) {
+            log.info("修改DM设备状态："+eqpId);
+            status = "RUN";
+        }
+        fabEquipmentStatusService.updateStatus(eqpId,status, "", "");
     }
 
     @RabbitHandler

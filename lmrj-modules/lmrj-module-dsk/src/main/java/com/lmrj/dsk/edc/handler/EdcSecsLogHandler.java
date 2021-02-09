@@ -197,6 +197,7 @@ public class EdcSecsLogHandler {
             edcAmsRecord.setLotYield(lotTrack.getLotYieldEqp());
         }
         edcAmsRecordService.insert(edcAmsRecord);
+        fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
     }
 
     @RabbitHandler
