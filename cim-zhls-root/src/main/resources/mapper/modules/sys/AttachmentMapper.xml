@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.cim.modules.sys.mapper.AttachmentMapper" >
+
+    <sql id="Base_Column_List" >
+        t.id,
+        t.biz_id,
+        t.biz_category
+        t.file_name,
+        t.user_id,
+        t.upload_time,
+        t.upload_ip,
+        t.file_ext,
+        t.file_path,
+        t.file_size,
+        t.content_type,
+        t.status,
+        t.create_by,
+        t.create_date,
+        t.update_by,
+        t.update_date,
+        t.remarks,
+        t.del_flag
+    </sql>
+
+  <select id="selectAttachmentPage" resultType="com.lmrj.core.sys.entity.Attachment">
+	  select
+	  <include refid="Base_Column_List" />
+	  from sys_attachment a
+	  LEFT JOIN sys_user u on a.userid=u.id
+	  <where>
+	   ${ew.sqlSegment}
+	  </where>
+  </select>
+</mapper>

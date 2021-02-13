@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	说明：
+	1、日志级别及文件
+		日志记录采用分级记录，级别与日志文件名相对应，不同级别的日志信息记录到不同的日志文件中
+		例如：error级别记录到log_error_xxx.log或log_error.log（该文件为当前记录的日志文件），而log_error_xxx.log为归档日志，
+		日志文件按日期记录，同一天内，若日志文件大小等于或大于2M，则按0、1、2...顺序分别命名
+		例如log-level-2013-12-21.0.log
+		其它级别的日志也是如此。
+	2、文件路径
+		相对路径../logs时
+		若开发、测试用，在Eclipse中运行项目，则到Eclipse的安装路径查找logs文件夹
+		若部署到Tomcat下，则在Tomcat下的logs文件中
+	3、Appender
+		FILEERROR对应error级别，文件名以log-error-xxx.log形式命名
+		FILEWARN对应warn级别，文件名以log-warn-xxx.log形式命名
+		FILEINFO对应info级别，文件名以log-info-xxx.log形式命名
+		FILEDEBUG对应debug级别，文件名以log-debug-xxx.log形式命名
+		stdout将日志信息输出到控制上，为方便开发测试使用
+ -->
+<configuration>
+
+     <property name="LOG_PATH" value="/tmp/cim/logs" />
+    <!--<property resource="cim.properties"/>-->
+    <!-- 日志记录器，日期滚动记录 -->
+    <appender name="FILEERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${LOG_PATH}/log_error.log</file>
+        <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 归档的日志文件的路径，从而将当前日志文件或归档日志文件置不同的目录。
+            而2013-12-21的日志文件在由fileNamePattern指定。%d{yyyy-MM-dd}指定日期格式，%i指定索引 例如log-error-2013-12-21.0.log-->
+            <fileNamePattern>${LOG_PATH}/back/log-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <!--日志文件保留天数-->
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+            <!-- 除按日志记录之外，还配置了日志文件不能超过2M，若超过2M，日志文件会以索引0开始，
+            命名日志文件，例如log-error-2013-12-21.0.log -->
+        </rollingPolicy>
+        <!-- 追加方式记录日志 -->
+        <append>true</append>
+        <!-- 日志文件的格式 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5p [%d] [%t]%C:%L - %m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="FILEWARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/log_warn.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/back/log-warn-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>20MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5p [%d] %C:%L - %m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="FILEINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/log_info.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/back/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>2</maxHistory>
+            <maxFileSize>20MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5p [%d] %C:%L - %m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="EQPINFO" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>EQPID</key>
+            <defaultValue>00000000</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="SECSINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${LOG_PATH}/EQP/${EQPID}.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>${LOG_PATH}/EQP/Z/${EQPID}/EQP-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                    <maxHistory>7</maxHistory>
+                    <maxFileSize>20MB</maxFileSize>
+                    <totalSizeCap>10GB</totalSizeCap>
+                </rollingPolicy>
+                <append>true</append>
+                <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                    <!--<pattern>%-5p [%d] %C:%L - %m%n</pattern>-->
+                    <pattern>[%d] %m%n</pattern>
+                    <charset>utf-8</charset>
+                </encoder>
+                <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                    <level>INFO</level>
+                    <onMatch>ACCEPT</onMatch>
+                    <onMismatch>DENY</onMismatch>
+                </filter>
+            </appender>
+        </sift>
+    </appender>
+
+
+    <appender name="FILEDEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/log_debug.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/back/log-debug-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%-5p [%d] %C:%L - %m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>%-5p [%d] %C:%L - %m%n</pattern>
+            <!--%d %p  %C:%L - %m%n-->
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- 此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <appender name="rollingFile_mq" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/log_mq.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/back/log-mq-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>2</maxHistory>
+            <maxFileSize>20MB</maxFileSize>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <!--
+            %d          : 时间
+            %thread     : 应该是线程,显示的main(瞎猜的)
+            %-5level    : 等级,占5个字符
+            %logger{36} : 操作人,最多36层
+            %L          :显示调用logger的代码行
+             -->
+            <pattern>[%d] [%thread] %-5level %logger{36}:%L%n%msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- MQ单独配置 -->
+    <logger name="com.lmrj.core.mq" level="DEBUG" additivity="false">
+        <appender-ref ref="rollingFile_mq"/>
+    </logger>
+    <!--<logger name="java.sql.Connection" level="DEBUG"/>-->
+    <!--<logger name="java.sql.Statement" level="DEBUG"/>-->
+    <!--<logger name="java.sql.PreparedStatement" level="DEBUG"/>-->
+    <!--<logger name="com.lmrj.cim.modules.oa.mapper" level="DEBUG">-->
+    <!--</logger>-->
+
+    <logger name="com.lmrj.codec.secs.log" level="INFO" additivity="false">
+        <appender-ref ref="EQPINFO"/>
+    </logger>
+
+    <!-- 生产环境，将此级别配置为适合的级别(至少WARN)，以免日志文件太多或影响程序性能 -->
+    <root level="debug">
+        <appender-ref ref="FILEDEBUG"/>
+        <appender-ref ref="stdout"/>
+
+        <appender-ref ref="FILEINFO"/>
+        <appender-ref ref="FILEWARN"/>
+        <appender-ref ref="FILEERROR"/>
+    </root>
+</configuration>
