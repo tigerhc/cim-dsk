@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -21,4 +23,5 @@ public interface RmsRecipeBodyMapper extends BaseMapper<RmsRecipeBody> {
     int copy(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
     int copyMinValue(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
     int copyMaxValue(@Param("recipeIdNew") String recipeIdNew, @Param("recipeIdOld") String recipeIdOld);
+    List<RmsRecipeBody> queryRecipeBody(@Param("recipeId") String recipeId);
 }

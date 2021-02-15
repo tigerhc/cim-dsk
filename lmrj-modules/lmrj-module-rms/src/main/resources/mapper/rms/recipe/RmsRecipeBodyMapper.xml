@@ -69,6 +69,10 @@
         where a.recipe_id = #{recipeIdNew} and b.recipe_id = #{recipeIdOld} and b.max_value != null
     </update>
 
+    <select id="queryRecipeBody" resultType="com.lmrj.rms.recipe.entity.RmsRecipeBody">
+        select * from rms_recipe_body where recipe_id = #{recipeId}
+    </select>
+
     <!--<if test="dbName == 'oracle'">'%'||#{id}||'%'</if>-->
     <!--<if test="dbName == 'mssql'">'%'+#{id}+'%'</if>-->
     <!--<if test="dbName == 'mysql'">concat('%',#{id},'%')</if>-->

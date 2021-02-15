@@ -14,7 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.ibm.mq.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 
-@Configuration
+//@Configuration
 public class JmsConfig {
     /**
      * 注入连接参数:

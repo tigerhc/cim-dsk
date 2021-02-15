@@ -12,7 +12,7 @@ import javax.jms.TextMessage;
 /**
  * ibm mq 消息接受者
  */
-@Component
+//@Component
 public class ReceiveMessage  extends MessageListenerAdapter {
     @Autowired
     JmsOperations jmsOperations;

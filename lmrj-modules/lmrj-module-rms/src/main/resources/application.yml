@@ -207,13 +207,13 @@ swagger:
     submit-methods: get,delete
 
 
-ibm:
-  mq:
-    host: 192.168.0.91
-    port: 10001
-    queueManager: QM01
-    channel: CHaa
-    connName: 192.168.0.91(10001)
-    username: root
-    password: Daoda@123
-    receiveTimeout: 20000
+#ibm:
+#  mq:
+#    host: 192.168.0.91
+#    port: 10001
+#    queueManager: QM01
+#    channel: CHaa
+#    connName: 192.168.0.91(10001)
+#    username: root
+#    password: Daoda@123
+#    receiveTimeout: 20000

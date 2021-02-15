@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 /**
  * ibm mq 消息发送者
  */
-@Component
+//@Component
 public class SendMessage {
 
     @Autowired
