@@ -87,7 +87,7 @@
         <dependency>
             <groupId>com.lmrj</groupId>
             <artifactId>lmrj-common-quartz</artifactId>
-            <version>1.0.5.RELEASE</version>
+            <version>1.0.5-SNAPSHOT</version>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>com.lmrj</groupId>-->
