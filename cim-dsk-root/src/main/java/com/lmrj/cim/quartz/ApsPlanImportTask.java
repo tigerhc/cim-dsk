@@ -10,6 +10,7 @@ import com.lmrj.util.ExcelUtil;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
+import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +54,7 @@ public class ApsPlanImportTask {
         try {
             this.readApsPlan(lastFile.getAbsolutePath());
         } catch (Exception e){
-            log.error("排程有异常");
+            log.error("排程有异常",e);
         }
         log.info("定时任务开始执行结束");
     }
@@ -244,6 +245,7 @@ public class ApsPlanImportTask {
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList,100);
         //将排程的数据上传到redis中
+        log.info(JsonUtil.toJsonString(apsPlanPdtYieldDetailList));
         for(ApsPlanPdtYieldDetail item : apsPlanPdtYieldDetailList){
             String proNo = item.getProductionNo();
             String proName = item.getProductionName();

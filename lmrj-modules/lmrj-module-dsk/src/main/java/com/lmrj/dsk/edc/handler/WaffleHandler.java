@@ -33,8 +33,8 @@ public class WaffleHandler {
     }
 
     @RabbitHandler
-//    @RabbitListener(queues = {"C2S.Q.CHIP_ID_DATA"})
-    @RabbitListener(queues = {"QUEUE_JUNIT"})
+    @RabbitListener(queues = {"C2S.Q.CHIP_ID_DATA"})
+//   @RabbitListener(queues = {"QUEUE_JUNIT"})
     public void saveChipIdData(String dataJson) {
         try {
             List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
