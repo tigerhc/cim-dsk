@@ -18,5 +18,5 @@ public interface IRmsRecipeBodyService extends ICommonService<RmsRecipeBody> {
     int copyParaFromExist(String recipeIdNew, String recipeIdOld);
     int copyMinValue(String recipeIdNew, String recipeIdOld);
     int copyMaxValue(String recipeIdNew, String recipeIdOld);
-    boolean checkRecipeBody(String recipeCode, String recipeBody, String recipeBodySize);
+    boolean checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize);
 }

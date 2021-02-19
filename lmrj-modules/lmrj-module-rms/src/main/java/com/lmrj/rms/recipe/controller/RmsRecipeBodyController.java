@@ -39,11 +39,11 @@ public class RmsRecipeBodyController extends BaseCRUDController<RmsRecipeBody> {
     private IRmsRecipeBodyService rmsRecipeBodyService;
 
     @RequestMapping(value = "checkRecipeBody")
-    public Response checkRecipeBody(@RequestParam String recipeCode, @RequestParam String recipeBody, @RequestParam String recipeBodySize, HttpServletRequest request) {
+    public Response checkRecipeBody(@RequestParam String eqpId, @RequestParam String recipeCode, @RequestParam String recipeBody, @RequestParam String recipeBodySize, HttpServletRequest request) {
         Response response = Response.ok("参数校验通过");
         boolean flag = false;
         try {
-            flag = rmsRecipeBodyService.checkRecipeBody(recipeCode, recipeBody, recipeBodySize);
+            flag = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
             if (!flag){
                 response = Response.error(999998, "参数校验失败");
             }

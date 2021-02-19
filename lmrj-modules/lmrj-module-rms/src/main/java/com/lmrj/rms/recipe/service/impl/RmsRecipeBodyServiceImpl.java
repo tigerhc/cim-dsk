@@ -2,6 +2,10 @@ package com.lmrj.rms.recipe.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.rms.config.entity.RmsRecipeDownloadConfig;
+import com.lmrj.rms.config.service.IRmsRecipeDownloadConfigService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
@@ -36,6 +40,10 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 
     @Autowired
     private IRmsRecipeService recipeService;
+    @Autowired
+    private IFabEquipmentService fabEquipmentService;
+    @Autowired
+    private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
 
     @Override
     public int copyParaFromExist(String recipeIdNew, String recipeIdOld) {
@@ -53,9 +61,31 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     }
 
     @Override
-    public boolean checkRecipeBody(String recipeCode, String recipeBody, String recipeBodySize) {
+    public boolean checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize) {
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
+        RmsRecipeDownloadConfig downloadConfig = null;
+        String versionType = null;
+        List<RmsRecipe> rmsRecipes = new ArrayList<>();
+        if (downloadConfigs != null && downloadConfigs.size() > 0) {
+            downloadConfig = downloadConfigs.get(0);
+            versionType = downloadConfig.getLevel1();
+            rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", versionType));
+            if (rmsRecipes.size() == 0) {
+                versionType = downloadConfig.getLevel2();
+                rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", versionType));
+                if (rmsRecipes.size() == 0) {
+                    versionType = downloadConfig.getLevel3();
+                    rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", versionType));
+                    if (rmsRecipes.size() == 0) {
+                        rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", "DRAFT"));
+                    }
+                }
+            }
+        } else {
+            rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", "DRAFT"));
+        }
         boolean flag = true;
-        List<RmsRecipe> rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0"));
         if (rmsRecipes.size() == 0) {
             log.info("未找到[" + recipeCode + "]对应的配方");
             return false;
@@ -72,7 +102,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             if (i < size - 1) {
                 value = recipeBody.substring(i * 10, (i + 1) * 10).trim();
             }
-            if (!value.equals(recipeBodies.get(i).getSetValue())) {
+
+            if (Integer.parseInt(value) < Integer.parseInt(recipeBodies.get(i).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodies.get(i).getMaxValue())) {
                 log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
                 flag = false;
             }
