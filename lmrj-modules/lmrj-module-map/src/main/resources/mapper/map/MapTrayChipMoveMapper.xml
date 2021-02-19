@@ -13,7 +13,7 @@
 		<result column="to_x" property="toX"></result>
 		<result column="to_y" property="toY"></result>
 		<result column="start_time" property="startTime"></result>
-<!--		<result column="down_eqp_id" property="downEqpId"></result>-->
+		<!--		<result column="down_eqp_id" property="downEqpId"></result>-->
 		<result column="eqp_type" property="eqpType"></result>
 		<result column="search_flag" property="searchFlag"></result>
 	</resultMap>
@@ -36,83 +36,89 @@
 	</sql>
 
 	<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
-	    SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
-	    `lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
-	    `judge_result` AS judgeResult, `start_time` AS startTime
-		FROM `map_tray_chip_move`
+		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
+		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
+		`judge_result` AS judgeResult, `start_time` AS startTime,
+		(
+		select param_value from edc_dsk_log_production prod where prod.start_time=chip.start_time and prod.eqp_id=chip.eqp_id limit 1
+		) as productionParam,
+		(
+		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_id=chip.eqp_id
+		) as productionTitle
+		FROM `map_tray_chip_move` chip
 		WHERE
-	    <trim suffixOverrides="," prefixOverrides="AND">
-	    	<choose>
-			    <when test="chipIds != null and chipIds.size > 0">
-			    	`chip_id` IN
-			    	<foreach collection="chipIds" item="chip" open="(" separator="," close=")">
-					#{chip}
+		<trim suffixOverrides="," prefixOverrides="AND">
+			<choose>
+				<when test="chipIds != null and chipIds.size > 0">
+					`chip_id` IN
+					<foreach collection="chipIds" item="chip" open="(" separator="," close=")">
+						#{chip}
 					</foreach>
-			    </when>
-			    <otherwise>
-			    	<if test="lotNo != null and lotNo != ''">
-					    AND lot_no = #{lotNo}
+				</when>
+				<otherwise>
+					<if test="lotNo != null and lotNo != ''">
+						AND lot_no = #{lotNo}
 					</if>
 					<if test="eqpIds != null and eqpIds.size > 0">
-					    AND eqp_id IN(
-					    <foreach collection="eqpIds" item="eqp" separator=",">
-						#{eqp}
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
 						</foreach>
-					    )
+						)
 
 					</if>
 					<choose>
 						<when test="sTime == null">
-				    		AND `start_time` &gt;= CURDATE()
-				    	</when>
-					    <otherwise>
-					    	AND `start_time` &gt;= #{sTime}
-					    	AND `start_time` &lt;= #{eTime}
-					    </otherwise>
+							AND `start_time` &gt;= CURDATE()
+						</when>
+						<otherwise>
+							AND `start_time` &gt;= #{sTime}
+							AND `start_time` &lt;= #{eTime}
+						</otherwise>
 					</choose>
-			    </otherwise>
+				</otherwise>
 			</choose>
 			<!-- ORDER BY `start_time` DESC -->
 			ORDER BY `start_time` DESC
 			LIMIT #{offset},#{pageSize}
-	    </trim>
+		</trim>
 	</select>
 
 	<select id="countChipMove" resultType="int" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
-	    SELECT COUNT(1)
-	    FROM `map_tray_chip_move`
-	    WHERE
-	    <trim suffixOverrides="," prefixOverrides="AND">
-	    	<choose>
-			    <when test="chipIds != null and chipIds.size > 0">
-			    	`chip_id` IN
-			    	<foreach collection="chipIds" item="chip" open="(" separator="," close=")">
-					#{chip}
+		SELECT COUNT(1)
+		FROM `map_tray_chip_move`
+		WHERE
+		<trim suffixOverrides="," prefixOverrides="AND">
+			<choose>
+				<when test="chipIds != null and chipIds.size > 0">
+					`chip_id` IN
+					<foreach collection="chipIds" item="chip" open="(" separator="," close=")">
+						#{chip}
 					</foreach>
-			    </when>
-			    <otherwise>
-			    	<if test="lotNo != null and lotNo != ''">
-					    AND lot_no = #{lotNo}
+				</when>
+				<otherwise>
+					<if test="lotNo != null and lotNo != ''">
+						AND lot_no = #{lotNo}
 					</if>
 					<if test="eqpIds != null and eqpIds.size > 0">
-					    AND eqp_id IN(
-					    <foreach collection="eqpIds" item="eqp" separator=",">
-						#{eqp}
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
 						</foreach>
-					    )
+						)
 					</if>
 					<choose>
 						<when test="sTime == null">
-				    		AND `start_time` &gt;= CURDATE()
-				    	</when>
-					    <otherwise>
-					    	AND `start_time` &gt;= #{sTime}
-					    	AND `start_time` &lt;= #{eTime}
-					    </otherwise>
+							AND `start_time` &gt;= CURDATE()
+						</when>
+						<otherwise>
+							AND `start_time` &gt;= #{sTime}
+							AND `start_time` &lt;= #{eTime}
+						</otherwise>
 					</choose>
-			    </otherwise>
+				</otherwise>
 			</choose>
-	    </trim>
+		</trim>
 	</select>
 
 	<select id="queryChip" resultType="map" parameterType="string">
@@ -193,9 +199,9 @@
 
 	<select id="getStartData" parameterType="java.lang.String" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time
-				,m.lot_no,c.eqp_type, 0 as search_flag
+		,m.lot_no,c.eqp_type, 0 as search_flag
 		from map_tray_chip_move m
-	left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
+		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
 		where m.map_flag=0
 		and c.eqp_type=8 and c.eqp_id like 'APJ%'
 		<if test="startTime!=null and startTime!=''">
@@ -206,9 +212,9 @@
 
 	<select id="getStartErrorData" parameterType="java.lang.String" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time
-				,m.lot_no,c.eqp_type, 0 as search_flag
+		,m.lot_no,c.eqp_type, 0 as search_flag
 		from map_tray_chip_move m
-	left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
+		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
 		where (m.map_flag > 1 and m.map_flag &lt;99)
 		and c.eqp_type=8 and c.eqp_id like 'APJ%'
 		<if test="startTime!=null and startTime!=''">
@@ -219,13 +225,13 @@
 
 	<select id="getUpperData" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time
-				,m.lot_no,c.eqp_type, 0 as search_flag
-			from map_tray_chip_move m
-	 left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
-	 	where c.down_eqp_id=#{eqpId} and m.lot_no=#{lotNo}
-	 	and ( (m.to_tray_id=#{fromTrayId} and m.to_x=#{fromX} and m.to_y=#{fromY}) or((m.to_tray_id=#{toTrayId} and m.to_x=#{toX} and m.to_y=#{toY})))
-	 	and m.start_time &lt;= #{startTime} and m.map_flag=0
-	 	<if test="lmtTime!=null and lmtTime!=''">
+		,m.lot_no,c.eqp_type, 0 as search_flag
+		from map_tray_chip_move m
+		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
+		where c.down_eqp_id=#{eqpId} and m.lot_no=#{lotNo}
+		and ( (m.to_tray_id=#{fromTrayId} and m.to_x=#{fromX} and m.to_y=#{fromY}) or((m.to_tray_id=#{toTrayId} and m.to_x=#{toX} and m.to_y=#{toY})))
+		and m.start_time &lt;= #{startTime} and m.map_flag=0
+		<if test="lmtTime!=null and lmtTime!=''">
 			and m.start_time >= #{lmtTime}
 		</if>
 	</select>

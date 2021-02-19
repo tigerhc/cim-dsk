@@ -68,4 +68,7 @@ public class ChipMove extends AbstractEntity {
     /**创建日期*/
     @TableField(value = "create_date")
     private Date createDate;
+    /**eqp_model_name*/
+    @TableField(value = "eqp_model_name")
+    private String eqpModelName;
 }

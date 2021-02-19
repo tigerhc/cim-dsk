@@ -36,6 +36,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     chipId = null;
                 }
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
+                data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
                 data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
@@ -120,6 +121,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     //超音波洗净机
                     ChipMove usData = new ChipMove();
                     usData.setEqpId(EqpNameConstant.EQP_CLEAN_US);
+                    usData.setEqpModelName(EqpNameConstant.MODEL_NAME_US);
                     usData.setToTrayId(data.getFromTrayId());
                     usData.setToX(1);
                     usData.setToY(1);
@@ -142,6 +144,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     param.put("eqpId", EqpNameConstant.EQP_JET);
                     ChipMove jetData = new ChipMove();
                     jetData.setEqpId(EqpNameConstant.EQP_JET);
+                    jetData.setEqpModelName(EqpNameConstant.MODEL_NAME_JET);
                     jetData.setToTrayId(data.getFromTrayId());
                     jetData.setToX(1);
                     jetData.setToY(1);
@@ -164,6 +167,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 }else{
                     ChipMove data = new ChipMove();
                     data.setEqpId(MapUtils.getString(item, "eqpId"));
+                    data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                     data.setProductionNo(MapUtils.getString(item, "productionNo"));
                     data.setLotNo(MapUtils.getString(item, "lotNo"));
                     data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
