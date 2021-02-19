@@ -291,18 +291,28 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
             }
 
-            try {
-                int count = iMsMeasureKongdongService.findKongdongData(line, productionName, lotNo);
-                if (count == 0) {
-                    if (kongdongList.size() > 0) {
-                        iMsMeasureKongdongService.insertBatch(kongdongList, 100);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("空洞数据插入失败" + line + "  " + productionName + "  " + lotNo);
-                e.printStackTrace();
+            String types = "";
+            for (MsMeasureKongdong measureKongdong : kongdongList) {
+                types = types+","+measureKongdong.getType();
             }
-            kongdongStr = StringUtil.join(kongdongVal, ",");
+            String msg  = MsMeasureKongdongServiceImpl.getUnhaveData(productionName,types);
+            if("".equals(msg)){
+                try {
+                    int count = iMsMeasureKongdongService.findKongdongData(line, productionName, lotNo);
+                    if (count == 0) {
+                        if (kongdongList.size() > 0) {
+                            iMsMeasureKongdongService.insertBatch(kongdongList, 100);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("空洞数据插入失败" + line + "  " + productionName + "  " + lotNo);
+                    e.printStackTrace();
+                }
+                kongdongStr = StringUtil.join(kongdongVal, ",");
+            }else{
+                return "ERROR: Missing data! type "+msg;
+            }
+
         }
         if ("5GI".equals(line) || "6GI".equals(line)) {
             log.info("file name: {}", lotNoFile.get(0).getName());
