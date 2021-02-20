@@ -310,7 +310,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
                 kongdongStr = StringUtil.join(kongdongVal, ",");
             }else{
-                return "ERROR: Missing data! type "+msg;
+                return "ERROR: Missing data!  type "+msg+"  Please try again after correction!";
             }
 
         }
