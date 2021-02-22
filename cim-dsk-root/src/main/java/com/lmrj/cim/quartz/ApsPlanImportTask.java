@@ -10,7 +10,6 @@ import com.lmrj.util.ExcelUtil;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -245,14 +244,14 @@ public class ApsPlanImportTask {
         apsPlanPdtYieldDetailService.deleteByPeriod(period);
         apsPlanPdtYieldDetailService.insertBatch(apsPlanPdtYieldDetailList,100);
         //将排程的数据上传到redis中
-        log.info(JsonUtil.toJsonString(apsPlanPdtYieldDetailList));
+        /*log.info(JsonUtil.toJsonString(apsPlanPdtYieldDetailList));
         for(ApsPlanPdtYieldDetail item : apsPlanPdtYieldDetailList){
             String proNo = item.getProductionNo();
             String proName = item.getProductionName();
             if(null !=proNo && !"".equals(proNo) && null !=proName && !"".equals(proName)){
                 redisTemplate.opsForValue().set(proNo, proName);
             }
-        }
+        }*/
     }
 
 }
