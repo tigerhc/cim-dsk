@@ -3,6 +3,7 @@ package com.lmrj.rms.recipe.utils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class FileUtil {
 
     public static Map<String, String> analysis(String filePath) throws Exception{
         Map<String, String> map = new HashMap<>();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filePath)),"UTF-16"));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filePath)), StandardCharsets.UTF_8));
         String str = null;
         StringBuffer stringBuffer = new StringBuffer();
         while ((str = bufferedReader.readLine()) != null) {
@@ -28,6 +29,19 @@ public class FileUtil {
                 }
                 map.put(strings[strings.length - 1], stringBuffer.toString());
                 stringBuffer.setLength(0);
+            }
+        }
+        return map;
+    }
+
+    public static Map<String, String> analysisRecipeTemplate(String filePath) throws Exception{
+        Map<String, String> map = new HashMap<>();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filePath)), StandardCharsets.UTF_8));
+        String str = null;
+        while ((str = bufferedReader.readLine()) != null) {
+            String[] strings = str.trim().split("=");
+            if (strings.length == 2){
+                map.put(strings[0], strings[1]);
             }
         }
         return map;
