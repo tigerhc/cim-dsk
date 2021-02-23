@@ -228,6 +228,8 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
 
     @Override
     public List<Map> findDetailBytime(String beginTime, String endTime,String eqpId) {
+        beginTime = beginTime+" 00:00:00";
+        endTime = endTime+" 23:59:59";
         int count = baseMapper.findCountBytime(eqpId,  beginTime,  endTime);
         if(count>1000000){
             return null;
