@@ -104,7 +104,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
     }
 
     /**获得缺少的数据的type，空字符串视为没有问题*/
-    private String getUnhaveData(String productionName, String datas){
+    public static String getUnhaveData(String productionName, String datas){
         String simTitle = "DI-1,DI-2,MIC-7,MIC-D-6,MOS-3,MOS-4,MOS-5";
         String smaTitle = "DI-1,MIC-5,MIC-D-3,MOS-2,MOS-3-4";
         String sx680Title = "DI-1,DI-2,MIC-8,MIC-D-7,MOS-3,MOS-4,MOS-5";
@@ -129,7 +129,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                 unhaveType = type + ",";
             }
         }
-        return unhaveType.equals("")?unhaveType:"缺少："+ unhaveType;
+        return unhaveType.equals("")?unhaveType:"miss："+ unhaveType;
     }
 
     @Override

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -75,5 +76,24 @@ public class RmsRecipeTemplateController extends BaseCRUDController<RmsRecipeTem
 //    @RequiresMethodPermissions("export")
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
         return doExport("配方详情", queryable,  propertyPreFilterable,  request,  response);
+    }
+
+    /**
+     * 上传模板文件
+     * @param request
+     * @throws IOException
+     */
+    @RequestMapping(value = "uploadRecipeTemplate")
+    public Response uploadRecipe(@RequestParam String eqpModelId, @RequestParam String fileName, HttpServletRequest request) {
+        Response response = Response.ok("上传成功");
+        try {
+            boolean flag = iRmsRecipeTemplateService.uploadRecipeTemplate(eqpModelId, fileName);
+            if (!flag){
+                response = Response.error(999998, "上传失败");
+            }
+        } catch (Exception e) {
+            response = Response.error(999998,e.getMessage());
+        }
+        return response;
     }
 }

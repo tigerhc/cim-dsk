@@ -55,6 +55,7 @@ public class EdcStateHandler {
         */
         //设置上一条数据的结束时间，并计算持续时间
         EdcEqpState edcEqpState = JsonUtil.from(msg,EdcEqpState.class);
+        fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
         if(!"ALARM".equals(edcEqpState.getState())){
             EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
             if(lastedcEqpState==null){

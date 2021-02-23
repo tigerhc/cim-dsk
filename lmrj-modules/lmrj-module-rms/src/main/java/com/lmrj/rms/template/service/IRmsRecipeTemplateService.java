@@ -16,4 +16,6 @@ import com.lmrj.rms.template.entity.RmsRecipeTemplate;
 */
 public interface IRmsRecipeTemplateService extends ICommonService<RmsRecipeTemplate> {
 
+    boolean uploadRecipeTemplate(String eqpModelId, String fileName) throws Exception;
+
 }

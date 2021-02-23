@@ -539,18 +539,19 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setStartDate(edcDskLogOperation.getStartTime());
                 edcEvtRecordList.add(edcEvtRecord);
             }
-            EdcEqpState edcEqpState = new EdcEqpState();
-            edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
-            edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
-            if ("0".equals(eventId) || "7".equals(eventId)) {
-                status = "DOWN";
-            } else if ("1".equals(eventId) || "6".equals(eventId)) {
-                status = "RUN";
-            } else if ("3".equals(eventId)) {
-                status = "IDLE";
-            } else if ("2".equals(eventId)) {
-                status = "ALARM";
-            }
+            if(!eqpId.contains("SIM-DM")){
+                EdcEqpState edcEqpState = new EdcEqpState();
+                edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
+                edcEqpState.setStartTime(edcDskLogOperation.getStartTime());
+                if ("0".equals(eventId) || "7".equals(eventId)) {
+                    status = "DOWN";
+                } else if ("1".equals(eventId) || "6".equals(eventId)) {
+                    status = "RUN";
+                } else if ("3".equals(eventId)) {
+                    status = "IDLE";
+                } else if ("2".equals(eventId)) {
+                    status = "ALARM";
+                }
             /*if (eqpId.contains("WB")) {
                 if (edcDskLogOperation.getEventName().equals("2")) {
                     status = "DOWN";
@@ -562,16 +563,19 @@ public class EdcDskLogHandler {
                     status = "IDLE";
                 }
             }*/
-            edcEqpState.setState(status);
-
-            if (StringUtil.isNotBlank(status)) {
+                edcEqpState.setState(status);
+                //发送状态数据到设备状态队列
+                if (StringUtil.isNotBlank(status)) {
                 /*edcEqpStateList.add(edcEqpState);
                 if(edcEqpStateList.size()>0){
                     String stateListJson = JsonUtil.toJsonString(edcEqpStateList);
                     rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateListJson);
                 }*/
-                String stateJson = JsonUtil.toJsonString(edcEqpState);
-                rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                    String stateJson = JsonUtil.toJsonString(edcEqpState);
+                    rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                    //修改页面设备状态
+                    fabEquipmentStatusService.updateStatus(eqpId,status, "", "");
+                }
             }
         }
         /*if(edcEqpStateList.size()>0){
@@ -586,16 +590,7 @@ public class EdcDskLogHandler {
             repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         }
         // TODO: 2020/8/3 改为发送mq消息处理
-        /*if(StringUtil.isNotBlank(status)){
-            fabEquipmentStatusService.updateStatus(edcDskLogOperationlist.get(0).getEqpId(),status, "", "");
-        }*/
-        FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-        //DM会有频繁报警的现象，但是报警与报警之间没有恢复事件，会导致设备状态显示长时间alarm 为避免对报警事件的状态进行修改
-        if(eqpId.contains("SIM-DM") && equipmentStatus.getEqpStatus().equals("ALARM")) {
-            log.info("修改DM设备状态："+eqpId);
-            status = "RUN";
-        }
-        fabEquipmentStatusService.updateStatus(eqpId,status, "", "");
+
     }
 
     @RabbitHandler
