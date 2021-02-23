@@ -1,7 +1,6 @@
 package com.lmrj.mes.lot.controller;
 
 import com.google.common.collect.Lists;
-import com.lmrj.aps.plan.entity.ApsPlanPdtYieldDetail;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldDetailService;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
@@ -72,7 +71,9 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             periodDate = DateUtil.formatDate(calendar.getTime(),"yyyyMMdd");
         }
         FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId("SIM-REFLOW1");
-
+        if(fabEquipmentStatus==null){
+            return;
+        }
         //按照当日产量来算,比较复杂
         //List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).like("production_name", "SIM"));
         //int yieldQty = 0;
@@ -80,7 +81,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         //    int qty = apsPlanPdtYieldDetail.getPlanQty();
         //    yieldQty = yieldQty+qty;
         //}
-        List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).eq("production_no", fabEquipmentStatus.getProductionNo()));
+        //List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).eq("production_no", fabEquipmentStatus.getProductionNo()));
         //int yieldQty = yieldList.get(0).getPlanQty();
         //改为当日目标产量
         int yieldQty = apsPlanPdtYieldDetailService.findCurrentDayPlan(fabEquipmentStatus.getProductionNo(),periodDate);
