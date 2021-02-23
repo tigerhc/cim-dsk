@@ -69,7 +69,11 @@ public class MesLotWipTask {
                     MesLotWip oldmesLotWip = iMesLotWipService.finddata(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
                     //判断设备前后顺序 若新数据站点在已存在数据站点之后 则更新 否则 不更新
                     int oldSortNo = iMesLotWipService.findSortNo(oldmesLotWip.getEqpId());
-                    int newSortNo = iMesLotWipService.findSortNo(mes.getEqpId());
+                    String eqpid = mes.getEqpId();
+                    if(eqpid.contains("SIM-WB") && eqpid.contains("A")){
+                        eqpid = eqpid.replace("A","B");
+                    }
+                    int newSortNo = iMesLotWipService.findSortNo(eqpid);
                     if (newSortNo >= oldSortNo) {
                         if (eqpId.contains("WB")) {
                             MesLotTrack wbLotTrack = iMesLotWipService.findWByYield(eqpId, mesLotWip.getLotNo(), mesLotWip.getProductionNo());

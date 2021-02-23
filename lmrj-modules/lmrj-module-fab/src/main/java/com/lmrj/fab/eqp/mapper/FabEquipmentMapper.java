@@ -49,7 +49,7 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
 
     List<Map<String,Object>> findEmailALL (@Param("code") String code);
 
-    @Select("select * from fab_equipment where eqp_id like concat(#{eqpId},'%')")
+    @Select("select * from fab_equipment where eqp_id like concat(#{eqpId},'%') order by eqp_id")
     List<FabEquipment> findWbEqp(@Param("eqpId") String eqpId);
 
     @Select("select * from fab_equipment where temp_flag='1'")
