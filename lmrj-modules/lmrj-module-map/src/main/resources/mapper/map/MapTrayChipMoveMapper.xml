@@ -43,7 +43,7 @@
 		select param_value from edc_dsk_log_production prod where prod.start_time=chip.start_time and prod.eqp_id=chip.eqp_id limit 1
 		) as productionParam,
 		(
-		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_id=chip.eqp_id
+		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
 		) as productionTitle
 		FROM `map_tray_chip_move` chip
 		WHERE
