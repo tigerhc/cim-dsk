@@ -36,4 +36,6 @@ public class ChipBox {
     private Date createDate;
     @TableField(value = "map_flag")
     private Integer mapFlag;
+    @TableField(value = "file_name")
+    private String fileName;
 }

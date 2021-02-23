@@ -71,4 +71,6 @@ public class ChipMove extends AbstractEntity {
     /**eqp_model_name*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    @TableField(value = "file_name")
+    private String fileName;
 }

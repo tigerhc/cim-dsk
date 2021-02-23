@@ -22,17 +22,17 @@
 	</sql>
     <insert id="insertMoveLog" parameterType="com.lmrj.dsk.eqplog.entity.ChipMove">
         insert into map_tray_chip_move(eqp_id,production_no,lot_no,from_tray_id,from_x,from_y,to_tray_id,to_x,to_y,to_z,
-        judge_result,start_time,create_date,chip_id,eqp_model_name) values
+        judge_result,start_time,create_date,chip_id,eqp_model_name, file_name) values
         <foreach collection="dataList" item="item" separator=",">
             (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.fromTrayId},#{item.fromX}
             ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.toZ},#{item.judgeResult},
-            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName})
+            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName}, #{fileName})
         </foreach>
     </insert>
     <insert id="insertChipBox" parameterType="com.lmrj.dsk.eqplog.entity.ChipBox">
-        insert into map_tray_chip_box(eqp_id,production_no,lot_no,to_tray_id,start_time,create_date)values
+        insert into map_tray_chip_box(eqp_id,production_no,lot_no,to_tray_id,start_time,create_date, file_name)values
         <foreach collection="dataList" item="item" separator=",">
-            (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.toTrayId},#{item.startTime},now())
+            (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.toTrayId},#{item.startTime},now(),#{fileName})
         </foreach>
     </insert>
 

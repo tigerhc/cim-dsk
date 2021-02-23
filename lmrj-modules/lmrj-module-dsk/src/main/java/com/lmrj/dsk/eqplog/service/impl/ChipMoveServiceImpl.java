@@ -63,6 +63,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
                 data.setChipId(chipId);
+                data.setFileName(MapUtils.getString(item, "fileName"));
                 mapperList.add(data);
             }
             if(mapperList.size()>0){
@@ -89,9 +90,9 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setToTrayId(MapUtils.getString(item, "toTrayId"));
                     data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                     data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                    data.setFileName(MapUtils.getString(item, "fileName"));
                     mapperList.add(data);
-                }else if(EqpNameConstant.EQP_TRM.equals(eqpId)){
-                    //速风机需要将洗净机的日志补全
+                }else if(EqpNameConstant.EQP_TRM.equals(eqpId)){//速风机需要将洗净机的日志补全
                     ChipMove data = new ChipMove();
                     data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
                     data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
@@ -102,8 +103,10 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setChipId(MapUtils.getString(item, "chipId"));
                     data.setFromX(1);
                     data.setFromY(1);
+                    data.setFileName(MapUtils.getString(item, "fileName"));
                     moveList.add(data);
 
+                    //更新jet 和us 的数据（一个料盒中含有）对应了多少个芯片
                     boolean shiftTrayFlag = false;
                     if(trmTrayId.equals(data.getFromTrayId())){
                         trmCount = trmCount + 1;
@@ -125,7 +128,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     usData.setToTrayId(data.getFromTrayId());
                     usData.setToX(1);
                     usData.setToY(1);
-                    Map<String, Object> usTime = baseMapper.findChipBoxStartTime(param);
+                    Map<String, Object> usTime = baseMapper.findChipBoxStartTime(param);//取设备上报的开始时间
                     if(usTime!=null){
                         String usStartTime = MapUtil.getString(usTime, "startTime");
                         usData.setStartTime(sdf.parse(usStartTime));
