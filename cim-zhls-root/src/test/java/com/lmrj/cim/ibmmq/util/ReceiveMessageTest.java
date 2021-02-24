@@ -1,8 +1,9 @@
-package com.lmrj.rms.IBMMQ.util;
+package com.lmrj.cim.ibmmq.util;
 
+import static org.junit.Assert.*;
 import com.ibm.mq.*;
 
-public class demoUtil {
+public class ReceiveMessageTest {
 
     private static MQQueueManager qMgr;
     private static int CCSID = 1381;
@@ -90,3 +91,4 @@ public class demoUtil {
         receiveMsg();
     }
 }
+
