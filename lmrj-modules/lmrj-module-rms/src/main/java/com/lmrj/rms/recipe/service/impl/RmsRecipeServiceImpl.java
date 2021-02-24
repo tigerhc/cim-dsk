@@ -178,6 +178,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
+    public List<String> selectRecipeList(String eapId) {
+        return null;
+    }
+
+    @Override
     public boolean insert(RmsRecipe rmsRecipe) {
         // 保存主表
         super.insert(rmsRecipe);
