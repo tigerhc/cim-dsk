@@ -80,14 +80,10 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     }
 
     /**
-     * 根据页码和每页记录数，以及查询条件动态加载数据
-     *
+     * 上传recipe
      * @param request
-     * @throws IOException
      */
     @RequestMapping(value = "uploadrecipe")
-    //@LogAspectj(logType = LogType.SELECT)
-    //@RequiresMethodPermissions("list")
     public Response uploadRecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
         Response response = Response.ok("上传成功");
         // TODO: 2019/8/26 判断返回结果
@@ -104,9 +100,28 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         return response;
     }
 
+    /**
+     *  查询recipe列表
+     * @param request
+     */
+    @RequestMapping(value = "uploadrecipe")
+    public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request,  HttpServletResponse response) {
+        Response res = null;
+        List<String> recipeList = rmsRecipeService.selectRecipeList(eqpId);
+        if (recipeList.size() == 0){
+            res = Response.error(999998, "未查询到配方");
+        } else {
+            res = DateResponse.ok(recipeList);
+        }
+        String content = JSON.toJSONString(res);
+        ServletUtils.printJson(response,content);
+    }
+
+    /**
+     *  下载recipe
+     * @param request
+     */
     @RequestMapping(value = "downloadrecipe")
-    //@LogAspectj(logType = LogType.SELECT)
-    //@RequiresMethodPermissions("list")
     public Response downloadrecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
         Response response = Response.ok("下载成功");
         boolean flag = false;
@@ -124,8 +139,6 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
 
     @Override
     @GetMapping("export")
-    //@LogAspectj(logType = LogType.EXPORT)
-//    @RequiresMethodPermissions("export")
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
         return doExport("配方信息", queryable,  propertyPreFilterable,  request,  response);
     }
