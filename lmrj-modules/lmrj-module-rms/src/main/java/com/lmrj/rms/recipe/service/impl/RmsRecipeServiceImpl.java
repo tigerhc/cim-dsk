@@ -72,8 +72,8 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private IRmsRecipePermitService rmsRecipePermitService;
     @Autowired
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
-    @Autowired
-    private ReceiveMessage receiveMessage;
+//    @Autowired
+    private ReceiveMessage receiveMessage = new ReceiveMessage();
 
 
     public static List<String> recipeList = new ArrayList<>();

@@ -31,7 +31,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * ibm mq 消息接受者
  */
-@Component
+//@Component
 @Slf4j
 public class ReceiveMessage  extends MessageListenerAdapter {
     @Autowired
