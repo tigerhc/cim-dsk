@@ -104,15 +104,20 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      *  查询recipe列表
      * @param request
      */
-    @RequestMapping(value = "uploadrecipe")
+    @RequestMapping(value = "selectRecipeList")
     public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request,  HttpServletResponse response) {
         Response res = null;
-        List<String> recipeList = rmsRecipeService.selectRecipeList(eqpId);
-        if (recipeList.size() == 0){
-            res = Response.error(999998, "未查询到配方");
-        } else {
-            res = DateResponse.ok(recipeList);
+        try {
+            List<String> recipeList = rmsRecipeService.selectRecipeList(eqpId);
+            if (recipeList.size() == 0){
+                res = Response.error(999998, "未查询到配方");
+            } else {
+                res = DateResponse.ok(recipeList);
+            }
+        } catch (Exception e) {
+            res = Response.error(999998, e.getMessage());
         }
+
         String content = JSON.toJSONString(res);
         ServletUtils.printJson(response,content);
     }

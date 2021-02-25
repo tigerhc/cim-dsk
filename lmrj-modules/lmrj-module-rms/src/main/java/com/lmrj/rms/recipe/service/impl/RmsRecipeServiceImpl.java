@@ -22,6 +22,8 @@ import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
 import com.lmrj.rms.recipe.utils.FileUtil;
+import com.lmrj.rms.recipe.utils.FixedLength;
+import com.lmrj.rms.recipe.utils.ReceiveMessage;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -70,6 +72,11 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     private IRmsRecipePermitService rmsRecipePermitService;
     @Autowired
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
+    @Autowired
+    private ReceiveMessage receiveMessage;
+
+
+    public static List<String> recipeList = new ArrayList<>();
 
 //    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
     public static String[] FTP94 = new String[]{"127.0.0.1", "21", "FTP", "FTP"};
@@ -178,8 +185,32 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public List<String> selectRecipeList(String eapId) {
-        return null;
+    public List<String> selectRecipeList(String eqpId) throws Exception{
+        String trxId = "TXR03";
+        String typeId = "I";
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String id = ShiroExt.getPrincipalProperty(principal, "id");
+        User user = UserUtil.getUser(id);
+        String userId = user.getId();
+        trxId = FixedLength.toFixedLengthString(trxId, 5);
+        typeId = FixedLength.toFixedLengthString(typeId, 1);
+        eqpId = FixedLength.toFixedLengthString(eqpId, 10);
+        userId = FixedLength.toFixedLengthString(userId, 20);
+        String msg = trxId + typeId + eqpId + userId;
+        // TODO 发送MQ消息
+        log.info("发送至 LQ1WM1RMSI({});", msg);
+        while (recipeList.size() == 0) {
+            try {
+                log.info("未收到回复，休眠等待");
+                Thread.sleep(500);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        List<String> recipes = new ArrayList<>(recipeList);
+        recipeList = new ArrayList<>();
+        return recipes;
     }
 
     @Override

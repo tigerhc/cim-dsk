@@ -43,7 +43,7 @@ public class RmsRecipeBodyController extends BaseCRUDController<RmsRecipeBody> {
         Response response = Response.ok("参数校验通过");
         boolean flag = false;
         try {
-            flag = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
+            flag = "Y".equals(rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize).getResult());
             if (!flag){
                 response = Response.error(999998, "参数校验失败");
             }

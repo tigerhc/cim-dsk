@@ -7,6 +7,7 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.config.entity.RmsRecipeDownloadConfig;
 import com.lmrj.rms.config.service.IRmsRecipeDownloadConfigService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
+import com.lmrj.rms.recipe.entity.TRXO;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
@@ -61,7 +62,11 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     }
 
     @Override
-    public boolean checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize) {
+    public TRXO checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize) {
+        TRXO reply = new TRXO();
+        reply.setTrxId("TXR01", 5);
+        reply.setTypeId("O", 1);
+        reply.setResult("Y", 1);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
         RmsRecipeDownloadConfig downloadConfig = null;
@@ -85,29 +90,35 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         } else {
             rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", "DRAFT"));
         }
-        boolean flag = true;
         if (rmsRecipes.size() == 0) {
             log.info("未找到[" + recipeCode + "]对应的配方");
-            return false;
+            reply.setResult("N", 1);
+            reply.setMsg("未找到[" + recipeCode + "]对应的配方", 100);
+            return reply;
         }
         List<RmsRecipeBody> recipeBodies = baseMapper.queryRecipeBody(rmsRecipes.get(0).getId());
         int size = Integer.parseInt(recipeBodySize);
         if (size > recipeBodies.size()) {
             log.info("需校验参数个数超出维护参数个数");
-            return false;
+            reply.setResult("N", 1);
+            reply.setMsg("需校验参数个数超出维护参数个数", 100);
+            return reply;
         }
 
         for (int i = 0; i < size; i++) {
-            String value = recipeBody.substring(i * 10).trim();
+            String value;
             if (i < size - 1) {
-                value = recipeBody.substring(i * 10, (i + 1) * 10).trim();
+                value = recipeBody.substring(i * 100, (i + 1) * 100).trim().split("=")[1];
+            } else {
+                value = recipeBody.substring(i * 100).trim().split("=")[1];
             }
 
             if (Integer.parseInt(value) < Integer.parseInt(recipeBodies.get(i).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodies.get(i).getMaxValue())) {
                 log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
-                flag = false;
+                reply.setResult("N", 1);
+                reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
             }
         }
-        return flag;
+        return reply;
     }
 }

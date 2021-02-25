@@ -2,6 +2,7 @@ package com.lmrj.rms.recipe.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
+import com.lmrj.rms.recipe.entity.TRXO;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -18,5 +19,5 @@ public interface IRmsRecipeBodyService extends ICommonService<RmsRecipeBody> {
     int copyParaFromExist(String recipeIdNew, String recipeIdOld);
     int copyMinValue(String recipeIdNew, String recipeIdOld);
     int copyMaxValue(String recipeIdNew, String recipeIdOld);
-    boolean checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize);
+    TRXO checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize);
 }
