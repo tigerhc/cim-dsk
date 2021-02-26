@@ -1,4 +1,4 @@
-package com.lmrj.rms.recipe.utils;
+package com.lmrj.cim.recipe.util;
 
 import com.ibm.mq.MQC;
 import com.ibm.mq.MQEnvironment;
@@ -7,10 +7,10 @@ import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
+import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
 import com.lmrj.rms.recipe.entity.TRXO;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.impl.RmsRecipeServiceImpl;
-import io.swagger.models.auth.In;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,7 +30,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * ibm mq 消息接受者
  */
-//@Component
+@Component
 @Slf4j
 public class ReceiveMessage  extends MessageListenerAdapter {
     @Autowired
@@ -46,6 +45,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
     int CCSID;
 
 
+    @Autowired
     private IRmsRecipeBodyService rmsRecipeBodyService;
 
     @SneakyThrows
@@ -73,7 +73,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             e.printStackTrace();
         }
         ReceiveMessage mqst = new ReceiveMessage();
-        this.sendMsg("TX105O000000000000".getBytes("UTF-8"), this.hexStringToByteArray( message.getJMSMessageID().substring(3)), message.getJMSCorrelationIDAsBytes());
+        this.sendMsg("TX105O000000000000".getBytes("UTF-8"), hexStringToByteArray( message.getJMSMessageID().substring(3)), message.getJMSCorrelationIDAsBytes());
 
         mqst.finalizer();
     }
@@ -239,8 +239,10 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             } else {
                 recipeCode = message.substring(start + i * 100).trim().split("=")[1];
             }
-            RmsRecipeServiceImpl.recipeList.add(recipeCode);
+            RecipeServiceImpl.recipeList.add(recipeCode);
         }
     }
 
 }
+
+
