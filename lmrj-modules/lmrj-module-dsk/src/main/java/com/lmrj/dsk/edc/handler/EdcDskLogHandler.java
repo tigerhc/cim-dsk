@@ -356,9 +356,12 @@ public class EdcDskLogHandler {
             ovnBatchLot.setId(StringUtil.randomTimeUUID());
             ovnBatchLot.setEqpId(proList.get(0).getEqpId());
             ovnBatchLot.setStartTime(proList.get(0).getStartTime());
+            ovnBatchLot.setStepCode("DM");
             ovnBatchLot.setLotId(lotNo);
             ovnBatchLot.setEndTime(proList.get(proList.size()-1).getStartTime());
             ovnBatchLot.setOtherTempsTitle("T102面积当前值,T102面积SET,T102面积MIN,T102面积MAX,T103面积当前值,T103面积SET,T103面积MIN,T103面积MAX,T104面积当前值,T105面积SET,T105面积MIN,T105面积MAX,T106面积当前值,T106面积SET,T106面积MIN,T106面积MAX,T107面积当前值,T107面积SET,T107面积MIN,T107面积MAX,T108面积当前值,T108面积SET,T108面积MIN,T108面积MAX,T109面积当前值,T109面积SET,T109面积MIN,T109面积MAX,T110面积当前值,T110面积SET,T110面积MIN,T110面积MAX,T111面积当前值,T111面积SET,T111面积MIN,T111面积MAX,T112面积当前值,T112面积SET,T112面积MIN,T112面积MAX,T113面积当前值,T113面积SET,T113面积MIN,T113面积MAX,T114面积当前值,T114面积SET,T114面积MIN,T114面积MAX,T115面积当前值,T115面积SET,T115面积MIN,T115面积MAX,T116面积当前值,T116面积SET,T116面积MIN,T116面积MAX,T117面积当前值,T117面积SET,T117面积MIN,T117面积MAX,T118面积当前值,T118面积SET,T118面积MIN,T118面积MAX,T119面积当前值,T119面积SET,T119面积MIN,T119面积MAX,T120面积当前值,T120面积SET,T120面积MIN,T120面积MAX,T121面积当前值,T121面积SET,T121面积MIN,T121面积MAX,T122面积当前值,T122面积SET,T122面积MIN,T122面积MAX,T123面积当前值,T123面积SET,T123面积MIN,T123面积MAX,T124面积当前值,T124面积SET,T124面积MIN,T124面积MAX,T125面积当前值,T125面积SET,T125面积MIN,T125面积MAX,T126面积当前值,T126面积SET,T126面积MIN,T126面积MAX,T127面积当前值,T127面积SET,T127面积MIN,T127面积MAX,T128面积当前值,T128面积SET,T128面积MIN,T128面积MAX,T129面积当前值,T129面积SET,T129面积MIN,T129面积MAX,,");
+            FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(proList.get(0).getEqpId());
+            ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
             for (EdcDskLogProduction edcDskLogProduction:proList){
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
                 String[] a = edcDskLogProduction.getParamValue().split(",");
@@ -635,6 +638,8 @@ public class EdcDskLogHandler {
             if(!eqpId.equals("")){
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
                 ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
+                FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
             }
             Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
             Date startTime = new Date(time);
