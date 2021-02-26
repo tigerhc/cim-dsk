@@ -299,7 +299,12 @@ public class EdcSecsLogHandler {
                 ovnBatchLot.setEqpId(eqpId);
                 ovnBatchLot.setStartTime(productionLog.getStartTime());
                 ovnBatchLot.setEndTime(productionLog.getEndTime());
+                ovnBatchLot.setStepCode("TRM");
+                ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
                 ovnBatchLot.setOtherTempsTitle("模腔1预热器L温度,模腔2预热器L温度,模腔3预热器L温度,模腔1预热器R温度,模腔2预热器R温度,模腔3预热器R温度,模具1温度上型,模具2温度上型,模具3温度上型,模具1温度下型,模具2温度下型,模具3温度下型");
+                if(mesLotTrack!=null){
+                    ovnBatchLot.setLotId(mesLotTrack.getLotNo());
+                }
                 String[] a = pro.getParamValue().split(",");
                 Long create =  productionLog.getStartTime().getTime()+(1000);
                 String temp = null;
@@ -328,10 +333,10 @@ public class EdcSecsLogHandler {
                 ovnBatchLotParam.setOtherTempsValue(temp);
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
-                //实现主表一天内只有一条数据
-                Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
-                Date stime = new Date(time);
-                OvnBatchLot ovnBatchLot1 = iOvnBatchLotService.findBatchData(eqpId,stime);
+                //实现主表一个批次只有一条数据
+                /*Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
+                Date stime = new Date(time);*/
+                OvnBatchLot ovnBatchLot1 = iOvnBatchLotService.findBatchDataByLot(eqpId,mesLotTrack.getLotNo());
                 if(ovnBatchLot1!=null){
                     List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
                     ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
