@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@RequestMapping("rms/rmsrecipe")
+@RequestMapping("rms2/rmsrecipe")
 @RequiresPathPermission("rms:rmsrecipe")
 public class RecipeController extends BaseCRUDController<RmsRecipe> {
 
