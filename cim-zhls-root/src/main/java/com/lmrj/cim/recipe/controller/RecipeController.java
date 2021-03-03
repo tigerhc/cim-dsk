@@ -43,6 +43,7 @@ public class RecipeController extends BaseCRUDController<RmsRecipe> {
                 res = DateResponse.ok(recipeList);
             }
         } catch (Exception e) {
+            logger.error(e.getMessage());
             res = Response.error(999998, e.getMessage());
         }
 

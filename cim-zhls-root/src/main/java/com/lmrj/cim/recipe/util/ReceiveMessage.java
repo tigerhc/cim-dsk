@@ -11,6 +11,7 @@ import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
 import com.lmrj.rms.recipe.entity.TRXO;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.service.impl.RmsRecipeServiceImpl;
+import com.lmrj.util.lang.StringUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
 
     @SneakyThrows
     @Override
-    @JmsListener(destination = "LQ1WM1R02I") //队列
+    @JmsListener(destination = "LQWM2R02I") //队列
     public void onMessage(Message message) {
         String str = null;
         // 1、读取报文
@@ -75,10 +76,10 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         ReceiveMessage mqst = new ReceiveMessage();
         this.sendMsg("TX105O000000000000".getBytes("UTF-8"), hexStringToByteArray( message.getJMSMessageID().substring(3)), message.getJMSCorrelationIDAsBytes());
 
-        mqst.finalizer();
+//        mqst.finalizer();
     }
 
-    @JmsListener(destination = "LQ1WM1R01I")
+    @JmsListener(destination = "LQWM2R01I")
     public void getMsg2(Message msg) throws Exception {
         String str = null;
         System.out.println(msg);
@@ -106,7 +107,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         this.sendMsg(replyMsg.getBytes("UTF-8"), hexStringToByteArray( msg.getJMSMessageID().substring(3)), msg.getJMSCorrelationIDAsBytes());
     }
 
-    @JmsListener(destination = "LQ1WM1RMSI")
+    @JmsListener(destination = "LQWM2RMSO")
     public void getReply(Message msg) throws Exception {
         String str = null;
         System.out.println(msg);
@@ -231,13 +232,18 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         String msg = message.substring(17, 117);
         String recipeCodeSize = message.substring(117, 122);
         int start = 122;
-        int size = Integer.parseInt(recipeCodeSize);
+        int size = 0;
+        if(StringUtil.isEmpty(recipeCodeSize.trim())){
+            log.error("NO RecipeSize");
+            return;
+        }
+        size = Integer.parseInt(recipeCodeSize.trim());
         for (int i = 0; i < size; i++) {
             String recipeCode;
             if (i < size - 1) {
-                recipeCode = message.substring(start + i * 100, start + (i + 1) * 100).trim().split("=")[1];
+                recipeCode = message.substring(start + i * 100, start + (i + 1) * 100).trim();
             } else {
-                recipeCode = message.substring(start + i * 100).trim().split("=")[1];
+                recipeCode = message.substring(start + i * 100).trim();
             }
             RecipeServiceImpl.recipeList.add(recipeCode);
         }
