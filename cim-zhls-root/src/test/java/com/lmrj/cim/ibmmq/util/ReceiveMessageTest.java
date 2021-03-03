@@ -10,16 +10,16 @@ public class ReceiveMessageTest {
     private static String queueString = "MQ_SEND";
 
     public static void connect() throws MQException {
-        MQEnvironment.hostname = "127.0.0.1";
-        MQEnvironment.channel = "MQ_CHL";
-        MQEnvironment.port = 1414;
+        MQEnvironment.hostname = "192.168.0.91";
+        MQEnvironment.channel = "CHRCVR";
+        MQEnvironment.port = 10001;
         MQEnvironment.CCSID = CCSID;
         //MQ中拥有权限的用户名
-        MQEnvironment.userID = "daoda";
+        MQEnvironment.userID = "root";
         //用户名对应的密码
-        MQEnvironment.password = "";
+        MQEnvironment.password = "Daoda@123";
 
-        qMgr = new MQQueueManager("TESTMQ");
+        qMgr = new MQQueueManager("QM01");
 
     }
 
