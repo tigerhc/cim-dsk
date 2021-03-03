@@ -2,24 +2,27 @@ package com.lmrj.cim.ibmmq.util;
 
 import static org.junit.Assert.*;
 import com.ibm.mq.*;
+import com.lmrj.util.string.HexUtil;
+
+import java.math.BigInteger;
 
 public class ReceiveMessageTest {
 
     private static MQQueueManager qMgr;
     private static int CCSID = 1381;
-    private static String queueString = "MQ_SEND";
+    private static String queueString = "LQWM2RMSI";// "LQ1WM2RMSI";
 
     public static void connect() throws MQException {
-        MQEnvironment.hostname = "192.168.0.91";
-        MQEnvironment.channel = "CHRCVR";
-        MQEnvironment.port = 10001;
+        MQEnvironment.hostname = "10.210.64.102";
+        MQEnvironment.channel = "CVRWVCHN01";
+        MQEnvironment.port = 1414;
         MQEnvironment.CCSID = CCSID;
         //MQ中拥有权限的用户名
-        MQEnvironment.userID = "root";
+        MQEnvironment.userID = "";
         //用户名对应的密码
-        MQEnvironment.password = "Daoda@123";
+        MQEnvironment.password = "";
 
-        qMgr = new MQQueueManager("QM01");
+        qMgr = new MQQueueManager("QMWM1");
 
     }
 
@@ -86,9 +89,17 @@ public class ReceiveMessageTest {
     }
 
     public static void main(String[] args) throws MQException {
-        connect();
-        sendMsg("我来测试一下");
-        receiveMsg();
+//        connect();
+//        sendMsg("我来测试一下");
+//        receiveMsg();
+//        String msg = "23PWEK07TCSX";
+       // BigInteger bigInt = new BigInteger(msg, 16);
+//        System.out.println(msg.toCharArray());
+        char a = '1';
+//        System.out.println(HexUtil.toHexString(a+""));
+
+//
+
     }
 }
 
