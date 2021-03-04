@@ -26,8 +26,8 @@ public class RmsRecipeServiceImplTest {
 
     @Test
     public void uploadRecipe() throws Exception {
-        boolean flag = rmsRecipeServiceImpl.uploadRecipe("SIM-DM1", "SIM-DM1#");
-        System.out.println(flag);
+//        boolean flag = rmsRecipeServiceImpl.uploadRecipe("SIM-DM1", "SIM-DM1#");
+//        System.out.println(flag);
     }
 
     @Test
