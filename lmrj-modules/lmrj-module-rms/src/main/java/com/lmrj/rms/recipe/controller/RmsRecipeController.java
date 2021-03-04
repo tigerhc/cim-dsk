@@ -33,6 +33,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -84,13 +86,21 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      * @param request
      */
     @RequestMapping(value = "uploadrecipe")
-    public Response uploadRecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
+    public Response uploadRecipe(@RequestParam String eqpId, @RequestParam String recipeList, HttpServletRequest request) {
         Response response = Response.ok("上传成功");
         // TODO: 2019/8/26 判断返回结果
         // TODO: 2019/8/26 springmvc异常处理,当前好像已经有此功能了
         boolean flag = false;
         try {
-            flag = rmsRecipeService.uploadRecipe(eqpId, recipeName);
+            String[] recipeCodes = recipeList.split("@");
+            List<String> recipes = new ArrayList<>();
+            for (String recipe : recipeCodes) {
+                if (StringUtil.isEmpty(recipe)) {
+                    continue;
+                }
+                recipes.add(recipe);
+            }
+            flag = rmsRecipeService.uploadRecipe(eqpId, recipes);
             if (!flag){
                 response = Response.error(999998, "上传失败");
             }

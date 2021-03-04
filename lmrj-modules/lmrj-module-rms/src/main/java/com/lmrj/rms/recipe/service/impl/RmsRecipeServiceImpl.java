@@ -230,8 +230,12 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public boolean uploadRecipe(String eqpId, String recipeCode) throws Exception{
-        return uploadOvenRecipe(eqpId, recipeCode);
+    public boolean uploadRecipe(String eqpId, List<String> recipeList) throws Exception{
+        boolean flag = true;
+        for (String recipeCode : recipeList) {
+            flag = uploadOvenRecipe(eqpId, recipeCode);
+        }
+        return flag;
     }
 
     /**

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,12 @@ public class RecipeController extends BaseCRUDController<RmsRecipe> {
     public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request, HttpServletResponse response) {
         Response res = null;
         try {
-            List<String> recipeList = recipeService.selectRecipeList(eqpId);
+//            List<String> recipeList = recipeService.selectRecipeList(eqpId);
+            List<String> recipeList = new ArrayList<>();
+            recipeList.add("qqq");
+            recipeList.add("www");
+            recipeList.add("eee");
+            recipeList.add("rrr");
             if (recipeList.size() == 0){
                 res = Response.error(999998, "未查询到配方");
             } else {
