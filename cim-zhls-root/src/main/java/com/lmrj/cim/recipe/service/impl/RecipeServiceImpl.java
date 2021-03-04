@@ -44,7 +44,7 @@ public class RecipeServiceImpl implements IRecipeService {
         String msg = trxId + typeId + eqpId + userId;
         // TODO 发送MQ消息
 //        jmsTemplate.convertAndSend("LQWM2RMSI", msg);
-        sendMsg(msg);
+        sendMsg(msg, "23PWEK07TCSX");
         log.info("发送至 LQWM2RMSI({});", msg);
         int count = 0;
         while (recipeList.size() == 0) {
@@ -65,7 +65,7 @@ public class RecipeServiceImpl implements IRecipeService {
         return recipes;
     }
 
-    public static void sendMsg(String msgStr) throws Exception{
+    public static void sendMsg(String msgStr, String messageIdStr) throws Exception{
         MQEnvironment.hostname = "10.210.64.102";
         MQEnvironment.channel = "CVRWVCHN01";
         MQEnvironment.port = 1414;
@@ -87,7 +87,7 @@ public class RecipeServiceImpl implements IRecipeService {
             msg.encoding = 1381;
             byte[] messageId = new byte[24];
             //需要把设备号转为byte后放入messageid
-            byte[] messages = "23PWEK07TCSX".getBytes();
+            byte[] messages = messageIdStr.getBytes();
             for (int i = 0; i < messageId.length; i++) {
                 if( i < messages.length){
                     messageId[i] = messages[i];
