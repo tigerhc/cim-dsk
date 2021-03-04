@@ -55,7 +55,7 @@ public class RecipeServiceImpl implements IRecipeService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(count > 60){
+            if(count > 100){
                 return new ArrayList<>();
             }
 
