@@ -129,7 +129,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
                 recipeList(str);
                 break;
             case "TXR04" :
-                System.out.println("recipe上传参数格式");
+                uploadRecipe(str);
                 break;
             case "TXR05" :
                 System.out.println("recipe上传单文本");
@@ -246,6 +246,30 @@ public class ReceiveMessage  extends MessageListenerAdapter {
                 recipeCode = message.substring(start + i * 100).trim();
             }
             RecipeServiceImpl.recipeList.add(recipeCode);
+        }
+    }
+
+    private void uploadRecipe(String message) {
+        String trxId = message.substring(0, 5);
+        String typeId = message.substring(5, 6);
+        String flag = message.substring(6, 7);
+        String msg = message.substring(7, 107);
+        String recipeBodySize = message.substring(107, 112);
+        int start = 112;
+        int size = 0;
+        if (StringUtil.isEmpty(recipeBodySize.trim())) {
+            log.error("NO RecipeSize");
+            return;
+        }
+        size = Integer.parseInt(recipeBodySize.trim());
+        for (int i = 0; i < size; i++) {
+            String recipeBodyValue;
+            if (i < size - 1) {
+                recipeBodyValue = message.substring(start + i * 100, start + (i + 1) * 100).trim();
+            } else {
+                recipeBodyValue = message.substring(start + i * 100).trim();
+            }
+            System.out.println(recipeBodyValue);
         }
     }
 

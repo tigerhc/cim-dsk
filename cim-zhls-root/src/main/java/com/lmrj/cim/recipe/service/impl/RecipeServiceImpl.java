@@ -65,6 +65,25 @@ public class RecipeServiceImpl implements IRecipeService {
         return recipes;
     }
 
+    @Override
+    public boolean uploadRecipe(String eqpId, List<String> recipeList) throws Exception {
+        String trxId = "TXR04";
+        String typeId = "I";
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String id = ShiroExt.getPrincipalProperty(principal, "id");
+        User user = UserUtil.getUser(id);
+        String userId = user.getId();
+        userId = FixedLength.toFixedLengthString(userId, 20);
+        eqpId = FixedLength.toFixedLengthString("23PWEK07", 10);
+        for (String recipe : recipeList) {
+            recipe = FixedLength.toFixedLengthString("recipe", 100);
+            String msg = trxId + typeId + eqpId + recipe + userId;
+            sendMsg(msg, "23PWEK07TCSX");
+            log.info("发送至 LQWM2RMSI({});", msg);
+        }
+        return true;
+    }
+
     public static void sendMsg(String msgStr, String messageIdStr) throws Exception{
         MQEnvironment.hostname = "10.210.64.102";
         MQEnvironment.channel = "CVRWVCHN01";
