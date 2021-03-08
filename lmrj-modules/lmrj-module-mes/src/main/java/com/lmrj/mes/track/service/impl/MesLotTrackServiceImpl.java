@@ -925,11 +925,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @SuppressWarnings("unchecked")
-    public String findSX(String production, String lotNo) {
+    public String findSX(String production, String lotNo,String flag) {
         List<String> lines = null;
         StringBuilder result = new StringBuilder();
-        File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX.csv");
-
+        File pathfile = new File("D:\\DSK1");
+        if ("LF".equals(flag)) {
+             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX-LF.csv");
+        }else if ("check".equals(flag)){
+             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX-检查.csv");
+        }
         try {
             lines = FileUtil.readLines(pathfile);
         } catch (IOException e) {
