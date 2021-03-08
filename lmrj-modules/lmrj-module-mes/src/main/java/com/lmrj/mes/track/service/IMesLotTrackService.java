@@ -66,7 +66,7 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     String find6GI(String lotNo,String production);
 
-    String findSX(String production,String lotNo);
+    String findSX(String production,String lotNo ,String flag);
 
     List<MesLotTrack> findLotsByTime(String eqpId, Date startTime, Date endTime);
 }
