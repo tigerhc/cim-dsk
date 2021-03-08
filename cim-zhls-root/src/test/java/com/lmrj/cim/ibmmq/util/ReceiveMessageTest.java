@@ -1,6 +1,7 @@
 package com.lmrj.cim.ibmmq.util;
 
 import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
+import com.lmrj.cim.recipe.util.ReceiveMessage;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.rms.permit.utils.ShiroExt;
@@ -118,6 +119,6 @@ public class ReceiveMessageTest {
         String recipeCode = FixedLength.toFixedLengthString("xxxx", 100);
         userId = FixedLength.toFixedLengthString(userId, 20);
         String msg = trxId + typeId + eqpId + userId;
-        RecipeServiceImpl.sendMsg(msg,"23PWEK07TCSX");
+        ReceiveMessage.sendMsg(msg,"23PWEK07TCSX", "LQWM2RMSI", null);
     }
 }
