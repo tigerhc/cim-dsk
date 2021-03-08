@@ -34,10 +34,10 @@ public class RecipeServiceImpl implements IRecipeService {
         String userId = user.getId();
         trxId = FixedLength.toFixedLengthString(trxId, 5);
         typeId = FixedLength.toFixedLengthString(typeId, 1);
-        eqpId = FixedLength.toFixedLengthString("23PWEK07", 10);
+        String eqpIdStr = FixedLength.toFixedLengthString(eqpId, 10);
         userId = FixedLength.toFixedLengthString(userId, 20);
-        String msg = trxId + typeId + eqpId + userId;
-        ReceiveMessage.sendMsg(msg, "23PWEK07TCSX", "LQWM2RMSI", null);
+        String msg = trxId + typeId + eqpIdStr + userId;
+        ReceiveMessage.sendMsg(msg, eqpId + "TCSX", "LQWM2RMSI", null);
         log.info("发送至 LQWM2RMSI({});", msg);
         int count = 0;
         while (recipeList.size() == 0) {
@@ -67,11 +67,11 @@ public class RecipeServiceImpl implements IRecipeService {
         User user = UserUtil.getUser(id);
         String userId = user.getId();
         userId = FixedLength.toFixedLengthString(userId, 20);
-        eqpId = FixedLength.toFixedLengthString("23PWEK07", 10);
+        String eqpIdStr = FixedLength.toFixedLengthString(eqpId, 10);
         for (String recipe : recipeList) {
             recipe = FixedLength.toFixedLengthString("recipe", 100);
-            String msg = trxId + typeId + eqpId + recipe + userId;
-            ReceiveMessage.sendMsg(msg, "23PWEK07TCSX", "LQWM2RMSI", null);
+            String msg = trxId + typeId + eqpIdStr + recipe + userId;
+            ReceiveMessage.sendMsg(msg, eqpId + "TCSX", "LQWM2RMSI", null);
             log.info("发送至 LQWM2RMSI({});", msg);
         }
         return true;

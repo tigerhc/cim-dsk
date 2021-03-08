@@ -78,6 +78,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         RmsRecipeDownloadConfig downloadConfig = null;
         String versionType = null;
         List<RmsRecipe> rmsRecipes = new ArrayList<>();
+        recipeCode = recipeCode.replaceAll("\\\\", "-");
         if (downloadConfigs != null && downloadConfigs.size() > 0) {
             downloadConfig = downloadConfigs.get(0);
             versionType = downloadConfig.getLevel1();
@@ -103,13 +104,13 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             return reply;
         }
         List<RmsRecipeBody> recipeBodies = baseMapper.queryRecipeBody(rmsRecipes.get(0).getId());
-        int size = Integer.parseInt(recipeBodySize);
-        if (size > recipeBodies.size()) {
-            log.info("需校验参数个数超出维护参数个数");
-            reply.setResult("N", 1);
-            reply.setMsg("需校验参数个数超出维护参数个数", 100);
-            return reply;
-        }
+        int size = Integer.parseInt(recipeBodySize.trim());
+//        if (size > recipeBodies.size()) {
+//            log.info("需校验参数个数超出维护参数个数");
+//            reply.setResult("N", 1);
+//            reply.setMsg("需校验参数个数超出维护参数个数", 100);
+//            return reply;
+//        }
 
         //将需要校验的recipeBodyList转换成map,
         Map<String, RmsRecipeBody> map = new HashMap<>();
@@ -125,23 +126,33 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         }
 
         for (int i = 0; i < size; i++) {
-            String key;
-            String value;
+            String key = null;
+            String value = null;
             if (i < size - 1) {
                 String[] stirs = recipeBody.substring(i * 100, (i + 1) * 100).trim().split("=");
+                if (stirs.length < 2) {
+                    continue;
+                }
                 key = stirs[0];
                 value = stirs[1];
             } else {
                 String[] strings = recipeBody.substring(i * 100).trim().split("=");
+                if (strings.length < 2) {
+                    continue;
+                }
                 key = strings[0];
                 value = strings[1];
             }
 
             if (map.get(key) != null) {
-                if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
-                    log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
-                    reply.setResult("N", 1);
-                    reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
+                if (map.get(key) != null) {
+                    if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
+                        if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
+                            log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
+                            reply.setResult("N", 1);
+                            reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
+                        }
+                    }
                 }
             }
         }

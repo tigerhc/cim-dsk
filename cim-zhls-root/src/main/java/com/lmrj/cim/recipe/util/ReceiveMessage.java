@@ -92,7 +92,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
 //        mqst.finalizer();
     }
 
-    @JmsListener(destination = "LQWM2R01I")
+    @JmsListener(destination = "LQ1WM1R01I")
     public void getMsg2(Message msg) throws Exception {
         String str = null;
         System.out.println(msg);
@@ -116,11 +116,17 @@ public class ReceiveMessage  extends MessageListenerAdapter {
 
         TRXO trxo = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
 
+        if (StringUtil.isEmpty(trxo.getMsg())) {
+            trxo.setMsg("", 100);
+        }
+
         String replyMsg = trxo.getTrxId() + trxo.getTypeId() + trxo.getResult() + trxo.getMsg();
-        sendMsg(replyMsg, eqpId, "LQWM2R01O", msg.getJMSCorrelationIDAsBytes());
+//        sendMsg(replyMsg, msg.getJMSMessageID().substring(3), "LQ1WM1R01O", msg.getJMSCorrelationIDAsBytes());
+        this.reply("LQ1WM1R01O" , replyMsg.getBytes("UTF-8"), hexStringToByteArray(msg.getJMSMessageID().substring(3)), msg.getJMSCorrelationIDAsBytes());
+        log.info("发送至 LQ1WM1R01O({});", replyMsg);
     }
 
-        @JmsListener(destination = "LQWM2RMSO")
+    @JmsListener(destination = "LQWM2RMSO")
     public void getReply(Message msg) throws Exception {
         String str = null;
         System.out.println(msg);
@@ -278,71 +284,109 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         }
     }
 
-    private void recipeList(String message) {
-        String trxId = message.substring(0, 5);
-        String typeId = message.substring(5, 6);
-        String eqpId = message.substring(6, 16);
-        String result = message.substring(16, 17);
-        String msg = message.substring(17, 117);
-        String recipeCodeSize = message.substring(117, 122);
-        int start = 122;
-        int size = 0;
-        if(StringUtil.isEmpty(recipeCodeSize.trim())){
-            log.error("NO RecipeSize");
-            return;
+     //this.reply(qname , "TX105O000000000000".getBytes("UTF-8"), hexStringToByteArray( message.getJMSMessageID().substring(3)), message.getJMSCorrelationIDAsBytes());
+    public void reply(String qname, byte[] qByte, byte[] messageId, byte[]  correlationId) {
+        try {
+            MQMessage qMsg = new MQMessage();
+            qMsg.correlationId = correlationId;
+            qMsg.messageId = messageId;
+            qMsg.characterSet = 1208;
+            qMsg.encoding=546;
+            qMsg.write(qByte);
+            MQPutMessageOptions pmo = new MQPutMessageOptions();
+            new MQQueueManager(qManager).accessQueue(qname, qOptioin, null, null, null).put(qMsg, pmo);
+            System.out.println("----"+qMsg);
+            System.out.println("\tThe message is " + new String(qByte, "GBK"));
+        } catch (MQException e) {
+            System.out
+                    .println("A WebSphere MQ error occurred : Completion code "
+                            + e.completionCode + " Reason Code is "
+                            + e.reasonCode);
+        } catch (java.io.IOException e) {
+            System.out
+                    .println("An error occurred whilst to the message buffer "
+                            + e);
         }
-        size = Integer.parseInt(recipeCodeSize.trim());
-        for (int i = 0; i < size; i++) {
-            String recipeCode;
-            if (i < size - 1) {
-                recipeCode = message.substring(start + i * 100, start + (i + 1) * 100).trim();
-            } else {
-                recipeCode = message.substring(start + i * 100).trim();
+    }
+
+    private void recipeList(String message) {
+        try {
+            String trxId = message.substring(0, 5);
+            String typeId = message.substring(5, 6);
+            String eqpId = message.substring(6, 16);
+            String result = message.substring(16, 17);
+            String msg = message.substring(17, 117);
+            String recipeCodeSize = message.substring(117, 122);
+            int start = 122;
+            int size = 0;
+            if(StringUtil.isEmpty(recipeCodeSize.trim())){
+                log.error("NO RecipeSize");
+                return;
             }
-            RecipeServiceImpl.recipeList.add(recipeCode);
+            size = Integer.parseInt(recipeCodeSize.trim());
+            for (int i = 0; i < size; i++) {
+                String recipeCode;
+                if (i < size - 1) {
+                    recipeCode = message.substring(start + i * 100, start + (i + 1) * 100).trim();
+                } else {
+                    recipeCode = message.substring(start + i * 100).trim();
+                }
+                RecipeServiceImpl.recipeList.add(recipeCode);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 
     private void uploadRecipe(String message) {
-        String trxId = message.substring(0, 5);
-        String typeId = message.substring(5, 6);
-        String flag = message.substring(6, 7);
-        String msg = message.substring(7, 107);
-        String eqpId = message.substring(107, 117);
-        String recipeCode = message.substring(117, 217);
-        String recipeBodySize = message.substring(217, 222);
-        int start = 222;
-        int size = 0;
-        if (StringUtil.isEmpty(recipeBodySize.trim())) {
-            log.error("NO RecipeSize");
-            return;
-        }
-        size = Integer.parseInt(recipeBodySize.trim());
-        RmsRecipe rmsRecipe = new RmsRecipe();
-        List<RmsRecipeBody> recipeBodyList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            RmsRecipeBody recipeBody = new RmsRecipeBody();
-            String str;
-            if (i < size - 1) {
-                str = message.substring(start + i * 100, start + (i + 1) * 100).trim();
-            } else {
-                str = message.substring(start + i * 100).trim();
+        try {
+            String trxId = message.substring(0, 5);
+            String typeId = message.substring(5, 6);
+            String eqpId = message.substring(6, 16).trim();
+            String recipeCode = message.substring(16, 116).trim();
+            String flag = message.substring(116, 117);
+            String msg = message.substring(117, 217);
+            String recipeBodySize = message.substring(217, 222);
+            int start = 222;
+            int size = 0;
+            if (StringUtil.isEmpty(recipeBodySize.trim())) {
+                log.error("NO RecipeSize");
+                return;
             }
-            String[] strs = str.split("=");
-            recipeBody.setParaName(strs[0]);
-            recipeBody.setParaCode(strs[0]);
-            recipeBody.setSetValue(strs[1]);
-            recipeBodyList.add(recipeBody);
+            size = Integer.parseInt(recipeBodySize.trim());
+            RmsRecipe rmsRecipe = new RmsRecipe();
+            List<RmsRecipeBody> recipeBodyList = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                RmsRecipeBody recipeBody = new RmsRecipeBody();
+                String str;
+                if (i < size - 1) {
+                    str = message.substring(start + i * 100, start + (i + 1) * 100).trim();
+                } else {
+                    str = message.substring(start + i * 100).trim();
+                }
+                String[] strs = str.split("=");
+                if (strs.length == 2) {
+                    recipeBody.setParaName(strs[0]);
+                    recipeBody.setParaCode(strs[0]);
+                    recipeBody.setSetValue(strs[1]);
+                    recipeBodyList.add(recipeBody);
+                }
+            }
+            rmsRecipe.setRecipeName(recipeCode);
+            recipeCode = recipeCode.replaceAll("\\\\", "-");
+            rmsRecipe.setRecipeCode(recipeCode);
+            rmsRecipe.setEqpId(eqpId);
+            rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
+            rmsRecipe.setStatus("0");
+            rmsRecipe.setVersionType("DRAFT");
+            rmsRecipe.setApproveStep("1");
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+            rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+            rmsRecipeService.insert(rmsRecipe);
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
-        rmsRecipe.setRecipeName(recipeCode);
-        rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
-        rmsRecipe.setStatus("0");
-        rmsRecipe.setVersionType("DRAFT");
-        rmsRecipe.setApproveStep("1");
-        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-        rmsRecipe.setEqpModelId(fabEquipment.getModelId());
-        rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-        rmsRecipeService.insert(rmsRecipe);
     }
 
 }
