@@ -8,8 +8,13 @@ import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
+import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.rms.recipe.entity.RmsRecipe;
+import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.entity.TRXO;
 import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
+import com.lmrj.rms.recipe.service.IRmsRecipeService;
 import com.lmrj.rms.recipe.service.impl.RmsRecipeServiceImpl;
 import com.lmrj.util.lang.StringUtil;
 import lombok.SneakyThrows;
@@ -27,6 +32,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ibm mq 消息接受者
@@ -35,15 +42,21 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 public class ReceiveMessage  extends MessageListenerAdapter {
     @Autowired
-    JmsOperations jmsOperations;
-    private String qManager;// QueueManager名
+    private JmsOperations jmsOperations;
+    private static String qManager;
     private MQQueueManager qMgr;
     private MQQueue qQueue2;
-    String HOST_NAME;
-    int PORT = 0;
-    String Q_NAME2;
-    String CHANNEL;
-    int CCSID;
+    private String HOST_NAME;
+    private int PORT = 0;
+    private String CHANNEL;
+    private int CCSID;
+    private static int qOptioin;
+
+    @Autowired
+    private IFabEquipmentService fabEquipmentService;
+
+    @Autowired
+    private IRmsRecipeService rmsRecipeService;
 
 
     @Autowired
@@ -74,7 +87,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             e.printStackTrace();
         }
         ReceiveMessage mqst = new ReceiveMessage();
-        this.sendMsg("TX105O000000000000".getBytes("UTF-8"), hexStringToByteArray( message.getJMSMessageID().substring(3)), message.getJMSCorrelationIDAsBytes());
+        sendMsg("TX105O000000000000", message.getJMSMessageID().substring(3),"" ,message.getJMSCorrelationIDAsBytes());
 
 //        mqst.finalizer();
     }
@@ -104,7 +117,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         TRXO trxo = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
 
         String replyMsg = trxo.getTrxId() + trxo.getTypeId() + trxo.getResult() + trxo.getMsg();
-        this.sendMsg(replyMsg.getBytes("UTF-8"), hexStringToByteArray( msg.getJMSMessageID().substring(3)), msg.getJMSCorrelationIDAsBytes());
+        sendMsg(replyMsg, eqpId, "LQWM2R01O", msg.getJMSCorrelationIDAsBytes());
     }
 
         @JmsListener(destination = "LQWM2RMSO")
@@ -126,10 +139,12 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         String trxId = str.substring(0, 5);
         switch (trxId) {
             case "TXR03" :
+                //获取recipe列表
                 recipeList(str);
                 break;
             case "TXR04" :
-                System.out.println("recipe上传参数格式");
+                //recipe上传参数格式
+                uploadRecipe(str);
                 break;
             case "TXR05" :
                 System.out.println("recipe上传单文本");
@@ -164,21 +179,30 @@ public class ReceiveMessage  extends MessageListenerAdapter {
     @PostConstruct
     public void init() {
         try {
-            HOST_NAME = "10.210.64.102";//Hostname或IP
-            PORT = 1414;//要有一个侦听器，处于活动状态，且监听1414端口
+            //Hostname或IP
+            HOST_NAME = "10.210.64.102";
+            //要有一个侦听器，处于活动状态，且监听1414端口
+            PORT = 1414;
             qManager = "QMWM1";
-            Q_NAME2 = "LQ1WM1105O";//Q1是一个本地队列
-            CHANNEL = "CVRWVCHN01";//QM_APPLE上要建一个名为DC.SVRCONN的服务器连接通道
-            CCSID = 1208; // 表示是简体中文，
-            // CCSID的值在AIX上一般设为1383，如果要支持GBK则设为1386，在WIN上设为1381。
-            MQEnvironment.hostname = HOST_NAME; // 安裝MQ所在的ip address
-            MQEnvironment.port = PORT; // TCP/IP port
+            //Q1是一个本地队列
+            //Q_NAME2 = "LQ1WM1105O";
+            //QM_APPLE上要建一个名为DC.SVRCONN的服务器连接通道
+            CHANNEL = "CVRWVCHN01";
+            // 表示是简体中文，CCSID的值在AIX上一般设为1383，如果要支持GBK则设为1386，在WIN上设为1381。
+            CCSID = 1208;
+            //MQ中拥有权限的用户名
+            MQEnvironment.userID = "";
+            //用户名对应的密码
+            MQEnvironment.password = "";
+            // 安裝MQ所在的ip address
+            MQEnvironment.hostname = HOST_NAME;
+            // TCP/IP port
+            MQEnvironment.port = PORT;
             MQEnvironment.channel = CHANNEL;
             MQEnvironment.CCSID = CCSID;
             qMgr = new MQQueueManager(qManager);
-            int qOptioin = MQC.MQOO_INPUT_AS_Q_DEF | MQC.MQOO_INQUIRE
+            qOptioin = MQC.MQOO_INPUT_AS_Q_DEF | MQC.MQOO_INQUIRE
                     | MQC.MQOO_OUTPUT;
-            qQueue2 = qMgr.accessQueue(Q_NAME2, 9264);
         } catch (MQException e) {
             System.out
                     .println("A WebSphere MQ error occurred : Completion code "
@@ -200,27 +224,57 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         }
     }
 
-    public void sendMsg(byte[] qByte, byte[] messageId, byte[]  correlationId) {
+    public static void sendMsg(String msgStr, String messageIdStr, String qname, byte[]  correlationId) throws Exception{
+//        MQEnvironment.hostname = "10.210.64.102";
+//        MQEnvironment.channel = "CVRWVCHN01";
+//        MQEnvironment.port = 1414;
+//        MQEnvironment.CCSID = 1381;
+//        //MQ中拥有权限的用户名
+//        MQEnvironment.userID = "";
+//        //用户名对应的密码
+//        MQEnvironment.password = "";
+
+        MQQueue queue = null;
         try {
-            MQMessage qMsg = new MQMessage();
-            qMsg.correlationId = correlationId;
-            qMsg.messageId = messageId;
-            qMsg.characterSet = 1208;
-            qMsg.encoding=546;
-            qMsg.write(qByte);
+            // 建立Q1通道的连接
+            queue = new MQQueueManager(qManager).accessQueue(qname, qOptioin, null, null, null);
+            // 要写入队列的消息
+            MQMessage msg = new MQMessage();
+            msg.correlationId = correlationId;
+            msg.format = MQC.MQFMT_STRING;
+            msg.characterSet = 1381;
+            msg.encoding = 1381;
+            byte[] messageId = new byte[24];
+            //需要把设备号转为byte后放入messageid
+            byte[] messages = messageIdStr.getBytes();
+            for (int i = 0; i < messageId.length; i++) {
+                if( i < messages.length){
+                    messageId[i] = messages[i];
+                }else{
+                    messageId[i] = 0X20;
+                }
+            }
+
+            msg.messageId = messageId;
+            // msg.writeObject(msgStr); //将消息写入消息对象中
+            msg.writeString(msgStr);
             MQPutMessageOptions pmo = new MQPutMessageOptions();
-            qQueue2.put(qMsg, pmo);
-            System.out.println("----"+qMsg);
-            System.out.println("\tThe message is " + new String(qByte, "GBK"));
-        } catch (MQException e) {
-            System.out
-                    .println("A WebSphere MQ error occurred : Completion code "
-                            + e.completionCode + " Reason Code is "
-                            + e.reasonCode);
-        } catch (java.io.IOException e) {
-            System.out
-                    .println("An error occurred whilst to the message buffer "
-                            + e);
+            // 设置消息用不过期
+            msg.expiry = -1;
+            // 将消息放入队列
+            queue.put(msg, pmo);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            if (queue != null) {
+                try {
+                    queue.close();
+                } catch (MQException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -247,6 +301,48 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             }
             RecipeServiceImpl.recipeList.add(recipeCode);
         }
+    }
+
+    private void uploadRecipe(String message) {
+        String trxId = message.substring(0, 5);
+        String typeId = message.substring(5, 6);
+        String flag = message.substring(6, 7);
+        String msg = message.substring(7, 107);
+        String eqpId = message.substring(107, 117);
+        String recipeCode = message.substring(117, 217);
+        String recipeBodySize = message.substring(217, 222);
+        int start = 222;
+        int size = 0;
+        if (StringUtil.isEmpty(recipeBodySize.trim())) {
+            log.error("NO RecipeSize");
+            return;
+        }
+        size = Integer.parseInt(recipeBodySize.trim());
+        RmsRecipe rmsRecipe = new RmsRecipe();
+        List<RmsRecipeBody> recipeBodyList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            RmsRecipeBody recipeBody = new RmsRecipeBody();
+            String str;
+            if (i < size - 1) {
+                str = message.substring(start + i * 100, start + (i + 1) * 100).trim();
+            } else {
+                str = message.substring(start + i * 100).trim();
+            }
+            String[] strs = str.split("=");
+            recipeBody.setParaName(strs[0]);
+            recipeBody.setParaCode(strs[0]);
+            recipeBody.setSetValue(strs[1]);
+            recipeBodyList.add(recipeBody);
+        }
+        rmsRecipe.setRecipeName(recipeCode);
+        rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
+        rmsRecipe.setStatus("0");
+        rmsRecipe.setVersionType("DRAFT");
+        rmsRecipe.setApproveStep("1");
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        rmsRecipe.setEqpModelId(fabEquipment.getModelId());
+        rmsRecipe.setEqpModelName(fabEquipment.getModelName());
+        rmsRecipeService.insert(rmsRecipe);
     }
 
 }

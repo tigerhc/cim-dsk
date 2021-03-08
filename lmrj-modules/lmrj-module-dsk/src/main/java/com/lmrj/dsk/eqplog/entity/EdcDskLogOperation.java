@@ -50,13 +50,22 @@ public class EdcDskLogOperation extends AbstractEntity {
     @Excel(name = "配方名", orderNum = "7", width = 20)
     private String recipeCode;
     /**日投入数*/
-    @TableField(value = "day_yield")
-    @Excel(name = "日产量", orderNum = "8", width = 10)
-    private Integer dayYield;
+    @TableField(value = "day_input")
+    @Excel(name = "日投入数", orderNum = "1", width = 20)
+    private Integer dayInput;
     /**批量投入数*/
+    @TableField(value = "lot_input")
+    @Excel(name = "批次投入数", orderNum = "1", width = 20)
+    private Integer lotInput;
+    /**日产量*/
+    @TableField(value = "day_yield")
+    @Excel(name = "日产量", orderNum = "1", width = 20)
+    private Integer dayYield;
+    /**批次产量*/
     @TableField(value = "lot_yield")
-    @Excel(name = "批次产量", orderNum = "9", width = 10)
+    @Excel(name = "批次产量", orderNum = "1", width = 20)
     private Integer lotYield;
+
     @JSONField(format="yyyy-MM-dd HH:mm:ss.SSS")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     @TableField(value = "start_time")

@@ -402,9 +402,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/findSX", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findSX(@RequestParam String production ,@RequestParam String lotNo
+    public String findSX(@RequestParam String production ,@RequestParam String lotNo,@RequestParam String flag
     ) throws IOException {
-        return mesLotTrackService.findSX(production,lotNo);
+        return mesLotTrackService.findSX(production,lotNo,flag);
 
     }
 

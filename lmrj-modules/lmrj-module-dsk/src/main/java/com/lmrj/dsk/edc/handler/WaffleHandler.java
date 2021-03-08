@@ -28,7 +28,7 @@ public class WaffleHandler {
             int count = mapTrayChipMoveService.insertData(dataList);
             log.info("WaffleHandler_parseWaffleMove:count:"+count);
         }catch(Exception e){
-            log.error("WaffleHandler_parseWaffleMove:find an error");
+            log.error("WaffleHandler_parseWaffleMove:find an error", e);
         }
     }
 

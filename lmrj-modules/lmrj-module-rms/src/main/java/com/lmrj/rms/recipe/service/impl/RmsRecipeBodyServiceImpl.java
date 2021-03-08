@@ -13,13 +13,17 @@ import com.lmrj.rms.recipe.service.IRmsRecipeBodyService;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.mapper.RmsRecipeBodyMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
+import com.lmrj.rms.template.entity.RmsRecipeTemplate;
+import com.lmrj.rms.template.service.IRmsRecipeTemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -45,6 +49,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     private IFabEquipmentService fabEquipmentService;
     @Autowired
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
+    @Autowired
+    private IRmsRecipeTemplateService rmsRecipeTemplateService;
 
     @Override
     public int copyParaFromExist(String recipeIdNew, String recipeIdOld) {
@@ -105,18 +111,38 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             return reply;
         }
 
+        //将需要校验的recipeBodyList转换成map,
+        Map<String, RmsRecipeBody> map = new HashMap<>();
+        for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
+            List<RmsRecipeTemplate> recipeTemplates = new ArrayList<>();
+            recipeTemplates = rmsRecipeTemplateService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("para_code", rmsRecipeBody.getParaCode()).eq("para_name", rmsRecipeBody.getParaName()));
+            if (recipeTemplates.size() > 0) {
+                RmsRecipeTemplate recipeTemplate = recipeTemplates.get(0);
+                if ("Y".equals(recipeTemplate.getMonitorFlag())) {
+                    map.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
+                }
+            }
+        }
+
         for (int i = 0; i < size; i++) {
+            String key;
             String value;
             if (i < size - 1) {
-                value = recipeBody.substring(i * 100, (i + 1) * 100).trim().split("=")[1];
+                String[] stirs = recipeBody.substring(i * 100, (i + 1) * 100).trim().split("=");
+                key = stirs[0];
+                value = stirs[1];
             } else {
-                value = recipeBody.substring(i * 100).trim().split("=")[1];
+                String[] strings = recipeBody.substring(i * 100).trim().split("=");
+                key = strings[0];
+                value = strings[1];
             }
 
-            if (Integer.parseInt(value) < Integer.parseInt(recipeBodies.get(i).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodies.get(i).getMaxValue())) {
-                log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
-                reply.setResult("N", 1);
-                reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
+            if (map.get(key) != null) {
+                if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
+                    log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
+                    reply.setResult("N", 1);
+                    reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
+                }
             }
         }
         return reply;
