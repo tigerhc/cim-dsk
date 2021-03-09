@@ -69,7 +69,7 @@ public class RecipeServiceImpl implements IRecipeService {
         userId = FixedLength.toFixedLengthString(userId, 20);
         String eqpIdStr = FixedLength.toFixedLengthString(eqpId, 10);
         for (String recipe : recipeList) {
-            recipe = FixedLength.toFixedLengthString("recipe", 100);
+            recipe = FixedLength.toFixedLengthString(recipe, 100);
             String msg = trxId + typeId + eqpIdStr + recipe + userId;
             ReceiveMessage.sendMsg(msg, eqpId + "TCSX", "LQWM2RMSI", null);
             log.info("发送至 LQWM2RMSI({});", msg);

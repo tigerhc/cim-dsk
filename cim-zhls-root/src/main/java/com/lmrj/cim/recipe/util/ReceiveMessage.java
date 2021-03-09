@@ -64,7 +64,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
 
     @SneakyThrows
     @Override
-    @JmsListener(destination = "LQWM2R02I") //队列
+//    @JmsListener(destination = "LQWM2R02I") //队列
     public void onMessage(Message message) {
         String str = null;
         // 1、读取报文
@@ -185,10 +185,12 @@ public class ReceiveMessage  extends MessageListenerAdapter {
     @PostConstruct
     public void init() {
         try {
+            //QMWM1/CVRWVCHN01/10.210.66.5(41416)
+            //10.210.64.102(1414)
             //Hostname或IP
-            HOST_NAME = "10.210.64.102";
+            HOST_NAME = "10.210.66.5";
             //要有一个侦听器，处于活动状态，且监听1414端口
-            PORT = 1414;
+            PORT = 41416;
             qManager = "QMWM1";
             //Q1是一个本地队列
             //Q_NAME2 = "LQ1WM1105O";
