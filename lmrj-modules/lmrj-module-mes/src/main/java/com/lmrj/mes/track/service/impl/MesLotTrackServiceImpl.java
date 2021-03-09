@@ -930,9 +930,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1");
         if ("LF".equals(flag)) {
-             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX-LF.csv");
+             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-LF\\SX-LF.csv");
         }else if ("check".equals(flag)){
-             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX(IT)\\SX-检查.csv");
+             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-检查\\SX-检查.csv");
         }
         try {
             lines = FileUtil.readLines(pathfile);
@@ -951,7 +951,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String[] row = rowString.split(",");
             String[] colum2 = row[2].split("-");
             if(production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK") ){
-              result.append(row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12]+",");
+              result.append(row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12]+","+row[13]+","+row[14]+",");
 
             }
         }
