@@ -10,6 +10,7 @@ import com.ibm.mq.MQQueueManager;
 import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.RmsRecipeBody;
 import com.lmrj.rms.recipe.entity.TRXO;
@@ -54,9 +55,10 @@ public class ReceiveMessage  extends MessageListenerAdapter {
 
     @Autowired
     private IFabEquipmentService fabEquipmentService;
-
     @Autowired
     private IRmsRecipeService rmsRecipeService;
+    @Autowired
+    private IRmsRecipeLogService rmsRecipeLogService;
 
 
     @Autowired
@@ -386,6 +388,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             rmsRecipe.setEqpModelId(fabEquipment.getModelId());
             rmsRecipe.setEqpModelName(fabEquipment.getModelName());
             rmsRecipeService.insert(rmsRecipe);
+            rmsRecipeLogService.addLog(rmsRecipe, "upload", eqpId);
         } catch (Exception e) {
             log.error(e.getMessage());
         }

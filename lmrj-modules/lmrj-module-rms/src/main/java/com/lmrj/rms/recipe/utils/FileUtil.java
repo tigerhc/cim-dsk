@@ -38,8 +38,13 @@ public class FileUtil {
         Map<String, String> map = new HashMap<>();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filePath)), StandardCharsets.UTF_8));
         String str = null;
+        boolean flag = true;
         while ((str = bufferedReader.readLine()) != null) {
             String[] strings = str.trim().split("=");
+            if (flag && strings.length == 1) {
+                map.put("recipeType", strings[0]);
+                flag = false;
+            }
             if (strings.length == 2){
                 map.put(strings[0], strings[1]);
             }
