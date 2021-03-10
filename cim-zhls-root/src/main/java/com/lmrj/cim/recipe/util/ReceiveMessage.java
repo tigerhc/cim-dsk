@@ -381,7 +381,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             rmsRecipe.setRecipeCode(recipeCode);
             rmsRecipe.setEqpId(eqpId);
             rmsRecipe.setRmsRecipeBodyDtlList(recipeBodyList);
-            rmsRecipe.setStatus("0");
+            rmsRecipe.setStatus("Y");
             rmsRecipe.setVersionType("DRAFT");
             rmsRecipe.setApproveStep("1");
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
