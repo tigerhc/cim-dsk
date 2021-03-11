@@ -73,6 +73,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         reply.setTrxId("TXR01", 5);
         reply.setTypeId("O", 1);
         reply.setResult("Y", 1);
+        reply.setMsg("", 100);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
         RmsRecipeDownloadConfig downloadConfig = null;
@@ -98,9 +99,9 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             rmsRecipes = recipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("status", "Y").eq("del_flag", "0").eq("version_type", "DRAFT"));
         }
         if (rmsRecipes.size() == 0) {
-            log.info("未找到[" + recipeCode + "]对应的配方");
+            log.info("not find [" + recipeCode + "] recipe");
             reply.setResult("N", 1);
-            reply.setMsg("未找到[" + recipeCode + "]对应的配方", 100);
+            reply.setMsg("not find [" + recipeCode + "] recipe", 100);
             return reply;
         }
         List<RmsRecipeBody> recipeBodies = baseMapper.queryRecipeBody(rmsRecipes.get(0).getId());
@@ -148,9 +149,9 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 if (map.get(key) != null) {
                     if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
                         if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
-                            log.info("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过");
+                            log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
                             reply.setResult("N", 1);
-                            reply.setMsg("[" + recipeBodies.get(i).getParaName() + "]的参数值["+ value +"]校验不通过", 100);
+                            reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
                         }
                     }
                 }

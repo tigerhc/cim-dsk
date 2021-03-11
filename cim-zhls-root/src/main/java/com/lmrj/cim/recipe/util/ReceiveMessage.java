@@ -8,6 +8,10 @@ import com.ibm.mq.MQPutMessageOptions;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.lmrj.cim.recipe.service.impl.RecipeServiceImpl;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.core.sys.entity.SysFunction;
+import com.lmrj.core.sys.service.ISysFunctionService;
+import com.lmrj.core.sys.service.impl.SysFunctionServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.log.service.IRmsRecipeLogService;
@@ -59,6 +63,8 @@ public class ReceiveMessage  extends MessageListenerAdapter {
     private IRmsRecipeService rmsRecipeService;
     @Autowired
     private IRmsRecipeLogService rmsRecipeLogService;
+    @Autowired
+    private ISysFunctionService sysFunctionService;
 
 
     @Autowired
@@ -116,6 +122,22 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         String recipeBodySize = str.substring(116,121);
         String recipeBody = str.substring(121);
 
+        List<SysFunction> sysFunctions = sysFunctionService.selectList(new EntityWrapper<SysFunction>().eq("fct_type", "RMS").eq("fct_code", "RMS_CHECK_RECIPE_BODY"));
+        SysFunction sysFunction = new SysFunction();
+        if (sysFunctions != null) {
+            sysFunction = sysFunctions.get(0);
+        }
+        if (!"Y".equals(sysFunction.getActiveFlag())) {
+            TRXO reply = new TRXO();
+            reply.setTrxId("TXR01", 5);
+            reply.setTypeId("O", 1);
+            reply.setResult("Y", 1);
+            reply.setMsg("", 100);
+            String replyMsg = reply.getTrxId() + reply.getTypeId() + reply.getResult() + reply.getMsg();
+            this.reply("LQ1WM1R01O" , replyMsg.getBytes("UTF-8"), hexStringToByteArray(msg.getJMSMessageID().substring(3)), msg.getJMSCorrelationIDAsBytes());
+            return;
+        }
+
         TRXO trxo = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
 
         if (StringUtil.isEmpty(trxo.getMsg())) {
@@ -123,7 +145,6 @@ public class ReceiveMessage  extends MessageListenerAdapter {
         }
 
         String replyMsg = trxo.getTrxId() + trxo.getTypeId() + trxo.getResult() + trxo.getMsg();
-//        sendMsg(replyMsg, msg.getJMSMessageID().substring(3), "LQ1WM1R01O", msg.getJMSCorrelationIDAsBytes());
         this.reply("LQ1WM1R01O" , replyMsg.getBytes("UTF-8"), hexStringToByteArray(msg.getJMSMessageID().substring(3)), msg.getJMSCorrelationIDAsBytes());
         log.info("发送至 LQ1WM1R01O({});", replyMsg);
     }
