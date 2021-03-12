@@ -34,7 +34,6 @@
        t.start_time,
        t.create_date
 	</sql>
-
 	<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
@@ -78,7 +77,6 @@
 					</choose>
 				</otherwise>
 			</choose>
-			<!-- ORDER BY `start_time` DESC -->
 			ORDER BY `start_time` DESC
 			LIMIT #{offset},#{pageSize}
 		</trim>

@@ -1,9 +1,11 @@
 package com.lmrj.map.tray.controller;
 
+import com.google.common.collect.Maps;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.core.entity.MesResult;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.map.tray.entity.MapTrayChipLog;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
@@ -11,6 +13,8 @@ import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+import com.lmrj.util.mapper.JsonUtil;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +51,9 @@ public class MapTrayChipMoveController {
 
     @Autowired
     private IMapTrayChipLogService mpTrayChipLogService;
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
+
     /**
      * 根据页码和每页记录数，以及查询条件动态加载数据
      *
@@ -100,5 +107,21 @@ public class MapTrayChipMoveController {
             mpTrayChipLogService.updateById(traceLog);
         }
         return Response.ok();
+    }
+
+    @RequestMapping(value = "getCommand",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getCommand(@RequestParam String bcCode){
+        Response rs = Response.ok();
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "TRAY_REUPLOAD");
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bcCode, JsonUtil.toJsonString(map));
+        if (replyMsg != null) {
+            MesResult result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.getFlag())) {
+                rs.put("cnt", result.getContent());
+                return rs;
+            }
+        }
+        return Response.error("没有得到返回结果");
     }
 }
