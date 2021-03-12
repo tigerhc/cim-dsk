@@ -1,6 +1,7 @@
 package com.lmrj.mes.track.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
@@ -12,6 +13,9 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
+import com.lmrj.mes.measure.entity.measureSx;
+import com.lmrj.mes.measure.mapper.MeasureSxMapper;
+import com.lmrj.mes.measure.service.MeasureSxService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
@@ -19,6 +23,7 @@ import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.FileUtils;
 import com.lmrj.util.file.FileUtil;
+import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -65,6 +71,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IApsPlanPdtYieldService apsPlanPdtYieldService;
     @Autowired
     IMsMeasureKongdongService iMsMeasureKongdongService;
+    @Autowired
+    MeasureSxMapper measureSxMapper;
 
     /**
      * 按照eqp和line获取recipe
@@ -926,6 +934,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
     @SuppressWarnings("unchecked")
     public String findSX(String production, String lotNo,String flag) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         List<String> lines = null;
         StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1");
@@ -936,9 +945,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         try {
             lines = FileUtil.readLines(pathfile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         if (production.contains("YGD")) {
             production = production.substring(2, 7) + "YGD";
@@ -953,7 +960,34 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if(production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK") ){
               result.append(row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12]+","+row[13]+","+row[14]+",");
 
+
+
+
+              measureSx measure = new measureSx();
+              measure.setMeaDate(df.parse(row[1]));
+              measure.setLotNo(colum2[1]);
+              measure.setProductionNo(colum2[0]);
+              measure.setSerialCounter(row[3]);
+              measure.setMeasureJudgment(row[4]);
+              measure.setMeasureName(row[5]);
+              measure.setMeasureCounter(row[6]);
+              measure.setA1(Double.parseDouble(row[7]));
+              measure.setB1(Double.parseDouble(row[8]));
+              measure.setC1(Double.parseDouble(row[9]));
+              measure.setD1(Double.parseDouble(row[10]));
+              measure.setA2(Double.parseDouble(row[11]));
+              measure.setB2(Double.parseDouble(row[12]));
+              measure.setC2(Double.parseDouble(row[13]));
+              measure.setD2(Double.parseDouble(row[14]));
+              measure.setMeasureType(flag);
+              EntityWrapper wrapper = new  EntityWrapper();
+              wrapper.eq("lot_no",colum2[1]).eq("production_no",colum2[0]);
+              if (measureSxMapper.selectCount(wrapper) <=1)
+                  measureSxMapper.insert(measure);
             }
+        }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
         }
         return  result.toString();
     }
