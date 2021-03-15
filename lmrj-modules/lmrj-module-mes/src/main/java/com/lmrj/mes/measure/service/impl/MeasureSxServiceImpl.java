@@ -20,15 +20,15 @@ import java.util.*;
 public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, measureSx> implements MeasureSxService {
     @Autowired
     private MeasureSxMapper measureSxMapper;
-    public List<Map<String, String>> findProductionNo(){
-        List<Map<String, String>> result =  measureSxMapper.findProductionNo();
+    public List<Map<String, String>> findProductionNo(String type){
+        List<Map<String, String>> result =  measureSxMapper.findProductionNo(type);
         for (Map map : result){
             String productionNo =(String) map.get("productionNo");
             map.clear();
             map.put("label",productionNo);
             map.put("value",productionNo);
         }
-        return measureSxMapper.findProductionNo();
+        return result;
     }
 
     public List findSxNumber(String productionName, String number,  String startDate,String endDate,String type){

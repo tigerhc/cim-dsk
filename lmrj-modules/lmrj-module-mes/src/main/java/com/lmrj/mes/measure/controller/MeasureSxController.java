@@ -31,9 +31,9 @@ public class MeasureSxController {
     private MeasureSxService measureSxService;
 
     @RequestMapping(value = "/productionName",method = {RequestMethod.GET, RequestMethod.POST})
-    public List<Map<String, String>> productionName(){
+    public List<Map<String, String>> productionName(@RequestParam String type){
 
-        return  measureSxService.findProductionNo();
+        return  measureSxService.findProductionNo(type);
 
     }
 
