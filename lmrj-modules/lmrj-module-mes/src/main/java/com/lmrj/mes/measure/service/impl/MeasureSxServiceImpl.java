@@ -4,6 +4,7 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.mes.measure.entity.measureSx;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
 import com.lmrj.mes.measure.service.MeasureSxService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
         return measureSxMapper.findProductionNo();
     }
 
-    public List findSxNumber(String productionName, String number,  String startDate,String endDate){
-        List<Map<String, String>> result =  measureSxMapper.findSxNumber(productionName,number,startDate,endDate);
+    public List findSxNumber(String productionName, String number,  String startDate,String endDate,String type){
+        List<Map<String, String>> result =  measureSxMapper.findSxNumber(productionName,number,startDate,endDate,type);
         List patent = new LinkedList();
         List title = new LinkedList();
         List arr = new LinkedList();
