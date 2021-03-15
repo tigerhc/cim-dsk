@@ -404,6 +404,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/findSX", method = {RequestMethod.GET, RequestMethod.POST})
     public String findSX(@RequestParam String production ,@RequestParam String lotNo,@RequestParam String flag
     ) throws IOException {
+        fabLogService.info("findSX", "Param", "MesLotTrackController.findSX", "production参数:"+production+",lotNo参数:"+lotNo+",flag参数:"+flag,lotNo , "jiafuxing");//日志记录参数
         return mesLotTrackService.findSX(production,lotNo,flag);
 
     }
