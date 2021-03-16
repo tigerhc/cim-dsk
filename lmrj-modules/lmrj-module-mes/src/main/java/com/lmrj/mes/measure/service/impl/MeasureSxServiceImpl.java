@@ -54,6 +54,24 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
 
         for (int i = 0; i < 4; i++) {
             Map element = new HashMap();
+            if (i==2 ||i==3){
+            Map markLine = new HashMap();
+            List dataB = new ArrayList();
+            Map basic = new HashMap();
+            basic.put("type","max");
+            basic.put("name","最大数据");
+            dataB.add(basic);
+            markLine.put("data",dataB);
+            element.put("markLine",markLine);
+            }
+
+
+
+
+
+
+
+
             switch (i) {
                 case 0:
                     element.put("name", "1:" + local.toUpperCase());
@@ -95,9 +113,6 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
             }
 //            element.put("name",result.get(i).get("lotNo"));
             element.put("type", "line");
-            if (local.equals("a")){
-                element.put("min", "13");
-            }
             List elementArr = new LinkedList();
             for (int j = 0; j < result.size(); j++) {
                 if (i == 2) {
@@ -141,49 +156,6 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
             min.put("min" ,0);
         }
         patent.add(min);
-//        for (Map map : result){
-//            Map map1 = new HashMap();
-//            List data = new LinkedList();
-//            element1.add( map.get("lotNo"));
-//            map1.put("name",map.get("lotNo"));
-//            map1.put("type","line");
-
-//            if (map.get("lotNo").equals("1225F")){
-//
-//                data.add(25);
-//                data.add(63);
-//                data.add(33);
-//                data.add(72);
-//                data.add(45);
-//                data.add(56);
-//                data.add(23);
-//                data.add(62);
-//            }else
-//            {
-//                data.add(55);
-//                data.add(63);
-//                data.add(31);
-//                data.add(72);
-//                data.add(65);
-//                data.add(96);
-//                data.add(26);
-//                data.add(12);
-//            }
-
-
-//            data.add(map.get("a1"));
-//            data.add(map.get("b1"));
-//            data.add(map.get("c1"));
-//            data.add(map.get("d1"));
-//            data.add(map.get("a2"));
-//            data.add(map.get("b2"));
-//            data.add(map.get("c2"));
-//            data.add(map.get("d2"));
-//            map1.put("data",data);
-//            element2.add(map1);
-//        }
-//        patent.add(element1);
-//        patent.add(element2);
 
 
         return patent;
