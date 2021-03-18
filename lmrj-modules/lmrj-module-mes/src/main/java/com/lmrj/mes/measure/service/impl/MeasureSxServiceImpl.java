@@ -33,26 +33,26 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
     }
 
     public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
+        number = "0001";
         List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
+        number = "0002";
+        List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
         List patent = new LinkedList();
         List title = new LinkedList();
         List arr = new LinkedList();
         List totalValue = new LinkedList();
+        List totalValue2 = new LinkedList();
         for (Map map : result) {
             title.add(map.get("lotNo"));
-//            totalValue.add(map.get("a1"));
-//            totalValue.add(map.get("b1"));
-//            totalValue.add(map.get("c1"));
-//            totalValue.add(map.get("d1"));
-//            totalValue.add(map.get("a2"));
-//            totalValue.add(map.get("b2"));
-//            totalValue.add(map.get("c2"));
-//            totalValue.add(map.get("d2"));
             totalValue.add(map.get(local + "1"));
             totalValue.add(map.get(local + "2"));
         }
+        for (Map map : result2) {
+            totalValue2.add(map.get(local + "1"));
+            totalValue2.add(map.get(local + "2"));
+        }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             Map element = new HashMap();
             if (i==2 ||i==3){
             Map markLine = new HashMap();
@@ -74,10 +74,10 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
 
             switch (i) {
                 case 0:
-                    element.put("name", "1:" + local.toUpperCase());
+                    element.put("name", "1-1:" + local.toUpperCase());
                     break;
                 case 1:
-                    element.put("name", "2:" + local.toUpperCase());
+                    element.put("name", "1-2:" + local.toUpperCase());
                     break;
                 case 2:
                     element.put("name", "上限");
@@ -85,36 +85,18 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
                 case 3:
                     element.put("name", "下限");
                     break;
+                case 4:
+                    element.put("name", "2-1:" + local.toUpperCase());
+                    break;
+                case 5:
+                    element.put("name", "2-2:" + local.toUpperCase());
+                    break;
 
-//                case 0 :
-//                    element.put("name","1:A");
-//                    break;
-//                case 1 :
-//                    element.put("name","1:B");
-//                    break;
-//                case 2 :
-//                    element.put("name","1:C");
-//                    break;
-//                case 3 :
-//                    element.put("name","1:D");
-//                    break;
-//                case 4 :
-//                    element.put("name","2:A");
-//                    break;
-//                case 5 :
-//                    element.put("name","2:B");
-//                    break;
-//                case 6 :
-//                    element.put("name","3:C");
-//                    break;
-//                case 7 :
-//                    element.put("name","4:D");
-//                    break;
             }
-//            element.put("name",result.get(i).get("lotNo"));
             element.put("type", "line");
             List elementArr = new LinkedList();
-            for (int j = 0; j < result.size(); j++) {
+            int size  = (result.size()>result2.size()) ? result2.size():result.size();
+            for (int j = 0; j < size; j++) {
                 if (i == 2) {
                     if (local.equals("a")) {
                         elementArr.add(14.3);
@@ -136,7 +118,16 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
                         elementArr.add(0);
                     }
                 } else {
-                    elementArr.add(totalValue.get((j * 2) + i));
+                    if (i<2){
+                    elementArr.add(totalValue.get((j * 2) + i));}
+                    else if(i>3){
+                        if (i==4){
+                            int q =0;
+                        elementArr.add(totalValue2.get((j * 2) + q));}
+                        if (i==5){
+                            int q =1;
+                            elementArr.add(totalValue2.get((j * 2) + q));}
+                    }
                 }
             }
             element.put("data", elementArr);
