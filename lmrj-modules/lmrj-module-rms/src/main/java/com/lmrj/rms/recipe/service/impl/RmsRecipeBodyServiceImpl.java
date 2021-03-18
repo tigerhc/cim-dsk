@@ -147,18 +147,19 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 
             if (map.get(key) != null) {
                 if (map.get(key) != null) {
-//                    if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
-//                        if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
-//                            log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
-//                            reply.setResult("N", 1);
-//                            reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
-//                        }
-//                    }
-                    if (map.get(key).getSetValue() != null) {
-                        if (!map.get(key).getSetValue().equals(value)) {
+                    if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
+                        if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
                             log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
                             reply.setResult("N", 1);
                             reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
+                        }
+                    } else {
+                        if (map.get(key).getSetValue() != null) {
+                            if (!map.get(key).getSetValue().equals(value)) {
+                                log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
+                                reply.setResult("N", 1);
+                                reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
+                            }
                         }
                     }
                 }
