@@ -54,24 +54,16 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
 
         for (int i = 0; i < 6; i++) {
             Map element = new HashMap();
-            if (i==2 ||i==3){
-            Map markLine = new HashMap();
-            List dataB = new ArrayList();
-            Map basic = new HashMap();
-            basic.put("type","max");
-            basic.put("name","最大数据");
-            dataB.add(basic);
-            markLine.put("data",dataB);
-            element.put("markLine",markLine);
+            if (i == 2 || i == 3) {
+                Map markLine = new HashMap();
+                List dataB = new ArrayList();
+                Map basic = new HashMap();
+                basic.put("type", "max");
+                basic.put("name", "最大数据");
+                dataB.add(basic);
+                markLine.put("data", dataB);
+                element.put("markLine", markLine);
             }
-
-
-
-
-
-
-
-
             switch (i) {
                 case 0:
                     element.put("name", "1-1:" + local.toUpperCase());
@@ -91,11 +83,10 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
                 case 5:
                     element.put("name", "2-2:" + local.toUpperCase());
                     break;
-
             }
             element.put("type", "line");
             List elementArr = new LinkedList();
-            int size  = (result.size()>result2.size()) ? result2.size():result.size();
+            int size = (result.size() > result2.size()) ? result2.size() : result.size();
             for (int j = 0; j < size; j++) {
                 if (i == 2) {
                     if (local.equals("a")) {
@@ -118,37 +109,36 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
                         elementArr.add(0);
                     }
                 } else {
-                    if (i<2){
-                    elementArr.add(totalValue.get((j * 2) + i));}
-                    else if(i>3){
-                        if (i==4){
-                            int q =0;
-                        elementArr.add(totalValue2.get((j * 2) + q));}
-                        if (i==5){
-                            int q =1;
-                            elementArr.add(totalValue2.get((j * 2) + q));}
+                    if (i < 2) {
+                        elementArr.add(totalValue.get((j * 2) + i));
+                    } else if (i > 3) {
+                        if (i == 4) {
+                            int q = 0;
+                            elementArr.add(totalValue2.get((j * 2) + q));
+                        }
+                        if (i == 5) {
+                            int q = 1;
+                            elementArr.add(totalValue2.get((j * 2) + q));
+                        }
                     }
                 }
             }
             element.put("data", elementArr);
             arr.add(element);
-
         }
         patent.add(title);
         patent.add(arr);
         Map min = new HashMap();
         if (local.equals("a")) {
-            min.put("min" ,13.9);
+            min.put("min", 13.9);
         } else if (local.equals("b")) {
-            min.put("min" ,0.4);
+            min.put("min", 0.4);
         } else if (local.equals("c")) {
-            min.put("min" ,0.07);
+            min.put("min", 0.07);
         } else if (local.equals("d")) {
-            min.put("min" ,0);
+            min.put("min", 0);
         }
         patent.add(min);
-
-
         return patent;
     }
 }
