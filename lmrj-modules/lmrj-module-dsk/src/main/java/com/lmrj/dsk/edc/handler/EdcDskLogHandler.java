@@ -680,6 +680,8 @@ public class EdcDskLogHandler {
             users = fabEquipmentService.findEmailALL(alarmCode);
             if("E-0009".equals(alarmCode)){
                 code = alarmCode;
+            }else if("E-0010".equals(alarmCode)){
+                code = alarmCode;
             }
         }else if (department.get(0).get("department").equals("YK")) {
             users = fabEquipmentService.findEmailALL("E-0007");

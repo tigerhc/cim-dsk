@@ -1,7 +1,7 @@
 package com.lmrj.mes.track.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.aps.plan.service.IApsPlanPdtYieldService;
@@ -15,7 +15,6 @@ import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
 import com.lmrj.mes.measure.entity.measureSx;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
-import com.lmrj.mes.measure.service.MeasureSxService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.mapper.MesLotTrackMapper;
@@ -23,7 +22,6 @@ import com.lmrj.mes.track.service.IMesLotTrackLogService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.FileUtils;
 import com.lmrj.util.file.FileUtil;
-import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -144,6 +142,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             }
         } else {
             temps = "TEMPTEST";
+        }
+        if("The Productionlog was not updated!".equals(temps)){
+            sendAlarmEmail("SIM-REFLOW1","E-0010");
         }
         result.setContent(temps);
         return result;
@@ -993,11 +994,26 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
       String a = "SX68122M (AU)YGD-RP";
       String b = a.substring(0,7);
       int d =a.indexOf("c");
         System.out.println(b);
     }
-    //}
+    //}*/
+    public Boolean sendAlarmEmail(String eqpId,String alarmCode){
+        Boolean flag = true;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("EQP_ID", eqpId);
+        jsonObject.put("ALARM_CODE", alarmCode);
+        String jsonString = jsonObject.toJSONString();
+        log.info(eqpId+"设备---日志数据未更新!将发送邮件通知管理人员");
+        try {
+            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+        } catch (Exception e) {
+            flag = false;
+            log.error("Exception:", e);
+        }
+        return flag;
+    }
 }
