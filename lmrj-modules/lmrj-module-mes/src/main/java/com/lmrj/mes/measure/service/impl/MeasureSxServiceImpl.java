@@ -33,9 +33,9 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
     }
 
     public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
-        number = "0001";
+        number = "1";
         List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
-        number = "0002";
+        number = "2";
         List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
         List patent = new LinkedList();
         List title = new LinkedList();

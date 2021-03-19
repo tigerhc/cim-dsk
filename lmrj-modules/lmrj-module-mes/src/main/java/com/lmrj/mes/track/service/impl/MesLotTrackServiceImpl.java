@@ -964,7 +964,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     measure.setMeaDate(df.parse(row[1]));
                     measure.setLotNo(colum2[1]);
                     measure.setProductionNo(colum2[0]);
-                    measure.setSerialCounter(row[3]);
+                    measure.setSerialCounter(row[3].replaceFirst("^0*", ""));
                     measure.setMeasureJudgment(row[4]);
                     measure.setMeasureName(row[5]);
                     measure.setMeasureCounter(row[6]);
