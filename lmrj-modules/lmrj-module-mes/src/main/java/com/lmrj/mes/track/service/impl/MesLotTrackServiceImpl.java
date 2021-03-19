@@ -937,7 +937,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     @SuppressWarnings("unchecked")
     public String findSX(String production, String lotNo, String flag) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        SimpleDateFormat df2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//        SimpleDateFormat df2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         List<String> lines = null;
         StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1");
@@ -955,19 +955,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 production = production.substring(2, 8);
             }
-
-
             for (String rowString : lines) {
                 String[] row = rowString.split(",");
                 String[] colum2 = row[2].split("-");
                 if (production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK")) {
                     result.append(row[7] + "," + row[8] + "," + row[9] + "," + row[10] + "," + row[11] + "," + row[12] + "," + row[13] + "," + row[14] + ",");
                     measureSx measure = new measureSx();
-                    if (row[1].length() > 15) {
-                        measure.setMeaDate(df2.parse(row[1]));
-                    } else {
-                        measure.setMeaDate(df.parse(row[1]));
-                    }
+                    measure.setMeaDate(df.parse(row[1]));
                     measure.setLotNo(colum2[1]);
                     measure.setProductionNo(colum2[0]);
                     measure.setSerialCounter(row[3]);
