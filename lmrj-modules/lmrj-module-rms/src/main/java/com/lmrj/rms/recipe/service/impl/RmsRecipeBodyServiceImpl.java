@@ -167,4 +167,16 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         }
         return reply;
     }
+
+    @Override
+    public boolean setLimitValue(String id, String maxValue, String minValue) {
+        RmsRecipeBody recipeBody = baseMapper.selectById(id);
+        recipeBody.setMaxValue(maxValue);
+        recipeBody.setMinValue(minValue);
+        Integer integer = baseMapper.updateById(recipeBody);
+        if (integer == 1) {
+            return true;
+        }
+        return false;
+    }
 }
