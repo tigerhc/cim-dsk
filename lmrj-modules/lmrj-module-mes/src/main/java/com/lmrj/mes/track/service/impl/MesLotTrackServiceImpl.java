@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -143,8 +144,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             temps = "TEMPTEST";
         }
-        if("The Productionlog was not updated!".equals(temps)){
-            sendAlarmEmail("SIM-REFLOW1","E-0010");
+        if ("The Productionlog was not updated!".equals(temps)) {
+            sendAlarmEmail("SIM-REFLOW1", "E-0010");
         }
         result.setContent(temps);
         return result;
@@ -167,12 +168,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 if ("Y".equals(result.getFlag())) {
                     value = (String) result.getContent();
                 }
-                if("ERROR: NOT FOUND".equals(value)){
+                if ("ERROR: NOT FOUND".equals(value)) {
                     com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
-                    jsonObject.put("EQP_ID", eqpId+":重量获取失败 批量："+lotNo+"  品番："+productionNo);
+                    jsonObject.put("EQP_ID", eqpId + ":重量获取失败 批量：" + lotNo + "  品番：" + productionNo);
                     jsonObject.put("ALARM_CODE", "E-9999");
                     String jsonString = jsonObject.toJSONString();
-                    log.info(eqpId+"重量数据获取失败!将发送邮件通知管理人员");
+                    log.info(eqpId + "重量数据获取失败!将发送邮件通知管理人员");
                     try {
                         rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
                     } catch (Exception e) {
@@ -302,10 +303,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
 
             String types = "";
             for (MsMeasureKongdong measureKongdong : kongdongList) {
-                types = types+","+measureKongdong.getType();
+                types = types + "," + measureKongdong.getType();
             }
-            String msg  = MsMeasureKongdongServiceImpl.getUnhaveData(productionName,types);
-            if("".equals(msg)){
+            String msg = MsMeasureKongdongServiceImpl.getUnhaveData(productionName, types);
+            if ("".equals(msg)) {
                 try {
                     int count = iMsMeasureKongdongService.findKongdongData(line, productionName, lotNo);
                     if (count == 0) {
@@ -318,8 +319,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     e.printStackTrace();
                 }
                 kongdongStr = StringUtil.join(kongdongVal, ",");
-            }else{
-                return "ERROR: Missing data!  type "+msg+"  Please try again after correction!";
+            } else {
+                return "ERROR: Missing data!  type " + msg + "  Please try again after correction!";
             }
 
         }
@@ -468,11 +469,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             return MesResult.error("eqp not found");
         }
         for (FabEquipment fabEquipment : fabEquipmentList) {
-            if(yield==null || yield.equals("")){
+            if (yield == null || yield.equals("")) {
                 yield = "5712";
             }
-            int yeild1 = Integer.parseInt(yield)/2;
-            String yield2= ""+yeild1;
+            int yeild1 = Integer.parseInt(yield) / 2;
+            String yield2 = "" + yeild1;
             result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield2, recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
                 return result; //失败提前退出
@@ -934,63 +935,65 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @SuppressWarnings("unchecked")
-    public String findSX(String production, String lotNo,String flag) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    public String findSX(String production, String lotNo, String flag) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        SimpleDateFormat df2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         List<String> lines = null;
         StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1");
         if ("LF".equals(flag)) {
-             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-LF\\SX-LF.csv");
-        }else if ("check".equals(flag)){
-             pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-检查\\SX-检查.csv");
+            pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-LF\\SX-LF.csv");
+        } else if ("check".equals(flag)) {
+            pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\SX\\SX-检查\\SX-检查.csv");
         }
         try {
             lines = FileUtil.readLines(pathfile);
+            LocalDate localDate = LocalDate.of(2019, 1, 7);
 
-
-        if (production.contains("YGD")) {
-            production = production.substring(2, 7) + "YGD";
-        } else {
-            production = production.substring(2, 8);
-        }
-
-
-        for (String rowString : lines){
-            String[] row = rowString.split(",");
-            String[] colum2 = row[2].split("-");
-            if(production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK") ){
-              result.append(row[7]+","+row[8]+","+row[9]+","+row[10]+","+row[11]+","+row[12]+","+row[13]+","+row[14]+",");
-
-
-
-
-              measureSx measure = new measureSx();
-              measure.setMeaDate(df.parse(row[1]));
-              measure.setLotNo(colum2[1]);
-              measure.setProductionNo(colum2[0]);
-              measure.setSerialCounter(row[3]);
-              measure.setMeasureJudgment(row[4]);
-              measure.setMeasureName(row[5]);
-              measure.setMeasureCounter(row[6]);
-              measure.setA1(Double.parseDouble(row[7]));
-              measure.setB1(Double.parseDouble(row[8]));
-              measure.setC1(Double.parseDouble(row[9]));
-              measure.setD1(Double.parseDouble(row[10]));
-              measure.setA2(Double.parseDouble(row[11]));
-              measure.setB2(Double.parseDouble(row[12]));
-              measure.setC2(Double.parseDouble(row[13]));
-              measure.setD2(Double.parseDouble(row[14]));
-              measure.setMeasureType(flag);
-              EntityWrapper wrapper = new  EntityWrapper();
-              wrapper.eq("lot_no",colum2[1]).eq("production_no",colum2[0]).eq("measure_type",flag).eq("serial_counter",row[3]);
-              if (measureSxMapper.selectCount(wrapper) <1)
-                  measureSxMapper.insert(measure);
+            if (production.contains("YGD")) {
+                production = production.substring(2, 7) + "YGD";
+            } else {
+                production = production.substring(2, 8);
             }
-        }
+
+
+            for (String rowString : lines) {
+                String[] row = rowString.split(",");
+                String[] colum2 = row[2].split("-");
+                if (production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK")) {
+                    result.append(row[7] + "," + row[8] + "," + row[9] + "," + row[10] + "," + row[11] + "," + row[12] + "," + row[13] + "," + row[14] + ",");
+                    measureSx measure = new measureSx();
+                    if (row[1].length() > 15) {
+                        measure.setMeaDate(df2.parse(row[1]));
+                    } else {
+                        measure.setMeaDate(df.parse(row[1]));
+                    }
+                    measure.setLotNo(colum2[1]);
+                    measure.setProductionNo(colum2[0]);
+                    measure.setSerialCounter(row[3]);
+                    measure.setMeasureJudgment(row[4]);
+                    measure.setMeasureName(row[5]);
+                    measure.setMeasureCounter(row[6]);
+                    measure.setA1(Double.parseDouble(row[7]));
+                    measure.setB1(Double.parseDouble(row[8]));
+                    measure.setC1(Double.parseDouble(row[9]));
+                    measure.setD1(Double.parseDouble(row[10]));
+                    measure.setA2(Double.parseDouble(row[11]));
+                    measure.setB2(Double.parseDouble(row[12]));
+                    measure.setC2(Double.parseDouble(row[13]));
+                    measure.setD2(Double.parseDouble(row[14]));
+                    measure.setMeasureType(flag);
+                    EntityWrapper wrapper = new EntityWrapper();
+                    wrapper.eq("lot_no", colum2[1]).eq("production_no", colum2[0]).eq("measure_type", flag).eq("serial_counter", row[3]);
+                    if (measureSxMapper.selectCount(wrapper) < 1) {
+                        measureSxMapper.insert(measure);
+                    }
+                }
+            }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
-        return  result.toString();
+        return result.toString();
     }
 
 
@@ -1001,13 +1004,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         System.out.println(b);
     }
     //}*/
-    public Boolean sendAlarmEmail(String eqpId,String alarmCode){
+    public Boolean sendAlarmEmail(String eqpId, String alarmCode) {
         Boolean flag = true;
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("EQP_ID", eqpId);
         jsonObject.put("ALARM_CODE", alarmCode);
         String jsonString = jsonObject.toJSONString();
-        log.info(eqpId+"设备---日志数据未更新!将发送邮件通知管理人员");
+        log.info(eqpId + "设备---日志数据未更新!将发送邮件通知管理人员");
         try {
             rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
         } catch (Exception e) {
