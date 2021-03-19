@@ -54,4 +54,20 @@ public class RmsRecipeBodyController extends BaseCRUDController<RmsRecipeBody> {
         return response;
     }
 
+    @RequestMapping(value = "changMaxMinValue")
+    public Response checkRecipeBody(@RequestParam String id, @RequestParam String maxValue, @RequestParam String minValue, HttpServletRequest request) {
+        Response response = Response.ok("最值设置成功");
+        boolean flag = false;
+        try {
+            flag = rmsRecipeBodyService.setLimitValue(id, maxValue, minValue);
+            if (!flag){
+                response = Response.error(999998, "最值设置失败");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response = Response.error(999998,e.getMessage());
+        }
+        return response;
+    }
+
 }
