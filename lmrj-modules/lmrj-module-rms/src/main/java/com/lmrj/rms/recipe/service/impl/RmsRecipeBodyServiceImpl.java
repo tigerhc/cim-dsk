@@ -6,6 +6,7 @@ import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.config.entity.RmsRecipeDownloadConfig;
 import com.lmrj.rms.config.service.IRmsRecipeDownloadConfigService;
+import com.lmrj.rms.log.service.IRmsRecipeLogService;
 import com.lmrj.rms.recipe.entity.RmsRecipe;
 import com.lmrj.rms.recipe.entity.TRXO;
 import com.lmrj.rms.recipe.mapper.RmsRecipeMapper;
@@ -51,6 +52,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     private IRmsRecipeDownloadConfigService rmsRecipeDownloadConfigService;
     @Autowired
     private IRmsRecipeTemplateService rmsRecipeTemplateService;
+    @Autowired
+    private IRmsRecipeLogService recipeLogService;
 
     @Override
     public int copyParaFromExist(String recipeIdNew, String recipeIdOld) {
@@ -146,24 +149,28 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             }
 
             if (map.get(key) != null) {
-                if (map.get(key) != null) {
-                    if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
-                        if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
-                            log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
+                log.info("校验值：[" + value + "]     设定值：[" + map.get(key).getSetValue() + "]     最小值：[" + map.get(key).getMinValue() + "]     最大值：[" + map.get(key).getMaxValue() + "]");
+                if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
+                    if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
+                        log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                        reply.setResult("N", 1);
+                        reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
+                    }
+                } else {
+                    if (map.get(key).getSetValue() != null) {
+                        if (!map.get(key).getSetValue().equals(value)) {
+                            log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);
                             reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
-                        }
-                    } else {
-                        if (map.get(key).getSetValue() != null) {
-                            if (!map.get(key).getSetValue().equals(value)) {
-                                log.info("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error");
-                                reply.setResult("N", 1);
-                                reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
-                            }
                         }
                     }
                 }
             }
+        }
+        if ("Y".equals(reply.getResult())){
+            recipeLogService.addLog(rmsRecipes.get(0), "checkPass", eqpId);
+        } else {
+            recipeLogService.addLog(rmsRecipes.get(0), "checkFail", eqpId);
         }
         return reply;
     }
