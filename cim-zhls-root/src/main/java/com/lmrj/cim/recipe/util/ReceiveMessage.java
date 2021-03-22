@@ -410,6 +410,14 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             rmsRecipe.setEqpModelId(fabEquipment.getModelId());
             rmsRecipe.setEqpModelName(fabEquipment.getModelName());
             rmsRecipeService.insert(rmsRecipe);
+            List<RmsRecipe> rmsRecipes = rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).orderBy("create_date", false));
+            for (int i = 1; i < rmsRecipes.size(); i++) {
+                RmsRecipe recipe = rmsRecipes.get(i);
+                if ("Y".equals(recipe.getStatus())) {
+                    recipe.setStatus("N");
+                    rmsRecipeService.updateById(recipe);
+                }
+            }
             rmsRecipeLogService.addLog(rmsRecipe, "upload", eqpId);
         } catch (Exception e) {
             log.error(e.getMessage());
