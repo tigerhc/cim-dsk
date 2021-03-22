@@ -978,8 +978,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     measure.setD2(Double.parseDouble(row[14]));
                     measure.setMeasureType(flag);
                     EntityWrapper wrapper = new EntityWrapper();
-                    wrapper.eq("lot_no", colum2[1]).eq("production_no", colum2[0]).eq("measure_type", flag).eq("serial_counter", row[3]);
-                    if (measureSxMapper.selectCount(wrapper) < 1) {
+                    wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", flag).eq("serial_counter", row[3].replaceFirst("^0*", ""));
+                    Integer nm = measureSxMapper.selectCount(wrapper);
+                    if (nm < 1) {
                         measureSxMapper.insert(measure);
                     }
                 }
