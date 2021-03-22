@@ -118,14 +118,22 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 
         //将需要校验的recipeBodyList转换成map,
         Map<String, RmsRecipeBody> map = new HashMap<>();
+        boolean flag = true;
         for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
             List<RmsRecipeTemplate> recipeTemplates = new ArrayList<>();
-            recipeTemplates = rmsRecipeTemplateService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("para_code", rmsRecipeBody.getParaCode()).eq("para_name", rmsRecipeBody.getParaName()));
+            recipeTemplates = rmsRecipeTemplateService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("para_code", rmsRecipeBody.getParaCode()));
             if (recipeTemplates.size() > 0) {
+                flag = false;
                 RmsRecipeTemplate recipeTemplate = recipeTemplates.get(0);
                 if ("Y".equals(recipeTemplate.getMonitorFlag())) {
                     map.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
                 }
+            }
+        }
+
+        if (flag) {
+            for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
+                map.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
             }
         }
 

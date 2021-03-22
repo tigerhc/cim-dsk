@@ -41,8 +41,8 @@ public class RmsRecipeTemplateServiceImpl  extends CommonServiceImpl<RmsRecipeTe
                 RmsRecipeTemplate recipeTemplate = new RmsRecipeTemplate();
                 recipeTemplate.setEqpModelId(eqpModelId);
                 recipeTemplate.setEqpModelName(model.getManufacturerName());
-                recipeTemplate.setParaCode(contentMap.get("recipeType") + "-" + key);
-                recipeTemplate.setParaName(key);
+                recipeTemplate.setParaCode(key.replaceAll("\\\\", "-"));
+                recipeTemplate.setParaName(contentMap.get("recipeType") + "-" + key);
                 recipeTemplate.setShowFlag("Y");
                 recipeTemplate.setMonitorFlag("Y");
                 recipeTemplate.setSetValue(contentMap.get(key));
