@@ -6,7 +6,6 @@ import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -32,7 +31,7 @@ public class ImageMoveTask {
     String path1 = "Z:\\IT化データ（一課）\\X線データ\\データ処理\\ボイド率";*/
 
 
-    @Scheduled(cron = "0 0 4 * * ?")
+    //@Scheduled(cron = "0 0 4 * * ?")
     public void compressAndMoveImage() throws IOException {
         log.info("执行图片转化");
         Calendar now = Calendar.getInstance();
@@ -66,7 +65,7 @@ public class ImageMoveTask {
     public static void main(String[] args)throws  Exception {
         new ImageMoveTask().compressAndMoveImage();
     }
-    @Scheduled(cron = "0 0/20 * * * ?")
+    //@Scheduled(cron = "0 0/20 * * * ?")
     public void smaKongDong(){
         List<File> fileList =
                 (List<File>) FileUtil.listFiles(new File(path2), new String[]{"bmp"}, true);
