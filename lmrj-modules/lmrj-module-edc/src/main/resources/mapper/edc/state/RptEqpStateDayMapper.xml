@@ -60,7 +60,7 @@
         sum(other_time) otherTime
         FROM
         rpt_eqp_state_day t
-        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
         WHERE t.period_date between #{beginTime} and #{endTime}
         <if test="officeId != null and officeId != ''">
             and f.step_code = #{officeId}
@@ -84,7 +84,7 @@
         sum(other_time) otherTime
         FROM
         rpt_eqp_state_day t
-        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
         WHERE t.period_date between #{beginTime} and #{endTime}
         <if test="officeId != null and officeId != ''">
             and f.OFFICE_ID = #{officeId}
@@ -109,7 +109,7 @@
         (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
-        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
         WHERE t.period_date between #{beginTime} and #{endTime}
         <if test="fab != null and fab != ''">
             and f.fab = #{fab}
@@ -127,7 +127,7 @@
         (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
-        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = '1'
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
         WHERE t.period_date between #{beginTime} and #{endTime}
         and f.line_no='SIM'
         group by t.period_date

@@ -83,7 +83,7 @@
         FROM
         fab_equipment_status t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
-        WHERE t.del_flag = '0' and f.active_flag = '1'
+        WHERE t.del_flag = '0' and f.active_flag = 'Y'
         <if test="officeId != null and officeId != ''">
             and f.OFFICE_ID = #{officeId}
         </if>

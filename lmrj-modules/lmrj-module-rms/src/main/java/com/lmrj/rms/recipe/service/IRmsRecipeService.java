@@ -29,4 +29,6 @@ public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     List<RmsRecipe> recipePermitList(String eqpId,String recipeCode,String startDate,String endDate,String versionType);
     List<RmsRecipe> getRecipePermitList();
     boolean editStatus(String id, String status);
+    boolean delete(String id);
+
 }

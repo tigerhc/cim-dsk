@@ -627,4 +627,20 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return versionNo;
     }
 
+    @Override
+    public boolean delete(String id) {
+        List<RmsRecipeBody> oldRmsRecipeBodyList = rmsRecipeBodyService.selectList(new EntityWrapper<RmsRecipeBody>(RmsRecipeBody.class).eq("recipe_id",id));
+        for(RmsRecipeBody oldRmsRecipeBody : oldRmsRecipeBodyList ) {
+
+            String rmsRecipeBodyId = oldRmsRecipeBody.getRecipeId();
+             rmsRecipeBodyService.deleteById(rmsRecipeBodyId);
+
+        }
+        baseMapper.deleteById(id);
+        return true;
+    }
+
+
+
+
 }

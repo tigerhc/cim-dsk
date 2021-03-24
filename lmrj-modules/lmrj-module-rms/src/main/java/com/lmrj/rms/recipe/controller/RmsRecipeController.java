@@ -33,10 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -342,6 +339,12 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     public Response editStatus(@PathVariable String id, @PathVariable String status) {
         rmsRecipeService.editStatus(id, status);
         return Response.ok("修改成功");
+    }
+
+    @PutMapping("/delete/{id}")
+    public Response delete(@PathVariable String id) {
+        rmsRecipeService.delete(id);
+        return Response.ok("删除成功");
     }
 
     /**

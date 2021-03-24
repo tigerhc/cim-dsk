@@ -19,7 +19,7 @@
         FROM
         edc_ams_record t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
-        WHERE f.active_flag = '1'
+        WHERE f.active_flag = 'Y'
         <if test="officeId != null and officeId != ''">
             and f.OFFICE_ID = #{officeId}
         </if>
