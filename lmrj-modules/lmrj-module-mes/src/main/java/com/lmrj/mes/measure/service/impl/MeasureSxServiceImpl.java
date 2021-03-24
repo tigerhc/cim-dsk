@@ -33,9 +33,9 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
     }
 
     public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
-        number = "0001";
+        number = "1";
         List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
-        number = "0002";
+        number = "2";
         List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
         List patent = new LinkedList();
         List title = new LinkedList();
@@ -129,13 +129,13 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, mea
         patent.add(title);
         patent.add(arr);
         Map min = new HashMap();
-        if (local.equals("a")) {
-            min.put("min", 13.9);
-        } else if (local.equals("b")) {
-            min.put("min", 0.4);
-        } else if (local.equals("c")) {
-            min.put("min", 0.07);
-        } else if (local.equals("d")) {
+        if (local.equals("a")) { //13.9
+            min.put("min", 13.8);
+        } else if (local.equals("b")) { //0.4
+            min.put("min", 0.3);
+        } else if (local.equals("c")) {   //0.07
+            min.put("min", 0.06);
+        } else if (local.equals("d")) {   //0
             min.put("min", 0);
         }
         patent.add(min);

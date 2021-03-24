@@ -115,6 +115,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             str = ((TextMessage) msg).getText();
             str = new String(str.getBytes("ISO-8859-1"), "UTF-8");
         }
+        log.info("LQ1WM1R01I传来的值为:{}" , str);
 
         String eqpId = str.substring(106,116).trim();
         String recipeCode = str.substring(6,106).trim();
@@ -409,6 +410,14 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             rmsRecipe.setEqpModelId(fabEquipment.getModelId());
             rmsRecipe.setEqpModelName(fabEquipment.getModelName());
             rmsRecipeService.insert(rmsRecipe);
+            List<RmsRecipe> rmsRecipes = rmsRecipeService.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).orderBy("create_date", false));
+            for (int i = 1; i < rmsRecipes.size(); i++) {
+                RmsRecipe recipe = rmsRecipes.get(i);
+                if ("Y".equals(recipe.getStatus())) {
+                    recipe.setStatus("N");
+                    rmsRecipeService.updateById(recipe);
+                }
+            }
             rmsRecipeLogService.addLog(rmsRecipe, "upload", eqpId);
         } catch (Exception e) {
             log.error(e.getMessage());
