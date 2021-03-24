@@ -24,7 +24,7 @@
        <select id="findLookup"  resultType="map">
               select id, concat( manufacturer_name,'-',class_code) model_name from fab_equipment_model
               where del_flag = '0'
-              and active_flag = 1
+              and active_flag = 'Y'
        </select>
 
        <select id="manufacturerNameList" resultType="string">
