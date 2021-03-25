@@ -16,6 +16,7 @@ import com.lmrj.rms.recipe.mapper.RmsRecipeBodyMapper;
 import com.lmrj.rms.recipe.service.IRmsRecipeService;
 import com.lmrj.rms.template.entity.RmsRecipeTemplate;
 import com.lmrj.rms.template.service.IRmsRecipeTemplateService;
+import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,23 +118,22 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 //        }
 
         //将需要校验的recipeBodyList转换成map,
-        Map<String, RmsRecipeBody> map = new HashMap<>();
-        boolean flag = true;
-        for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
-            List<RmsRecipeTemplate> recipeTemplates = new ArrayList<>();
-            recipeTemplates = rmsRecipeTemplateService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("para_code", rmsRecipeBody.getParaCode()));
-            if (recipeTemplates.size() > 0) {
-                flag = false;
-                RmsRecipeTemplate recipeTemplate = recipeTemplates.get(0);
-                if ("Y".equals(recipeTemplate.getMonitorFlag())) {
-                    map.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
-                }
-            }
+        Map<String, RmsRecipeTemplate> templateMap = new HashMap<>();
+        List<RmsRecipeTemplate> rmsRecipeTemplates = rmsRecipeTemplateService.selectList(new EntityWrapper<RmsRecipeTemplate>().eq("eqp_model_id", fabEquipment.getModelId()));
+        for (RmsRecipeTemplate recipeTemplate : rmsRecipeTemplates) {
+            templateMap.put(recipeTemplate.getParaCode(), recipeTemplate);
         }
-
-        if (flag) {
+        Map<String, RmsRecipeBody> recipeBodyMap = new HashMap<>();
+        if (rmsRecipeTemplates.size() == 0) {
             for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
-                map.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
+                recipeBodyMap.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
+            }
+        } else {
+            for (RmsRecipeBody rmsRecipeBody : recipeBodies) {
+                RmsRecipeTemplate recipeTemplate = templateMap.get(rmsRecipeBody.getParaCode());
+                if ("Y".equals(recipeTemplate.getMonitorFlag())) {
+                    recipeBodyMap.put(rmsRecipeBody.getParaName(), rmsRecipeBody);
+                }
             }
         }
 
@@ -156,20 +156,20 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 value = strings[1];
             }
 
-            if (map.get(key) != null) {
-                log.info("校验值：[" + value + "]     设定值：[" + map.get(key).getSetValue() + "]     最小值：[" + map.get(key).getMinValue() + "]     最大值：[" + map.get(key).getMaxValue() + "]");
-                if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
-                    if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
-                        log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+            if (recipeBodyMap.get(key) != null) {
+                log.info("校验值：[" + value + "]     设定值：[" + recipeBodyMap.get(key).getSetValue() + "]     最小值：[" + recipeBodyMap.get(key).getMinValue() + "]     最大值：[" + recipeBodyMap.get(key).getMaxValue() + "]");
+                if (!StringUtil.isEmpty(recipeBodyMap.get(key).getMinValue()) && !StringUtil.isEmpty(recipeBodyMap.get(key).getMaxValue())) {
+                    if (Integer.parseInt(value) < Integer.parseInt(recipeBodyMap.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodyMap.get(key).getMaxValue())) {
+                        log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                         reply.setResult("N", 1);
-                        reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
+                        reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
                     }
                 } else {
-                    if (map.get(key).getSetValue() != null) {
-                        if (!map.get(key).getSetValue().equals(value)) {
-                            log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                    if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
+                        if (!recipeBodyMap.get(key).getSetValue().equals(value)) {
+                            log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);
-                            reply.setMsg("param:[" + recipeBodies.get(i).getParaName() + "]-value:["+ value +"] is error", 100);
+                            reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
                         }
                     }
                 }
