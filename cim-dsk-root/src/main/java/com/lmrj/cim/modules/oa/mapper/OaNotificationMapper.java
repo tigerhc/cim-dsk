@@ -15,7 +15,7 @@ import java.util.Map;
 @Mapper
 public interface OaNotificationMapper extends BaseMapper<OaNotification> {
 
-    @Select("select subject,content,create_date from oa_notification where status = 'Y' ORDER BY create_date DESC")
+    @Select("select no_subject,content,create_date from oa_notification where status = 'Y' ORDER BY create_date DESC")
     List<Map<String,Object>> findList();
 
 }
