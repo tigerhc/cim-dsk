@@ -2,9 +2,13 @@ package com.lmrj.cim.modules.oa.controller;
 
 
 import com.lmrj.cim.modules.oa.service.IOaNotificationService;
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
@@ -12,6 +16,8 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.cim.modules.oa.entity.OaNotification;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -47,6 +53,14 @@ public class OaNotificationController extends BaseCRUDController<OaNotification>
            map.put("create_date",temp);
        }
         return result;
+    }
+
+    @Override
+    @GetMapping("export")
+    //@LogAspectj(logType = LogType.EXPORT)
+//    @RequiresMethodPermissions("export")
+    public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
+        return doExport("公告信息", queryable,  propertyPreFilterable,  request,  response);
     }
 
 

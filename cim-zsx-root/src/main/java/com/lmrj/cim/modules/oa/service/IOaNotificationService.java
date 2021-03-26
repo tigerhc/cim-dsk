@@ -1,7 +1,7 @@
 package com.lmrj.cim.modules.oa.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
-import com.lmrj.cim.modules.oa.entity.OaNotification;
+import com.lmrj.cim.modules.oa.entity.OaNotificationEntity;
 
 /**
  * @Title: 通知公告
@@ -11,7 +11,7 @@ import com.lmrj.cim.modules.oa.entity.OaNotification;
  * @version V1.0
  *
  */
-public interface IOaNotificationService extends ICommonService<OaNotification> {
+public interface IOaNotificationService extends ICommonService<OaNotificationEntity> {
 
 }
 
