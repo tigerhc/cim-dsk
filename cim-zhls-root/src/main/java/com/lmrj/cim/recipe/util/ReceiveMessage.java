@@ -139,7 +139,7 @@ public class ReceiveMessage  extends MessageListenerAdapter {
             return;
         }
 
-        TRXO trxo = rmsRecipeBodyService.checkRecipeBody(eqpId, recipeCode, recipeBody, recipeBodySize);
+        TRXO trxo = rmsRecipeBodyService.checkRecipeBodyInLog(eqpId, recipeCode, recipeBody, recipeBodySize);//增加加入日志表功能
 
         if (StringUtil.isEmpty(trxo.getMsg())) {
             trxo.setMsg("", 100);

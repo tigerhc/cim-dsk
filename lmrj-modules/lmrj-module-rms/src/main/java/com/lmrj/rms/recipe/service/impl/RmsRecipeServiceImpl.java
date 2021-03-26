@@ -37,10 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -84,6 +81,83 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         rmsRecipe.setRmsRecipeBodyDtlList(rmsRecipeBodyList);
         return rmsRecipe;
     }
+
+
+
+
+    @Override
+    public RmsRecipe selectByTwoId(String id){
+        String[] ids = id.split(",");
+        RmsRecipe retRecipe = new RmsRecipe();
+        RmsRecipe rmsRecipe1 = this.selectById(ids[0]);
+        RmsRecipe rmsRecipe2 = this.selectById(ids[1]);
+        if (rmsRecipe1.getRmsRecipeBodyDtlList() != null &&
+                rmsRecipe2.getRmsRecipeBodyDtlList() != null &&
+                rmsRecipe1.getRmsRecipeBodyDtlList().size() > 0 &&
+                rmsRecipe2.getRmsRecipeBodyDtlList().size() > 0) {
+            retRecipe.setRecipeName(rmsRecipe1.getRecipeName()+"----"+rmsRecipe2.getRecipeName());
+            retRecipe.setId(rmsRecipe1.getId());
+            retRecipe.setRmsRecipeBodyDtlList(contect(rmsRecipe1.getRmsRecipeBodyDtlList(),rmsRecipe2.getRmsRecipeBodyDtlList()));//测试数据是否可以这样赋值
+            //retRecipe.getRmsRecipeBodyDtlList().addAll(contect(rmsRecipe1.getRmsRecipeBodyDtlList(),rmsRecipe2.getRmsRecipeBodyDtlList()));
+
+        }
+         return retRecipe;
+    }
+
+    public List<RmsRecipeBody> contect(List<RmsRecipeBody> one,List<RmsRecipeBody> two){
+        int len = 0;
+        List<RmsRecipeBody> retList = new ArrayList<RmsRecipeBody>();
+        RmsRecipeBody ret = new RmsRecipeBody();
+        if(one.size()>two.size()){
+            //len  = two.size();
+            for (int i=0;i<one.size();i++){
+                ret = new RmsRecipeBody();
+                if(i<two.size()) {
+                    ret.setParaName(one.get(i).getParaName() + "----" + two.get(i).getParaName());
+                    ret.setParaCode(one.get(i).getParaName() + "----" + two.get(i).getParaName());
+                    ret.setSetValue(one.get(i).getSetValue());
+                    ret.setMinValue(one.get(i).getMinValue());
+                    ret.setMaxValue(one.get(i).getMaxValue());
+                    ret.setSetValueOld(two.get(i).getSetValue());
+                    ret.setMinValueOld(two.get(i).getMinValue());
+                    ret.setMaxValueOld(two.get(i).getMaxValue());
+                }else{
+                    ret.setParaName(one.get(i).getParaName());
+                    ret.setParaCode(one.get(i).getParaName());
+                    ret.setSetValue(one.get(i).getSetValue());
+                    ret.setMinValue(one.get(i).getMinValue());
+                    ret.setMaxValue(one.get(i).getMaxValue());
+                }
+                retList.add(ret);
+            }
+        }else{
+            //len  = one.size();
+            for (int i=0;i<two.size();i++){
+                ret = new RmsRecipeBody();
+                if(i<one.size()) {
+                    ret.setParaName(one.get(i).getParaName() + "----" + two.get(i).getParaName());
+                    ret.setParaCode(one.get(i).getParaName() + "----" + two.get(i).getParaName());
+                    ret.setSetValue(one.get(i).getSetValue());
+                    ret.setMinValue(one.get(i).getMinValue());
+                    ret.setMaxValue(one.get(i).getMaxValue());
+                    ret.setSetValueOld(two.get(i).getSetValue());
+                    ret.setMinValueOld(two.get(i).getMinValue());
+                    ret.setMaxValueOld(two.get(i).getMaxValue());
+                }else{
+                    ret.setParaName(two.get(i).getParaName());
+                    ret.setParaCode(two.get(i).getParaName());
+                    ret.setSetValueOld(two.get(i).getSetValueOld());
+                    ret.setMinValueOld(two.get(i).getMinValueOld());
+                    ret.setMaxValueOld(two.get(i).getMaxValueOld());
+                }
+                retList.add(ret);
+            }
+        }
+
+        return retList;
+
+    }
+
 
     @Override
     public RmsRecipe selectByIdAndCompareParam(String id){

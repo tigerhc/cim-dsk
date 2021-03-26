@@ -32,8 +32,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -194,6 +195,31 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
                 afterFind(entity); //二次处理
                 res = DateResponse.ok(entity);
             }
+        }
+        String content = JSON.toJSONString(res);
+        ServletUtils.printJson(response,content);
+    }
+
+
+    @RequestMapping(value = "/{id}/findCompareRecipeTwo", method = { RequestMethod.GET, RequestMethod.POST })
+    public void findCompareRecipeTwo(Model model, @PathVariable("id") String id, HttpServletRequest request,
+                                  HttpServletResponse response) {
+        Response res;
+        if (ObjectUtil.isNullOrEmpty(id)) {
+            res = Response.error("参数为空,无法查询");
+        }else{
+           String[] ids =  id.split(",");
+           if(ids.length != 2){
+               res = Response.error("能且只能选择两条数据");
+            }else {
+               RmsRecipe entity = rmsRecipeService.selectByTwoId(id);
+               if (entity.getRmsRecipeBodyDtlList().size() == 0) {
+                   res = Response.error("未查询到数据");
+               } else {
+                   afterFind(entity); //二次处理
+                   res = DateResponse.ok(entity);
+               }
+           }
         }
         String content = JSON.toJSONString(res);
         ServletUtils.printJson(response,content);

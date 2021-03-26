@@ -20,5 +20,6 @@ public interface IRmsRecipeBodyService extends ICommonService<RmsRecipeBody> {
     int copyMinValue(String recipeIdNew, String recipeIdOld);
     int copyMaxValue(String recipeIdNew, String recipeIdOld);
     TRXO checkRecipeBody(String eqpId, String recipeCode, String recipeBody, String recipeBodySize);
+    TRXO checkRecipeBodyInLog(String eqpId, String recipeCode, String recipeBody, String recipeBodySize);
     boolean setLimitValue(String id, String maxValue, String minValue);
 }
