@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.oven.batchlot.mapper.OvnParticleMapper" >
+    <resultMap id="particleMap" type="com.lmrj.oven.batchlot.entity.ParticleDataBean">
+        <result property="eqpId" column="eqp_id"/>
+        <result property="particle03His" column="particle03_his"/>
+        <result property="particle05His" column="particle05_his"/>
+        <result property="particle1His" column="particle1_his"/>
+        <result property="particle3His" column="particle3_his"/>
+        <result property="particle5His" column="particle5_his"/>
+        <result property="particle10His" column="particle10_his"/>
+        <result property="temp" column="temp"/>
+        <result property="humidity" column="humidity"/>
+        <result property="samplingFlow" column="sampling_flow"/>
+        <result property="windSpeed" column="wind_speed"/>
+        <result property="pressureDiff" column="pressure_diff"/>
+        <result property="startTimeStr" column="start_time"/>
+    </resultMap>
+    <select id="getList" parameterType="java.util.Map" resultMap="particleMap">
+        select eqp_id, particle03_his, particle05_his, particle1_his, particle3_his, particle5_his, particle10_his, temp, humidity, sampling_flow, wind_speed, pressure_diff, start_time
+        from ovn_particle
+        where eqp_id=#{eqpId}
+        and start_time &gt; #{beginTime}
+        and start_time &lt; #{endTime}
+        order by start_time
+    </select>
+</mapper>
