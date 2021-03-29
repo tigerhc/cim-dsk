@@ -49,18 +49,18 @@ public class OvnParticleServiceImpl extends CommonServiceImpl<OvnParticleMapper,
                 pressureDiff.add(item.getPressureDiff());
             }
         }
-        rs.put("particle03", particle03);
-        rs.put("particle05", particle05);
-        rs.put("particle1", particle1);
-        rs.put("particle3", particle3);
-        rs.put("particle5", particle5);
-        rs.put("particle10", particle10);
-        rs.put("temp", temp);
-        rs.put("humidity", humidity);
-        rs.put("samplingFlow", samplingFlow);
-        rs.put("windSpeed", windSpeed);
-        rs.put("pressureDiff", pressureDiff);
-        rs.put("time", time);
+        rs.put("0.3μm", particle03);
+        rs.put("0.5μm", particle05);
+        rs.put("1μm", particle1);
+        rs.put("3μm", particle3);
+        rs.put("5μm", particle5);
+        rs.put("10μm", particle10);
+        rs.put("温度", temp);
+        rs.put("湿度", humidity);
+        rs.put("流量", samplingFlow);
+        rs.put("风速", windSpeed);
+        rs.put("压差", pressureDiff);
+        rs.put("date", time);
         return rs;
     }
 }
