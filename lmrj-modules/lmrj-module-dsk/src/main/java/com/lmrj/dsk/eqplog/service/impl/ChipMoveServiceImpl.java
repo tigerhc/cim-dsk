@@ -21,7 +21,7 @@ import java.util.Map;
 @Service("mapTrayChipMoveService")
 @Slf4j
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private String trmTrayId = "";
     private int trmCount = 0;
 
