@@ -19,4 +19,10 @@
        t.update_date,
        t.del_flag
 	</sql>
+
+    <select id="getAllTrayEqp" resultType="java.util.Map">
+		select eqp_id as "eqpId", eqp_name as "eqpName"
+		from fab_equipment
+		where tray_flag='Y'
+	</select>
 </mapper>

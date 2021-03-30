@@ -4,7 +4,10 @@ import com.lmrj.map.tray.entity.MapTrayConfig;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
- /**
+import java.util.List;
+import java.util.Map;
+
+/**
  * All rights Reserved, Designed By www.lmrj.com
  *
  * @version V1.0
@@ -17,5 +20,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface MapTrayConfigMapper extends BaseMapper<MapTrayConfig> {
-    
-}
+
+     List<Map<String, Object>> getAllTrayEqp();
+ }

@@ -7,6 +7,9 @@ import com.lmrj.map.tray.mapper.MapTrayConfigMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -22,5 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service("mapTrayConfigService")
 public class MapTrayConfigServiceImpl  extends CommonServiceImpl<MapTrayConfigMapper,MapTrayConfig> implements  IMapTrayConfigService {
-
+    @Override
+    public List<Map<String, Object>> getAllTrayEqp(){
+        return baseMapper.getAllTrayEqp();
+    }
 }
