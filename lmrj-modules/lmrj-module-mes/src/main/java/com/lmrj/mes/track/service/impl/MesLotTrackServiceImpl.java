@@ -132,7 +132,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if ("SIM-REFLOW1".equals(eqpId)) {
             //recipe = "151.1,152.1,153.1,154.1,155.1,156.1,157.1,158.1,159.1,160.1,161.1,162.1,163.1,164.1,165.1,166.1,167.1,168.1,169.1";
             map.put("METHOD", "FIND_TEMP");
-            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("test_a", JsonUtil.toJsonString(map));
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("find_TempAndWtWeight", JsonUtil.toJsonString(map));
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);
                 if ("Y".equals(result.getFlag())) {
@@ -162,7 +162,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             map.put("LOTNO", lotNo);
             map.put("PRODUCTIONNO", productionNo);
             log.info("findParam 参数" + map);
-            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("test_a", JsonUtil.toJsonString(map));
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("find_TempAndWtWeight", JsonUtil.toJsonString(map));
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);
                 if ("Y".equals(result.getFlag())) {
