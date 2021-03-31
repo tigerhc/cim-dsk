@@ -105,6 +105,11 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 } else {//Xray 和 速风机之后
                     ChipMove data = new ChipMove();
                     data.setEqpId(MapUtils.getString(item, "eqpId"));
+                    if(MapUtils.getString(item, "eqpId").contains("-DM")){
+                        data.setDmId(MapUtils.getString(item, "dmId"));
+                        data.setDmX(MapUtils.getInteger(item, "dmX"));
+                        data.setDmY(MapUtils.getInteger(item, "dmY"));
+                    }
                     data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                     data.setProductionNo(MapUtils.getString(item, "productionNo"));
                     data.setLotNo(MapUtils.getString(item, "lotNo"));
