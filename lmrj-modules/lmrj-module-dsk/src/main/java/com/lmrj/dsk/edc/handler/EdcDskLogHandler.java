@@ -668,6 +668,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
     public void sendAlarm(String msg) {
+        log.info("C2S.Q.MSG.MAIL数据解析：",msg);
         String eqpId = null;
         String alarmCode = null;
         String code = "RTP_ALARM";
@@ -689,6 +690,8 @@ public class EdcDskLogHandler {
             users = fabEquipmentService.findEmailALL("E-0007");
         } else if (department.get(0).get("department").equals("EK")) {
             users = fabEquipmentService.findEmailALL("E-0008");
+        }else if (department.get(0).get("department").equals("APJ")) {
+            users = fabEquipmentService.findEmailALL("E-0001");
         }
 
         List<String> param = new ArrayList<>();
