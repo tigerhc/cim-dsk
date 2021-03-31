@@ -73,4 +73,7 @@ public class ChipMove extends AbstractEntity {
     private String eqpModelName;
     @TableField(value = "file_name")
     private String fileName;
+    /**目标托盘Y*/
+    @TableField(value = "map_flag")
+    private Integer mapFlag;
 }

@@ -64,6 +64,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
                 data.setChipId(chipId);
                 data.setFileName(MapUtils.getString(item, "fileName"));
+                data.setMapFlag(0);
                 mapperList.add(data);
             }
             if(mapperList.size()>0){
@@ -95,6 +96,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
                         data.setFileName(MapUtils.getString(item, "fileName"));
                         data.setChipId(chipId);
+                        data.setMapFlag(1);
                         moveList.add(data);
                     }
                     if(EqpNameConstant.EQP_JET.equals(eqpId)){
@@ -115,6 +117,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setToX(1);
                         data.setToY(1);
                     }
+                    data.setMapFlag(1);
                     moveList.add(data);
                 }
             }
