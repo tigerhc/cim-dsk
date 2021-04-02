@@ -30,6 +30,9 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
 
     List<Map> selectDaypdtByIds(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") List<String> eqpId);
 
+    @Select("select * from rpt_lot_yield_day where create_date between #{startTime} AND #{endTime} order_by eqp_id")
+    List<RptLotYieldDay> selectDayYieldList(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
     @Select("select eqp_id from fab_equipment where line_no=#{lineNo} and station_code=#{stationCode} and step_yield_flag='1' order by eqp_id ")
     List<String> findEqpId(@Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
@@ -45,7 +48,7 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     @Select("select distinct station_code as value,station_code as label from fab_equipment where line_no=#{lineNo} ")
     List<Map<String,Object>> searchStandAndEqp( @Param("lineNo") String lineNo);
 
-    @Select("select eqp_id,production_name,production_no,sum(lot_yield) as lot_yield, sum(lot_yield_eqp) AS lot_yield_eqp from mes_lot_track where eqp_id=#{eqpId} and end_time between #{startTime} and #{endTime}")
+    @Select("select distinct eqp_id,production_name,production_no,sum(lot_yield) as lot_yield, sum(lot_yield_eqp) AS lot_yield_eqp from mes_lot_track where eqp_id=#{eqpId} and end_time between #{startTime} and #{endTime}")
     RptLotYieldDay findDayYield(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<Map<String,Object>> findSonEqp( @Param("lineNo") String lineNo,@Param("stationId") List<String> stationId);

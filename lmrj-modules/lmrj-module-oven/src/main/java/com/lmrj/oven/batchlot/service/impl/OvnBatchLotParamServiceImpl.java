@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
 * All rights Reserved, Designed By www.gzst.gov.cn
@@ -25,5 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("ovnbatchlotparamService")
 public class OvnBatchLotParamServiceImpl  extends CommonServiceImpl<OvnBatchLotParamMapper,OvnBatchLotParam> implements IOvnBatchLotParamService {
 
-
+    @Override
+    public List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime){
+        return baseMapper.selectTempData(startTime,endTime);
+    }
 }

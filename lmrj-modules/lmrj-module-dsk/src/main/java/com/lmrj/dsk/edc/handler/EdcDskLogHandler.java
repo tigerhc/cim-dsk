@@ -200,6 +200,7 @@ public class EdcDskLogHandler {
         //如果为REFLOW 或 PRINTER 再乘以12
         if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
             for (EdcDskLogProduction edcDskLogProduction : proList) {
+                edcDskLogProduction.setJudgeResult("Y");
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
@@ -668,7 +669,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
     public void sendAlarm(String msg) {
-        log.info("C2S.Q.MSG.MAIL数据解析：",msg);
+        log.info("C2S.Q.MSG.MAIL数据解析："+msg);
         String eqpId = null;
         String alarmCode = null;
         String code = "RTP_ALARM";

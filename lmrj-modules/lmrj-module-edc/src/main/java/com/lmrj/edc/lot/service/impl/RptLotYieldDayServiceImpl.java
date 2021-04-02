@@ -39,6 +39,10 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Override
+    public List<RptLotYieldDay> selectDayYieldList(Date startTime, Date endTime){
+        return baseMapper.selectDayYieldList(startTime,endTime);
+    }
+    @Override
     public Integer findLotYield(String eqpId, String lotNo, Date startTime, Date endTime) {
         return baseMapper.findLotYield(eqpId, lotNo, startTime, endTime);
     }

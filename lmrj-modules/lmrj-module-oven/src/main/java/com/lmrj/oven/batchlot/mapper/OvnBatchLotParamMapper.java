@@ -3,8 +3,11 @@ package com.lmrj.oven.batchlot.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
- /**
+import java.util.List;
+
+/**
  * All rights Reserved, Designed By www.gzst.gov.cn
  *
  * @version V1.0
@@ -17,5 +20,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface OvnBatchLotParamMapper extends BaseMapper<OvnBatchLotParam> {
-    
+
+ @Select("select * from ovn_batch_lot_param where create_date between #{startTime} and #{endTime}")
+ List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime);
 }
