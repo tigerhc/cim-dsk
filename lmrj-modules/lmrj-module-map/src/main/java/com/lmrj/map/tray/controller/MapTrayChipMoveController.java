@@ -93,6 +93,17 @@ public class MapTrayChipMoveController {
         return DateResponse.ok(list);
     }
 
+    /**
+     * 查询晶圆轨迹
+     *
+     * @param chipId
+     */
+    @RequestMapping(value = "dmDetail", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response dmDetail(@RequestParam String chipId) {
+        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(chipId);
+        return DateResponse.ok(list);
+    }
+
     @RequestMapping(value = "traceData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response pageList() {
         MapTrayChipLog traceLog = new MapTrayChipLog();

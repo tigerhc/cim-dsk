@@ -454,6 +454,34 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
         }
 //        baseMapper.updateChipIds();
     }
+
+    @Override
+    public List<Map<String, Object>> dmDetail(String chipId) {
+        List<Map<String, Object>> list = baseMapper.dmDetail(chipId);
+        for(Map<String, Object> item : list){
+            String[] xs = MapUtils.getString(item, "dmX").split(",");
+            String[] ys = MapUtils.getString(item, "dmY").split(",");
+
+            String xy = xs[0]+"_"+ys[0];
+            List<Map<String, Integer>> dmXY = new ArrayList<>();
+            for(int i=0; i<xs.length; i++){
+                xy = xy + ","+ xs[i]+"_"+ys[i];
+                Map<String, Integer> xyMap = new HashMap<>();
+                xyMap.put("dmX", Integer.parseInt(xs[i]));
+                xyMap.put("dmY", Integer.parseInt(ys[i]));
+                dmXY.add(xyMap);
+                if(i==0){
+                    xy = xs[i]+"_"+ys[i];
+                }else{
+                    xy = xy + ","+ xs[i]+"_"+ys[i];
+                }
+            }
+            item.put("lightPst", dmXY);
+            item.put("pstDesc", xy);
+        }
+        return list;
+    }
+
     public void clearBuff(List<MapTrayChipMove> buff, int mapFlag){
         if(buff!=null && buff.size()>0){
             if(mapFlag>1){

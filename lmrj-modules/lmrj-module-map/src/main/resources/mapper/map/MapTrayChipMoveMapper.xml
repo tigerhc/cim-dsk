@@ -84,7 +84,7 @@
 	<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
-		`judge_result` AS judgeResult, `start_time` AS startTime,
+		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
 		(
 		select param_value from edc_dsk_log_production prod where prod.start_time=chip.start_time and prod.eqp_id=chip.eqp_id limit 1
 		) as productionParam,
@@ -108,7 +108,6 @@
 							#{eqp}
 						</foreach>
 						)
-
 					</if>
 					<choose>
 						<when test="sTime == null">
@@ -322,5 +321,14 @@
 		</if>
 		and judge_result='N'
 		order by m.start_time
+	</select>
+
+	<select id="dmDetail" parameterType="java.lang.String" resultType="java.util.Map">
+		select dm_id as dmId, eqp_id as eqpId,
+			GROUP_CONCAT(dm_x ||'_'||dm_y) as dmX,GROUP_CONCAT(dm_y) as dmY,
+			GROUP_CONCAT(date_format(START_time,'%y-%m-%d %H:%i:%s.%S')) as startTime
+		from map_tray_chip_move
+		where chip_id=#{chipId} and dm_id is not null
+		GROUP BY dm_id,eqp_id
 	</select>
 </mapper>
