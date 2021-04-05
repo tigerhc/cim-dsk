@@ -65,7 +65,7 @@ public class MapTrayChipMoveController {
         if (query == null) {
             query = new MapTrayChipMoveQueryVo();
         }
-        if(query.getChipIds().size()>0){
+        if(query.getChipIds()!=null && query.getChipIds().size()>0){
             query.setChipId(query.getLotNo()+";%"+query.getChipIds().get(0));
         }
 

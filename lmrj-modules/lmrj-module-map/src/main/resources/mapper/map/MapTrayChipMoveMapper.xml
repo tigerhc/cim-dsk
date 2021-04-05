@@ -109,15 +109,10 @@
 						</foreach>
 						)
 					</if>
-					<choose>
-						<when test="sTime == null">
-							AND `start_time` &gt;= CURDATE()
-						</when>
-						<otherwise>
-							AND `start_time` &gt;= #{sTime}
-							AND `start_time` &lt;= #{eTime}
-						</otherwise>
-					</choose>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` &gt;= #{sTime}
+						AND `start_time` &lt;= #{eTime}
+					</if>
 				</otherwise>
 			</choose>
 			ORDER BY `start_time` DESC
@@ -145,15 +140,10 @@
 						</foreach>
 						)
 					</if>
-					<choose>
-						<when test="sTime == null">
-							AND `start_time` &gt;= CURDATE()
-						</when>
-						<otherwise>
-							AND `start_time` &gt;= #{sTime}
-							AND `start_time` &lt;= #{eTime}
-						</otherwise>
-					</choose>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` &gt;= #{sTime}
+						AND `start_time` &lt;= #{eTime}
+					</if>
 				</otherwise>
 			</choose>
 		</trim>
