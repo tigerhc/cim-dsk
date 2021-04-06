@@ -45,9 +45,11 @@ public class ApsPlanImportTask {
             return;
         }
         File lastFile = files.get(0);
-        for (File file : files) {
-            if(lastFile.lastModified() < file.lastModified()){
-                lastFile = file;
+        if(files.size()>1){
+            for (File file : files) {
+                if(lastFile.lastModified() <= file.lastModified()){
+                    lastFile = file;
+                }
             }
         }
         try {
@@ -171,6 +173,7 @@ public class ApsPlanImportTask {
                 }
             }
         } catch (Exception e) {
+            log.error("readApsPlan方法出错",e);
             e.printStackTrace();
         }
 
