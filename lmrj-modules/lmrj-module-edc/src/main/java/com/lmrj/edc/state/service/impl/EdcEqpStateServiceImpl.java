@@ -63,6 +63,26 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在8点到第一条数据之间新建一条数据
+        if(eqpStateList.size()==0 && eqpId.contains("SIM-REFLOW")){
+            EdcEqpState firstData = new EdcEqpState();
+            //当天八点前最后一条数据
+            EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+            if(lastData != null){
+                lastData.setEndTime(startTime);
+                Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
+                lastData.setStateTimes(state);
+                this.updateById(lastData);
+            }
+            firstData.setStartTime(startTime);
+            firstData.setEndTime(new Date());
+            Double state1 = (double) (new Date().getTime() - startTime.getTime());
+            firstData.setStateTimes(state1);
+            //把第一条数据的状态值设为当天八点前最后一条数据的状态
+            firstData.setState("RUN");
+            firstData.setEqpId(eqpId);
+            this.insert(firstData);
+            log.info("插入记录成功");
+        }
         if (eqpStateList.get(0).getStartTime().after(startTime)) {
             EdcEqpState firstData = new EdcEqpState();
             //当天八点前最后一条数据
@@ -115,6 +135,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         if (CollectionUtils.isEmpty(eqpStateList)) {
             return 0;
         } else {
+
             if (neweqpStateList.size() > 0) {
                 if (this.updateBatchById(neweqpStateList,1000)) {
                     log.info("edc_eqp_state更新成功");
