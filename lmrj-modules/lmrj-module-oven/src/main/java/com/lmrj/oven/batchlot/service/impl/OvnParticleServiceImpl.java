@@ -63,4 +63,9 @@ public class OvnParticleServiceImpl extends CommonServiceImpl<OvnParticleMapper,
         rs.put("date", time);
         return rs;
     }
+
+    @Override
+    public List<Map<String, Object>> getParticleEqps() {
+        return baseMapper.getParticleEqps();
+    }
 }

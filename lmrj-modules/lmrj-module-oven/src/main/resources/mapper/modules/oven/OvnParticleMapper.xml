@@ -24,4 +24,13 @@
         and start_time &lt; #{endTime}
         order by start_time
     </select>
+
+    <select id="getParticleEqps" resultType="java.util.Map">
+         select eqp_id as eqpId,
+                eqp_name as eqpName
+           from fab_equipment
+          where del_flag='0'
+            and temp_flag='2'
+          order by eqp_id
+    </select>
 </mapper>

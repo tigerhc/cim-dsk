@@ -10,4 +10,6 @@ import java.util.Map;
 @Mapper
 public interface OvnParticleMapper extends BaseMapper<ParticleDataBean> {
     List<ParticleDataBean> getList(Map<String, Object> param);
+
+    List<Map<String, Object>> getParticleEqps();
 }

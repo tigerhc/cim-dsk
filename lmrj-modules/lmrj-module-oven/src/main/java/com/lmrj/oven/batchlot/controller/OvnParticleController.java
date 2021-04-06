@@ -38,4 +38,11 @@ public class OvnParticleController extends BaseCRUDController<ParticleDataBean> 
         rs.put("data", particleService.getEchartData(param));
         return rs;
     }
+
+    @RequestMapping("getParticleEqps")
+    public Response getParticleEqps(){
+        Response rs = Response.ok();
+        rs.putList("eqps", particleService.getParticleEqps());
+        return rs;
+    }
 }
