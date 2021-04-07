@@ -176,6 +176,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                         log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                         reply.setResult("N", 1);
                         reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
+                        rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                        rmsChLog.setCheckResult("失败");
                     }
                 } else {
                     if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
@@ -183,6 +185,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                             log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);
                             reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
+                            rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                            rmsChLog.setCheckResult("失败");
                         }
                     }
                 }
