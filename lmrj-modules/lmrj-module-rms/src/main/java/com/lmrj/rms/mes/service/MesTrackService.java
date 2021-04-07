@@ -35,6 +35,31 @@ public class MesTrackService {
     @Autowired
     private AmqpTemplate rabbitTemplate;
 
+    public String convertSilver2recipe(String sliver){
+        String recipeName = sliver;
+        if(sliver.contains("-101-")){
+            recipeName = "101";
+        }else if(sliver.contains("-202-")){
+            recipeName = "202";
+        }else if(sliver.contains("-601-")){
+            recipeName = "601";
+        }else if(sliver.contains("-602-")){
+            recipeName = "602";
+        }else if(sliver.contains("-401-")){
+            recipeName = "401";
+        }else if(sliver.contains("-605-")){
+            recipeName = "605";
+        }else if(sliver.contains("-805-")){
+            recipeName = "805";
+        }else if(sliver.contains("-")){
+            String[] recipes = sliver.split("-");
+            if(recipes.length>2){
+                recipeName = recipes[1];
+            }
+        }
+        return recipeName;
+    }
+
     public String beforeTrackIn(String eqpId, String recipeName, String lotId, String userId, String params) {
         // TODO: 2019/6/23 打印日志
         // TODO: 2019/6/23 校验开关
@@ -46,21 +71,8 @@ public class MesTrackService {
 
         Map<String, String> map = Maps.newHashMap();
         map.put("METHOD", "BEFORE_TRACK_IN");
-        if(recipeName.contains("-101-")){
-            recipeName = "101";
-        }else if(recipeName.contains("-202-")){
-            recipeName = "202";
-        }else if(recipeName.contains("-202-")){
-            recipeName = "202";
-        }else if(recipeName.contains("-601-")){
-            recipeName = "601";
-        }else if(recipeName.contains("-602-")){
-            recipeName = "602";
-        }else if(recipeName.contains("-401-")){
-            recipeName = "401";
-        }else if(recipeName.contains("-605-")){
-            recipeName = "605";
-        }else{
+        recipeName = convertSilver2recipe(recipeName);
+        if(recipeName.length() > 3){
             MesResult mesResult = new MesResult();
             mesResult.setFlag("N");
             mesResult.setMsg(recipeName+"银浆号找不到对应的程序名");
@@ -113,21 +125,7 @@ public class MesTrackService {
 
         Map<String, String> map = Maps.newHashMap();
         map.put("METHOD", "AFTER_TRACK_IN");
-        if(recipeName.contains("-101-")){
-            recipeName = "101";
-        }else if(recipeName.contains("-202-")){
-            recipeName = "202";
-        }else if(recipeName.contains("-202-")){
-            recipeName = "202";
-        }else if(recipeName.contains("-601-")){
-            recipeName = "601";
-        }else if(recipeName.contains("-602-")){
-            recipeName = "602";
-        }else if(recipeName.contains("-401-")){
-            recipeName = "401";
-        }else if(recipeName.contains("-605-")){
-            recipeName = "605";
-        }
+        recipeName = convertSilver2recipe(recipeName);
         map.put("RECIPE_NAME", recipeName);
         map.put("LOT_ID", lotId);
         map.put("EQP_ID", eqpId);
