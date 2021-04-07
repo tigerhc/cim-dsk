@@ -140,6 +140,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             }
         }
 
+        RmsRecipeCheckLog rmsChLog = new RmsRecipeCheckLog();
         for (int i = 0; i < size; i++) {
             String key = null;
             String value = null;
@@ -176,6 +177,11 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                         }
                     }
                 }
+                Date date=new Date();
+                DateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //创建一个格式化日期对象
+                String punchTime = simpleDateFormat.format(date);
+                rmsChLog.setCheckDate(punchTime);
+                recipeCheckLogService.addLog(rmsChLog);//将校验信息插入日志表插入日志表
             }
         }
         if ("Y".equals(reply.getResult())){
@@ -297,7 +303,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 rmsChLog.setParamName(recipeBodies.get(i).getParaName());
                 rmsChLog.setCheckResult("成功");
                 log.info("校验值：[" + value + "]     设定值：[" + map.get(key).getSetValue() + "]     最小值：[" + map.get(key).getMinValue() + "]     最大值：[" + map.get(key).getMaxValue() + "]");
-                if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
+                if (!StringUtil.isEmpty(map.get(key).getMinValue()) && !StringUtil.isEmpty(map.get(key).getMaxValue())) {
                     if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
                         log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                         reply.setResult("N", 1);
@@ -307,7 +313,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 
                     }
                 } else {
-                    if (map.get(key).getSetValue() != null) {
+                    if (!StringUtil.isEmpty(map.get(key).getSetValue())) {
                         if (!map.get(key).getSetValue().equals(value)) {
                             log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);
