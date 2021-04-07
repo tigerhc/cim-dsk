@@ -70,9 +70,14 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             calendar.add(Calendar.DAY_OF_MONTH, -1);
             periodDate = DateUtil.formatDate(calendar.getTime(),"yyyyMMdd");
         }
-        FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId("SIM-REFLOW1");
+        String eqpId = "SIM-REFLOW1";
+        FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
         if(fabEquipmentStatus==null){
-            return;
+            eqpId = "APJ-HB2-SINTERING1";
+            fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
+            if(fabEquipmentStatus == null){
+                return;
+            }
         }
         //按照当日产量来算,比较复杂
         //List<ApsPlanPdtYieldDetail> yieldList = apsPlanPdtYieldDetailService.selectList(new com.baomidou.mybatisplus.mapper.EntityWrapper().eq("plan_date", periodDate).like("production_name", "SIM"));
@@ -110,7 +115,12 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             endTime=cal.getTime();
         }
         int lotYieldAll=0;
-        lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
+        if(eqpId.contains("APJ")){
+            lotYieldAll = iMesLotWipService.findDayLotYield(eqpId,startTime,endTime);
+        }else {
+            lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
+        }
+
         /*for (MesLotTrack rptLotYield : lotYieldDaylList) {
             int lotYield = rptLotYield.getLotYield();
             if(lotYield ==0){

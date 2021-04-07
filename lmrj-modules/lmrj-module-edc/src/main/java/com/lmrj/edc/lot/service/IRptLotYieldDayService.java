@@ -21,6 +21,8 @@ import java.util.Map;
 public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
     RptLotYieldDay findDayYield(String eqpId,Date startTime, Date endTime);
 
+    List<RptLotYieldDay> selectDayYieldList(Date startTime, Date endTime);
+
     List<Map> pdtChart(String beginTime, String endTime, String line, String stationCode);
 
     List<Map> pdtChart(String beginTime, String endTime, String line, String stationCode,String eqpId);

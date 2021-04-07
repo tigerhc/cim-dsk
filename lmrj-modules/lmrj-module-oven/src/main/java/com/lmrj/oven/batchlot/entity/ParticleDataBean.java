@@ -52,6 +52,8 @@ public class ParticleDataBean extends BaseDataEntity {
     private double pressureDiff;//<!--压差（带1位小数，数值100表示10.0）（风速传感器适配：0.25-4V SDP1000-L/SDP2000-L）-->
     @TableField(value = "start_time")
     private Date startTime;
+    @TableField(exist = false)
+    private String startTimeStr;
 
     @TableField(value = "particle03_alarm")
     private int particle03Alarm;//<!--0不报警，1报警-->

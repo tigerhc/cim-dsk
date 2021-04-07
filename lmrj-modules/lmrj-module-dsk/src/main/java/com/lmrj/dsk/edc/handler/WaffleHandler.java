@@ -42,7 +42,7 @@ public class WaffleHandler {
             int count = mapTrayChipMoveService.insertChipIdData(dataList);
             log.info("WaffleHandler_saveChipIdData:count:"+count);
         }catch(Exception e){
-            log.error("WaffleHandler_saveChipIdData:find an error");
+            log.error("WaffleHandler_saveChipIdData:find an error",e);
         }
     }
 }

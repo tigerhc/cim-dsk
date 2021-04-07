@@ -200,6 +200,7 @@ public class EdcDskLogHandler {
         //如果为REFLOW 或 PRINTER 再乘以12
         if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
             for (EdcDskLogProduction edcDskLogProduction : proList) {
+                edcDskLogProduction.setJudgeResult("Y");
                 edcDskLogProduction.setLotYield(edcDskLogProduction.getLotYield() * 12);
             }
         }
@@ -668,6 +669,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
     public void sendAlarm(String msg) {
+        log.info("C2S.Q.MSG.MAIL数据解析："+msg);
         String eqpId = null;
         String alarmCode = null;
         String code = "RTP_ALARM";
@@ -678,15 +680,19 @@ public class EdcDskLogHandler {
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if(!alarmCode.equals(":网络断开连接!")){
             users = fabEquipmentService.findEmailALL(alarmCode);
-            if("E-0009".equals(alarmCode)){
+            /*if("E-0009".equals(alarmCode)){
                 code = alarmCode;
             }else if("E-0010".equals(alarmCode)){
                 code = alarmCode;
-            }
+            }else if("E-0011".equals(alarmCode)){
+                code = alarmCode;
+            }*/
         }else if (department.get(0).get("department").equals("YK")) {
             users = fabEquipmentService.findEmailALL("E-0007");
         } else if (department.get(0).get("department").equals("EK")) {
             users = fabEquipmentService.findEmailALL("E-0008");
+        }else if (department.get(0).get("department").equals("APJ")) {
+            users = fabEquipmentService.findEmailALL("E-0001");
         }
 
         List<String> param = new ArrayList<>();

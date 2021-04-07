@@ -34,7 +34,7 @@
        t.start_time,
        t.create_date
 	</sql>
-	<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
+	<!--<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
 		`judge_result` AS judgeResult, `start_time` AS startTime,
@@ -80,19 +80,23 @@
 			ORDER BY `start_time` DESC
 			LIMIT #{offset},#{pageSize}
 		</trim>
-	</select>
-
-	<select id="countChipMove" resultType="int" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
-		SELECT COUNT(1)
-		FROM `map_tray_chip_move`
+	</select> -->
+	<select id="queryChipMove" resultType="map" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
+		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
+		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
+		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
+		(
+		select param_value from edc_dsk_log_production prod where prod.start_time=chip.start_time and prod.eqp_id=chip.eqp_id limit 1
+		) as productionParam,
+		(
+		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
+		) as productionTitle
+		FROM `map_tray_chip_move` chip
 		WHERE
 		<trim suffixOverrides="," prefixOverrides="AND">
 			<choose>
-				<when test="chipIds != null and chipIds.size > 0">
-					`chip_id` IN
-					<foreach collection="chipIds" item="chip" open="(" separator="," close=")">
-						#{chip}
-					</foreach>
+				<when test="chipId != null and chipId !=''">
+					`chip_id` like concat('%', #{chipId})
 				</when>
 				<otherwise>
 					<if test="lotNo != null and lotNo != ''">
@@ -105,15 +109,41 @@
 						</foreach>
 						)
 					</if>
-					<choose>
-						<when test="sTime == null">
-							AND `start_time` &gt;= CURDATE()
-						</when>
-						<otherwise>
-							AND `start_time` &gt;= #{sTime}
-							AND `start_time` &lt;= #{eTime}
-						</otherwise>
-					</choose>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` &gt;= #{sTime}
+						AND `start_time` &lt;= #{eTime}
+					</if>
+				</otherwise>
+			</choose>
+			ORDER BY `start_time` DESC
+			LIMIT #{offset},#{pageSize}
+		</trim>
+	</select>
+
+	<select id="countChipMove" resultType="int" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
+		SELECT COUNT(1)
+		FROM `map_tray_chip_move`
+		WHERE
+		<trim suffixOverrides="," prefixOverrides="AND">
+			<choose>
+				<when test="chipId != null and chipId !=''">
+					`chip_id` like concat('%', #{chipId})
+				</when>
+				<otherwise>
+					<if test="lotNo != null and lotNo != ''">
+						AND lot_no = #{lotNo}
+					</if>
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` &gt;= #{sTime}
+						AND `start_time` &lt;= #{eTime}
+					</if>
 				</otherwise>
 			</choose>
 		</trim>
@@ -281,5 +311,14 @@
 		</if>
 		and judge_result='N'
 		order by m.start_time
+	</select>
+
+	<select id="dmDetail" parameterType="java.lang.String" resultType="java.util.Map">
+		select dm_id as dmId, eqp_id as eqpId,
+			GROUP_CONCAT(dm_x ||'_'||dm_y) as dmX,GROUP_CONCAT(dm_y) as dmY,
+			GROUP_CONCAT(date_format(START_time,'%y-%m-%d %H:%i:%s.%S')) as startTime
+		from map_tray_chip_move
+		where chip_id=#{chipId} and dm_id is not null
+		GROUP BY dm_id,eqp_id
 	</select>
 </mapper>

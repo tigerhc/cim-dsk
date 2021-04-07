@@ -21,8 +21,8 @@ public class RabbitMQDskConfig {
                 "C2S.Q.MEASURE.DATA",
                 "C2S.Q.ALARMRPT.DATA",
                 //RMS
-                "C2S.Q.RMS.UPLOAD"
-
+                "C2S.Q.RMS.UPLOAD",
+                "C2S.Q.EQPLOG.PARAM"
 
         };
         for(String queueName :queueNames){

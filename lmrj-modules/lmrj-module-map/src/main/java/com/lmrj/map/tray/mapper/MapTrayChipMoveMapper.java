@@ -30,6 +30,8 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     public List<Map<String, Object>> queryChip(String chipId);
 
+    List<Map<String, Object>> dmDetail(String chipId);
+
     List<MapTrayChipMove> getAllTraceData(Map<String,Object> param);
 
     void editTraceRs();

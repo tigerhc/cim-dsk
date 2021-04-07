@@ -140,6 +140,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             }
         }
 
+        RmsRecipeCheckLog rmsChLog = new RmsRecipeCheckLog();
         for (int i = 0; i < size; i++) {
             String key = null;
             String value = null;
@@ -160,12 +161,23 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             }
 
             if (recipeBodyMap.get(key) != null) {
+                rmsChLog = new RmsRecipeCheckLog();
+                rmsChLog.setEqpId(eqpId);
+                rmsChLog.setVersionNo(rmsRecipes.get(0).getVersionNo());
+                rmsChLog.setVersionType(rmsRecipes.get(0).getVersionType());
+                rmsChLog.setRecipeCode(rmsRecipes.get(0).getRecipeCode());
+                rmsChLog.setRecipeName(rmsRecipes.get(0).getRecipeName());
+                rmsChLog.setParamCode(recipeBodies.get(i).getParaCode());
+                rmsChLog.setParamName(recipeBodies.get(i).getParaName());
+                rmsChLog.setCheckResult("成功");
                 log.info("校验值：[" + value + "]     设定值：[" + recipeBodyMap.get(key).getSetValue() + "]     最小值：[" + recipeBodyMap.get(key).getMinValue() + "]     最大值：[" + recipeBodyMap.get(key).getMaxValue() + "]");
                 if (!StringUtil.isEmpty(recipeBodyMap.get(key).getMinValue()) && !StringUtil.isEmpty(recipeBodyMap.get(key).getMaxValue())) {
                     if (Integer.parseInt(value) < Integer.parseInt(recipeBodyMap.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodyMap.get(key).getMaxValue())) {
                         log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                         reply.setResult("N", 1);
                         reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
+                        rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                        rmsChLog.setCheckResult("失败");
                     }
                 } else {
                     if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
@@ -173,9 +185,16 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                             log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);
                             reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
+                            rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
+                            rmsChLog.setCheckResult("失败");
                         }
                     }
                 }
+                Date date=new Date();
+                DateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //创建一个格式化日期对象
+                String punchTime = simpleDateFormat.format(date);
+                rmsChLog.setCheckDate(punchTime);
+                recipeCheckLogService.addLog(rmsChLog);//将校验信息插入日志表插入日志表
             }
         }
         if ("Y".equals(reply.getResult())){
@@ -297,7 +316,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 rmsChLog.setParamName(recipeBodies.get(i).getParaName());
                 rmsChLog.setCheckResult("成功");
                 log.info("校验值：[" + value + "]     设定值：[" + map.get(key).getSetValue() + "]     最小值：[" + map.get(key).getMinValue() + "]     最大值：[" + map.get(key).getMaxValue() + "]");
-                if (map.get(key).getMinValue() != null && map.get(key).getMaxValue()!= null) {
+                if (!StringUtil.isEmpty(map.get(key).getMinValue()) && !StringUtil.isEmpty(map.get(key).getMaxValue())) {
                     if (Integer.parseInt(value) < Integer.parseInt(map.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(map.get(key).getMaxValue())) {
                         log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                         reply.setResult("N", 1);
@@ -307,7 +326,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
 
                     }
                 } else {
-                    if (map.get(key).getSetValue() != null) {
+                    if (!StringUtil.isEmpty(map.get(key).getSetValue())) {
                         if (!map.get(key).getSetValue().equals(value)) {
                             log.info("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                             reply.setResult("N", 1);

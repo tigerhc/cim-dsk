@@ -3,6 +3,9 @@ package com.lmrj.map.tray.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.map.tray.entity.MapTrayConfig;
 
+import java.util.List;
+import java.util.Map;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +18,5 @@ import com.lmrj.map.tray.entity.MapTrayConfig;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IMapTrayConfigService extends ICommonService<MapTrayConfig> {
-
+    List<Map<String, Object>> getAllTrayEqp();
 }

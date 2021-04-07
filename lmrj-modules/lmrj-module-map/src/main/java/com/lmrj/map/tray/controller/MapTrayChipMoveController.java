@@ -14,6 +14,7 @@ import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
 import com.lmrj.util.mapper.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,6 +65,10 @@ public class MapTrayChipMoveController {
         if (query == null) {
             query = new MapTrayChipMoveQueryVo();
         }
+        if(query.getChipIds()!=null && query.getChipIds().size()>0){
+            query.setChipId(query.getLotNo()+";%"+query.getChipIds().get(0));
+        }
+
         int total = query.getTotal();
         if (total <= 0) {
             total = mapper.countChipMove(query);
@@ -85,6 +90,17 @@ public class MapTrayChipMoveController {
     @RequestMapping(value = "moveDetail", method = {RequestMethod.GET, RequestMethod.POST})
     public Response pageList(@RequestParam String chipId) {
         List<Map<String, Object>> list = mapper.queryChip(chipId);
+        return DateResponse.ok(list);
+    }
+
+    /**
+     * 查询晶圆轨迹
+     *
+     * @param chipId
+     */
+    @RequestMapping(value = "dmDetail", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response dmDetail(@RequestParam String chipId) {
+        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(chipId);
         return DateResponse.ok(list);
     }
 

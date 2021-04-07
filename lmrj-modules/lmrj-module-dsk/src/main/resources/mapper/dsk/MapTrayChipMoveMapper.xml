@@ -22,30 +22,19 @@
 	</sql>
     <insert id="insertMoveLog" parameterType="com.lmrj.dsk.eqplog.entity.ChipMove">
         insert into map_tray_chip_move(eqp_id,production_no,lot_no,from_tray_id,from_x,from_y,to_tray_id,to_x,to_y,to_z,
-        judge_result,start_time,create_date,chip_id,eqp_model_name, file_name) values
+        judge_result,start_time,create_date,chip_id,eqp_model_name, file_name, map_flag,dm_id,dm_x,dm_y) values
         <foreach collection="dataList" item="item" separator=",">
             (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.fromTrayId},#{item.fromX}
             ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.toZ},#{item.judgeResult},
-            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName}, #{item.fileName})
-        </foreach>
-    </insert>
-    <insert id="insertChipBox" parameterType="com.lmrj.dsk.eqplog.entity.ChipBox">
-        insert into map_tray_chip_box(eqp_id,production_no,lot_no,to_tray_id,start_time,create_date, file_name)values
-        <foreach collection="dataList" item="item" separator=",">
-            (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.toTrayId},#{item.startTime},now(),#{item.fileName})
+            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName}, #{item.fileName}, #{item.mapFlag},#{item.dmId},#{item.dmId},#{item.dmX},#{item.dmY})
         </foreach>
     </insert>
 
-    <select id="findChipBoxStartTime" parameterType="java.util.Map" resultType="java.util.Map">
-        select id as "id", date_format(max(start_time), '%Y-%m-%d %H:%i:%s') as "startTime" from map_tray_chip_box where start_time &lt; #{startTime}
-        and to_tray_id=#{toTrayId} and map_flag=0 and eqp_id=#{eqpId}
-        order by start_time desc limit 1
+    <select id="findXrayData" parameterType="java.lang.String" resultType="java.lang.String">
+        select chip_id from map_tray_chip_move where to_tray_id=#{toTrayId} and eqp_id='APJ-HB2-XRAY' and map_flag=0
     </select>
-    <update id="updateChipBox" parameterType="java.util.Map">
-        update map_tray_chip_box set copy_count=#{copyCount}
-        <if test="mapFlag!=null">
-            ,map_flag=#{mapFlag}
-        </if>
-        where id=#{id}
+
+    <update id="finishXrayData" parameterType="java.lang.String">
+        update map_tray_chip_move set map_flag='1' where map_flag=0 and eqp_id='APJ-HB2-XRAY' and to_tray_id=#{toTrayId}
     </update>
 </mapper>

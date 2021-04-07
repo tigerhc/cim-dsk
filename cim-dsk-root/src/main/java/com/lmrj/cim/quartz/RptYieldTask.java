@@ -7,12 +7,14 @@ import com.lmrj.edc.lot.service.IRptLotYieldService;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
 import com.lmrj.mes.track.service.IMesLotTrackLogService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -49,7 +51,7 @@ public class RptYieldTask {
                 if (yield == null) {
                     continue;
                 } else {
-                    boolean updateFlag = rptLotYieldService.updateForSet("lot_yield=" + yield+", lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
+                    boolean updateFlag = rptLotYieldService.updateForSet("lot_yield=" + yield+", lot_yield_eqp=" + yield + ", eqp_id='" + eqpId + "'"+ ", update_date='" + DateUtil.formatDateTime(new Date()) + "'", new EntityWrapper().eq("lot_no", lotNo).eq("production_no", productionNo));
                     if (!updateFlag) {
                         RptLotYield rptLotYield = new RptLotYield();
                         rptLotYield.setLotNo(lotNo);

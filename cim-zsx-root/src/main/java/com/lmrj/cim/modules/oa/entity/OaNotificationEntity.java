@@ -21,7 +21,7 @@ import java.util.Date;
 @TableName("oa_notification")
 @SuppressWarnings("serial")
 @Data
-public class OaNotification extends DataEntity {
+public class OaNotificationEntity extends DataEntity {
 
 	/** 字段主键 */
 	@TableId(value = "id", type = IdType.UUID)
@@ -39,8 +39,8 @@ public class OaNotification extends DataEntity {
 	@Excel(name = "有效标识", orderNum = "1", width = 20)
 	private String status;
 	/** 创建时间 */
-//	@TableField(value = "create_date")
-////	@Excel(name = "创建时间", orderNum = "1", width = 40)
-//	private Date createDate;
+	@TableField(value = "create_date")
+	@Excel(name = "创建时间", orderNum = "1", width = 40)
+	private Date createDate;
 
 }
