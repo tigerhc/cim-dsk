@@ -161,6 +161,15 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             }
 
             if (recipeBodyMap.get(key) != null) {
+                rmsChLog = new RmsRecipeCheckLog();
+                rmsChLog.setEqpId(eqpId);
+                rmsChLog.setVersionNo(rmsRecipes.get(0).getVersionNo());
+                rmsChLog.setVersionType(rmsRecipes.get(0).getVersionType());
+                rmsChLog.setRecipeCode(rmsRecipes.get(0).getRecipeCode());
+                rmsChLog.setRecipeName(rmsRecipes.get(0).getRecipeName());
+                rmsChLog.setParamCode(recipeBodies.get(i).getParaCode());
+                rmsChLog.setParamName(recipeBodies.get(i).getParaName());
+                rmsChLog.setCheckResult("成功");
                 log.info("校验值：[" + value + "]     设定值：[" + recipeBodyMap.get(key).getSetValue() + "]     最小值：[" + recipeBodyMap.get(key).getMinValue() + "]     最大值：[" + recipeBodyMap.get(key).getMaxValue() + "]");
                 if (!StringUtil.isEmpty(recipeBodyMap.get(key).getMinValue()) && !StringUtil.isEmpty(recipeBodyMap.get(key).getMaxValue())) {
                     if (Integer.parseInt(value) < Integer.parseInt(recipeBodyMap.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodyMap.get(key).getMaxValue())) {
