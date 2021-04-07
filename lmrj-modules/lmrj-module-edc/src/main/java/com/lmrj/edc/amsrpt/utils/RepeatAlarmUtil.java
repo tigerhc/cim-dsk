@@ -103,7 +103,7 @@ public class RepeatAlarmUtil {
         log.info("start 检查报警信息{} : {}", edcAmsRecord.getEqpId(), edcAmsRecord.getAlarmCode());
         //先看是不是配置过的alarm
         List<EdcAmsRptDefine> amsRptDefineList = redisTemplate.opsForList().range("amsRptDefineList", 0, -1);
-        List<EdcAmsDefine> amsDefineList = redisTemplate.opsForList().range("amsDefineList", 0, 1);//edcAmsDefineService.selectList(new EntityWrapper<>());//
+        List<EdcAmsDefine> amsDefineList = redisTemplate.opsForList().range("amsDefineList", 0, -1);//edcAmsDefineService.selectList(new EntityWrapper<>());//
         for (EdcAmsDefine amsDefine:amsDefineList){
             if(amsDefine.getAlarmCode().equals(edcAmsRecord.getAlarmCode())){
                 //如果alarm_id是否符合
