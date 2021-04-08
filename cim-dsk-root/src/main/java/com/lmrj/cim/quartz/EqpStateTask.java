@@ -42,6 +42,18 @@ public class EqpStateTask {
             Date endTime = cal.getTime();
             log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
             List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+            //当SIM-REFLOW1没有数据时补充数据
+            String reflowId = "SIM-REFLOW1";
+            boolean flag = true;
+            for (String s : eqpIdList) {
+                if(reflowId.equals(s)){
+                    flag = false;
+                }
+            }
+            if(flag){
+                eqpIdList.add(reflowId);
+            }
+
             for (String eqpId : eqpIdList) {
                 edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
             }
@@ -70,4 +82,5 @@ public class EqpStateTask {
         }
         edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
     }
+
 }

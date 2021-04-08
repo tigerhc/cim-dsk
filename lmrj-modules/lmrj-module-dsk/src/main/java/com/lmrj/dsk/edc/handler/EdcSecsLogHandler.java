@@ -392,11 +392,11 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
         edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
         String eventId = "";
-        if(evtRecord.getEventId().startsWith("11")){
+        if(evtRecord.getEventId() != null && evtRecord.getEventId().startsWith("11")){
             eventId = "1";
-        }else if(evtRecord.getEventId().length()==1){
+        }else if(evtRecord.getEventId() != null &&evtRecord.getEventId().length()==1){
             eventId = "0";
-        } else if(evtRecord.getEventId().startsWith("23") || evtRecord.getEventId().startsWith("21")){
+        } else if(evtRecord.getEventId() != null && (evtRecord.getEventId().startsWith("23") || evtRecord.getEventId().startsWith("21"))){
             eventId = "3";
         }
 
@@ -415,17 +415,17 @@ public class EdcSecsLogHandler {
         EdcEqpState edcEqpState = new EdcEqpState();
         edcEqpState.setEqpId(evtRecord.getEqpId());
         edcEqpState.setStartTime(evtRecord.getStartDate());
-        if(evtRecord.getEventDesc().equals("ProcessStateChg_EVENT")){
-            if(evtRecord.getEventId().equals("0")){
+        if("ProcessStateChg_EVENT".equals(evtRecord.getEventDesc())){
+            if("0".equals(evtRecord.getEventId())){
                 edcEqpState.setState("DOWN");
-            }else if(evtRecord.getEventId().equals("3")){
+            }else if("3".equals(evtRecord.getEventId())){
                 edcEqpState.setState("RUN");
             }
         }
-        if(evtRecord.getEventId().equals("21049") || evtRecord.getEventId().startsWith("20")){
+        if("21049".equals(evtRecord.getEventId()) || "20".equals(evtRecord.getEventId())){
             edcEqpState.setState("RUN");
         }
-        if(evtRecord.getEventParams()!= null){
+        if(evtRecord.getEventParams()!= null && evtRecord.getEventId()!=null){
             if(evtRecord.getEventId().startsWith("23")){
                 edcEqpState.setState("IDLE");
             }
