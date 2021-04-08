@@ -2,6 +2,9 @@ package com.lmrj.rms.recipe.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.edc.ams.entity.EdcAmsRecord;
+import com.lmrj.edc.ams.service.IEdcAmsRecordService;
+import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.rms.config.entity.RmsRecipeDownloadConfig;
@@ -58,6 +61,10 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
     private IRmsRecipeLogService recipeLogService;
     @Autowired
     private IRmsRecipeCheckLogService recipeCheckLogService;
+    @Autowired
+    private IEdcAmsRecordService edcAmsRecordService;
+    @Autowired
+    RepeatAlarmUtil repeatAlarmUtil;
 
     @Override
     public int copyParaFromExist(String recipeIdNew, String recipeIdOld) {
@@ -178,6 +185,17 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                         reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
                         rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                         rmsChLog.setCheckResult("失败");
+                        //校验失败插入警报记录并调用邮件发送mq
+                        EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
+                        edcAmsRecord.setAlarmCode("param_check");
+                        edcAmsRecord.setAlarmName("参数检验失败");
+                        edcAmsRecord.setEqpId(eqpId);
+                        edcAmsRecord.setAlarmSwitch("1");
+                        edcAmsRecord.setAlarmDetail(rmsRecipes.get(0).getRecipeCode()+","+key.replaceAll("\\\\", "-"));
+                        edcAmsRecordService.addRecord(edcAmsRecord);
+                        List<EdcAmsRecord> list =new ArrayList<EdcAmsRecord>();
+                        list.add(edcAmsRecord);
+                        repeatAlarmUtil.putEdcAmsRecordInMq(list);
                     }
                 } else {
                     if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
@@ -187,6 +205,19 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                             reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
                             rmsChLog.setCheckRemarks("参数:[" + recipeBodies.get(i).getParaName() + "]-值:["+ value +"]不符合规范");
                             rmsChLog.setCheckResult("失败");
+                            //校验失败插入警报记录并调用邮件发送mq
+                            EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
+                            edcAmsRecord.setAlarmCode("param_check");
+                            edcAmsRecord.setAlarmName("参数检验失败");
+                            edcAmsRecord.setEqpId(eqpId);
+                            edcAmsRecord.setAlarmSwitch("1");
+                            edcAmsRecord.setAlarmDetail(rmsRecipes.get(0).getRecipeCode()+","+key.replaceAll("\\\\", "-"));
+                            edcAmsRecordService.addRecord(edcAmsRecord);
+
+                            //调用mq准备发送
+                            List<EdcAmsRecord> list =new ArrayList<EdcAmsRecord>();
+                            list.add(edcAmsRecord);
+                            repeatAlarmUtil.putEdcAmsRecordInMq(list);
                         }
                     }
                 }
@@ -201,6 +232,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
             recipeLogService.addLog(rmsRecipes.get(0), "checkPass", eqpId);
         } else {
             recipeLogService.addLog(rmsRecipes.get(0), "checkFail", eqpId);
+
         }
         return reply;
     }
