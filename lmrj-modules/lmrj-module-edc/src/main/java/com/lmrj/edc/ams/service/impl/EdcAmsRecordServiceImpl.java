@@ -56,4 +56,9 @@ public class EdcAmsRecordServiceImpl extends CommonServiceImpl<EdcAmsRecordMappe
     public List<Map> selectAlarmCountByStation(String beginTime, String endTime, String lineNo, String stationCode) {
         return baseMapper.selectAlarmCountByStation(beginTime, endTime, lineNo, stationCode);
     }
+
+    @Override
+    public void addRecord(EdcAmsRecord amsRecord){
+        baseMapper.insert(amsRecord);
+    }
 }
