@@ -167,7 +167,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 rmsChLog.setVersionType(rmsRecipes.get(0).getVersionType());
                 rmsChLog.setRecipeCode(rmsRecipes.get(0).getRecipeCode());
                 rmsChLog.setRecipeName(rmsRecipes.get(0).getRecipeName());
-                rmsChLog.setParamCode(key);
+                rmsChLog.setParamCode(key.replaceAll("\\\\", "-"));
                 rmsChLog.setParamName(key);
                 rmsChLog.setCheckResult("成功");
                 log.info("校验值：[" + value + "]     设定值：[" + recipeBodyMap.get(key).getSetValue() + "]     最小值：[" + recipeBodyMap.get(key).getMinValue() + "]     最大值：[" + recipeBodyMap.get(key).getMaxValue() + "]");
