@@ -89,6 +89,11 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         reply.setResult("Y", 1);
         reply.setMsg("", 100);
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null) {
+            reply.setResult("N", 1);
+            reply.setMsg("this eqpId not find", 100);
+            return reply;
+        }
         List<RmsRecipeDownloadConfig> downloadConfigs = rmsRecipeDownloadConfigService.selectList(new EntityWrapper<RmsRecipeDownloadConfig>().eq("eqp_model_id", fabEquipment.getModelId()));
         RmsRecipeDownloadConfig downloadConfig = null;
         String versionType = null;
