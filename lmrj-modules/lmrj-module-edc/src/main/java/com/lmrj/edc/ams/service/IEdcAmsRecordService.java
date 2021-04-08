@@ -25,4 +25,5 @@ public interface IEdcAmsRecordService extends ICommonService<EdcAmsRecord> {
     List<Map>  selectAlarmCountByEqp(String beginTime, String endTime, String eqpId);
     List<EdcAmsRecord> findAmsRecordByTime(Date startTime, Date endTime);
     List<Map> selectAlarmCountByStation(String beginTime, String endTime, String lineNo, String stationCode);
+    void addRecord(EdcAmsRecord amsRecord);
 }
