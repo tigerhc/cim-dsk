@@ -153,6 +153,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
         }
 
         RmsRecipeCheckLog rmsChLog = new RmsRecipeCheckLog();
+        List<EdcAmsRecord> edcAmsRecordList =new ArrayList<EdcAmsRecord>();
         for (int i = 0; i < size; i++) {
             String key = null;
             String value = null;
@@ -198,9 +199,8 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                         edcAmsRecord.setAlarmSwitch("1");
                         edcAmsRecord.setAlarmDetail(rmsRecipes.get(0).getRecipeCode()+","+key.replaceAll("\\\\", "-"));
                         edcAmsRecordService.addRecord(edcAmsRecord);
-                        List<EdcAmsRecord> list =new ArrayList<EdcAmsRecord>();
-                        list.add(edcAmsRecord);
-                        repeatAlarmUtil.putEdcAmsRecordInMq(list);
+
+                        edcAmsRecordList.add(edcAmsRecord);
                     }
                 } else {
                     if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
@@ -219,10 +219,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                             edcAmsRecord.setAlarmDetail(rmsRecipes.get(0).getRecipeCode()+","+key.replaceAll("\\\\", "-"));
                             edcAmsRecordService.addRecord(edcAmsRecord);
 
-                            //调用mq准备发送
-                            List<EdcAmsRecord> list =new ArrayList<EdcAmsRecord>();
-                            list.add(edcAmsRecord);
-                            repeatAlarmUtil.putEdcAmsRecordInMq(list);
+                            edcAmsRecordList.add(edcAmsRecord);
                         }
                     }
                 }
@@ -233,6 +230,7 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 recipeCheckLogService.addLog(rmsChLog);//将校验信息插入日志表插入日志表
             }
         }
+        repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
         if ("Y".equals(reply.getResult())){
             recipeLogService.addLog(rmsRecipes.get(0), "checkPass", eqpId);
         } else {
