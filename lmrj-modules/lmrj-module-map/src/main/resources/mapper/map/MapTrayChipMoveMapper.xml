@@ -92,61 +92,47 @@
 		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
 		) as productionTitle
 		FROM `map_tray_chip_move` chip
-		WHERE
-		<trim suffixOverrides="," prefixOverrides="AND">
-			<choose>
-				<when test="chipId != null and chipId !=''">
-					`chip_id` like concat('%', #{chipId})
-				</when>
-				<otherwise>
-					<if test="lotNo != null and lotNo != ''">
-						AND lot_no = #{lotNo}
-					</if>
-					<if test="eqpIds != null and eqpIds.size > 0">
-						AND eqp_id IN(
-						<foreach collection="eqpIds" item="eqp" separator=",">
-							#{eqp}
-						</foreach>
-						)
-					</if>
-					<if test="sTime!=null and sTime!=''">
-						AND `start_time` &gt;= #{sTime}
-						AND `start_time` &lt;= #{eTime}
-					</if>
-				</otherwise>
-			</choose>
-			ORDER BY `start_time` DESC
-			LIMIT #{offset},#{pageSize}
-		</trim>
+		<where>
+			<if test="chipId != null and chipId !=''">
+				and `chip_id` like concat('%', #{chipId})
+			</if>
+			<if test="eqpIds != null and eqpIds.size > 0">
+				AND eqp_id IN(
+				<foreach collection="eqpIds" item="eqp" separator=",">
+					#{eqp}
+				</foreach>
+				)
+			</if>
+			<if test="sTime!=null and sTime!=''">
+				AND `start_time` &gt;= #{sTime}
+				AND `start_time` &lt;= #{eTime}
+			</if>
+		</where>
+		ORDER BY `start_time` DESC
+		LIMIT #{offset},#{pageSize}
 	</select>
 
 	<select id="countChipMove" resultType="int" parameterType="com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo">
 		SELECT COUNT(1)
 		FROM `map_tray_chip_move`
-		WHERE
-		<trim suffixOverrides="," prefixOverrides="AND">
-			<choose>
-				<when test="chipId != null and chipId !=''">
-					`chip_id` like concat('%', #{chipId})
-				</when>
-				<otherwise>
-					<if test="lotNo != null and lotNo != ''">
-						AND lot_no = #{lotNo}
-					</if>
-					<if test="eqpIds != null and eqpIds.size > 0">
-						AND eqp_id IN(
-						<foreach collection="eqpIds" item="eqp" separator=",">
-							#{eqp}
-						</foreach>
-						)
-					</if>
-					<if test="sTime!=null and sTime!=''">
-						AND `start_time` &gt;= #{sTime}
-						AND `start_time` &lt;= #{eTime}
-					</if>
-				</otherwise>
-			</choose>
-		</trim>
+		<where>
+			<if test="chipId != null and chipId !=''">
+				and `chip_id` like concat('%', #{chipId})
+			</if>
+			<if test="eqpIds != null and eqpIds.size > 0">
+				AND eqp_id IN(
+				<foreach collection="eqpIds" item="eqp" separator=",">
+					#{eqp}
+				</foreach>
+				)
+			</if>
+			<if test="sTime!=null and sTime!=''">
+				AND `start_time` &gt;= #{sTime}
+				AND `start_time` &lt;= #{eTime}
+			</if>
+		</where>
+		ORDER BY `start_time` DESC
+		LIMIT #{offset},#{pageSize}
 	</select>
 
 	<select id="queryChip" resultType="map" parameterType="string">
