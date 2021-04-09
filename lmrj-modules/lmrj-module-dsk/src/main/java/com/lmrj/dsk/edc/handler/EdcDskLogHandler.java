@@ -640,7 +640,9 @@ public class EdcDskLogHandler {
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
                 ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
                 FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+                if(equipmentStatus != null){
+                    ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+                }
             }
             Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
             Date startTime = new Date(time);
