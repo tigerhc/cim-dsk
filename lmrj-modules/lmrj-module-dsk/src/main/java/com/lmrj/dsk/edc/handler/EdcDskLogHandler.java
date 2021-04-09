@@ -664,8 +664,16 @@ public class EdcDskLogHandler {
                 ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
                 ovnBatchLotService.insert(ovnBatchLot);
             }
-            tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
+            if(filterEqpId(eqpId)){
+                tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
+            }
         }
+    }
+
+    private boolean filterEqpId(String eqpId){
+        eqpId = eqpId + ",";
+        String allEqp = "APJ-CLEAN-US1,APJ-RT,APJ-HT,APJ-OVEN1,";
+        return allEqp.contains(eqpId);
     }
 
     @RabbitHandler
