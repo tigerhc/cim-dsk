@@ -26,28 +26,37 @@ public class OvnParticleHandler {
     @RabbitListener(queues= {"C2S.Q.PARTICLE.DATA"})
     public void handleParticleData(String dataJson){
         try{
+            boolean flag =false;
             ParticleDataBean data = JsonUtil.from(dataJson, ParticleDataBean.class);
             ovnParticleService.insert(data);
             StringBuilder msg =new StringBuilder();
             msg.append("尘埃粒子计数器数值异常:");
             if(data.getParticle03Alarm()==1){
                 msg.append("0.3μm,");
+                flag=true;
             } if (data.getParticle05Alarm()==1){
                 msg.append("0.5μm,");
+                flag=true;
             } if (data.getParticle1Alarm()==1){
                 msg.append("1μm,");
+                flag=true;
             } if (data.getParticle3Alarm()==1){
                 msg.append("3μm,");
+                flag=true;
             } if (data.getParticle5Alarm()==1){
                 msg.append("5μm,");
+                flag=true;
             } if (data.getParticle10Alarm()==1){
                 msg.append("10μm,");
+                flag=true;
             }
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("EQP_ID",msg.toString());
             jsonObject.put("ALARM_CODE", "E-0009");
             String jsonString = jsonObject.toJSONString();
+            if (flag==true){
             rabbitTemplate.convertAndSend(queueName, jsonString);
+            }
         }catch (Exception e){
             log.error("尘埃计数器接收队列数据出错:"+dataJson,e);
         }
