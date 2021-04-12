@@ -87,8 +87,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 log.error("数据插入失败");
                 e.printStackTrace();
             }
-        }
-        if (eqpStateList.get(0).getStartTime().after(startTime)) {
+        } else if (eqpStateList.get(0).getStartTime().after(startTime)) {
             EdcEqpState firstData = new EdcEqpState();
             //当天八点前最后一条数据
             EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
