@@ -53,7 +53,7 @@ public class OvnParticleHandler {
             }
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("EQP_ID",msg.toString());
-            jsonObject.put("ALARM_CODE", "E-0009");
+            jsonObject.put("ALARM_CODE", "E-0070");
             String jsonString = jsonObject.toJSONString();
             if (flag==true){
             rabbitTemplate.convertAndSend(queueName, jsonString);
