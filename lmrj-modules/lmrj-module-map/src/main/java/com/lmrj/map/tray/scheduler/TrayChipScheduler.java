@@ -49,7 +49,7 @@ public class TrayChipScheduler {
         }
     }
 
-//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+    @Scheduled(cron = "0 0/2 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipNG(){
         log.info("---------------------------------------------------执行执行TrayChipNG开始");
         MapTrayChipLog traceLog = new MapTrayChipLog();
