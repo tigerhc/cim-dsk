@@ -3,6 +3,8 @@ package com.lmrj.edc.param.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.param.entity.EdcEqpLogParam;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -16,4 +18,7 @@ import com.lmrj.edc.param.entity.EdcEqpLogParam;
 */
 public interface IEdcEqpLogParamService extends ICommonService<EdcEqpLogParam> {
 
+    List<EdcEqpLogParam> findLogParamList();
+
+    List<String> findParamEqpId();
 }

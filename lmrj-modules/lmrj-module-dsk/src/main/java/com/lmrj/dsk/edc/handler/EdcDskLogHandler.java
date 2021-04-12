@@ -15,6 +15,7 @@ import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
+import com.lmrj.edc.param.service.impl.EdcEqpLogParamServiceImpl;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -98,6 +99,8 @@ public class EdcDskLogHandler {
     IOvnBatchLotService iOvnBatchLotService;
     @Autowired
     IEdcDskLogProductionService iEdcDskLogProductionService;
+    @Autowired
+    EdcEqpLogParamServiceImpl edcEqpLogParamService;
 
     StringBuffer alarmEmailLog = new StringBuffer();//当温度数据异常时，记录发送邮件情况 TODO
     long lastSendMailTime = 0L;//最后一次发送邮件的时间
@@ -831,4 +834,21 @@ public class EdcDskLogHandler {
 //        System.out.println("2");
 //        tempFilter(ovnBatchLot, dataMsg);
 //    }
+
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.EQPLOG.PARAM"})
+    public String findLogParam(String msg){
+        log.info("客户端请求日志参数："+msg);
+        String result = null;
+        try {
+            result = edcEqpLogParamService.findCsvLogParam();
+        } catch (Exception e) {
+            log.error("日志参数查询出错！",e);
+            e.printStackTrace();
+        }
+        if(result==null){
+            log.error("日志参数查询为空！");
+        }
+        return result;
+    }
 }
