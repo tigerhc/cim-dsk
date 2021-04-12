@@ -1,6 +1,7 @@
 package com.lmrj.oven.batchlot.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.oven.batchlot.entity.ParticleDataBean;
 import com.lmrj.oven.batchlot.service.IOvnParticleService;
 import com.lmrj.util.mapper.JsonUtil;
@@ -56,6 +57,14 @@ public class OvnParticleHandler {
             String jsonString = jsonObject.toJSONString();
             if (flag==true){
             rabbitTemplate.convertAndSend(queueName, jsonString);
+            EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
+            edcAmsRecord.setCreateDate(data.getStartTime());
+            edcAmsRecord.setAlarmName("尘埃粒子计数器数值异常:"+msg);
+            edcAmsRecord.setEqpId("APJ-PARTICLE1");
+            edcAmsRecord.setAlarmCode("E-0070");
+            edcAmsRecord.setAlarmSwitch("1");
+            String json = JsonUtil.toJsonString(edcAmsRecord);
+            rabbitTemplate.convertAndSend("C2S.Q.ALARMRPT.DATA", json);
             }
         }catch (Exception e){
             log.error("尘埃计数器接收队列数据出错:"+dataJson,e);
