@@ -828,7 +828,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        log.info("基恩士测试当前时间为" + ft.format(new Date().getTime()));
         for (int i = 0; i < lines.size(); i++) {
             log.info("基恩士:" + lines.get(i));
             String[] ele = lines.get(i).split(",");
@@ -887,9 +886,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         List<String> str = new ArrayList<>();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        log.info("5GI测试当前时间为 : " + ft.format(new Date().getTime()));
         for (int i = 0; i < lines.size(); i++) {
-            log.info("5GI当前行数据 : " + lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if (ele2.length == 3) {
@@ -917,9 +914,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        log.info("6GI测试当前时间为 : " + ft.format(new Date().getTime()));
         for (int i = 0; i < lines.size(); i++) {
-            log.info("6GI当前行数据 : " + lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
             if (ele2.length >= 2) {
