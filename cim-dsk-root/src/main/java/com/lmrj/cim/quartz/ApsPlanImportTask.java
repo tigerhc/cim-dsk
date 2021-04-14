@@ -36,28 +36,33 @@ public class ApsPlanImportTask {
     public String dir;
 
     public void rundskAps() {
-        log.info("计划插入定时任务开始执行");
-        String[] extensions = {"xls"};
-        String year = DateUtil.getYear().substring(2,4);
-        dir = dir+"日次計画"+year+"年\\";
-        List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
-        if(files.size() == 0){
-            return;
-        }
-        File lastFile = files.get(0);
-        if(files.size()>1){
-            for (File file : files) {
-                if(lastFile.lastModified() <= file.lastModified()){
-                    lastFile = file;
+        try {
+            log.info("计划插入定时任务开始执行");
+            String[] extensions = {"xls"};
+            String year = DateUtil.getYear().substring(2,4);
+            dir = dir+"日次計画"+year+"年";
+            List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
+            if(files.size() == 0){
+                return;
+            }
+            File lastFile = files.get(0);
+            if(files.size()>1){
+                for (File file : files) {
+                    if(lastFile.lastModified() <= file.lastModified()){
+                        lastFile = file;
+                    }
                 }
             }
+            try {
+                this.readApsPlan(lastFile.getAbsolutePath());
+            } catch (Exception e){
+                log.error("排程有异常",e);
+            }
+            log.info("定时任务开始执行结束");
+        } catch (Exception e) {
+            log.error("计划插入定时任务出错",e);
+            e.printStackTrace();
         }
-        try {
-            this.readApsPlan(lastFile.getAbsolutePath());
-        } catch (Exception e){
-            log.error("排程有异常",e);
-        }
-        log.info("定时任务开始执行结束");
     }
 
     //String dir  ="D:\\1项目\\大连三垦\\2需求分设\\APS\\";
