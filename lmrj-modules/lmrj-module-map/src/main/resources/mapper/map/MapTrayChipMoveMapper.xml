@@ -90,7 +90,8 @@
 		) as productionParam,
 		(
 		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
-		) as productionTitle
+		) as productionTitle,
+		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` chip
 		<where>
 			<if test="chipId != null and chipId !=''">
