@@ -90,7 +90,8 @@
 		) as productionParam,
 		(
 		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
-		) as productionTitle
+		) as productionTitle,
+		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` chip
 		<where>
 			<if test="chipId != null and chipId !=''">
@@ -141,7 +142,8 @@
 	    mv.`from_tray_id` AS fromTrayId, mv.`from_x` AS fromX, mv.`from_y` AS fromY,
 	    IFNULL(mv.`to_tray_id`,mv.`chip_id`) AS toTrayId, IFNULL(mv.`to_x`,1) AS toX, IFNULL(mv.`to_y`,1) AS toY, mv.`to_z` AS toZ,
 	    mv.`judge_result` AS judgeResult, mv.`start_time` AS startTime,
-	    ec.down_eqp_id as 'nextEqpId'
+	    ec.down_eqp_id as 'nextEqpId',
+	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` mv
 		LEFT JOIN `map_tray_config` cf ON mv.`to_tray_id` = cf.`tray_id`
 		LEFT JOIN `map_equipment_config` ec ON mv.`eqp_id` = ec.`eqp_id` and ec.del_flag='0'
