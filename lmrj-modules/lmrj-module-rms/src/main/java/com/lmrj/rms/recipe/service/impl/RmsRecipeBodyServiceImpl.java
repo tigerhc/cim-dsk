@@ -186,10 +186,10 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 log.info("校验值：[" + value + "]     设定值：[" + recipeBodyMap.get(key).getSetValue() + "]     最小值：[" + recipeBodyMap.get(key).getMinValue() + "]     最大值：[" + recipeBodyMap.get(key).getMaxValue() + "]");
                 if (!StringUtil.isEmpty(recipeBodyMap.get(key).getMinValue()) && !StringUtil.isEmpty(recipeBodyMap.get(key).getMaxValue())) {
                     if (Integer.parseInt(value) < Integer.parseInt(recipeBodyMap.get(key).getMinValue()) || Integer.parseInt(value) > Integer.parseInt(recipeBodyMap.get(key).getMaxValue())) {
-                        log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
+                        log.info("参数:[" + key + "]-值:["+ value +"]不符合规范,应处于"+ recipeBodyMap.get(key).getMinValue() +"~"+ recipeBodyMap.get(key).getMaxValue() +"之间");
                         reply.setResult("N", 1);
                         reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
-                        rmsChLog.setCheckRemarks("参数:[" + key + "]-值:["+ value +"]不符合规范");
+                        rmsChLog.setCheckRemarks("参数:[" + key + "]-值:["+ value +"]不符合规范,应处于"+ recipeBodyMap.get(key).getMinValue() +"~"+ recipeBodyMap.get(key).getMaxValue() +"之间");
                         rmsChLog.setCheckResult("失败");
                         //校验失败插入警报记录并调用邮件发送mq
                         EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
@@ -205,10 +205,10 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 } else {
                     if (!StringUtil.isEmpty(recipeBodyMap.get(key).getSetValue())) {
                         if (!recipeBodyMap.get(key).getSetValue().equals(value)) {
-                            log.info("参数:[" + key + "]-值:["+ value +"]不符合规范");
+                            log.info("参数:[" + key + "]-值:["+ value +"]不符合规范，应为"+ recipeBodyMap.get(key).getSetValue());
                             reply.setResult("N", 1);
                             reply.setMsg("param:[" + key + "]-value:["+ value +"] is error", 100);
-                            rmsChLog.setCheckRemarks("参数:[" + key + "]-值:["+ value +"]不符合规范");
+                            rmsChLog.setCheckRemarks("参数:[" + key + "]-值:["+ value +"]不符合规范，应为"+ recipeBodyMap.get(key).getSetValue());
                             rmsChLog.setCheckResult("失败");
                             //校验失败插入警报记录并调用邮件发送mq
                             EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
@@ -227,7 +227,9 @@ public class RmsRecipeBodyServiceImpl  extends CommonServiceImpl<RmsRecipeBodyMa
                 DateFormat simpleDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //创建一个格式化日期对象
                 String punchTime = simpleDateFormat.format(date);
                 rmsChLog.setCheckDate(punchTime);
-                recipeCheckLogService.addLog(rmsChLog);//将校验信息插入日志表插入日志表
+                if ("失败".equals(rmsChLog.getCheckResult())) {
+                    recipeCheckLogService.addLog(rmsChLog);//将校验失败的信息插入日志表
+                }
             }
         }
         repeatAlarmUtil.putEdcAmsRecordInMq(edcAmsRecordList);
