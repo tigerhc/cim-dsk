@@ -26,7 +26,7 @@
         <foreach collection="dataList" item="item" separator=",">
             (#{item.eqpId},#{item.productionNo},#{item.lotNo},#{item.fromTrayId},#{item.fromX}
             ,#{item.fromY},#{item.toTrayId},#{item.toX},#{item.toY},#{item.toZ},#{item.judgeResult},
-            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName}, #{item.fileName}, #{item.mapFlag},#{item.dmId},#{item.dmId},#{item.dmX},#{item.dmY})
+            #{item.startTime},now(),#{item.chipId},#{item.eqpModelName}, #{item.fileName}, #{item.mapFlag},#{item.dmId},#{item.dmX},#{item.dmY})
         </foreach>
     </insert>
 
