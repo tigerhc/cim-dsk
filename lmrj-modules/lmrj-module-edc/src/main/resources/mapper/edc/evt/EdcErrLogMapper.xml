@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.edc.evt.mapper.EdcErrLogMapper">
+    <resultMap id="ErrMsgMap" type="com.lmrj.edc.evt.entity.EdcErrLogBean">
+        <result property="id" column="id"/>
+        <result property="errType" column="err_type"/>
+        <result property="errPosition" column="err_position"/>
+        <result property="errRemark" column="err_remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createTimeStr" column="create_time_str"/>
+    </resultMap>
+    <insert id="saveErrMsg" parameterType="com.lmrj.edc.evt.entity.EdcErrLogBean">
+        insert into edc_err_log(err_type, err_position, err_remark, create_time)values(#{errType}, #{errPosition}, #{errRemark}, #{createTime})
+    </insert>
+</mapper>
