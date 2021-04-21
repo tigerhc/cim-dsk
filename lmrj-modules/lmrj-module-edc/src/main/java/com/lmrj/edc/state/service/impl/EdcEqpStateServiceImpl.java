@@ -59,11 +59,15 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
      */
     //给edc_eqp_state表里的数据添加end_time
     @Override
+    public List<EdcEqpState> getAllByTime(Date startTime,Date endTime,String eqpId){
+        return baseMapper.getAllByTime(startTime,endTime,eqpId);
+    }
+    @Override
     public int syncEqpSate(Date startTime, Date endTime, String eqpId) {
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在8点到第一条数据之间新建一条数据
-        if(eqpStateList.size()==0 && eqpId.equals("SIM-REFLOW1")){
+        /*if(eqpStateList.size()==0 && eqpId.equals("SIM-REFLOW1")){
             try {
                 EdcEqpState firstData = new EdcEqpState();
                 //当天八点前最后一条数据
@@ -84,10 +88,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 this.insert(firstData);
                 log.info("插入记录成功");
             } catch (Exception e) {
-                log.error("数据插入失败");
+                log.error("数据插入失败",e);
                 e.printStackTrace();
             }
-        } else if (eqpStateList.get(0).getStartTime().after(startTime)) {
+        } else*/ if (eqpStateList.get(0).getStartTime().after(startTime)) {
             EdcEqpState firstData = new EdcEqpState();
             //当天八点前最后一条数据
             EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
