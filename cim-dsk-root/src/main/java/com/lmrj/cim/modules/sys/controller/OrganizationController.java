@@ -22,6 +22,7 @@ import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.core.sys.service.IOrganizationService;
 import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,9 @@ public class OrganizationController extends BaseBeanController<Organization> {
 
     protected final static String OFFICE_CACHE_NAME = "officeCache";
     public static final String OFFICE_CACHE_ID_ = "office_oid_";
+
+    @Value("${dsk.lineNo}")
+    String lineNo;
 
     /**
      * 根据页码和每页记录数，以及查询条件动态加载数据
@@ -214,7 +218,7 @@ public class OrganizationController extends BaseBeanController<Organization> {
     @LogAspectj(logType = LogType.SELECT)
     @RequiresMethodPermissions("list")
     public void findYieldStep(HttpServletResponse response) throws IOException {
-        List<Organization> treeNodeList = organizationService.findYieldStep("");
+        List<Organization> treeNodeList = organizationService.findYieldStep(lineNo);
         String content = JSON.toJSONString(treeNodeList );
         ServletUtils.printJson(response, content);
     }
