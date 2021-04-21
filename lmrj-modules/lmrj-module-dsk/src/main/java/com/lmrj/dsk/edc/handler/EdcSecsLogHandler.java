@@ -444,9 +444,21 @@ public class EdcSecsLogHandler {
     public Boolean sendAlarmEmail(String eqpId,String tempPv,int tempMax,int tempMin){
         Boolean flag = false;
         double temp = Double.parseDouble(tempPv);
-        if(temp < tempMin || temp > tempMax){
+        if(temp < tempMin){
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("EQP_ID", eqpId);
+            jsonObject.put("EQP_ID", eqpId + "温度低于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax);
+            jsonObject.put("ALARM_CODE", "E-0009");
+            String jsonString = jsonObject.toJSONString();
+            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
+            try {
+                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+            } catch (Exception e) {
+                log.error("Exception:", e);
+            }
+            flag = true;
+        }else if(temp > tempMax){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("EQP_ID", eqpId + "温度高于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax);
             jsonObject.put("ALARM_CODE", "E-0009");
             String jsonString = jsonObject.toJSONString();
             log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
@@ -457,6 +469,7 @@ public class EdcSecsLogHandler {
             }
             flag = true;
         }
+
         return flag;
     }
 }
