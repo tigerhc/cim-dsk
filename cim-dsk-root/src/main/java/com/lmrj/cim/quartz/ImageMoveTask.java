@@ -6,6 +6,7 @@ import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -31,34 +32,37 @@ public class ImageMoveTask {
 /*  String path = "Z:\\IT化データ（一課）\\X線データ\\日連科技\\ボイド率";
     String path1 = "Z:\\IT化データ（一課）\\X線データ\\データ処理\\ボイド率";*/
 
-
+    @Value("${dsk.lineNo}")
+    String lineNo;
     @Scheduled(cron = "0 0 4 * * ?")
     public void compressAndMoveImage() throws IOException {
-        log.info("执行图片转化");
-        Calendar now = Calendar.getInstance();
-        List<File> fileList =
-                (List<File>) FileUtil.listFiles(new File(path), new String[]{"bmp"}, true);
-        fileList.forEach(System.out::println);
-        for (File file : fileList) {
-            if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 7) {
-                log.info(file.getName());
-                log.info("开始处理图片"+file.getAbsolutePath());
-                String line = file.getParentFile().getParentFile().getName();
-                String productionName = file.getParentFile().getName();
-                String destPath = path1+ "\\"+line + "\\" + now.get(Calendar.YEAR)+ "年" + "\\" + (now.get(Calendar.MONTH) + 1)+ "月"+ "\\"+productionName;
-                FileUtil.mkDir(destPath );
-                Image img = ImageIO.read(file);
-                if(img!=null){
-                    BufferedImage tag = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
-                    tag.getGraphics().drawImage(img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_SMOOTH), 0, 0, null);
-                    //FileOutputStream out =
-                    //        new FileOutputStream(destPath + file.getName().replace("bmp", "jpg"));
-                    //JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-                    //encoder.encode(tag);
-                    ImageIO.write(tag, "jpg",  new File(destPath + "\\" + file.getName().replace("bmp", "jpg")) /* target */ );
-                    file.delete();
+        if("SIM".equals(lineNo)){
+            log.info("执行图片转化");
+            Calendar now = Calendar.getInstance();
+            List<File> fileList =
+                    (List<File>) FileUtil.listFiles(new File(path), new String[]{"bmp"}, true);
+            fileList.forEach(System.out::println);
+            for (File file : fileList) {
+                if (new Date().getTime() - file.lastModified() > 1000 * 60 * 60 * 24 * 7) {
+                    log.info(file.getName());
+                    log.info("开始处理图片"+file.getAbsolutePath());
+                    String line = file.getParentFile().getParentFile().getName();
+                    String productionName = file.getParentFile().getName();
+                    String destPath = path1+ "\\"+line + "\\" + now.get(Calendar.YEAR)+ "年" + "\\" + (now.get(Calendar.MONTH) + 1)+ "月"+ "\\"+productionName;
+                    FileUtil.mkDir(destPath );
+                    Image img = ImageIO.read(file);
+                    if(img!=null){
+                        BufferedImage tag = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                        tag.getGraphics().drawImage(img.getScaledInstance(img.getWidth(null), img.getHeight(null), Image.SCALE_SMOOTH), 0, 0, null);
+                        //FileOutputStream out =
+                        //        new FileOutputStream(destPath + file.getName().replace("bmp", "jpg"));
+                        //JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+                        //encoder.encode(tag);
+                        ImageIO.write(tag, "jpg",  new File(destPath + "\\" + file.getName().replace("bmp", "jpg")) /* target */ );
+                        file.delete();
+                    }
+                    log.info("完成处理图片"+file.getAbsolutePath());
                 }
-                log.info("完成处理图片"+file.getAbsolutePath());
             }
         }
     }
@@ -68,36 +72,38 @@ public class ImageMoveTask {
     }
     @Scheduled(cron = "0 0/20 * * * ?")
     public void smaKongDong(){
-        List<File> fileList =
-                (List<File>) FileUtil.listFiles(new File(path2), new String[]{"bmp"}, true);
-        fileList.forEach(System.out::println);
-        List<File> newFileList = new ArrayList<>();
-        List<String> newFileNameList = new ArrayList<>();
-        for (File eqpFile : fileList) {
-            if(new Date().getTime() - eqpFile.lastModified() < 1000 * 60 * 60 * 24 ){
-                newFileNameList.add(eqpFile.getName());
-                newFileList.add(eqpFile);
+        if("SIM".equals(lineNo)){
+            List<File> fileList =
+                    (List<File>) FileUtil.listFiles(new File(path2), new String[]{"bmp"}, true);
+            fileList.forEach(System.out::println);
+            List<File> newFileList = new ArrayList<>();
+            List<String> newFileNameList = new ArrayList<>();
+            for (File eqpFile : fileList) {
+                if(new Date().getTime() - eqpFile.lastModified() < 1000 * 60 * 60 * 24 ){
+                    newFileNameList.add(eqpFile.getName());
+                    newFileList.add(eqpFile);
+                }
             }
-        }
-        List<MsMeasureKongdong> list = new ArrayList<>();
-        if(newFileList.size()>0){
-            for (File eqpFile : newFileList) {
-                String filePath = eqpFile.getAbsolutePath();
-                String fileName = eqpFile.getName();
-                String productionName = "J."+filePath.substring(filePath.indexOf("SMA")+4,filePath.indexOf(fileName)-1);
-                Date time = new Date(eqpFile.lastModified());
-                String createDate = DateUtil.formatDate(time,"yyyy-MM-dd HH:mm:ss");
-                _getDataByFile(list,fileName,createDate,filePath,productionName);
+            List<MsMeasureKongdong> list = new ArrayList<>();
+            if(newFileList.size()>0){
+                for (File eqpFile : newFileList) {
+                    String filePath = eqpFile.getAbsolutePath();
+                    String fileName = eqpFile.getName();
+                    String productionName = "J."+filePath.substring(filePath.indexOf("SMA")+4,filePath.indexOf(fileName)-1);
+                    Date time = new Date(eqpFile.lastModified());
+                    String createDate = DateUtil.formatDate(time,"yyyy-MM-dd HH:mm:ss");
+                    _getDataByFile(list,fileName,createDate,filePath,productionName);
+                }
             }
-        }
-        List<MsMeasureKongdong> newlist = new ArrayList<>();
-        for (MsMeasureKongdong measureKongdong : list) {
-            if(iMsMeasureKongdongService.findKongdongExist(measureKongdong.getLineNo(),measureKongdong.getProductionName(),measureKongdong.getLotNo(),measureKongdong.getType())==0){
-                newlist.add(measureKongdong);
+            List<MsMeasureKongdong> newlist = new ArrayList<>();
+            for (MsMeasureKongdong measureKongdong : list) {
+                if(iMsMeasureKongdongService.findKongdongExist(measureKongdong.getLineNo(),measureKongdong.getProductionName(),measureKongdong.getLotNo(),measureKongdong.getType())==0){
+                    newlist.add(measureKongdong);
+                }
             }
-        }
-        if(newlist.size()>0){
-            iMsMeasureKongdongService.insertBatch(newlist, 100);
+            if(newlist.size()>0){
+                iMsMeasureKongdongService.insertBatch(newlist, 100);
+            }
         }
     }
 
