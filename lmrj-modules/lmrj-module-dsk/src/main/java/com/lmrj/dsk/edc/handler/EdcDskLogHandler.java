@@ -526,6 +526,18 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventId(eventId);
                 String eventDesc = edcDskLogOperation.getEventName();
                 String eventParams = edcDskLogOperation.getEventDetail();
+                if(eventDesc == null && eventParams == null){
+                    if("0".equals(eventId)){
+                        eventDesc = "自動生産動作停止";
+                        eventParams = "自動生産動作停止";
+                    }else if("1".equals(eventId)){
+                        eventDesc = " 自動生産開始";
+                        eventParams = " 自動生産開始";
+                    }else if("3".equals(eventId)){
+                        eventDesc = "IDLE(制品等待)";
+                        eventParams = "IDLE(制品等待)";
+                    }
+                }
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
