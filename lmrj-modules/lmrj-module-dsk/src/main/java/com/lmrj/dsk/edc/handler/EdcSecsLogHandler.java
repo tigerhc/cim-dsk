@@ -25,6 +25,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.ArrayUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -71,7 +72,9 @@ public class EdcSecsLogHandler {
     @Autowired
     IOvnBatchLotParamService iOvnBatchLotParamService;
     static Map<String,String> alarmMap = new HashMap<>();
+    static Date emailDateFlag = null;
     static {
+
         alarmMap.put("A0001","引线框架库空通知");
         alarmMap.put("A0002","引线框架库为空");
         alarmMap.put("A0003","空引线框已满");
@@ -306,31 +309,51 @@ public class EdcSecsLogHandler {
                     ovnBatchLot.setLotId(mesLotTrack.getLotNo());
                 }
                 String[] a = pro.getParamValue().split(",");
-                Long create =  productionLog.getStartTime().getTime()+(1000);
+                String date = DateUtil.formatDateTime(productionLog.getStartTime());
                 String temp = null;
+                String title[] = ovnBatchLot.getOtherTempsTitle().split(",");
+                //634,634,633,150.0,150.1,150.2,150.0,150.1,150.0,184.9,185.0,184.9,184.9,184.9,185.0,-0.01,140.33,140.33,0.0,95.7,95.58,110,17,106
+                String alarmEmailStr = "";
                 for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
                         temp = a[4]+",150,145,155";
                         //判断温度是否超过范围，超过则发送邮件报警
-                        sendAlarmEmail(eqpId,a[4],155,145);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[4],155,145,title[1]);
                     }else if(i>4 && i<9){
                         temp = temp +","+ a[i] +",150,145,155";
-                        sendAlarmEmail(eqpId,a[i],155,145);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[i],155,145,title[i-3]);
                     }else{
                         temp = temp +","+ a[i] +",185,180,190";
-                        sendAlarmEmail(eqpId,a[i],190,180);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[i],190,180,title[i-3]);
                     }
                 }
-                Date createTime = new Date(create);
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
                 ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
                 ovnBatchLotParam.setTempPv(a[3]);
-                ovnBatchLotParam.setCreateDate(createTime);
+                ovnBatchLotParam.setCreateDate(productionLog.getStartTime());
                 ovnBatchLotParam.setTempMax("155");
                 ovnBatchLotParam.setTempMin("145");
                 ovnBatchLotParam.setTempSp("150");
-                sendAlarmEmail(eqpId,a[3],155,145);
+                alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[3],155,145,title[0]);
                 ovnBatchLotParam.setOtherTempsValue(temp);
+                if(!"".equals(alarmEmailStr)){
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(productionLog.getStartTime());
+                    cal.add(Calendar.MINUTE, -10);
+                    if(emailDateFlag == null || cal.before(emailDateFlag)){
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("EQP_ID", date + " " + eqpId + alarmEmailStr);
+                        jsonObject.put("ALARM_CODE", "E-0009");
+                        String jsonString = jsonObject.toJSONString();
+                        log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
+                        try {
+                            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+                            emailDateFlag = productionLog.getStartTime();
+                        } catch (Exception e) {
+                            log.error("Exception:", e);
+                        }
+                    }
+                }
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
                 //实现主表一个批次只有一条数据
@@ -441,35 +464,15 @@ public class EdcSecsLogHandler {
             iEdcEqpStateService.insert(edcEqpState);
         }
     }
-    public Boolean sendAlarmEmail(String eqpId,String tempPv,int tempMax,int tempMin){
-        Boolean flag = false;
-        double temp = Double.parseDouble(tempPv);
-        if(temp < tempMin){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("EQP_ID", eqpId + "温度低于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax);
-            jsonObject.put("ALARM_CODE", "E-0009");
-            String jsonString = jsonObject.toJSONString();
-            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-            try {
-                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-            } catch (Exception e) {
-                log.error("Exception:", e);
-            }
-            flag = true;
-        }else if(temp > tempMax){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("EQP_ID", eqpId + "温度高于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax);
-            jsonObject.put("ALARM_CODE", "E-0009");
-            String jsonString = jsonObject.toJSONString();
-            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-            try {
-                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-            } catch (Exception e) {
-                log.error("Exception:", e);
-            }
-            flag = true;
-        }
 
-        return flag;
+    public String sendTempAlarmEmail(String tempPv,int tempMax,int tempMin,String tempTitle){
+        double temp = Double.parseDouble(tempPv);
+        String emailStr = "";
+        if(temp < tempMin){
+            emailStr = "  " + tempTitle + "温度低于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax + "   ";
+        }else if(temp > tempMax){
+            emailStr = "  " + tempTitle + "温度高于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax + "   ";
+        }
+        return emailStr;
     }
 }
