@@ -30,6 +30,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -525,6 +526,18 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventId(eventId);
                 String eventDesc = edcDskLogOperation.getEventName();
                 String eventParams = edcDskLogOperation.getEventDetail();
+                if(eventDesc == null && eventParams == null){
+                    if("0".equals(eventId)){
+                        eventDesc = "自動生産動作停止";
+                        eventParams = "自動生産動作停止";
+                    }else if("1".equals(eventId)){
+                        eventDesc = " 自動生産開始";
+                        eventParams = " 自動生産開始";
+                    }else if("3".equals(eventId)){
+                        eventDesc = "IDLE(制品等待)";
+                        eventParams = "IDLE(制品等待)";
+                    }
+                }
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
@@ -707,7 +720,9 @@ public class EdcDskLogHandler {
         }else if (department.get(0).get("department").equals("APJ")) {
             users = fabEquipmentService.findEmailALL("E-0001");
         }
-
+        if(alarmCode.equals(":网络断开连接!")){
+            alarmCode = DateUtil.formatDateTime(new Date()) + "网络断开连接!";
+        }
         List<String> param = new ArrayList<>();
         if (!users.isEmpty()) {
             for (Map<String, Object> map : users) {
