@@ -1,4 +1,4 @@
-package com.lmrj.oven.batchlot.entity;
+package com.lmrj.edc.particle.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName("ovn_particle")
+@TableName("edc_particle_record")
 @Data
 public class ParticleDataBean extends BaseDataEntity {
     @TableField(value = "eqp_id")

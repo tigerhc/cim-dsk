@@ -1,24 +1,26 @@
-package com.lmrj.oven.batchlot.handler;
+package com.lmrj.edc.particle.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import com.lmrj.edc.ams.entity.EdcAmsRecord;
-import com.lmrj.oven.batchlot.entity.ParticleDataBean;
-import com.lmrj.oven.batchlot.service.IOvnParticleService;
+import com.lmrj.edc.particle.entity.ParticleDataBean;
+import com.lmrj.edc.particle.service.IEdcParticleService;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+@Configuration
+@EnableScheduling
 @Slf4j
 @Service
-public class OvnParticleHandler {
+public class EdcParticleHandler {
     @Autowired
-    private IOvnParticleService ovnParticleService;
+    private IEdcParticleService particleService;
     @Autowired
     private AmqpTemplate rabbitTemplate;
     String queueName = "C2S.Q.MSG.MAIL";
@@ -29,7 +31,7 @@ public class OvnParticleHandler {
         try{
             boolean flag =false;
             ParticleDataBean data = JsonUtil.from(dataJson, ParticleDataBean.class);
-            ovnParticleService.insert(data);
+            particleService.insert(data);
             StringBuilder msg =new StringBuilder();
             msg.append("尘埃粒子计数器数值异常:");
             if(data.getParticle03Alarm()==1){
@@ -70,4 +72,12 @@ public class OvnParticleHandler {
             log.error("尘埃计数器接收队列数据出错:"+dataJson,e);
         }
     }
+
+//    /**
+//     * 每天凌晨执行一次
+//     */
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    public void backData(){
+//
+//    }
 }

@@ -1,12 +1,12 @@
-package com.lmrj.oven.batchlot.controller;
+package com.lmrj.edc.particle.controller;
 
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
-import com.lmrj.oven.batchlot.entity.ParticleDataBean;
-import com.lmrj.oven.batchlot.service.IOvnParticleService;
+import com.lmrj.edc.particle.entity.ParticleDataBean;
+import com.lmrj.edc.particle.service.IEdcParticleService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("oven/ovnparticle")
-@ViewPrefix("modules/OvnParticle")
-@RequiresPathPermission("OvnParticle")
-@LogAspectj(title = "ovn_particle")
-public class OvnParticleController extends BaseCRUDController<ParticleDataBean> {
+@RequestMapping("ovn/ovnparticle")
+@ViewPrefix("modules/EdcParticle")
+@RequiresPathPermission("EdcParticle")
+@LogAspectj(title = "edc_particle")
+public class EdcParticleController extends BaseCRUDController<ParticleDataBean> {
     @Autowired
-    private IOvnParticleService particleService;
+    private IEdcParticleService particleService;
 
     @RequestMapping("echartData")
     public Response echartData(@RequestParam String eqpId, @RequestParam String beginTime, @RequestParam String endTime){

@@ -1,9 +1,9 @@
-package com.lmrj.oven.batchlot.service.impl;
+package com.lmrj.edc.particle.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.oven.batchlot.entity.ParticleDataBean;
-import com.lmrj.oven.batchlot.mapper.OvnParticleMapper;
-import com.lmrj.oven.batchlot.service.IOvnParticleService;
+import com.lmrj.edc.particle.entity.ParticleDataBean;
+import com.lmrj.edc.particle.mapper.EdcParticleMapper;
+import com.lmrj.edc.particle.service.IEdcParticleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +15,8 @@ import java.util.Map;
 
 @Slf4j
 @Transactional
-@Service("ovnparticleService")
-public class OvnParticleServiceImpl extends CommonServiceImpl<OvnParticleMapper, ParticleDataBean> implements IOvnParticleService {
+@Service("edcparticleService")
+public class EdcParticleServiceImpl extends CommonServiceImpl<EdcParticleMapper, ParticleDataBean> implements IEdcParticleService {
     @Override
     public Map<String, Object> getEchartData(Map<String, Object> params) {
         Map<String, Object> rs = new HashMap<>();
@@ -67,5 +67,10 @@ public class OvnParticleServiceImpl extends CommonServiceImpl<OvnParticleMapper,
     @Override
     public List<Map<String, Object>> getParticleEqps() {
         return baseMapper.getParticleEqps();
+    }
+
+    @Override
+    public void backData() {
+
     }
 }
