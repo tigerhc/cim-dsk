@@ -125,6 +125,17 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         map.put("EQP_ID", eqpId);
         map.put("METHOD", "FIND_PARAM");
+        if(eqpId.equals("TOP")){
+            eqpId = "APJ-DBCT-PRINTER1";
+        }else if(eqpId.equals("BOOTTOM")){
+            eqpId = "APJ-DBCB-PRINTER1";
+        }else if(eqpId.equals("FRD")){
+            eqpId = "APJ-FRD-PRINTER1";
+        }else if(eqpId.equals("IGBT")){
+            eqpId = "APJ-IGBT-PRINTER1";
+        }else {
+            log.error("设备名称错误！   "+eqpId);
+        }
         if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             if (fabEquipment == null) {

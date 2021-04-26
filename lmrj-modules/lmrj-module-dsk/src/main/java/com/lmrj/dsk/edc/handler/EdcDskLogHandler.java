@@ -731,6 +731,7 @@ public class EdcDskLogHandler {
         }
         String[] params = new String[param.size()];
         param.toArray(params);
+        log.error("params:",params.toString());
         emailSendService.blockSend(params, code, msgMap);
     }
 
