@@ -123,8 +123,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
-        map.put("EQP_ID", eqpId);
-        map.put("METHOD", "FIND_PARAM");
         if(eqpId.equals("TOP")){
             eqpId = "APJ-DBCT-PRINTER1";
         }else if(eqpId.equals("BOOTTOM")){
@@ -136,11 +134,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }else {
             log.error("设备名称错误！   "+eqpId);
         }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_PARAM");
         if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
-            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            /*FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             if (fabEquipment == null) {
                 return MesResult.error(eqpId + "设备不存在");
-            }
+            }*/
             String bc = "";
             if(eqpId.contains("DBC")){
                 bc = "APJ-BC2";
