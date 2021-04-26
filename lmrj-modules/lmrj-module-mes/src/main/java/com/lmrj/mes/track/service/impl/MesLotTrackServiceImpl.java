@@ -119,6 +119,50 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
+    public MesResult findPrinterParam(String eqpId, String opId){
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_PARAM");
+        if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            if (fabEquipment == null) {
+                return MesResult.error(eqpId + "设备不存在");
+            }
+            String bc = "";
+            if(eqpId.contains("DBC")){
+                bc = "APJ-BC2";
+            }else {
+                bc = "APJ-BC1";
+            }
+            /*bc = fabEquipment.getBcCode();
+            if(!"APJ-BC1".equals(bc) && !"APJ-BC2".equals(bc)){
+                if(eqpId.contains("DBC")){
+                    bc = "APJ-BC2";
+                }else {
+                    bc = "APJ-BC1";
+                }
+            }*/
+            log.info("findParam 参数" + map);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }
+                if ("ERROR: NOT FOUND".equals(value)) {
+                    log.error("EQP_ID:" + eqpId + "印刷机数据获取失败");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
+        } else {
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        result.setContent(value);
+        return result;
+    }
     public MesResult findTemp(String eqpId, String opId) {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null) {
@@ -219,29 +263,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
-        }else if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
-            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-            if (fabEquipment == null) {
-                return MesResult.error(eqpId + "设备不存在");
-            }
-            String bc = fabEquipment.getBcCode();
-            map.put("PARAM", param);
-            map.put("LOTNO", lotNo);
-            map.put("PRODUCTIONNO", productionNo);
-            log.info("findParam 参数" + map);
-            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
-            if (replyMsg != null) {
-                result = JsonUtil.from(replyMsg, MesResult.class);
-                if ("Y".equals(result.getFlag())) {
-                    value = (String) result.getContent();
-                }
-                if ("ERROR: NOT FOUND".equals(value)) {
-                    log.error("EQP_ID:" + eqpId + "印刷机数据获取失败: 批量：" + lotNo + "  品番：" + productionNo);
-                }
-            } else {
-                return MesResult.error(eqpId + " not reply");
-            }
-        } else {
+        }else {
             value = "TEMPTEST";
         }
         result.setContent(value);
