@@ -219,6 +219,28 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
+        }else if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+            if (fabEquipment == null) {
+                return MesResult.error(eqpId + "设备不存在");
+            }
+            String bc = fabEquipment.getBcCode();
+            map.put("PARAM", param);
+            map.put("LOTNO", lotNo);
+            map.put("PRODUCTIONNO", productionNo);
+            log.info("findParam 参数" + map);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }
+                if ("ERROR: NOT FOUND".equals(value)) {
+                    log.error("EQP_ID:" + eqpId + "印刷机数据获取失败: 批量：" + lotNo + "  品番：" + productionNo);
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
         } else {
             value = "TEMPTEST";
         }
