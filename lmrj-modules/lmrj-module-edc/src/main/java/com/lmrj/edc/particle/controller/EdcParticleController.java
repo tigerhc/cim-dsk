@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("ovn/ovnparticle")
+@RequestMapping("edc/edcparticle")
 @ViewPrefix("modules/EdcParticle")
 @RequiresPathPermission("EdcParticle")
 @LogAspectj(title = "edc_particle")
