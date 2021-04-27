@@ -135,7 +135,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             log.error("设备名称错误！   "+eqpId);
         }
         map.put("EQP_ID", eqpId);
-        map.put("METHOD", "FIND_PARAM");
+        map.put("METHOD", "FIND_PRINTER_PARAM");
         if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
             /*FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             if (fabEquipment == null) {
@@ -155,7 +155,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     bc = "APJ-BC1";
                 }
             }*/
-            log.info("findParam 参数" + map);
+            log.info("FIND_PRINTER_PARAM 参数" + map);
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
             if (replyMsg != null) {
                 result = JsonUtil.from(replyMsg, MesResult.class);
@@ -174,6 +174,108 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         result.setContent(value);
         return result;
     }
+
+    public MesResult findApjRecipeCode(String eqpId, String opId){
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_APJ_RECIPECODE");
+        String bc = "";
+        //bcCode暂时写死
+        if(eqpId.contains("DBC")){
+            bc = "APJ-BC2";
+        }else if(eqpId.contains("YJH")){
+            bc = "APJ-BC3";
+        }else {
+            bc = "APJ-BC1";
+        }
+        log.info("findApjRecipeCode 参数" + map);
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+        if (replyMsg != null) {
+            result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.getFlag())) {
+                value = (String) result.getContent();
+            }
+            if ("ERROR: NOT FOUND".equals(value)) {
+                log.error("EQP_ID:" + eqpId + "配方名称数据获取失败");
+            }
+        } else {
+            return MesResult.error(eqpId + " connection timed out");
+        }
+        String smtReplyMsg = null;
+        if("APJ-BC1".equals(bc)){
+            Map<String, String> map1 = Maps.newHashMap();
+            String smtValue = "";
+            if(eqpId.equals("IGBT")){
+                eqpId = "IGBTSMT";
+            }else if(eqpId.equals("FRD")) {
+                eqpId = "FRDSMT";
+            }
+            map1.put("EQP_ID", eqpId);
+            map1.put("METHOD", "FIND_APJ_RECIPECODE");
+            smtReplyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "APJ-BC4", JsonUtil.toJsonString(map1));
+            if (smtReplyMsg != null) {
+                result = JsonUtil.from(smtReplyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    smtValue = (String) result.getContent();
+                }
+                if ("ERROR: NOT FOUND".equals(smtValue)) {
+                    log.error("EQP_ID:" + eqpId + "配方名称数据获取失败");
+                }
+            } else {
+                return MesResult.error(eqpId + " connection timed out");
+            }
+            value = smtValue + "," + value;
+        }
+        result.setContent(value);
+        return result;
+    }
+
+    public MesResult findReflowParam(String eqpId, String opId){
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        if(eqpId.equals("TOP")){
+            eqpId = "APJ-DBCT-REFLOW1";
+        }else if(eqpId.equals("BOOTTOM")){
+            eqpId = "APJ-DBCB-REFLOW1";
+        }else if(eqpId.equals("FRD")){
+            eqpId = "APJ-FRD-REFLOW1";
+        }else if(eqpId.equals("IGBT")){
+            eqpId = "APJ-IGBT-REFLOW1";
+        }else {
+            log.error("设备名称错误！   "+eqpId);
+        }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_REFLOW_PARAM");
+        if(eqpId.contains("REFLOW") && eqpId.contains("APJ")){
+            String bc = "";
+            if(eqpId.contains("DBC")){
+                bc = "APJ-BC2";
+            }else {
+                bc = "APJ-BC1";
+            }
+            log.info("FIND_REFLOW_PARAM 参数" + map);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }
+                if ("ERROR: NOT FOUND".equals(value)) {
+                    log.error("EQP_ID:" + eqpId + "回流焊数据获取失败");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
+        } else {
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        result.setContent(value);
+        return result;
+    }
+
     public MesResult findTemp(String eqpId, String opId) {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null) {

@@ -170,7 +170,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                             @RequestParam(required = false) String productionName,
                             @RequestParam(required = false) String productionNo,
                             @RequestParam(required = false) String index,
-
                             HttpServletRequest request, HttpServletResponse response) {
         log.info("findTemp :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo + "\",\"opId\":\"" + opId + "\",\"param\":\"" + param + "\",\"productionName\":\"" + productionName + "\",\"productionNo\":\"" + productionNo + "\",\"index\":\"" + index + "\"}";//日志记录参数
@@ -197,8 +196,11 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         log.info("findPrinterParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId, "Param7", "MesLotTrackController.findParam", eventDesc, "", "wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param7", "MesLotTrackController.findPrinterParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
             MesResult result = mesLotTrackService.findPrinterParam(eqpId, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result7", "MesLotTrackController.findPrinterParam", jo.toString(), eqpId, "wangdong");//日志记录
@@ -208,7 +210,57 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error6", "MesLotTrackController.findPrinterParam", "有异常", eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error7", "MesLotTrackController.findPrinterParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findApjRecipeCode/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findApjRecipeCode(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                   HttpServletRequest request, HttpServletResponse response) {
+        log.info("findApjRecipeCode :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param8", "MesLotTrackController.findApjRecipeCode", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findApjRecipeCode(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result8", "MesLotTrackController.findApjRecipeCode", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error8", "MesLotTrackController.findApjRecipeCode", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findReflowParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findReflowParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                    HttpServletRequest request, HttpServletResponse response) {
+        log.info("findReflowParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param9", "MesLotTrackController.findReflowParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findReflowParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result9", "MesLotTrackController.findReflowParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error9", "MesLotTrackController.findReflowParam", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();
         }
     }
