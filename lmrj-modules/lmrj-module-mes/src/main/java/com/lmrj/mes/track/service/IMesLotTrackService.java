@@ -36,6 +36,8 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     MesResult findApjRecipeCode(String eqpId, String opId);
 
+    MesResult findSinterParam(String eqpId, String opId);
+
     MesLotTrack findLotNo(String startTime, String eqpId);
 
     MesLotTrack findNextStartTime(String endTime, String eqpId);

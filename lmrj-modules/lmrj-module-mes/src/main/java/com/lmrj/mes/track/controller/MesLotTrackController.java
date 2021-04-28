@@ -265,6 +265,31 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
+    @RequestMapping(value = "/findSinterParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findSinterParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                  HttpServletRequest request, HttpServletResponse response) {
+        log.info("findSinterParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param10", "MesLotTrackController.findSinterParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findSinterParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result10", "MesLotTrackController.findSinterParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error10", "MesLotTrackController.findSinterParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {

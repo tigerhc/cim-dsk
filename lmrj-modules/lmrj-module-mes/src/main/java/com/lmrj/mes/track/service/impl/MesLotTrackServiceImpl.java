@@ -187,8 +187,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             bc = "APJ-BC2";
         }else if(eqpId.contains("YJH")){
             bc = "APJ-BC3";
-        }else {
+        }else if(eqpId.equals("IGBT") || eqpId.equals("FRD")){
             bc = "APJ-BC1";
+        }else if(eqpId.equals("RY1")){
+            bc = "APJ-BC3";
+        }else {
+            bc = "APJ-BC4";
         }
         log.info("findApjRecipeCode 参数" + map);
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
@@ -238,7 +242,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         if(eqpId.equals("TOP")){
             eqpId = "APJ-DBCT-REFLOW1";
-        }else if(eqpId.equals("BOOTTOM")){
+        }else if(eqpId.equals("BOTTOM")){
             eqpId = "APJ-DBCB-REFLOW1";
         }else if(eqpId.equals("FRD")){
             eqpId = "APJ-FRD-REFLOW1";
@@ -265,6 +269,44 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
                 if ("ERROR: NOT FOUND".equals(value)) {
                     log.error("EQP_ID:" + eqpId + "回流焊数据获取失败");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
+        } else {
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        result.setContent(value);
+        return result;
+    }
+
+    public MesResult findSinterParam(String eqpId, String opId){
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        if(eqpId.equals("RY1")){
+            eqpId = "APJ-HB1-SINTERING1";
+        }else {
+            log.error("设备名称错误！   "+eqpId);
+        }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_SINTER_PARAM");
+        if(eqpId.contains("HB")){
+            String bc = "";
+            if(eqpId.contains("HB1")){
+                bc = "APJ-BC3";
+            }else {
+                bc = "APJ-BC4";
+            }
+            log.info("FIND_SINTER_PARAM 参数" + map);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }
+                if ("ERROR: NOT FOUND".equals(value)) {
+                    log.error("EQP_ID:" + eqpId + "热压数据获取失败");
                 }
             } else {
                 return MesResult.error(eqpId + " not reply");
