@@ -199,8 +199,26 @@ public class EdcSecsLogHandler {
             edcAmsRecord.setLotNo(lotTrack.getLotNo());
             edcAmsRecord.setLotYield(lotTrack.getLotYieldEqp());
         }
-        edcAmsRecordService.insert(edcAmsRecord);
-        fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
+        edcAmsRecordService.insert(edcAmsRecord);EdcEqpState edcEqpState = new EdcEqpState();
+        edcEqpState.setEqpId(edcAmsRecord.getEqpId());
+        edcEqpState.setStartTime(edcAmsRecord.getStartDate());
+        if("0".equals(edcAmsRecord.getAlarmSwitch())){
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),oldEdcEqpState.getState(), "", "");
+            edcEqpState.setState(oldEdcEqpState.getState());
+        }else {
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
+            edcEqpState.setState("ALARM");
+        }
+        if(edcEqpState.getState()!=null){
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
+            oldEdcEqpState.setEndTime(edcAmsRecord.getStartDate());
+            Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+            oldEdcEqpState.setStateTimes(state);
+            iEdcEqpStateService.updateById(oldEdcEqpState);
+            iEdcEqpStateService.insert(edcEqpState);
+        }
+
     }
 
     @RabbitHandler
@@ -400,6 +418,8 @@ public class EdcSecsLogHandler {
                     }
                 }
             }
+
+
         }
         EdcDskLogOperation edcDskLogOperation = new EdcDskLogOperation();
         FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
@@ -445,7 +465,7 @@ public class EdcSecsLogHandler {
                 edcEqpState.setState("RUN");
             }
         }
-        if("21049".equals(evtRecord.getEventId()) || "20".equals(evtRecord.getEventId())){
+        if(ArrayUtil.contains(ceids, ceid)){
             edcEqpState.setState("RUN");
         }
         if(evtRecord.getEventParams()!= null && evtRecord.getEventId()!=null){
