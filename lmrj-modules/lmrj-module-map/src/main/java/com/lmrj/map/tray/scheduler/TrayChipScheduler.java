@@ -20,7 +20,7 @@ public class TrayChipScheduler {
     @Autowired
     private IMapTrayChipLogService mpTrayChipLogService;
 
-//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipData(){
         log.info("---------------------------------------------------执行执行TrayChipData开始");
         MapTrayChipLog traceLog = new MapTrayChipLog();
@@ -35,7 +35,7 @@ public class TrayChipScheduler {
         }
     }
 
-//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipErrData(){
         log.info("---------------------------------------------------执行执行TrayChipErrData开始");
         MapTrayChipLog traceLog = new MapTrayChipLog();
