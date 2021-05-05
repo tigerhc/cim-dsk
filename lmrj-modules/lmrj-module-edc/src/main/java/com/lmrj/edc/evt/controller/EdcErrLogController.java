@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("edc/edcerrlog")
 @ViewPrefix("edc/edcerrlog")
 @RequiresPathPermission("edc:edcerrlog")
-@LogAspectj(title = "edc_err_log")
+@LogAspectj(title = "fab_error_log")
 public class EdcErrLogController extends BaseCRUDController<EdcErrLogBean> {
     @Autowired
     private IEdcErrLogService errLogService;
 
     @RabbitHandler
-    @RabbitListener(queues = {"C2S.Q.ERR_LOG"})
+//    @RabbitListener(queues = {"C2S.Q.ERR_LOG"})
     public void saveErrMsg(String dataJson){
         try {
             EdcErrLogBean errMsg = JsonUtil.from(dataJson, EdcErrLogBean.class);
@@ -33,6 +33,4 @@ public class EdcErrLogController extends BaseCRUDController<EdcErrLogBean> {
             logger.error("服务端保存edcerr数据出错", e);
         }
     }
-
-
 }

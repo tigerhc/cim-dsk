@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.util.Date;
 
-@TableName("edc_err_log")
+@TableName("fab_error_log")
 @Data
 public class EdcErrLogBean extends BaseDataEntity {
     private String id;
