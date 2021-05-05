@@ -203,9 +203,8 @@ public class EdcSecsLogHandler {
         edcEqpState.setEqpId(edcAmsRecord.getEqpId());
         edcEqpState.setStartTime(edcAmsRecord.getStartDate());
         if("0".equals(edcAmsRecord.getAlarmSwitch())){
-            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
-            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),oldEdcEqpState.getState(), "", "");
-            edcEqpState.setState(oldEdcEqpState.getState());
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"IDLE", "", "");
+            edcEqpState.setState("IDLE");
         }else {
             fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
             edcEqpState.setState("ALARM");
@@ -466,12 +465,8 @@ public class EdcSecsLogHandler {
             }
         }
         if(ArrayUtil.contains(ceids, ceid)){
+            log.info("TRM设备因生产数据将状态改为运行");
             edcEqpState.setState("RUN");
-        }
-        if(evtRecord.getEventParams()!= null && evtRecord.getEventId()!=null){
-            if(evtRecord.getEventId().startsWith("23")){
-                edcEqpState.setState("IDLE");
-            }
         }
         equipmentStatus.setEqpStatus(edcEqpState.getState());
         fabEquipmentStatusService.updateById(equipmentStatus);
@@ -481,6 +476,7 @@ public class EdcSecsLogHandler {
             Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
             oldEdcEqpState.setStateTimes(state);
             iEdcEqpStateService.updateById(oldEdcEqpState);
+            edcEqpState.setCreateBy("gxj");
             iEdcEqpStateService.insert(edcEqpState);
         }
     }

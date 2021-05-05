@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -127,6 +124,48 @@ public class EqpStateTask {
             rptEqpStateDayService.insertBatch(rptEqpStateDayList,50);
         }
 
+    }
+
+    @Scheduled(cron = "0 0 11 * * ?")
+    public void dataFilling(){
+        List<String> epqIdList = new ArrayList<>();
+        epqIdList = iFabEquipmentService.findEqpIdList();
+        Date startTime = new Date();
+        Date endTime = new Date();
+        List<RptEqpStateDay> rptEqpStateDayList = new ArrayList<>();
+        for (int i = 150; i >0 ; i--) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND,0);
+            cal.add(Calendar.DAY_OF_MONTH, -i);
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            endTime = cal.getTime();
+            String periodDate = DateUtil.formatDate(endTime, "yyyyMMdd");
+            for (String eqpId : epqIdList) {
+                RptEqpStateDay data = null;
+                data = rptEqpStateDayService.findData(eqpId,periodDate);
+                if(data==null){
+                    RptEqpStateDay newData = new RptEqpStateDay();
+                    newData.setEqpId(eqpId);
+                    newData.setRunTime(24 * 60 * 60 * 1000 * 1.0);
+                    newData.setOtherTime(0.0);
+                    newData.setDownTime(0.0);
+                    newData.setIdleTime(0.0);
+                    newData.setPeriodDate(periodDate);
+                    newData.setCreateBy("GXJTEST");
+                    rptEqpStateDayList.add(newData);
+                }
+            }
+        }
+        try {
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList,1000);
+        } catch (Exception e) {
+            log.info("数据插入失败",e);
+            e.printStackTrace();
+        }
     }
 
 }

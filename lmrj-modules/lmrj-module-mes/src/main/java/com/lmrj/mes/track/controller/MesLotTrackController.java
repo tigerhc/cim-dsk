@@ -171,7 +171,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                             @RequestParam(required = false) String productionNo,
                             @RequestParam(required = false) String index,
                             HttpServletRequest request, HttpServletResponse response) {
-        log.info("findTemp :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
+        log.info("findParam :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo + "\",\"opId\":\"" + opId + "\",\"param\":\"" + param + "\",\"productionName\":\"" + productionName + "\",\"productionNo\":\"" + productionNo + "\",\"index\":\"" + index + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param6", "MesLotTrackController.findParam", eventDesc, lotNo, "wangdong");//日志记录参数
