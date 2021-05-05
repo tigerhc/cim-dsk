@@ -297,7 +297,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         try {
             fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskTrackin2", eventDesc, trackinfo, "wangdong");//日志记录参数
             if (trackinfo.length() < 30) {
-                return "trackinfo too short";
+                return "trackinfo too short（过账信息不足！）";
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -329,7 +329,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
-                return "trackinfo too short";
+                return "trackinfo too short（过账信息不足！）";
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -356,8 +356,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             calendar.setTime(nowLotTrack.getStartTime());
             calendar.add(Calendar.MINUTE, +5);
             if (nowTime.before(calendar.getTime())) {
-                log.error("操做人员误操作，提前结束批次" + lotNo);
-                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator";
+                log.error("操做人员误操作，不允许提前结束批次" + lotNo);
+                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator（不允许提前结束批次，最短时间五分钟）";
             }
 
 

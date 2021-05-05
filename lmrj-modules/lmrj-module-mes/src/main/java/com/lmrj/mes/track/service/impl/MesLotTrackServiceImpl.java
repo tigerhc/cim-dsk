@@ -692,7 +692,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 mesResult1.setFlag("Y");
                 return mesResult1;
             } else {
-                return MesResult.error(eqpId + " : " + lotNo + "trackin has been completed");
+                return MesResult.error(eqpId + " : " + lotNo + "trackin has been completed（批次已入账，无法重复入账！）");
             }
             //mesLotTrack = mesLotTrackList.get(0);
         } else {
@@ -751,12 +751,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             mesLotTrackList= this.selectList(new EntityWrapper().eq("EQP_ID", eqpid).eq("lot_no", lotNo).eq("production_no", productionNo));
         }*/
         if (mesLotTrackList.size() == 0) {
-            return MesResult.error("please track in first");
+            return MesResult.error("lotNo:"+lotNo+ "   please track in first（批次未入账）");
         }
         MesLotTrack mesLotTrack = mesLotTrackList.get(0);
         if (mesLotTrack.getEndTime() != null) {
             if (!mesLotTrack.getEqpId().contains("AOI")) {
-                return MesResult.error(eqpId + " : " + lotNo + "trackout has been completed");
+                return MesResult.error(eqpId + " : " + lotNo + "trackout has been completed(批次已出帐)");
             }
         }
         MesLotTrack postTrack = baseMapper.findLastTrack(eqpId, lotNo, mesLotTrack.getStartTime());
