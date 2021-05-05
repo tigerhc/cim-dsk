@@ -39,9 +39,9 @@ public interface RptEqpStateDayMapper extends BaseMapper<RptEqpStateDay> {
     @Select("select * from rpt_eqp_state_day where period_date = #{periodDate} limit 1")
     RptEqpStateDay findData(@Param("periodDate") String periodDate);
 
-    @Select("select * from rpt_eqp_state_day where eqp_id = #{eqpId} and period_date = #{periodDate} limit 1")
-    RptEqpStateDay findData(@Param("eqpId") String eqpId,@Param("periodDate") String periodDate);
-
     List<Map> findSIMState(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
+
+    @Select("select count(id) from rpt_eqp_state_day where period_date = #{periodDate} and eqp_id = #{eqpId}")
+    int findDataByEqpId(@Param("periodDate") String periodDate,@Param("eqpId") String eqpId);
 }

@@ -39,6 +39,10 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     public IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Override
+    public int deleteByDate(String periodDate,String lineNo){
+        return baseMapper.deleteByDate(periodDate,lineNo);
+    }
+    @Override
     public List<RptLotYieldDay> selectDayYieldList(Date startTime, Date endTime){
         return baseMapper.selectDayYieldList(startTime,endTime);
     }
@@ -69,13 +73,13 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
         }else{
             eqpIdlist = baseMapper.findEqpId(lineNo, stationCode);
         }
+        SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
         for (String eqpid : eqpIdlist) {
             //查询一天内该设备的产量，并新建产量数据
             RptLotYieldDay rptLotYieldDay = baseMapper.findDayYield(eqpid,startTime,endTime);
             //当天该设备无产量则新建无产量数据
             if (Objects.isNull(rptLotYieldDay)) {
                 RptLotYieldDay lotYieldDay = new RptLotYieldDay();
-                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
                 lotYieldDay.setPeriodDate(sim.format(startTime));
                 lotYieldDay.setLotYield(0);
                 lotYieldDay.setLotYieldEqp(0);
@@ -87,7 +91,6 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
                 lotYieldDay.setEqpId(eqpid);
                 this.insert(lotYieldDay);
             }else{
-                SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
                 rptLotYieldDay.setPeriodDate(sim.format(startTime));
                 rptLotYieldDay.setStationCode(stationCode);
                 rptLotYieldDay.setLineNo(lineNo);

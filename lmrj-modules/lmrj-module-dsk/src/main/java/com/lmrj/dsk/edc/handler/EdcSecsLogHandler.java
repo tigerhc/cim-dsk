@@ -230,7 +230,6 @@ public class EdcSecsLogHandler {
             String modelId = "";
             if (fabEquipment != null) {
                 modelId = fabEquipment.getModelId();
-
                 EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
                 if (edcEvtDefine != null) {
                     edcEvtRecord.setEventDesc(edcEvtDefine.getEventName());
@@ -258,6 +257,7 @@ public class EdcSecsLogHandler {
         String ceid = evtRecord.getEventId();
         MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
         if (ArrayUtil.contains(ceids, ceid)) {
+            List<EdcDskLogProduction> proDataList = new ArrayList<>();
             fabEquipmentStatusService.increaseYield(eqpId, 24);
             FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
             log.info("TRM设备产量+24  eqpId："+eqpId+"DayYield"+equipmentStatus.getDayYield()+"LotYield"+equipmentStatus.getLotYield()+"LotYieldEqp"+equipmentStatus.getLotYieldEqp());
@@ -309,8 +309,50 @@ public class EdcSecsLogHandler {
             Double duration = (double)(endTime.getTime()-startTime.getTime())/100;
             productionLog.setDuration(duration);
             log.info("持续时间"+productionLog.getDuration());
+            //判断本条数据与上条数据之间是否有数据缺失，并进行补充
+            if(pro != null){
+                String lastParam = pro.getParamValue();
+                String lastParams[] = lastParam.split(",");
+                int lastCount = Integer.parseInt(lastParams[0]) + Integer.parseInt(lastParams[1]) + Integer.parseInt(lastParams[2]);
+                String params[] = eventParams.split(",");
+                int count = Integer.parseInt(params[0]) + Integer.parseInt(params[1]) + Integer.parseInt(params[2]);
+                if(count-lastCount>1){
+                    int dataNo = count-lastCount;
+                    Date lastTime = pro.getEndTime();
+                    Date newTime = productionLog.getStartTime();
+                    Long oneduration = (newTime.getTime()-lastTime.getTime())/dataNo;
+                    for (int i = 1; i < dataNo; i++) {
+                        EdcDskLogProduction productionLog1 = new EdcDskLogProduction();
+                        productionLog1.setEqpId(productionLog.getEqpId());
+                        productionLog1.setProductionNo(productionLog.getProductionNo());
+                        productionLog1.setLotNo(productionLog.getLotNo());
+                        productionLog1.setOrderNo(productionLog.getOrderNo());
+                        productionLog1.setLotYield(productionLog.getLotYield()+24*i);
+                        productionLog1.setParamValue(productionLog.getParamValue());
+                        productionLog1.setJudgeResult(productionLog.getJudgeResult());
+                        productionLog1.setDayYield(productionLog.getDayYield()+24*i);
+                        productionLog1.setEqpModelName(productionLog.getEqpModelName());
+                        productionLog1.setEqpModelId(productionLog.getEqpModelId());
+                        productionLog1.setEqpNo(productionLog.getEqpNo());
+                        productionLog1.setDuration(0D);
+                        productionLog1.setRecipeCode(productionLog.getRecipeCode());
+                        productionLog1.setMaterialNo2("GXJTEST");
+                        Date start= new Date(lastTime.getTime()+i*oneduration);
+                        productionLog1.setStartTime(start);
+                        productionLog1.setEndTime(newTime);
+                        proDataList.add(productionLog1);
+                    }
+                }
+            }
+            try {
+                if(proDataList.size()>0){
+                    edcDskLogProductionService.insertBatch(proDataList);
+                }
+            } catch (Exception e) {
+                log.error("SIM-TRM补充数据插入失败!   数据条数："+proDataList.size(),e);
+                e.printStackTrace();
+            }
             edcDskLogProductionService.insert(productionLog);
-
             //生成TRM温度数据
             try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();

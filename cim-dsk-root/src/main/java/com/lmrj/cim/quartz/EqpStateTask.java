@@ -1,19 +1,24 @@
 package com.lmrj.cim.quartz;
 
 import com.google.common.collect.Lists;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.entity.RptEqpStateDay;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.edc.state.service.IRptEqpStateDayService;
 import com.lmrj.edc.state.service.impl.EdcEqpStateServiceImpl;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -29,6 +34,8 @@ public class EqpStateTask {
     IFabEquipmentService iFabEquipmentService;
     @Autowired
     private IRptEqpStateDayService rptEqpStateDayService;
+    @Autowired
+    IMesLotTrackService iMesLotTrackService;
     /**
      * 计算当天的设备OEE数据
      * 每隔10分钟一次
@@ -79,11 +86,19 @@ public class EqpStateTask {
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
         //List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
         List<String> eqpIdList= new ArrayList<>();
+        /*eqpIdList.add("SIM-WB-1A");
+        eqpIdList.add("SIM-WB-1B");
+        eqpIdList.add("SIM-WB-2A");
+        eqpIdList.add("SIM-WB-2B");
         eqpIdList.add("SIM-WB-3A");
+        eqpIdList.add("SIM-WB-3B");
+        eqpIdList.add("SIM-WB-4A");
         eqpIdList.add("SIM-WB-4B");
         eqpIdList.add("SIM-WB-5A");
         eqpIdList.add("SIM-WB-5B");
         eqpIdList.add("SIM-WB-6A");
+        eqpIdList.add("SIM-WB-6B");*/
+        eqpIdList.add("SIM-DM2");
         for (String eqpId : eqpIdList) {
             edcEqpStateServiceImpl.syncOldEqpSate(startTime, endTime,eqpId);
         }
@@ -111,9 +126,15 @@ public class EqpStateTask {
                 RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
                 rptEqpStateDay.setEqpId(eqpId);
                 rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));
-                Double run = 24 * 60 * 60 * 1000 * 0.001;
-                rptEqpStateDay.setRunTime(run);
-                rptEqpStateDay.setDownTime(0.0);
+                if(iMesLotTrackService.findCorrectData(startTime,endTime).size()>0){
+                    Double run = 24 * 60 * 60 * 1000 * 0.001;
+                    rptEqpStateDay.setRunTime(run);
+                    rptEqpStateDay.setDownTime(0.0);
+                }else {
+                    Double down = 24 * 60 * 60 * 1000 * 0.001;
+                    rptEqpStateDay.setRunTime(0.0);
+                    rptEqpStateDay.setDownTime(down);
+                }
                 rptEqpStateDay.setIdleTime(0.0);
                 rptEqpStateDay.setPmTime(0.0);
                 rptEqpStateDay.setOtherTime(0.0);
@@ -126,7 +147,7 @@ public class EqpStateTask {
 
     }
 
-    @Scheduled(cron = "0 0 11 * * ?")
+    //@Scheduled(cron = "0 0 11 * * ?")
     public void dataFilling(){
         List<String> epqIdList = new ArrayList<>();
         epqIdList = iFabEquipmentService.findEqpIdList();
@@ -145,14 +166,21 @@ public class EqpStateTask {
             endTime = cal.getTime();
             String periodDate = DateUtil.formatDate(endTime, "yyyyMMdd");
             for (String eqpId : epqIdList) {
-                RptEqpStateDay data = null;
-                data = rptEqpStateDayService.findData(eqpId,periodDate);
-                if(data==null){
+                int dataNo = 0;
+                dataNo = rptEqpStateDayService.selectCount(new EntityWrapper<RptEqpStateDay>().eq("eqp_id",eqpId).eq("period_date",periodDate));
+                if(dataNo==0){
                     RptEqpStateDay newData = new RptEqpStateDay();
                     newData.setEqpId(eqpId);
-                    newData.setRunTime(24 * 60 * 60 * 1000 * 1.0);
+                    if(iMesLotTrackService.findCorrectData(startTime,endTime).size()>0){
+                        Double run = 24 * 60 * 60 * 1000 * 0.001;
+                        newData.setRunTime(run);
+                        newData.setDownTime(0.0);
+                    }else {
+                        Double down = 24 * 60 * 60 * 1000 * 0.001;
+                        newData.setRunTime(0.0);
+                        newData.setDownTime(down);
+                    }
                     newData.setOtherTime(0.0);
-                    newData.setDownTime(0.0);
                     newData.setIdleTime(0.0);
                     newData.setPeriodDate(periodDate);
                     newData.setCreateBy("GXJTEST");
