@@ -23,6 +23,7 @@ import com.lmrj.ms.record.service.IMsMeasureRecordService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
+import org.apache.commons.collections.MapUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -257,6 +258,73 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         Response res = Response.ok();
         res.putList("weightList", msMeasureRecordService.findWeight(param));
         return res;
+    }
+
+    @RequestMapping(value = "/weightChartExport", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response weightChartExport(@RequestParam String productionNo,@RequestParam String lotNo,@RequestParam String detailOption,
+                                @RequestParam String startTime,@RequestParam String endTime){
+        if(StringUtil.isEmpty(startTime)&&!StringUtil.isEmpty(endTime)){
+            return Response.error("请选择开始时间");
+        }
+        if(!StringUtil.isEmpty(startTime)&&StringUtil.isEmpty(endTime)){
+            return Response.error("请选择结束时间");
+        }
+        try {
+            String title = "量测重量";
+            Map<String, Object> param = new HashMap<>();
+            param.put("productionNo",productionNo);
+            param.put("lotNo", lotNo);
+            param.put("detailOption", detailOption);
+            if(!StringUtil.isEmpty(startTime)){
+                param.put("startTime",startTime);
+                param.put("endTime",endTime);
+            }
+            Response res = Response.ok();
+            List<ExcelExportEntity> keyList= new LinkedList<>();
+            List<Map<String,Object>> dataList = new LinkedList<>();
+            List<Map> weight = msMeasureRecordService.findWeight(param);
+            ExcelExportEntity key = new ExcelExportEntity("批号","1");
+            keyList.add(key);
+            ExcelExportEntity key2 = new ExcelExportEntity("平均重量","2");
+            keyList.add(key2);
+            ExcelExportEntity key3 = new ExcelExportEntity("最大重量","3");
+            keyList.add(key3);
+            ExcelExportEntity key4 = new ExcelExportEntity("最小重量","4");
+            keyList.add(key4);
+            ExcelExportEntity key5 = new ExcelExportEntity("设定管理上限","5");
+            keyList.add(key5);
+            ExcelExportEntity key6 = new ExcelExportEntity("设定管理下限","6");
+            keyList.add(key6);
+
+            weight.forEach(map -> {
+                Map<String, Object> data = new HashMap<>() ;
+                data.put("1",map.get("lotNo"));
+                data.put("2",map.get("avgWeight"));
+                data.put("3",map.get("limitMax"));
+                data.put("4",map.get("limitMin"));
+                data.put("5",map.get("limit90"));
+                data.put("6",map.get("limit11"));
+                dataList.add(data);
+            });
+
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测重量","量测详细信息"),keyList,dataList);
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+
+
     }
 
     @RequestMapping(value = "/getAllProductionNo", method = { RequestMethod.GET, RequestMethod.POST })
