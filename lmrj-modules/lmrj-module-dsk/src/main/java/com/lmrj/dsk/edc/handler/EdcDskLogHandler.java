@@ -479,7 +479,7 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
                 String alarmCode = edcDskLogOperation.getAlarmCode();
                 edcAmsRecord.setAlarmCode(alarmCode);
-                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventDetail());
+                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventName());
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
@@ -489,29 +489,18 @@ public class EdcDskLogHandler {
                     edcAmsRecord.setLineNo(fabEquipment.getLineNo());
                     edcAmsRecord.setStationCode(fabEquipment.getStationCode());
                 }
-                if ("34014801".equals(alarmCode) || "34015212".equals(alarmCode)) {
-                    List<Map<String, Object>> users = new ArrayList<>();
-                    users = fabEquipmentService.findEmailALL("WBAlarm");
-                    Map<String, Object> msgMap = new HashMap<>();
-                    if ("34014801".equals(alarmCode)) {
-                        msgMap.put("ALARM_CODE", "框架推送错误");
-                    } else {
-                        msgMap.put("ALARM_CODE", "联接机搬运过载错误");
-                    }
-                    msgMap.put("EQP_ID", eqpId);
-                    List<String> param = new ArrayList<>();
-                    if (!users.isEmpty()) {
-                        for (Map<String, Object> map : users) {
-                            param.add((String) map.get("email"));
-                        }
-                    }
-                    String[] params = new String[param.size()];
-                    param.toArray(params);
+                if ("02070651".equals(alarmCode) || "020707EC".equals(alarmCode)) {
+                    com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+                    jsonObject.put("EQP_ID", eqpId + ":报警"+alarmCode+"   "+edcDskLogOperation.getEventName());
+                    jsonObject.put("ALARM_CODE", "E-0003");
+                    jsonObject.put("CODE","WB-Recipe");
+                    String jsonString = jsonObject.toJSONString();
+                    String queueName = "C2S.Q.MSG.MAIL";
+                    log.info(eqpId+"设备---发生重要错误，发送邮件提醒"+alarmCode+"   "+edcDskLogOperation.getEventName() );
                     try {
-                        emailSendService.blockSend(params, "RTP_ALARM", msgMap);
+                        rabbitTemplate.convertAndSend(queueName, jsonString);
                     } catch (Exception e) {
-                        log.error("WB Alarm 邮件发送出错" + e);
-                        e.printStackTrace();
+                        log.error("邮件消息发送错误 Exception:", e);
                     }
                 }
                 edcAmsRecordList.add(edcAmsRecord);

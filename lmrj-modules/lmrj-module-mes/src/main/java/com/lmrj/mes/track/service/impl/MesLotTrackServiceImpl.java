@@ -286,6 +286,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         if(eqpId.equals("RY1")){
             eqpId = "APJ-HB1-SINTERING1";
+        }else if(eqpId.equals("RY2")){
+            eqpId = "APJ-HB2-SINTERING1";
         }else {
             log.error("设备名称错误！   "+eqpId);
         }
@@ -1208,4 +1210,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         return flag;
     }
+
+
 }
