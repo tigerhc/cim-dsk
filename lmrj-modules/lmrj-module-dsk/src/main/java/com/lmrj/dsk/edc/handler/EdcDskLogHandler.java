@@ -692,6 +692,7 @@ public class EdcDskLogHandler {
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
         List<Map<String, Object>> users = new ArrayList<>();
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if(!alarmCode.equals(":网络断开连接!")){
             users = fabEquipmentService.findEmailALL(alarmCode);
@@ -721,6 +722,7 @@ public class EdcDskLogHandler {
         String[] params = new String[param.size()];
         param.toArray(params);
         log.error("params:",params.toString());
+        msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
         emailSendService.blockSend(params, code, msgMap);
     }
 
