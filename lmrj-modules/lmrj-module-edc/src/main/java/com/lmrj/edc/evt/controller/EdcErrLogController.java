@@ -24,7 +24,7 @@ public class EdcErrLogController extends BaseCRUDController<EdcErrLogBean> {
     private IEdcErrLogService errLogService;
 
     @RabbitHandler
-//    @RabbitListener(queues = {"C2S.Q.ERR_LOG"})
+    @RabbitListener(queues = {"C2S.Q.ERR_LOG"})
     public void saveErrMsg(String dataJson){
         try {
             EdcErrLogBean errMsg = JsonUtil.from(dataJson, EdcErrLogBean.class);
