@@ -20,7 +20,7 @@ public class WaffleHandler {
     private IChipMoveService mapTrayChipMoveService;
 
     @RabbitHandler
-//    @RabbitListener(queues = {"C2S.Q.CHIP_MOVE"})
+    @RabbitListener(queues = {"C2S.Q.CHIP_MOVE"})
     public void parseWaffleMove(String dataJson) {
         try {
             List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
@@ -33,7 +33,7 @@ public class WaffleHandler {
     }
 
     @RabbitHandler
-//    @RabbitListener(queues = {"C2S.Q.CHIP_ID_DATA"})
+    @RabbitListener(queues = {"C2S.Q.CHIP_ID_DATA"})
 //   @RabbitListener(queues = {"QUEUE_JUNIT"})
     public void saveChipIdData(String dataJson) {
         try {
