@@ -119,32 +119,32 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findPrinterParam(String eqpId, String opId){
+    public MesResult findPrinterParam(String eqpId, String opId) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
-        if(eqpId.equals("TOP")){
+        if (eqpId.equals("TOP")) {
             eqpId = "APJ-DBCT-PRINTER1";
-        }else if(eqpId.equals("BOOTTOM")){
+        } else if (eqpId.equals("BOOTTOM")) {
             eqpId = "APJ-DBCB-PRINTER1";
-        }else if(eqpId.equals("FRD")){
+        } else if (eqpId.equals("FRD")) {
             eqpId = "APJ-FRD-PRINTER1";
-        }else if(eqpId.equals("IGBT")){
+        } else if (eqpId.equals("IGBT")) {
             eqpId = "APJ-IGBT-PRINTER1";
-        }else {
-            log.error("设备名称错误！   "+eqpId);
+        } else {
+            log.error("设备名称错误！   " + eqpId);
         }
         map.put("EQP_ID", eqpId);
         map.put("METHOD", "FIND_PRINTER_PARAM");
-        if(eqpId.contains("PRINTER") && eqpId.contains("APJ")){
+        if (eqpId.contains("PRINTER") && eqpId.contains("APJ")) {
             /*FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             if (fabEquipment == null) {
                 return MesResult.error(eqpId + "设备不存在");
             }*/
             String bc = "";
-            if(eqpId.contains("DBC")){
+            if (eqpId.contains("DBC")) {
                 bc = "APJ-BC2";
-            }else {
+            } else {
                 bc = "APJ-BC1";
             }
             /*bc = fabEquipment.getBcCode();
@@ -175,7 +175,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findApjRecipeCode(String eqpId, String opId){
+    public MesResult findApjRecipeCode(String eqpId, String opId) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
@@ -183,15 +183,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         map.put("METHOD", "FIND_APJ_RECIPECODE");
         String bc = "";
         //bcCode暂时写死
-        if(eqpId.contains("DBC")){
+        if (eqpId.contains("DBC")) {
             bc = "APJ-BC2";
-        }else if(eqpId.contains("YJH")){
+        } else if (eqpId.contains("YJH")) {
             bc = "APJ-BC3";
-        }else if(eqpId.equals("IGBT") || eqpId.equals("FRD")){
+        } else if (eqpId.equals("IGBT") || eqpId.equals("FRD")) {
             bc = "APJ-BC1";
-        }else if(eqpId.equals("RY1")){
+        } else if (eqpId.equals("RY1")) {
             bc = "APJ-BC3";
-        }else {
+        } else {
             bc = "APJ-BC4";
         }
         log.info("findApjRecipeCode 参数" + map);
@@ -208,12 +208,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             return MesResult.error(eqpId + " connection timed out");
         }
         String smtReplyMsg = null;
-        if("APJ-BC1".equals(bc)){
+        if ("APJ-BC1".equals(bc)) {
             Map<String, String> map1 = Maps.newHashMap();
             String smtValue = "";
-            if(eqpId.equals("IGBT")){
+            if (eqpId.equals("IGBT")) {
                 eqpId = "IGBTSMT";
-            }else if(eqpId.equals("FRD")) {
+            } else if (eqpId.equals("FRD")) {
                 eqpId = "FRDSMT";
             }
             map1.put("EQP_ID", eqpId);
@@ -236,28 +236,28 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findReflowParam(String eqpId, String opId){
+    public MesResult findReflowParam(String eqpId, String opId) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
-        if(eqpId.equals("TOP")){
+        if (eqpId.equals("TOP")) {
             eqpId = "APJ-DBCT-REFLOW1";
-        }else if(eqpId.equals("BOTTOM")){
+        } else if (eqpId.equals("BOTTOM")) {
             eqpId = "APJ-DBCB-REFLOW1";
-        }else if(eqpId.equals("FRD")){
+        } else if (eqpId.equals("FRD")) {
             eqpId = "APJ-FRD-REFLOW1";
-        }else if(eqpId.equals("IGBT")){
+        } else if (eqpId.equals("IGBT")) {
             eqpId = "APJ-IGBT-REFLOW1";
-        }else {
-            log.error("设备名称错误！   "+eqpId);
+        } else {
+            log.error("设备名称错误！   " + eqpId);
         }
         map.put("EQP_ID", eqpId);
         map.put("METHOD", "FIND_REFLOW_PARAM");
-        if(eqpId.contains("REFLOW") && eqpId.contains("APJ")){
+        if (eqpId.contains("REFLOW") && eqpId.contains("APJ")) {
             String bc = "";
-            if(eqpId.contains("DBC")){
+            if (eqpId.contains("DBC")) {
                 bc = "APJ-BC2";
-            }else {
+            } else {
                 bc = "APJ-BC1";
             }
             log.info("FIND_REFLOW_PARAM 参数" + map);
@@ -280,24 +280,24 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult findSinterParam(String eqpId, String opId){
+    public MesResult findSinterParam(String eqpId, String opId) {
         MesResult result = MesResult.ok("default");
         String value = "";
         Map<String, String> map = Maps.newHashMap();
-        if(eqpId.equals("RY1")){
+        if (eqpId.equals("RY1")) {
             eqpId = "APJ-HB1-SINTERING1";
-        }else if(eqpId.equals("RY2")){
+        } else if (eqpId.equals("RY2")) {
             eqpId = "APJ-HB2-SINTERING1";
-        }else {
-            log.error("设备名称错误！   "+eqpId);
+        } else {
+            log.error("设备名称错误！   " + eqpId);
         }
         map.put("EQP_ID", eqpId);
         map.put("METHOD", "FIND_SINTER_PARAM");
-        if(eqpId.contains("HB")){
+        if (eqpId.contains("HB")) {
             String bc = "";
-            if(eqpId.contains("HB1")){
+            if (eqpId.contains("HB1")) {
                 bc = "APJ-BC3";
-            }else {
+            } else {
                 bc = "APJ-BC4";
             }
             log.info("FIND_SINTER_PARAM 参数" + map);
@@ -315,6 +315,36 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             }
         } else {
             return MesResult.error(eqpId + "设备名称不正确");
+        }
+        result.setContent(value);
+        return result;
+    }
+
+    public MesResult findViParam(String eqpId, String opId) {
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        if (eqpId.equals("ZJ")) {
+            eqpId = "APJ-VI1";
+        } else {
+            log.error("设备名称错误！   " + eqpId);
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_VI_PARAM");
+        String bc = "APJ-BC4";
+        log.info("FIND_VI_PARAM 参数" + map);
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+        if (replyMsg != null) {
+            result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.getFlag())) {
+                value = (String) result.getContent();
+            }
+            if ("ERROR: NOT FOUND".equals(value)) {
+                log.error("EQP_ID:" + eqpId + "中间耐压数据获取失败");
+            }
+        } else {
+            return MesResult.error(eqpId + " not reply");
         }
         result.setContent(value);
         return result;
@@ -420,7 +450,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
-        }else {
+        } else {
             value = "TEMPTEST";
         }
         result.setContent(value);
@@ -753,7 +783,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             mesLotTrackList= this.selectList(new EntityWrapper().eq("EQP_ID", eqpid).eq("lot_no", lotNo).eq("production_no", productionNo));
         }*/
         if (mesLotTrackList.size() == 0) {
-            return MesResult.error("lotNo:"+lotNo+ "   please track in first（批次未入账）");
+            return MesResult.error("lotNo:" + lotNo + "   please track in first（批次未入账）");
         }
         MesLotTrack mesLotTrack = mesLotTrackList.get(0);
         if (mesLotTrack.getEndTime() != null) {
