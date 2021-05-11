@@ -60,6 +60,11 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setToX(MapUtils.getIntValue(item, "toRow"));
                     data.setToY(MapUtils.getIntValue(item, "toCol"));
                 }
+                if(MapUtils.getString(item, "eqpId").contains("-DM")){//DM 坐标
+                    data.setDmId(MapUtils.getString(item, "dmId"));
+                    data.setDmX(MapUtils.getInteger(item, "dmX"));
+                    data.setDmY(MapUtils.getInteger(item, "dmY"));
+                }
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
                 data.setChipId(chipId);
