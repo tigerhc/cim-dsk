@@ -183,7 +183,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         map.put("METHOD", "FIND_APJ_RECIPECODE");
         String bc = "";
         //bcCode暂时写死
-        if (eqpId.contains("DBC")) {
+        if (eqpId.equals("TOP") || eqpId.equals("BOTTOM")) {
             bc = "APJ-BC2";
         } else if (eqpId.contains("YJH")) {
             bc = "APJ-BC3";
