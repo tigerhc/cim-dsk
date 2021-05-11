@@ -325,7 +325,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         String value = "";
         Map<String, String> map = Maps.newHashMap();
         if (eqpId.equals("ZJ")) {
-            eqpId = "APJ-VI1";
+            eqpId = "APJ-HB1-VI1";
         } else {
             log.error("设备名称错误！   " + eqpId);
             return MesResult.error(eqpId + "设备名称不正确");

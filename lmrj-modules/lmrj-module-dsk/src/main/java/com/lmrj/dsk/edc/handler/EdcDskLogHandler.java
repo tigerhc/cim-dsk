@@ -125,7 +125,7 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.PRODUCTIONLOG.DATA"})
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
-        System.out.println("接收到的消息" + msg);
+        System.out.println("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
 
@@ -429,7 +429,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
-        log.info("recieved message:" + msg);
+        log.info("C2S.Q.OPERATIONLOG.DATA recieved message:" + msg);
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
@@ -455,7 +455,12 @@ public class EdcDskLogHandler {
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
             });
         }
-        edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
+        try {
+            edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
+        } catch (Exception e) {
+            log.error("Operation 数据插入失败！",e);
+            e.printStackTrace();
+        }
 
         //插入event或者alarm中
         //(エラーや装置の稼働変化)
@@ -605,7 +610,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
-        log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行");
+        log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行 "+msg);
         repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
@@ -617,7 +622,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.RECIPELOG.DATA"})
     public void parseRecipelog(String msg) {
-        log.info("recieved message 开始解析{}recipe文件 : {} " + msg);
+        log.info("C2S.Q.RECIPELOG.DATA  recieved message:" + msg);
         List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {
         });
         if (edcDskLogRecipeList == null || edcDskLogRecipeList.size() == 0) {
@@ -637,7 +642,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.TEMPLOG.DATA"})
     public void parseTempHlog(String msg) {
-        log.info("recieved message 开始解析{}温度曲线文件 : {} " + msg);
+        log.info("C2S.Q.TEMPLOG.DATA recieved message 开始解析{}温度曲线文件 : {} " + msg);
         OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
         String eqpId = ovnBatchLot.getEqpId();
         if (StringUtil.isNotBlank(eqpId)) {
@@ -684,7 +689,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
     public void sendAlarm(String msg) {
-        log.info("C2S.Q.MSG.MAIL数据解析："+msg);
+        log.info("C2S.Q.MSG.MAIL 数据解析："+msg);
         String eqpId = null;
         String alarmCode = null;
         String code = "RTP_ALARM";
