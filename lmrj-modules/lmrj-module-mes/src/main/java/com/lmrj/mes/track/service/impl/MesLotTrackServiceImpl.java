@@ -125,7 +125,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         if (eqpId.equals("TOP")) {
             eqpId = "APJ-DBCT-PRINTER1";
-        } else if (eqpId.equals("BOOTTOM")) {
+        } else if (eqpId.equals("BOTTOM")) {
             eqpId = "APJ-DBCB-PRINTER1";
         } else if (eqpId.equals("FRD")) {
             eqpId = "APJ-FRD-PRINTER1";
