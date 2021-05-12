@@ -87,9 +87,9 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
         try {
             for(Map<String, Object> item : dataList){
                 String eqpId = MapUtils.getString(item, "eqpId");
-                if(EqpNameConstant.EQP_CLEAN_US.equals(eqpId)||EqpNameConstant.EQP_JET.equals(eqpId)){
+                if(EqpNameConstant.EQP_CLEAN_US.equals(eqpId)||EqpNameConstant.EQP_JET.equals(eqpId)) {
                     List<String> xray = baseMapper.findXrayData(MapUtils.getString(item, "toTrayId"));
-                    for(String chipId : xray){
+                    for (String chipId : xray) {
                         ChipMove data = new ChipMove();
                         data.setEqpId(eqpId);
                         data.setProductionNo(MapUtils.getString(item, "productionNo"));
@@ -104,31 +104,10 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setMapFlag(1);
                         moveList.add(data);
                     }
-                    if(EqpNameConstant.EQP_JET.equals(eqpId)){
+                    if (EqpNameConstant.EQP_JET.equals(eqpId)) {
+                        //更新X射线的数据的追溯状态为追溯成功 1
                         baseMapper.finishXrayData(MapUtils.getString(item, "toTrayId"));
                     }
-                } else {//Xray 和 速风机之后
-                    ChipMove data = new ChipMove();
-                    data.setEqpId(MapUtils.getString(item, "eqpId"));
-                    if(MapUtils.getString(item, "eqpId").contains("-DM")){
-                        data.setDmId(MapUtils.getString(item, "dmId"));
-                        data.setDmX(MapUtils.getInteger(item, "dmX"));
-                        data.setDmY(MapUtils.getInteger(item, "dmY"));
-                    }
-                    data.setEqpModelName(MapUtils.getString(item, "eqpName"));
-                    data.setProductionNo(MapUtils.getString(item, "productionNo"));
-                    data.setLotNo(MapUtils.getString(item, "lotNo"));
-                    data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
-                    data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
-                    data.setChipId(MapUtils.getString(item, "chipId"));
-                    String toTrayId = MapUtils.getString(item, "toTrayId");
-                    if(!StringUtil.isEmpty(toTrayId)){
-                        data.setToTrayId(toTrayId);
-                        data.setToX(1);
-                        data.setToY(1);
-                    }
-                    data.setMapFlag(1);
-                    moveList.add(data);
                 }
             }
             if(moveList.size()>0){
