@@ -170,9 +170,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                             @RequestParam(required = false) String productionName,
                             @RequestParam(required = false) String productionNo,
                             @RequestParam(required = false) String index,
-
                             HttpServletRequest request, HttpServletResponse response) {
-        log.info("findTemp :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
+        log.info("findParam :  {}, {}, {}, {}", opId, lotNo, productionNo, index);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo + "\",\"opId\":\"" + opId + "\",\"param\":\"" + param + "\",\"productionName\":\"" + productionName + "\",\"productionNo\":\"" + productionNo + "\",\"index\":\"" + index + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param6", "MesLotTrackController.findParam", eventDesc, lotNo, "wangdong");//日志记录参数
@@ -190,6 +189,133 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+    //查找APJ-PRINTER设备参数，从产量日志中获取
+    @RequestMapping(value = "/findPrinterParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findPrinterParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                            HttpServletRequest request, HttpServletResponse response) {
+        log.info("findPrinterParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param7", "MesLotTrackController.findPrinterParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findPrinterParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result7", "MesLotTrackController.findPrinterParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error7", "MesLotTrackController.findPrinterParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findApjRecipeCode/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findApjRecipeCode(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                   HttpServletRequest request, HttpServletResponse response) {
+        log.info("findApjRecipeCode :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param8", "MesLotTrackController.findApjRecipeCode", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findApjRecipeCode(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result8", "MesLotTrackController.findApjRecipeCode", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error8", "MesLotTrackController.findApjRecipeCode", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findReflowParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findReflowParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                    HttpServletRequest request, HttpServletResponse response) {
+        log.info("findReflowParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param9", "MesLotTrackController.findReflowParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findReflowParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result9", "MesLotTrackController.findReflowParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error9", "MesLotTrackController.findReflowParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/findSinterParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findSinterParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                  HttpServletRequest request, HttpServletResponse response) {
+        log.info("findSinterParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param10", "MesLotTrackController.findSinterParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findSinterParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result10", "MesLotTrackController.findSinterParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error10", "MesLotTrackController.findSinterParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    //查找APJ二次热压设备参数，从产量日志中获取
+    @RequestMapping(value = "/findViParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findViParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                           HttpServletRequest request, HttpServletResponse response) {
+        log.info("findViParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param12", "MesLotTrackController.findViParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if("".equals(opId) || opId == null){
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findViParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result12", "MesLotTrackController.findViParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error12", "MesLotTrackController.findViParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
@@ -198,7 +324,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         try {
             fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskTrackin2", eventDesc, trackinfo, "wangdong");//日志记录参数
             if (trackinfo.length() < 30) {
-                return "trackinfo too short";
+                return "trackinfo too short（过账信息不足！）";
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -230,7 +356,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         fabLogService.info(eqpId, "Param6", "MesLotTrackController.dmTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
-                return "trackinfo too short";
+                return "trackinfo too short（过账信息不足！）";
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -257,8 +383,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             calendar.setTime(nowLotTrack.getStartTime());
             calendar.add(Calendar.MINUTE, +5);
             if (nowTime.before(calendar.getTime())) {
-                log.error("操做人员误操作，提前结束批次" + lotNo);
-                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator";
+                log.error("操做人员误操作，不允许提前结束批次" + lotNo);
+                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator（不允许提前结束批次，最短时间五分钟）";
             }
 
 

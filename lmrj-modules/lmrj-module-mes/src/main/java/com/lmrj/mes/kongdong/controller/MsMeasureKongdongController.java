@@ -1,5 +1,8 @@
 package com.lmrj.mes.kongdong.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
@@ -7,13 +10,21 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
+import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.lang.StringUtil;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +65,65 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
         Response rs = Response.ok();
         rs.put("data",kongdongService.kongdongChart(param));
         return rs;
+    }
+
+    @RequestMapping(value = "kongdongChartExport",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response kongdongChartExport(@RequestParam String productionName, @RequestParam String startDate, @RequestParam String endDate, @RequestParam String lineType){
+        try {
+            Map<String, Object> param = new HashMap<>();
+            param.put("productionName", productionName.replace("J.",""));
+            param.put("startTime", startDate);
+            param.put("endTime", endDate);
+            param.put("lineType", lineType);
+            Response rs = Response.ok();
+            rs.put("data",kongdongService.kongdongChart(param));
+            Map<String, Object> data= kongdongService.kongdongChart(param);
+            String title = "量测空洞";
+            Response res = Response.ok();
+            List<ExcelExportEntity> keyList= new LinkedList<>();
+            List<Map<Integer, Object>> dataList = new LinkedList<>();
+
+
+//            Map<String, Object> data = (Map) result.get("data");
+            List<String> legend = (List<String>) data.get("legend");
+            ExcelExportEntity key = new ExcelExportEntity("批号",1);
+            keyList.add(key);
+            for (int i = 0; i <legend.size() ; i++) {
+                ExcelExportEntity p = new ExcelExportEntity(String.valueOf(legend.get(i)),i+2);
+                keyList.add(p);
+            }
+            List xAxis = (List) data.get("xAxis");
+            for (int i = 0; i <xAxis.size() ; i++) {
+                Map<Integer, Object> data1 = new HashMap<>() ;
+                data1.put(1,xAxis.get(i));
+                List series = (List) data.get("series");
+                for (int j = 0; j <series.size() ; j++) {
+                    Map ele = (Map) series.get(j);
+                    List value1 = (List) ele.get("data");
+                    data1.put(j+2,value1.get(i));
+
+                }
+                dataList.add(data1);
+            }
+
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测空洞","量测详细信息"),keyList,dataList);
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+
+
     }
 
     @RequestMapping(value = "/kongDongBar", method = {RequestMethod.GET, RequestMethod.POST})

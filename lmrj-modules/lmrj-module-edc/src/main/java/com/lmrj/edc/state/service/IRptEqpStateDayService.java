@@ -34,7 +34,10 @@ public interface IRptEqpStateDayService extends ICommonService<RptEqpStateDay> {
 
     RptEqpStateDay findData(String periodDate);
 
+    int findDataByEqpId(String periodDate,String eqpId);
+
     List<Map> curPeriodData(String fab);
 
     List<Map> findSIMState();
+
 }

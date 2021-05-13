@@ -15,6 +15,7 @@ import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import com.lmrj.edc.amsrpt.utils.RepeatAlarmUtil;
 import com.lmrj.edc.evt.entity.EdcEvtRecord;
 import com.lmrj.edc.evt.service.IEdcEvtRecordService;
+import com.lmrj.edc.param.service.impl.EdcEqpLogParamServiceImpl;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
@@ -29,6 +30,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +100,8 @@ public class EdcDskLogHandler {
     IOvnBatchLotService iOvnBatchLotService;
     @Autowired
     IEdcDskLogProductionService iEdcDskLogProductionService;
+    @Autowired
+    EdcEqpLogParamServiceImpl edcEqpLogParamService;
 
     StringBuffer alarmEmailLog = new StringBuffer();//当温度数据异常时，记录发送邮件情况 TODO
     long lastSendMailTime = 0L;//最后一次发送邮件的时间
@@ -121,7 +125,7 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.PRODUCTIONLOG.DATA"})
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
-        System.out.println("接收到的消息" + msg);
+        System.out.println("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
         List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
         });
 
@@ -425,7 +429,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.OPERATIONLOG.DATA"})
     public void parseOperationlog(String msg) {
-        log.info("recieved message:" + msg);
+        log.info("C2S.Q.OPERATIONLOG.DATA recieved message:" + msg);
         //public void cureAlarm(byte[] message) throws UnsupportedEncodingException {
         //    String msg = new String(message, "UTF-8");
         //    System.out.println("接收到的消息"+msg);
@@ -451,7 +455,12 @@ public class EdcDskLogHandler {
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
             });
         }
-        edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
+        try {
+            edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
+        } catch (Exception e) {
+            log.error("Operation 数据插入失败！",e);
+            e.printStackTrace();
+        }
 
         //插入event或者alarm中
         //(エラーや装置の稼働変化)
@@ -475,7 +484,7 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
                 String alarmCode = edcDskLogOperation.getAlarmCode();
                 edcAmsRecord.setAlarmCode(alarmCode);
-                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventDetail());
+                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventName());
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
@@ -485,29 +494,18 @@ public class EdcDskLogHandler {
                     edcAmsRecord.setLineNo(fabEquipment.getLineNo());
                     edcAmsRecord.setStationCode(fabEquipment.getStationCode());
                 }
-                if ("34014801".equals(alarmCode) || "34015212".equals(alarmCode)) {
-                    List<Map<String, Object>> users = new ArrayList<>();
-                    users = fabEquipmentService.findEmailALL("WBAlarm");
-                    Map<String, Object> msgMap = new HashMap<>();
-                    if ("34014801".equals(alarmCode)) {
-                        msgMap.put("ALARM_CODE", "框架推送错误");
-                    } else {
-                        msgMap.put("ALARM_CODE", "联接机搬运过载错误");
-                    }
-                    msgMap.put("EQP_ID", eqpId);
-                    List<String> param = new ArrayList<>();
-                    if (!users.isEmpty()) {
-                        for (Map<String, Object> map : users) {
-                            param.add((String) map.get("email"));
-                        }
-                    }
-                    String[] params = new String[param.size()];
-                    param.toArray(params);
+                if ("02070651".equals(alarmCode) || "020707EC".equals(alarmCode)) {
+                    com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+                    jsonObject.put("EQP_ID", eqpId + ":报警"+alarmCode+"   "+edcDskLogOperation.getEventName());
+                    jsonObject.put("ALARM_CODE", "E-0003");
+                    jsonObject.put("CODE","WB-Recipe");
+                    String jsonString = jsonObject.toJSONString();
+                    String queueName = "C2S.Q.MSG.MAIL";
+                    log.info(eqpId+"设备---发生重要错误，发送邮件提醒"+alarmCode+"   "+edcDskLogOperation.getEventName() );
                     try {
-                        emailSendService.blockSend(params, "RTP_ALARM", msgMap);
+                        rabbitTemplate.convertAndSend(queueName, jsonString);
                     } catch (Exception e) {
-                        log.error("WB Alarm 邮件发送出错" + e);
-                        e.printStackTrace();
+                        log.error("邮件消息发送错误 Exception:", e);
                     }
                 }
                 edcAmsRecordList.add(edcAmsRecord);
@@ -522,6 +520,18 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventId(eventId);
                 String eventDesc = edcDskLogOperation.getEventName();
                 String eventParams = edcDskLogOperation.getEventDetail();
+                if(eventDesc == null && eventParams == null){
+                    if("0".equals(eventId)){
+                        eventDesc = "自動生産動作停止";
+                        eventParams = "自動生産動作停止";
+                    }else if("1".equals(eventId)){
+                        eventDesc = " 自動生産開始";
+                        eventParams = " 自動生産開始";
+                    }else if("3".equals(eventId)){
+                        eventDesc = "IDLE(制品等待)";
+                        eventParams = "IDLE(制品等待)";
+                    }
+                }
                 edcEvtRecord.setEventDesc(eventDesc);
                 // TODO: 2020/5/24  部分参数不可修改判断
                 List<String> paramEditList = Lists.newArrayList(paramEdit);
@@ -600,7 +610,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
-        log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行");
+        log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行 "+msg);
         repeatAlarmUtil.queryAlarmDefine();
         Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
@@ -612,7 +622,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.RECIPELOG.DATA"})
     public void parseRecipelog(String msg) {
-        log.info("recieved message 开始解析{}recipe文件 : {} " + msg);
+        log.info("C2S.Q.RECIPELOG.DATA  recieved message:" + msg);
         List<EdcDskLogRecipe> edcDskLogRecipeList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogRecipe>>() {
         });
         if (edcDskLogRecipeList == null || edcDskLogRecipeList.size() == 0) {
@@ -632,7 +642,7 @@ public class EdcDskLogHandler {
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.TEMPLOG.DATA"})
     public void parseTempHlog(String msg) {
-        log.info("recieved message 开始解析{}温度曲线文件 : {} " + msg);
+        log.info("C2S.Q.TEMPLOG.DATA recieved message 开始解析{}温度曲线文件 : {} " + msg);
         OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
         String eqpId = ovnBatchLot.getEqpId();
         if (StringUtil.isNotBlank(eqpId)) {
@@ -640,7 +650,9 @@ public class EdcDskLogHandler {
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
                 ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
                 FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+                if(equipmentStatus != null){
+                    ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+                }
             }
             Long time = ovnBatchLot.getStartTime().getTime()-24*60*60*1000;
             Date startTime = new Date(time);
@@ -662,14 +674,22 @@ public class EdcDskLogHandler {
                 ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
                 ovnBatchLotService.insert(ovnBatchLot);
             }
-            tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
+            if(filterEqpId(eqpId)){
+                tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
+            }
         }
+    }
+
+    private boolean filterEqpId(String eqpId){
+        eqpId = eqpId + ",";
+        String allEqp = "APJ-CLEAN-US1,APJ-RT,APJ-HT,APJ-OVEN1,";
+        return allEqp.contains(eqpId);
     }
 
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.MSG.MAIL"})
     public void sendAlarm(String msg) {
-        log.info("C2S.Q.MSG.MAIL数据解析："+msg);
+        log.info("C2S.Q.MSG.MAIL 数据解析："+msg);
         String eqpId = null;
         String alarmCode = null;
         String code = "RTP_ALARM";
@@ -677,6 +697,7 @@ public class EdcDskLogHandler {
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
         List<Map<String, Object>> users = new ArrayList<>();
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if(!alarmCode.equals(":网络断开连接!")){
             users = fabEquipmentService.findEmailALL(alarmCode);
@@ -694,7 +715,9 @@ public class EdcDskLogHandler {
         }else if (department.get(0).get("department").equals("APJ")) {
             users = fabEquipmentService.findEmailALL("E-0001");
         }
-
+        if(alarmCode.equals(":网络断开连接!")){
+            alarmCode = DateUtil.formatDateTime(new Date()) + "网络断开连接!";
+        }
         List<String> param = new ArrayList<>();
         if (!users.isEmpty()) {
             for (Map<String, Object> map : users) {
@@ -703,6 +726,8 @@ public class EdcDskLogHandler {
         }
         String[] params = new String[param.size()];
         param.toArray(params);
+        log.error("params:",params.toString());
+        msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
         emailSendService.blockSend(params, code, msgMap);
     }
 
@@ -821,4 +846,21 @@ public class EdcDskLogHandler {
 //        System.out.println("2");
 //        tempFilter(ovnBatchLot, dataMsg);
 //    }
+
+    @RabbitHandler
+    @RabbitListener(queues = {"C2S.Q.EQPLOG.PARAM"})
+    public String findLogParam(String msg){
+        log.info("客户端请求日志参数："+msg);
+        String result = null;
+        try {
+            result = edcEqpLogParamService.findCsvLogParam();
+        } catch (Exception e) {
+            log.error("日志参数查询出错！",e);
+            e.printStackTrace();
+        }
+        if(result==null){
+            log.error("日志参数查询为空！");
+        }
+        return result;
+    }
 }

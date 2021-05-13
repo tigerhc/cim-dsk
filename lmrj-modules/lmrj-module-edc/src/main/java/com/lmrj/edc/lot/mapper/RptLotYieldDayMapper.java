@@ -2,6 +2,7 @@ package com.lmrj.edc.lot.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.edc.lot.entity.RptLotYieldDay;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -54,4 +55,7 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     List<Map<String,Object>> findSonEqp( @Param("lineNo") String lineNo,@Param("stationId") List<String> stationId);
 
     List<Map<String,Object>> findAllEqp(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
+
+    @Delete("delete from rpt_lot_yield_day where period_date = #{periodDate} and line_no = #{lineNo}")
+    int deleteByDate(@Param("periodDate") String periodDate,@Param("lineNo") String lineNo);
 }

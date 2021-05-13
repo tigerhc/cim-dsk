@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,25 +25,36 @@ public class RptYieldDayTask {
      */
     //@Scheduled(cron = "0 0/20 * * * ?")
     public void updateDayYield() {
-        Date endTime=new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY,8);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        endTime=cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH,-1);
-        Date startTime=cal.getTime();
-        log.info("日产量计算定时任务开始执行");
-        String lineNo="SIM";
-        try {
-            List<String> stationCodeList = iFabEquipmentService.findStationCodeByLineNo(lineNo);
-            for (String stationCode : stationCodeList) {
-                rptLotYieldDayService.updateDayYield(startTime,endTime,lineNo,stationCode);
+        for (int i = 15; i >0 ; i--) {
+            Date endTime=new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY,8);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.add(Calendar.DAY_OF_MONTH,-i);
+            endTime=cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH,-1);
+            Date startTime=cal.getTime();
+            log.info("日产量计算定时任务开始执行");
+            String lineNo="SIM";
+            SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
+            try {
+                rptLotYieldDayService.deleteByDate(sim.format(startTime),lineNo);
+            } catch (Exception e) {
+                log.error("日产量数据删除出错");
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("updateDayYield():执行异常");
+            try {
+                List<String> stationCodeList = iFabEquipmentService.findStationCodeByLineNo(lineNo);
+                for (String stationCode : stationCodeList) {
+                    rptLotYieldDayService.updateDayYield(startTime,endTime,lineNo,stationCode);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("updateDayYield():执行异常");
+            }
+            log.info("日产量计算定时任务执行结束");
         }
-        log.info("日产量计算定时任务执行结束");
+
     }
 }

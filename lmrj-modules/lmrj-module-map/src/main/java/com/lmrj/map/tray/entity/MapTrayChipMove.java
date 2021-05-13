@@ -62,6 +62,9 @@ public class MapTrayChipMove {
     /** 开始时间 */
     @TableField(value = "start_time")
     private Date startTime;
+    /** 是否同批次 */
+    @TableField(value = "map_lot")
+    private String mapLot;
 
     @TableField(exist = false)
     private Integer eqpType;

@@ -42,4 +42,5 @@ public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
 
     List<Map<String,Object>> findAllEqp(String beginTime, String endTime, String line, String stationCode);
 
+    int deleteByDate(String periodDate,String lineNo);
 }

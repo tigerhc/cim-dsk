@@ -25,6 +25,7 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.ArrayUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
@@ -71,7 +72,9 @@ public class EdcSecsLogHandler {
     @Autowired
     IOvnBatchLotParamService iOvnBatchLotParamService;
     static Map<String,String> alarmMap = new HashMap<>();
+    static Date emailDateFlag = null;
     static {
+
         alarmMap.put("A0001","引线框架库空通知");
         alarmMap.put("A0002","引线框架库为空");
         alarmMap.put("A0003","空引线框已满");
@@ -196,8 +199,25 @@ public class EdcSecsLogHandler {
             edcAmsRecord.setLotNo(lotTrack.getLotNo());
             edcAmsRecord.setLotYield(lotTrack.getLotYieldEqp());
         }
-        edcAmsRecordService.insert(edcAmsRecord);
-        fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
+        edcAmsRecordService.insert(edcAmsRecord);EdcEqpState edcEqpState = new EdcEqpState();
+        edcEqpState.setEqpId(edcAmsRecord.getEqpId());
+        edcEqpState.setStartTime(edcAmsRecord.getStartDate());
+        if("0".equals(edcAmsRecord.getAlarmSwitch())){
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"IDLE", "", "");
+            edcEqpState.setState("IDLE");
+        }else {
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
+            edcEqpState.setState("ALARM");
+        }
+        if(edcEqpState.getState()!=null){
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
+            oldEdcEqpState.setEndTime(edcAmsRecord.getStartDate());
+            Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
+            oldEdcEqpState.setStateTimes(state);
+            iEdcEqpStateService.updateById(oldEdcEqpState);
+            iEdcEqpStateService.insert(edcEqpState);
+        }
+
     }
 
     @RabbitHandler
@@ -210,7 +230,6 @@ public class EdcSecsLogHandler {
             String modelId = "";
             if (fabEquipment != null) {
                 modelId = fabEquipment.getModelId();
-
                 EdcEvtDefine edcEvtDefine = edcEvtDefineService.selectOne(new EntityWrapper<EdcEvtDefine>().eq("event_id", edcEvtRecord.getEventId()).eq("eqp_model_id", modelId));
                 if (edcEvtDefine != null) {
                     edcEvtRecord.setEventDesc(edcEvtDefine.getEventName());
@@ -238,6 +257,7 @@ public class EdcSecsLogHandler {
         String ceid = evtRecord.getEventId();
         MesLotTrack mesLotTrack = mesLotTrackService.findLotNo1(eqpId, new Date());
         if (ArrayUtil.contains(ceids, ceid)) {
+            List<EdcDskLogProduction> proDataList = new ArrayList<>();
             fabEquipmentStatusService.increaseYield(eqpId, 24);
             FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
             log.info("TRM设备产量+24  eqpId："+eqpId+"DayYield"+equipmentStatus.getDayYield()+"LotYield"+equipmentStatus.getLotYield()+"LotYieldEqp"+equipmentStatus.getLotYieldEqp());
@@ -289,8 +309,50 @@ public class EdcSecsLogHandler {
             Double duration = (double)(endTime.getTime()-startTime.getTime())/100;
             productionLog.setDuration(duration);
             log.info("持续时间"+productionLog.getDuration());
+            //判断本条数据与上条数据之间是否有数据缺失，并进行补充
+            if(pro != null){
+                String lastParam = pro.getParamValue();
+                String lastParams[] = lastParam.split(",");
+                int lastCount = Integer.parseInt(lastParams[0]) + Integer.parseInt(lastParams[1]) + Integer.parseInt(lastParams[2]);
+                String params[] = eventParams.split(",");
+                int count = Integer.parseInt(params[0]) + Integer.parseInt(params[1]) + Integer.parseInt(params[2]);
+                if(count-lastCount>1){
+                    int dataNo = count-lastCount;
+                    Date lastTime = pro.getEndTime();
+                    Date newTime = productionLog.getStartTime();
+                    Long oneduration = (newTime.getTime()-lastTime.getTime())/dataNo;
+                    for (int i = 1; i < dataNo; i++) {
+                        EdcDskLogProduction productionLog1 = new EdcDskLogProduction();
+                        productionLog1.setEqpId(productionLog.getEqpId());
+                        productionLog1.setProductionNo(productionLog.getProductionNo());
+                        productionLog1.setLotNo(productionLog.getLotNo());
+                        productionLog1.setOrderNo(productionLog.getOrderNo());
+                        productionLog1.setLotYield(productionLog.getLotYield()+24*i);
+                        productionLog1.setParamValue(productionLog.getParamValue());
+                        productionLog1.setJudgeResult(productionLog.getJudgeResult());
+                        productionLog1.setDayYield(productionLog.getDayYield()+24*i);
+                        productionLog1.setEqpModelName(productionLog.getEqpModelName());
+                        productionLog1.setEqpModelId(productionLog.getEqpModelId());
+                        productionLog1.setEqpNo(productionLog.getEqpNo());
+                        productionLog1.setDuration(0D);
+                        productionLog1.setRecipeCode(productionLog.getRecipeCode());
+                        productionLog1.setMaterialNo2("GXJTEST");
+                        Date start= new Date(lastTime.getTime()+i*oneduration);
+                        productionLog1.setStartTime(start);
+                        productionLog1.setEndTime(newTime);
+                        proDataList.add(productionLog1);
+                    }
+                }
+            }
+            try {
+                if(proDataList.size()>0){
+                    edcDskLogProductionService.insertBatch(proDataList);
+                }
+            } catch (Exception e) {
+                log.error("SIM-TRM补充数据插入失败!   数据条数："+proDataList.size(),e);
+                e.printStackTrace();
+            }
             edcDskLogProductionService.insert(productionLog);
-
             //生成TRM温度数据
             try {
                 List<OvnBatchLotParam> paramList = new ArrayList<>();
@@ -306,31 +368,51 @@ public class EdcSecsLogHandler {
                     ovnBatchLot.setLotId(mesLotTrack.getLotNo());
                 }
                 String[] a = pro.getParamValue().split(",");
-                Long create =  productionLog.getStartTime().getTime()+(1000);
+                String date = DateUtil.formatDateTime(productionLog.getStartTime());
                 String temp = null;
+                String title[] = ovnBatchLot.getOtherTempsTitle().split(",");
+                //634,634,633,150.0,150.1,150.2,150.0,150.1,150.0,184.9,185.0,184.9,184.9,184.9,185.0,-0.01,140.33,140.33,0.0,95.7,95.58,110,17,106
+                String alarmEmailStr = "";
                 for (int i = 4; i < 15; i++) {
                     if(i == 4 ){
                         temp = a[4]+",150,145,155";
                         //判断温度是否超过范围，超过则发送邮件报警
-                        sendAlarmEmail(eqpId,a[4],155,145);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[4],155,145,title[1]);
                     }else if(i>4 && i<9){
                         temp = temp +","+ a[i] +",150,145,155";
-                        sendAlarmEmail(eqpId,a[i],155,145);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[i],155,145,title[i-3]);
                     }else{
                         temp = temp +","+ a[i] +",185,180,190";
-                        sendAlarmEmail(eqpId,a[i],190,180);
+                        alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[i],190,180,title[i-3]);
                     }
                 }
-                Date createTime = new Date(create);
                 OvnBatchLotParam ovnBatchLotParam = new OvnBatchLotParam();
                 ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
                 ovnBatchLotParam.setTempPv(a[3]);
-                ovnBatchLotParam.setCreateDate(createTime);
+                ovnBatchLotParam.setCreateDate(productionLog.getStartTime());
                 ovnBatchLotParam.setTempMax("155");
                 ovnBatchLotParam.setTempMin("145");
                 ovnBatchLotParam.setTempSp("150");
-                sendAlarmEmail(eqpId,a[3],155,145);
+                alarmEmailStr = alarmEmailStr + sendTempAlarmEmail(a[3],155,145,title[0]);
                 ovnBatchLotParam.setOtherTempsValue(temp);
+                if(!"".equals(alarmEmailStr)){
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(productionLog.getStartTime());
+                    cal.add(Calendar.MINUTE, -10);
+                    if(emailDateFlag == null || cal.before(emailDateFlag)){
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("EQP_ID", date + " " + eqpId + alarmEmailStr);
+                        jsonObject.put("ALARM_CODE", "E-0009");
+                        String jsonString = jsonObject.toJSONString();
+                        log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
+                        try {
+                            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+                            emailDateFlag = productionLog.getStartTime();
+                        } catch (Exception e) {
+                            log.error("Exception:", e);
+                        }
+                    }
+                }
                 paramList.add(ovnBatchLotParam);
                 ovnBatchLot.setOvnBatchLotParamList(paramList);
                 //实现主表一个批次只有一条数据
@@ -377,6 +459,8 @@ public class EdcSecsLogHandler {
                     }
                 }
             }
+
+
         }
         EdcDskLogOperation edcDskLogOperation = new EdcDskLogOperation();
         FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
@@ -392,11 +476,11 @@ public class EdcSecsLogHandler {
         edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
         edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
         String eventId = "";
-        if(evtRecord.getEventId().startsWith("11")){
+        if(evtRecord.getEventId() != null && evtRecord.getEventId().startsWith("11")){
             eventId = "1";
-        }else if(evtRecord.getEventId().length()==1){
+        }else if(evtRecord.getEventId() != null &&evtRecord.getEventId().length()==1){
             eventId = "0";
-        } else if(evtRecord.getEventId().startsWith("23") || evtRecord.getEventId().startsWith("21")){
+        } else if(evtRecord.getEventId() != null && (evtRecord.getEventId().startsWith("23") || evtRecord.getEventId().startsWith("21"))){
             eventId = "3";
         }
 
@@ -415,20 +499,16 @@ public class EdcSecsLogHandler {
         EdcEqpState edcEqpState = new EdcEqpState();
         edcEqpState.setEqpId(evtRecord.getEqpId());
         edcEqpState.setStartTime(evtRecord.getStartDate());
-        if(evtRecord.getEventDesc().equals("ProcessStateChg_EVENT")){
-            if(evtRecord.getEventId().equals("0")){
+        if("ProcessStateChg_EVENT".equals(evtRecord.getEventDesc())){
+            if("0".equals(evtRecord.getEventId())){
                 edcEqpState.setState("DOWN");
-            }else if(evtRecord.getEventId().equals("3")){
+            }else if("3".equals(evtRecord.getEventId())){
                 edcEqpState.setState("RUN");
             }
         }
-        if(evtRecord.getEventId().equals("21049") || evtRecord.getEventId().startsWith("20")){
+        if(ArrayUtil.contains(ceids, ceid)){
+            log.info("TRM设备因生产数据将状态改为运行");
             edcEqpState.setState("RUN");
-        }
-        if(evtRecord.getEventParams()!= null){
-            if(evtRecord.getEventId().startsWith("23")){
-                edcEqpState.setState("IDLE");
-            }
         }
         equipmentStatus.setEqpStatus(edcEqpState.getState());
         fabEquipmentStatusService.updateById(equipmentStatus);
@@ -438,25 +518,19 @@ public class EdcSecsLogHandler {
             Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
             oldEdcEqpState.setStateTimes(state);
             iEdcEqpStateService.updateById(oldEdcEqpState);
+            edcEqpState.setCreateBy("gxj");
             iEdcEqpStateService.insert(edcEqpState);
         }
     }
-    public Boolean sendAlarmEmail(String eqpId,String tempPv,int tempMax,int tempMin){
-        Boolean flag = false;
+
+    public String sendTempAlarmEmail(String tempPv,int tempMax,int tempMin,String tempTitle){
         double temp = Double.parseDouble(tempPv);
-        if(temp < tempMin || temp > tempMax){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("EQP_ID", eqpId);
-            jsonObject.put("ALARM_CODE", "E-0009");
-            String jsonString = jsonObject.toJSONString();
-            log.info(eqpId+"设备---温度不在规定范围之内!将发送邮件通知管理人员");
-            try {
-                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-            } catch (Exception e) {
-                log.error("Exception:", e);
-            }
-            flag = true;
+        String emailStr = "";
+        if(temp < tempMin){
+            emailStr = "  " + tempTitle + "温度低于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax + "   ";
+        }else if(temp > tempMax){
+            emailStr = "  " + tempTitle + "温度高于规定范围！  当前温度" + tempPv  +"   温度范围： "+tempMin +" - " +tempMax + "   ";
         }
-        return flag;
+        return emailStr;
     }
 }

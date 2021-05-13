@@ -30,6 +30,16 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     MesResult findParam(String eqpId, String param, String opId, String lotNo, String productionNo);
 
+    MesResult findPrinterParam(String eqpId, String opId);
+
+    MesResult findReflowParam(String eqpId, String opId);
+
+    MesResult findApjRecipeCode(String eqpId, String opId);
+
+    MesResult findSinterParam(String eqpId, String opId);
+
+    MesResult findViParam(String eqpId, String opId);
+
     MesLotTrack findLotNo(String startTime, String eqpId);
 
     MesLotTrack findNextStartTime(String endTime, String eqpId);

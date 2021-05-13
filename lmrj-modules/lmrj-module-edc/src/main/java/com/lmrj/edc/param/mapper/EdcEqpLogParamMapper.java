@@ -3,6 +3,9 @@ package com.lmrj.edc.param.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.edc.param.entity.EdcEqpLogParam;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -17,5 +20,9 @@ import org.apache.ibatis.annotations.Mapper;
 */
 @Mapper
 public interface EdcEqpLogParamMapper extends BaseMapper<EdcEqpLogParam> {
+    @Select("select * from edc_eqp_log_param order by eqp_id")
+    List<EdcEqpLogParam> findLogParamList();
 
+    @Select("select DISTINCT eqp_id from edc_eqp_log_param order by eqp_id")
+    List<String> findParamEqpId();
 }

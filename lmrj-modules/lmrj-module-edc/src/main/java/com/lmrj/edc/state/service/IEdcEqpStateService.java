@@ -4,7 +4,6 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.state.entity.EdcEqpState;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ import java.util.Map;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
+    List<EdcEqpState> getAllByTime(Date startTime,Date endTime,String eqpId);
 
     int syncEqpSate(Date startTime, Date endTime,String eqpId);
 
