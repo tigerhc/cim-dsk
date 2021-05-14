@@ -73,4 +73,10 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     String getLastStartTime(@Param("trayCode") String trayCode);
 
     List<MapTrayChipMove> getNGStart(@Param("startTime") String startTime);
+
+    String findNGProParam(Map<String, Object> param);
+
+    String findProParam(Map<String, Object> param);
+
+    List<Map<String, Object>> findParamTitle(String eqpModelName);
 }

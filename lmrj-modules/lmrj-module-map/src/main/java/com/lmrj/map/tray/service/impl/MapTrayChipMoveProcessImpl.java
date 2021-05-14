@@ -8,7 +8,6 @@ import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
 import com.lmrj.map.tray.service.IMapTrayChipLogDetailService;
 import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
-import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -24,6 +24,8 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
     private IMapTrayChipLogService mpTrayChipLogService;
     @Autowired
     private IMapTrayChipLogDetailService mapTrayChipLogDetailService;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 //    @Override
 //    public void traceDataNeedSpace() {
 //        List<MapTrayChipMove> traceDatas = new ArrayList<>();
@@ -503,5 +505,30 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             }
             buff.clear();
         }
+    }
+
+    @Override
+    public Map<String, Object> getProductionParam(long id){
+        Map<String, Object> rs = new HashMap<>();
+        MapTrayChipMove data = baseMapper.selectById(id);
+        if(data == null){
+            return null;
+        }
+        if("APJ-HTRT1".equals(data.getEqpId())){//高温室温检查
+
+        } else {
+            Map<String, Object> param = new HashMap<>();
+            param.put("eqpId", data.getEqpId());
+            String startTime = sdf.format(data.getStartTime());
+            startTime = startTime.length()>23? startTime.substring(0,23):startTime;//2021-04-28 09:10:46.248
+            param.put("startTime",startTime);
+            if("N".equals(data.getJudgeResult())){//不良品
+                rs.put("paramValue", baseMapper.findNGProParam(param));
+            } else {
+                rs.put("paramValue", baseMapper.findProParam(param));
+            }
+            rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
+        }
+        return rs;
     }
 }

@@ -32,6 +32,8 @@ public class MapTrayChipMove {
     /** 品番号 */
     @TableField(value = "production_no")
     private String productionNo;
+    @TableField(value = "eqp_model_name")
+    private String eqpModelName;
     /** 批次号 */
     @TableField(value = "lot_no")
     private String lotNo;
@@ -62,9 +64,6 @@ public class MapTrayChipMove {
     /** 开始时间 */
     @TableField(value = "start_time")
     private Date startTime;
-    /** 是否同批次 */
-    @TableField(value = "map_lot")
-    private String mapLot;
 
     @TableField(exist = false)
     private Integer eqpType;

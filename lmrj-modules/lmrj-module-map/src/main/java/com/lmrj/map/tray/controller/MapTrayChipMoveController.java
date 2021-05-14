@@ -140,4 +140,12 @@ public class MapTrayChipMoveController {
         }
         return Response.error("没有得到返回结果");
     }
+
+    @RequestMapping(value = "getProductionParam", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getProductionParam(@RequestParam String id){
+        Response rs = Response.ok();
+        Map<String, Object> productionParam = mapTrayChipMoveProcessService.getProductionParam(Long.parseLong(id));
+        rs.put("paramObj", productionParam);
+        return rs;
+    }
 }
