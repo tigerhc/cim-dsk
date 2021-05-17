@@ -1,7 +1,7 @@
 package com.lmrj.mes.measure.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.lmrj.mes.measure.entity.measureSx;
+import com.lmrj.mes.measure.entity.MeasureSx;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface MeasureSxMapper extends BaseMapper<measureSx> {
+public interface MeasureSxMapper extends BaseMapper<MeasureSx> {
 
     @Select("select distinct production_no as productionNo from measure_sx_record where measure_type = #{type}")
     List<Map<String, String>> findProductionNo(@Param("type") String type);

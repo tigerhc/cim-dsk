@@ -13,7 +13,7 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
-import com.lmrj.mes.measure.entity.measureSx;
+import com.lmrj.mes.measure.entity.MeasureSx;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
@@ -1153,6 +1153,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     for (int j = 7; j < ele.length; j++) {
                         str.add(ele[j]);
                     }
+
+
                 }
             }
         }
@@ -1186,7 +1188,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 String[] colum2 = row[2].split("-");
                 if (production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK")) {
                     result.append(row[7] + "," + row[8] + "," + row[9] + "," + row[10] + "," + row[11] + "," + row[12] + "," + row[13] + "," + row[14] + ",");
-                    measureSx measure = new measureSx();
+                    MeasureSx measure = new MeasureSx();
+                    measure.setLineNo("SX");
                     measure.setMeaDate(df.parse(row[1]));
                     measure.setLotNo(colum2[1]);
                     measure.setProductionNo(colum2[0]);
