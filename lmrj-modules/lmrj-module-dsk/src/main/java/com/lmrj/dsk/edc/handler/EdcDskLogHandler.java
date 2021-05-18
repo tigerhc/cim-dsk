@@ -668,24 +668,32 @@ public class EdcDskLogHandler {
                         try {
                             if(paramName.contains("ボンド荷重") || paramName.contains("超音波出力")){
                                 String newValue = recipeBody.getSetValue();
+                                String oldValue = recipeBody.getPreValue();
                                 double newvalue = Double.parseDouble(newValue);
+                                double oldvalue = Double.parseDouble(oldValue);
                                 if(recipeLimitMap.get(paramName) != null && !"".equals(recipeLimitMap.get(paramName))){
                                     String maxLimit = recipeLimitMap.get(paramName).split("~")[0];
                                     String minLimit = recipeLimitMap.get(paramName).split("~")[1];
                                     double max = Double.parseDouble(maxLimit);
                                     double min = Double.parseDouble(minLimit);
+                                    String jsonString = null;
                                     if(newvalue<min || newvalue>max){
                                         com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
                                         jsonObject.put("EQP_ID", edcDskLogRecipe.getEqpId() + ":参数"+paramName+"异常变更, 旧值："+recipeBody.getPreValue() +"  新值："+recipeBody.getSetValue() + "   管理范围："+minLimit+ "~" + maxLimit+"   修改时间："+DateUtil.formatDateTime(edcDskLogRecipe.getStartTime()));
                                         jsonObject.put("ALARM_CODE", "E-0004");
-                                        String jsonString = jsonObject.toJSONString();
-                                        String queueName = "C2S.Q.MSG.MAIL";
-                                        log.info(edcDskLogRecipe.getEqpId()+"设备---重要参数"+paramName+"变更，发送邮件提醒!");
-                                        try {
-                                            rabbitTemplate.convertAndSend(queueName, jsonString);
-                                        } catch (Exception e) {
-                                            log.error("邮件消息发送失败  Exception:", e);
-                                        }
+                                        jsonString = jsonObject.toJSONString();
+                                    }else if((oldvalue <min || oldvalue>max) && newvalue > min && newvalue < max  ){
+                                        com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+                                        jsonObject.put("EQP_ID", edcDskLogRecipe.getEqpId() + ":参数"+paramName+"恢复正常, 旧值："+recipeBody.getPreValue() +"  新值："+recipeBody.getSetValue() + "   管理范围："+minLimit+ "~" + maxLimit+"   修改时间："+DateUtil.formatDateTime(edcDskLogRecipe.getStartTime()));
+                                        jsonObject.put("ALARM_CODE", "E-0004");
+                                        jsonString = jsonObject.toJSONString();
+                                    }
+                                    String queueName = "C2S.Q.MSG.MAIL";
+                                    log.info(edcDskLogRecipe.getEqpId()+"设备---重要参数"+paramName+"变更，发送邮件提醒!");
+                                    try {
+                                        rabbitTemplate.convertAndSend(queueName, jsonString);
+                                    } catch (Exception e) {
+                                        log.error("邮件消息发送失败  Exception:", e);
                                     }
                                 }
                             }
