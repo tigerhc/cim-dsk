@@ -71,6 +71,13 @@ public class MapTrayChipMove {
     @TableField(value = "map_flag")
     private Integer mapFlag;
 
+    @TableField(value = "dm_id")
+    private String dmId;
+    @TableField(value = "dm_x")
+    private String dmX;
+    @TableField(value = "dm_y")
+    private String dmY;
+
     @TableField(exist = false)
     private Integer searchFlag;
 

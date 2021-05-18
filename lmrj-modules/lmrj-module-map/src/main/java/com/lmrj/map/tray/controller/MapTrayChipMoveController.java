@@ -96,11 +96,11 @@ public class MapTrayChipMoveController {
     /**
      * 查询晶圆轨迹
      *
-     * @param chipId
+     * @param id
      */
     @RequestMapping(value = "dmDetail", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response dmDetail(@RequestParam String chipId) {
-        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(chipId);
+    public Response dmDetail(@RequestParam String id) {
+        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(id);
         return DateResponse.ok(list);
     }
 
