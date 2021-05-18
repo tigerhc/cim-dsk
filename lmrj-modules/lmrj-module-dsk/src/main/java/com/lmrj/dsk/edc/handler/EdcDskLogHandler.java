@@ -58,6 +58,38 @@ import java.util.*;
 @Service
 @Slf4j
 public class EdcDskLogHandler {
+    static Map<String,String> recipeLimitMap = new HashMap<>();
+    static {
+        //  2:SIM-2ND BOND
+        //  1:SIM-1ST BOND
+        recipeLimitMap.put("2ND_ボンド荷重_HMIC-LEAD","270~150");
+        recipeLimitMap.put("2ND_ボンド荷重_HMIC-MOS","90~70");
+        recipeLimitMap.put("2ND_ボンド荷重_BDI-LEAD","270~150");
+        recipeLimitMap.put("2ND_ボンド荷重_HMIC-BDI","130~110");
+        recipeLimitMap.put("2ND_ボンド荷重_LMIC-LEAD","270~150");
+        recipeLimitMap.put("2ND_ボンド荷重_LMIC-MOS","90~70");
+        recipeLimitMap.put("2ND_ボンド荷重_MOS-LEAD","270~150");
+        recipeLimitMap.put("2ND_ボンド荷重_HMIC-HMIC","130~110");
+
+        recipeLimitMap.put("2ND_超音波出力_HMIC-LEAD","770~600");
+        recipeLimitMap.put("2ND_超音波出力_HMIC-MOS","160~140");
+        recipeLimitMap.put("2ND_超音波出力_BDI-LEAD","770~600");
+        recipeLimitMap.put("2ND_超音波出力_HMIC-BDI","160~140");
+        recipeLimitMap.put("2ND_超音波出力_LMIC-LEAD","770~600");
+        recipeLimitMap.put("2ND_超音波出力_LMIC-MOS","160~140");
+        recipeLimitMap.put("2ND_超音波出力_MOS-LEAD","770~600");
+        recipeLimitMap.put("2ND_超音波出力_HMIC-HMIC","160~140");
+
+        recipeLimitMap.put("1ST_ボンド荷重_H...","260~240");
+        recipeLimitMap.put("1ST_ボンド荷重_B...","260~240");
+        recipeLimitMap.put("1ST_ボンド荷重_L...","260~240");
+        recipeLimitMap.put("1ST_ボンド荷重_M...","90~70");
+
+        recipeLimitMap.put("1ST_超音波出力_B...","520~480");
+        recipeLimitMap.put("1ST_超音波出力_H...","420~380");
+        recipeLimitMap.put("1ST_超音波出力_L...","420~380");
+        recipeLimitMap.put("1ST_超音波出力_M...","390~350");
+    }
     @Autowired
     IMesLotTrackService iMesLotTrackService;
     @Autowired
@@ -498,7 +530,6 @@ public class EdcDskLogHandler {
                     com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
                     jsonObject.put("EQP_ID", eqpId + ":报警"+alarmCode+"   "+edcDskLogOperation.getEventName());
                     jsonObject.put("ALARM_CODE", "E-0003");
-                    jsonObject.put("CODE","WB-Recipe");
                     String jsonString = jsonObject.toJSONString();
                     String queueName = "C2S.Q.MSG.MAIL";
                     log.info(eqpId+"设备---发生重要错误，发送邮件提醒"+alarmCode+"   "+edcDskLogOperation.getEventName() );
@@ -630,6 +661,41 @@ public class EdcDskLogHandler {
         }
         //edcDskLogRecipeService.insertBatch(edcDskLogRecipeList);
         edcDskLogRecipeList.forEach(edcDskLogRecipe -> {
+            if(edcDskLogRecipe.getEqpId().contains("WB")){
+                if(edcDskLogRecipe.getEdcDskLogRecipeBodyList().size()>0){
+                    for (EdcDskLogRecipeBody recipeBody : edcDskLogRecipe.getEdcDskLogRecipeBodyList()) {
+                        String paramName = recipeBody.getParaName();
+                        try {
+                            if(paramName.contains("ボンド荷重") || paramName.contains("超音波出力")){
+                                String newValue = recipeBody.getSetValue();
+                                double newvalue = Double.parseDouble(newValue);
+                                if(recipeLimitMap.get(paramName) != null && !"".equals(recipeLimitMap.get(paramName))){
+                                    String maxLimit = recipeLimitMap.get(paramName).split("~")[0];
+                                    String minLimit = recipeLimitMap.get(paramName).split("~")[1];
+                                    double max = Double.parseDouble(maxLimit);
+                                    double min = Double.parseDouble(minLimit);
+                                    if(newvalue<min || newvalue>max){
+                                        com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
+                                        jsonObject.put("EQP_ID", edcDskLogRecipe.getEqpId() + ":参数"+paramName+"异常变更, 旧值："+recipeBody.getPreValue() +"  新值："+recipeBody.getSetValue() + "   管理范围："+minLimit+ "~" + maxLimit+"   修改时间："+DateUtil.formatDateTime(edcDskLogRecipe.getStartTime()));
+                                        jsonObject.put("ALARM_CODE", "E-0004");
+                                        String jsonString = jsonObject.toJSONString();
+                                        String queueName = "C2S.Q.MSG.MAIL";
+                                        log.info(edcDskLogRecipe.getEqpId()+"设备---重要参数"+paramName+"变更，发送邮件提醒!");
+                                        try {
+                                            rabbitTemplate.convertAndSend(queueName, jsonString);
+                                        } catch (Exception e) {
+                                            log.error("邮件消息发送失败  Exception:", e);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.error("WB配方日志监控出错",e);
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
             if(edcDskLogRecipe.getEdcDskLogRecipeBodyList().size()>0){
                 for (EdcDskLogRecipeBody recipeBody : edcDskLogRecipe.getEdcDskLogRecipeBodyList()) {
                     recipeBody.setRecipeLogId(edcDskLogRecipe.getId());
@@ -715,19 +781,19 @@ public class EdcDskLogHandler {
         }else if (department.get(0).get("department").equals("APJ")) {
             users = fabEquipmentService.findEmailALL("E-0001");
         }
-        if(alarmCode.equals(":网络断开连接!")){
-            alarmCode = DateUtil.formatDateTime(new Date()) + "网络断开连接!";
-        }
         List<String> param = new ArrayList<>();
         if (!users.isEmpty()) {
             for (Map<String, Object> map : users) {
                 param.add((String) map.get("email"));
+                log.info("发送邮箱："+(String) map.get("email"));
             }
         }
         String[] params = new String[param.size()];
         param.toArray(params);
         log.error("params:",params.toString());
-        msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
+        if(fabEquipment!=null){
+            msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
+        }
         emailSendService.blockSend(params, code, msgMap);
     }
 
