@@ -76,20 +76,24 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
             param.put("endTime", endDate);
             param.put("lineType", lineType);
             Response rs = Response.ok();
-            rs.put("data",kongdongService.kongdongChart(param));
             Map<String, Object> data= kongdongService.kongdongChart(param);
+//            rs.put("data",kongdongService.kongdongChart(param)); ??为何多查service一次
+            rs.put("data",data);
             String title = "量测空洞";
             Response res = Response.ok();
             List<ExcelExportEntity> keyList= new LinkedList<>();
             List<Map<Integer, Object>> dataList = new LinkedList<>();
-
+            List<String> timeList = (List) data.get("timeList");
 
 //            Map<String, Object> data = (Map) result.get("data");
             List<String> legend = (List<String>) data.get("legend");
             ExcelExportEntity key = new ExcelExportEntity("批号",1);
             keyList.add(key);
+            //时间
+            ExcelExportEntity timeTitle = new ExcelExportEntity("时间",2);
+            keyList.add(timeTitle);
             for (int i = 0; i <legend.size() ; i++) {
-                ExcelExportEntity p = new ExcelExportEntity(String.valueOf(legend.get(i)),i+2);
+                ExcelExportEntity p = new ExcelExportEntity(String.valueOf(legend.get(i)),i+3);
                 keyList.add(p);
             }
             List xAxis = (List) data.get("xAxis");
@@ -100,13 +104,18 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
                 for (int j = 0; j <series.size() ; j++) {
                     Map ele = (Map) series.get(j);
                     List value1 = (List) ele.get("data");
-                    data1.put(j+2,value1.get(i));
-
+                    data1.put(j+3,value1.get(i));
+                }
+                //添加时间
+                if(timeList.size()>i){
+                    data1.put(2, timeList.get(i));
+                } else {
+                    data1.put(2, "");
                 }
                 dataList.add(data1);
             }
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测空洞","量测详细信息"),keyList,dataList);
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测空洞"+productionName.replace("J.",""),"量测详细信息"),keyList,dataList);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();

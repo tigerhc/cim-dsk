@@ -6,6 +6,7 @@ import com.lmrj.mes.kongdong.mapper.MsMeasureKongdongMapper;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.util.FileUtils;
 import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.collection.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -245,6 +246,8 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
         List<Map<String, Double>> configLine = baseMapper.getConfig(configParam);
         List<String> xasix = baseMapper.getXasix(param);
         Map<String, List<Double>> LinesData = new HashMap<>();
+        List<String> timeList = new ArrayList<>();
+
         //初始化series 各个线的数组
         if(legends.size()>0){
             for(String legend : legends){
@@ -253,11 +256,13 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
             List<Map<String, Object>> datas = baseMapper.getData(param);
             for(String asix : xasix){
                 //根据横轴坐标补充该坐标上所有线对应的值，没有补空
+                long curT = 0;//时间
+                String curTimeStr = "";
                 for(String line : legends){
                     boolean findFlag = true;
                     for(Map<String, Object>  data : datas){
                         if(productionName.contains("5GI")||productionName.contains("6GI")){
-                            if(asix.equals(MapUtils.getString(data, "lotNo"))){
+                            if(asix.equals(MapUtils.getString(data, "lotNo"))){//批次号相同
                                 LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
                                 findFlag = false;
                             }
@@ -265,6 +270,14 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                             if(line.equals(MapUtils.getString(data,"lineType")) && asix.equals(MapUtils.getString(data, "lotNo"))){
                                 LinesData.get(line).add(MapUtils.getDouble(data, "voidRatio"));
                                 findFlag = false;
+                                //保存最小的时间 ,,导出功能使用
+                                String dataTimeStr = MapUtil.getString(data, "createDate");
+                                dataTimeStr = dataTimeStr.replace("-","").replace(" ", "").replace(":","");
+                                long dataTime = Long.parseLong(dataTimeStr);
+                                if(curT == 0 || dataTime < curT){
+                                    curT = dataTime;
+                                    curTimeStr = MapUtil.getString(data, "createDate");
+                                }
                             }
                         }
                     }
@@ -272,6 +285,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
                         LinesData.get(line).add(null);
                     }
                 }
+                timeList.add(curTimeStr);
             }
         }
         //添加数据对应的折线
@@ -305,6 +319,7 @@ public class MsMeasureKongdongServiceImpl extends CommonServiceImpl<MsMeasureKon
         rs.put("legend",legends);
         rs.put("series",seriesArr);
         rs.put("xAxis",xasix);
+        rs.put("timeList", timeList);
         return rs;
     }
 
