@@ -157,18 +157,18 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
                     "{\"eqpId\":\"APJ-FRD-REFLOW1\",\"eqpName\":\"APJ-FRD-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-DBCT-REFLOW1\",\"eqpName\":\"APJ-DBCT-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-DBCB-REFLOW1\",\"eqpName\":\"APJ-DBCB-REFLOW1\"},\n" +
-                    "{\"eqpId\":\"APJ-AT1\",\"eqpName\":\"APJ-耐老化设备温度\"},\n" +
-                    "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-US洗净机\"},\n" +
-                    "{\"eqpId\":\"APJ-TRM1\",\"eqpName\":\"APJ-塑封机\"},\n" +
-                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"APJ-RT检查温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"APJ-HT检查温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-HTRT1\",\"eqpName\":\"APJ-高温室温检查机\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-洗净后烘箱\"},\n" +
-                    "{\"eqpId\":\"APJ-AT2\",\"eqpName\":\"APJ-耐老化温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER3\",\"eqpName\":\"APJ-冷藏库(树脂)\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN2\",\"eqpName\":\"APJ-SAT旁恒温槽\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER2\",\"eqpName\":\"APJ-冷藏库(半田)\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER1\",\"eqpName\":\"APJ-AgNps冷藏库\"}]";
+                    "{\"eqpId\":\"APJ-AT1\",\"eqpName\":\"APJ-AT1\"},\n" +
+                    "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-CLEAN-US1\"},\n" +
+                    "{\"eqpId\":\"APJ-TRM1\",\"eqpName\":\"APJ-TRM1\"},\n" +
+                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"APJ-RT\"},\n" +
+                    "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"APJ-HT\"},\n" +
+                    "{\"eqpId\":\"APJ-HTRT1\",\"eqpName\":\"APJ-HTRT1\"},\n" +
+                    "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-OVEN1(JET洗净后恒温槽)\"},\n" +
+                    "{\"eqpId\":\"APJ-AT2\",\"eqpName\":\"APJ-AT2温度仪\"},\n" +
+                    "{\"eqpId\":\"APJ-FREEZER3\",\"eqpName\":\"APJ-FREEZER3(树脂)\"},\n" +
+                    "{\"eqpId\":\"APJ-OVEN2\",\"eqpName\":\"APJ-OVEN2(TRM恒温槽)\"},\n" +
+                    "{\"eqpId\":\"APJ-FREEZER2\",\"eqpName\":\"APJ-FREEZER2(半田)\"},\n" +
+                    "{\"eqpId\":\"APJ-FREEZER1\",\"eqpName\":\"APJ-FREEZER1(AgNps)\"}]";
             List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
             rs.put("eqpId", list);
         } else {
