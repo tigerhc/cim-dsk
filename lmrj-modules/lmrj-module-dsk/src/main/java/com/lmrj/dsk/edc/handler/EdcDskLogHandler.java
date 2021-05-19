@@ -526,7 +526,7 @@ public class EdcDskLogHandler {
                     edcAmsRecord.setLineNo(fabEquipment.getLineNo());
                     edcAmsRecord.setStationCode(fabEquipment.getStationCode());
                 }
-                if ("02070651".equals(alarmCode) || "020707EC".equals(alarmCode)) {
+                /*if ("02070651".equals(alarmCode) || "020707EC".equals(alarmCode)) {
                     com.alibaba.fastjson.JSONObject jsonObject = new com.alibaba.fastjson.JSONObject();
                     jsonObject.put("EQP_ID", eqpId + ":报警"+alarmCode+"   "+edcDskLogOperation.getEventName());
                     jsonObject.put("ALARM_CODE", "E-0003");
@@ -538,7 +538,7 @@ public class EdcDskLogHandler {
                     } catch (Exception e) {
                         log.error("邮件消息发送错误 Exception:", e);
                     }
-                }
+                }*/
                 edcAmsRecordList.add(edcAmsRecord);
                 if ("War04002004".equals(alarmCode) || "War01002013".equals(alarmCode) || "War01002012".equals(alarmCode)) {
 

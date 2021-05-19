@@ -95,10 +95,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String eqpId1 = eqpId;
             if (eqpId.contains("WB")) {
                 eqpId1 = eqpId + "A";
-            }
-            if (eqpId1.contains("DM")) {
+            } else if (eqpId1.contains("DM")) {
                 eqpId1 = "SIM-DM1";
             }
+
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
 
@@ -122,6 +122,78 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+
+    @RequestMapping(value = "/dskapjtrackin/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String dskApjTrackin(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("dsktrackin :  {}", trackinfo);
+        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"trackinfo\":\"" + trackinfo + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(subLineNo, "Param6", "MesLotTrackController.dskApjTrackin", eventDesc, trackinfo, "wangdong");//日志记录参数
+            if (trackinfo.length() < 30) {
+                return "trackinfo too short";
+            }
+            String[] trackinfos = trackinfo.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1].trim();
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
+
+            String eqpId1 = subLineNo;
+            if (subLineNo.contains("IGBT")) {
+                eqpId1 = "APJ-IGBT-SORT1";
+            } else if (eqpId1.contains("FED")) {
+                eqpId1 = "APJ-FRD-SORT1";
+            } else if (eqpId1.contains("IGBTUJH")) {
+                eqpId1 = "APJ-IGBT-SORT3";
+            } else if (eqpId1.contains("FRDUJH")) {
+                eqpId1 = "APJ-FRD-SORT3";
+            } else if (eqpId1.contains("RY1")) {
+                eqpId1 = "APJ-HB1-SORT2";
+            } else if (eqpId1.contains("RY2")) {
+                eqpId1 = "APJ-HB2-SORT2";
+            } else if (eqpId1.contains("ZJ")) {
+                eqpId1 = "APJ-VI1";
+            } else if (eqpId1.contains("TOP")) {
+                eqpId1 = "APJ-DBCT-SORT2";
+            } else if (eqpId1.contains("BOTTOM")) {
+                eqpId1 = "APJ-DBCB-SORT2";
+            } else if (eqpId1.contains("TRM")) {
+                eqpId1 = "APJ-TRM1";
+            } else if (eqpId1.contains("SAT")) {
+                eqpId1 = "APJ-SAT1";
+            } else if (eqpId1.contains("AT") && !eqpId1.contains("S")) {
+                eqpId1 = "APJ-SAT1";
+            } else if (eqpId1.contains("LF")) {
+                eqpId1 = "APJ-LF1";
+            } else if (eqpId1.contains("HTRT")) {
+                eqpId1 = "APJ-HTRT1";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
+            if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
+                log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+            }
+
+
+            MesResult result = mesLotTrackService.apjTrackin(subLineNo, productionNo, productionName, orderNo, lotNo, "", opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(subLineNo, "Result6", "MesLotTrackController.dskApjTrackin", jo.toString(), trackinfo, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return "Y";
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(subLineNo, "Error6", "MesLotTrackController.dskApjTrackin", "有异常", trackinfo, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
     @RequestMapping(value = "/findRecipeName/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findRecipeName(Model model, @PathVariable String eqpId, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
@@ -398,6 +470,81 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
         } catch (Exception e) {
             fabLogService.info(eqpId, "Error6", "MesLotTrackController.dmTrackout", "有异常", trackinfo, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+    @RequestMapping(value = "/dskapjtrackout/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String apjTrackout(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
+        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        fabLogService.info(subLineNo, "Param6", "MesLotTrackController.apjTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
+        try {
+            if (trackinfo.length() < 30) {
+                return "trackinfo too short（过账信息不足！）";
+            }
+            String[] trackinfos = trackinfo.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1].trim();
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
+
+
+            //对当前批次进行判断，若批次结束时间过快，阻止操做
+            String eqpId1 = subLineNo;
+            if (subLineNo.contains("IGBT")) {
+                eqpId1 = "APJ-IGBT-SORT1";
+            } else if (eqpId1.contains("FED")) {
+                eqpId1 = "APJ-FRD-SORT1";
+            } else if (eqpId1.contains("IGBTUJH")) {
+                eqpId1 = "APJ-IGBT-SORT3";
+            } else if (eqpId1.contains("FRDUJH")) {
+                eqpId1 = "APJ-FRD-SORT3";
+            } else if (eqpId1.contains("RY1")) {
+                eqpId1 = "APJ-HB1-SORT2";
+            } else if (eqpId1.contains("RY2")) {
+                eqpId1 = "APJ-HB2-SORT2";
+            } else if (eqpId1.contains("ZJ")) {
+                eqpId1 = "APJ-VI1";
+            } else if (eqpId1.contains("TOP")) {
+                eqpId1 = "APJ-DBCT-SORT2";
+            } else if (eqpId1.contains("BOTTOM")) {
+                eqpId1 = "APJ-DBCB-SORT2";
+            } else if (eqpId1.contains("TRM")) {
+                eqpId1 = "APJ-TRM1";
+            } else if (eqpId1.contains("SAT")) {
+                eqpId1 = "APJ-SAT1";
+            } else if (eqpId1.contains("AT") && !eqpId1.contains("S")) {
+                eqpId1 = "APJ-SAT1";
+            } else if (eqpId1.contains("LF")) {
+                eqpId1 = "APJ-LF1";
+            } else if (eqpId1.contains("HTRT")) {
+                eqpId1 = "APJ-HTRT1";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
+            Date nowTime = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nowLotTrack.getStartTime());
+            calendar.add(Calendar.MINUTE, +5);
+            if (nowTime.before(calendar.getTime())) {
+                log.error("操做人员误操作，不允许提前结束批次" + lotNo);
+                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator（不允许提前结束批次，最短时间五分钟）";
+            }
+
+            MesResult result = mesLotTrackService.apjTrackout(subLineNo, productionNo, productionName, orderNo, lotNo, yield, "", opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(subLineNo, "Result6", "MesLotTrackController.apjTrackout", jo.toString(), trackinfo, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return "Y";
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(subLineNo, "Error6", "MesLotTrackController.apjTrackout", "有异常", trackinfo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
