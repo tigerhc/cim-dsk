@@ -153,7 +153,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     public Response tempEqpList(){
         Response rs = Response.ok();
         if(lineNo.equals("APJ")){//应苏科长要求,REFLOW1 显示REFLOW1,个别设备冰箱等显示描述
-            String str = "[{\"id\":\"APJ-IGBT-REFLOW1\",\"eqpName\":\"APJ-IGBT-REFLOW1\"},\n" +
+            String str = "[{\"eqpId\":\"APJ-IGBT-REFLOW1\",\"eqpName\":\"APJ-IGBT-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-FRD-REFLOW1\",\"eqpName\":\"APJ-FRD-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-DBCT-REFLOW1\",\"eqpName\":\"APJ-DBCT-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-DBCB-REFLOW1\",\"eqpName\":\"APJ-DBCB-REFLOW1\"},\n" +
