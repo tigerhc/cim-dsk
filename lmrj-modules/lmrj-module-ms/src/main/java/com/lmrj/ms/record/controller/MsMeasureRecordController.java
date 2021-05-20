@@ -285,29 +285,32 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             List<Map> weight = msMeasureRecordService.findWeight(param);
             ExcelExportEntity key = new ExcelExportEntity("批号","1");
             keyList.add(key);
-            ExcelExportEntity key2 = new ExcelExportEntity("平均重量","2");
+            ExcelExportEntity keyt = new ExcelExportEntity("时间","2");
+            keyList.add(keyt);
+            ExcelExportEntity key2 = new ExcelExportEntity("平均重量","3");
             keyList.add(key2);
-            ExcelExportEntity key3 = new ExcelExportEntity("最大重量","3");
+            ExcelExportEntity key3 = new ExcelExportEntity("最大重量","4");
             keyList.add(key3);
-            ExcelExportEntity key4 = new ExcelExportEntity("最小重量","4");
+            ExcelExportEntity key4 = new ExcelExportEntity("最小重量","5");
             keyList.add(key4);
-            ExcelExportEntity key5 = new ExcelExportEntity("设定管理上限","5");
+            ExcelExportEntity key5 = new ExcelExportEntity("设定管理上限","6");
             keyList.add(key5);
-            ExcelExportEntity key6 = new ExcelExportEntity("设定管理下限","6");
+            ExcelExportEntity key6 = new ExcelExportEntity("设定管理下限","7");
             keyList.add(key6);
 
             weight.forEach(map -> {
                 Map<String, Object> data = new HashMap<>() ;
                 data.put("1",map.get("lotNo"));
-                data.put("2",map.get("avgWeight"));
-                data.put("3",map.get("limitMax"));
-                data.put("4",map.get("limitMin"));
-                data.put("5",map.get("limit90"));
-                data.put("6",map.get("limit11"));
+                data.put("2",map.get("createDate"));
+                data.put("3",map.get("avgWeight"));
+                data.put("4",map.get("limitMax"));
+                data.put("5",map.get("limitMin"));
+                data.put("6",map.get("limit90"));
+                data.put("7",map.get("limit11"));
                 dataList.add(data);
             });
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测重量","量测详细信息"),keyList,dataList);
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测重量"+productionNo,"量测详细信息"),keyList,dataList);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();
@@ -323,8 +326,6 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             var16.printStackTrace();
             return Response.error(999998, "导出失败");
         }
-
-
     }
 
     @RequestMapping(value = "/getAllProductionNo", method = { RequestMethod.GET, RequestMethod.POST })
