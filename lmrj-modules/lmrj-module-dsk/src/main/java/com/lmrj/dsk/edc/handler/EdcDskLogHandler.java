@@ -485,6 +485,18 @@ public class EdcDskLogHandler {
                 edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
                 edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
                 edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
+                if(edcDskLogOperation.getEventName() == null && edcDskLogOperation.getEventDetail() == null){
+                    if("0".equals(edcDskLogOperation.getEventId())){
+                        edcDskLogOperation.setEventName("自動生産動作停止");
+                        edcDskLogOperation.setEventDetail("自動生産動作停止");
+                    }else if("1".equals(edcDskLogOperation.getEventId())){
+                        edcDskLogOperation.setEventName("自動生産開始");
+                        edcDskLogOperation.setEventDetail("自動生産開始");
+                    }else if("3".equals(edcDskLogOperation.getEventId())){
+                        edcDskLogOperation.setEventName("IDLE(制品等待)");
+                        edcDskLogOperation.setEventDetail("IDLE(制品等待)");
+                    }
+                }
             });
         }
         try {
@@ -666,7 +678,7 @@ public class EdcDskLogHandler {
                     for (EdcDskLogRecipeBody recipeBody : edcDskLogRecipe.getEdcDskLogRecipeBodyList()) {
                         String paramName = recipeBody.getParaName();
                         try {
-                            if(paramName.contains("ボンド荷重") || paramName.contains("超音波出力")){
+                            if(paramName.contains("ボンド荷重") || paramName.contains("超音波出力") ){
                                 String newValue = recipeBody.getSetValue();
                                 String oldValue = recipeBody.getPreValue();
                                 double newvalue = Double.parseDouble(newValue);
