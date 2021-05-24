@@ -1,6 +1,5 @@
 package com.lmrj.iot.config.entity;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
@@ -12,20 +11,13 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * All rights Reserved, Designed By www.lmrj.com
- *
- * @version V1.0
- * @package com.lmrj.iot.config.entity
- * @title: iot_collect_data实体
- * @description: iot_collect_data实体
- * @author: wdj
- * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
+ * @author wdj
+ * @date 2021-05-13 15:42
  */
-
-@TableName("iot_collect_data")
+@TableName("iot_collect_data_his")
 @SuppressWarnings("serial")
 @Data
-public class IotCollectData extends BaseDataEntity {
+public class IotCollectDataHis extends BaseDataEntity {
     /**主键*/
     @TableField(value = "Id")
     private String id;
@@ -36,10 +28,8 @@ public class IotCollectData extends BaseDataEntity {
     @TableField(value = "collect_type")
     private String collectType;
     /**采集时间*/
-    @TableField(value = "collect_date", fill = FieldFill.INSERT)
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    private Date collectDate;
+    @TableField(value = "collect_date")
+    private String collectDate;
     /**上次示数*/
     @TableField(value = "last_num")
     private String lastNum;
@@ -59,5 +49,9 @@ public class IotCollectData extends BaseDataEntity {
     /**警报编码*/
     @TableField(value = "alarm_code")
     private String alarmCode;
-	
+    /**归档时间*/
+    @TableField(value = "end_date", fill = FieldFill.INSERT)
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    private Date endDate;
 }

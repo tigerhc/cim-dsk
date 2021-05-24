@@ -15,4 +15,6 @@ import com.lmrj.iot.config.entity.IotCollectData;
 */
 public interface IIotCollectDataService extends ICommonService<IotCollectData> {
 
+    void collectDataAndAlarm(IotCollectData fromdata);
+
 }

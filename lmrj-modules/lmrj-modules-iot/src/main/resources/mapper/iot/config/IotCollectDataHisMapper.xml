@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.iot.config.mapper.IotCollectDataHisMapper" >
+
+    <sql id="Base_Column_List" >
+       t.id,
+       t.eqp_id,
+       t.collect_type,
+       t.collect_date,
+       t.last_num,
+       t.this_num,
+       t.num_multiple,
+       t.num_type,
+       t.alarm_flag,
+       t.alarm_code,
+       t.end_date
+	</sql>
+</mapper>
