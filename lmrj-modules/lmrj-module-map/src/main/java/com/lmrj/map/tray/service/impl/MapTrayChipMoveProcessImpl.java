@@ -369,7 +369,7 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             traceLog.setRemarks("追溯正常的数据");
         }
         traceLog.setProcTotal(Long.valueOf(startData.size()));
-        List<MapTrayChipLogDetail> errDetailList = new ArrayList<>();
+//        List<MapTrayChipLogDetail> errDetailList = new ArrayList<>();
         long error = 0;
         long suc = 0;
         String errorLotNo = "";
@@ -380,7 +380,7 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 List<MapTrayChipMove> traceList = new ArrayList<>();
                 traceList.add(startItem);
                 buff.add(startItem);
-                if(!startItem.getLotNo().equals(errorLotNo)){
+                if(!errorLotNo.equals(startItem.getLotNo())){
                     while(traceList.size()>0){
                         MapTrayChipMove item = traceList.get(0);
 //                        if(item.getEqpType()==4){
@@ -429,11 +429,11 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                         }else if(item.getEqpType()!=1){//没有找到记录，并且非开始设备
                             clearBuff(buff, 2);
                             error++;
-                            MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
-                            errDetail.setWarnDtl("缺少上游数据，当前的数据是:"+JsonUtil.toJsonString(item));
-                            errDetail.setWarnId(item.getId());
-                            errDetail.setCreateDate(new Date());
-                            errDetailList.add(errDetail);
+//                            MapTrayChipLogDetail errDetail = new MapTrayChipLogDetail();
+//                            errDetail.setWarnDtl("缺少上游数据，当前的数据是:"+JsonUtil.toJsonString(item));
+//                            errDetail.setWarnId(item.getId());
+//                            errDetail.setCreateDate(new Date());
+//                            errDetailList.add(errDetail);
                             for(MapTrayChipMove errorItem : buff){
                                 traceList.remove(errorItem);
                             }
@@ -452,9 +452,9 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
         traceLog.setEndTime(new Date());
         //追溯补全log中只有开始时间没有结束时间的记录，以此标志着此次追溯完毕
         mpTrayChipLogService.updateById(traceLog);
-        if(errDetailList.size()>0){
-            mapTrayChipLogDetailService.insertBatch(errDetailList, 500);
-        }
+//        if(errDetailList.size()>0){
+//            mapTrayChipLogDetailService.insertBatch(errDetailList, 500);
+//        }
 //        baseMapper.updateChipIds();
     }
 
@@ -516,9 +516,16 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                         module=item;
                     }
                 }
-                mapFlag = module.getMapFlag();
-                module.setMapFlag(++mapFlag);
-                updateById(module);
+                if(module == null){//NG
+                    for(MapTrayChipMove item : buff){
+                        item.setMapFlag(mapFlag);
+                    }
+                    updateBatchById(buff,500);
+                } else {//良品追溯
+                    mapFlag = module.getMapFlag();
+                    module.setMapFlag(++mapFlag);
+                    updateById(module);
+                }
             }else{
                 for(MapTrayChipMove item : buff){
                     item.setMapFlag(mapFlag);
