@@ -1,9 +1,9 @@
 package com.lmrj.mes.measure.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.mes.measure.entity.MeasureSx;
-import com.lmrj.mes.measure.mapper.MeasureSxMapper;
-import com.lmrj.mes.measure.service.MeasureSxService;
+import com.lmrj.mes.measure.entity.MeasureSim;
+import com.lmrj.mes.measure.mapper.MeasureSimMapper;
+import com.lmrj.mes.measure.service.MeasureSimService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Transactional
-@Service("MeasureSxService")
+@Service("MeasureSimService")
 @Slf4j
-public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, MeasureSx> implements MeasureSxService {
+public class MeasureSimServiceImpl extends CommonServiceImpl<MeasureSimMapper, MeasureSim> implements MeasureSimService {
     @Autowired
-    private MeasureSxMapper measureSxMapper;
+    private MeasureSimMapper measureSimMapper;
 
     public List<Map<String, String>> findProductionNo(String type) {
-        List<Map<String, String>> result = measureSxMapper.findProductionNo(type);
+        List<Map<String, String>> result = measureSimMapper.findProductionNo(type);
         for (Map map : result) {
             String productionNo = (String) map.get("productionNo");
             map.clear();
@@ -29,11 +29,11 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         return result;
     }
 
-    public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
+    public List findSimNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
         number = "1";
-        List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
+        List<Map<String, String>> result = measureSimMapper.findSimNumber(productionName, number, startDate, endDate, type);
         number = "2";
-        List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
+        List<Map<String, String>> result2 = measureSimMapper.findSimNumber(productionName, number, startDate, endDate, type);
         List patent = new LinkedList();
         List title = new LinkedList();
         List arr = new LinkedList();

@@ -96,11 +96,11 @@ public class MapTrayChipMoveController {
     /**
      * 查询晶圆轨迹
      *
-     * @param chipId
+     * @param id
      */
     @RequestMapping(value = "dmDetail", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response dmDetail(@RequestParam String chipId) {
-        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(chipId);
+    public Response dmDetail(@RequestParam String id) {
+        List<Map<String, Object>> list = mapTrayChipMoveProcessService.dmDetail(id);
         return DateResponse.ok(list);
     }
 
@@ -139,5 +139,13 @@ public class MapTrayChipMoveController {
             }
         }
         return Response.error("没有得到返回结果");
+    }
+
+    @RequestMapping(value = "getProductionParam", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getProductionParam(@RequestParam String id){
+        Response rs = Response.ok();
+        Map<String, Object> productionParam = mapTrayChipMoveProcessService.getProductionParam(Long.parseLong(id));
+        rs.put("paramObj", productionParam);
+        return rs;
     }
 }

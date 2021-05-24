@@ -67,7 +67,9 @@
            CAST(min(dtl.limit_max)*1000 AS DECIMAL(10,2)) as "limitMax",
            CAST(((min(dtl.limit_min)+min(dtl.limit_max))/2+(min(dtl.limit_max)-min(dtl.limit_min))/2*0.9)*1000 AS DECIMAL(10,2)) as "limit90",
            CAST(((min(dtl.limit_min)+min(dtl.limit_max))/2-(min(dtl.limit_max)-min(dtl.limit_min))/2*0.9)*1000 AS DECIMAL(10,2)) as "limit11",
-           rcd.lot_no as "lotNo"
+
+           rcd.lot_no as "lotNo",
+           dtl.create_date as "createDate"
            from ms_measure_record_detail dtl
            LEFT JOIN ms_measure_record rcd on rcd.id=dtl.ms_record_id
            where dtl.item_code='WEIGHT'

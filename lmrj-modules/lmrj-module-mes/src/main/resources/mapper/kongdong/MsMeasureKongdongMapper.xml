@@ -32,7 +32,8 @@
     </select>
 
     <select id="getData" parameterType="java.util.Map" resultType="java.util.Map">
-        select void_ratio as "voidRatio", lot_no as "lotNo", type as "lineType"
+        select void_ratio as "voidRatio", lot_no as "lotNo", type as "lineType",
+            date_format(create_date,'%Y-%m-%d %H:%i:%s') as "createDate"
         from ms_measure_kongdong where production_name=concat('J.',#{productionName})
         <if test="startTime!=null and startTime!=''">
             and create_date>#{startTime}

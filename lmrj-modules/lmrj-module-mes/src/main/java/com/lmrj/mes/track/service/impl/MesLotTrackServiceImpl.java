@@ -13,7 +13,7 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
-import com.lmrj.mes.measure.entity.measureSx;
+import com.lmrj.mes.measure.entity.MeasureSx;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
@@ -605,10 +605,17 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
+    public MesResult apjTrackin(String subLineNo, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
+        MesResult result = MesResult.ok();
+        saveTrackLog(subLineNo, "TRACKIN", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
+        result = trackinLine(subLineNo, productionNo, productionName, orderNo, lotNo, recipeCode, opId);
+        return result;
+    }
+
     /**
      * 针对线别track in,直接更新这条线全部设备
      *
-     * @param lineNo
+     * @param sublineNo
      * @param productionName
      * @param productionNo
      * @param orderNo
@@ -627,11 +634,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
      * "SIM-HGAZO1"
      * };
      */
-    public MesResult trackinLine(String lineNo, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
+    public MesResult trackinLine(String sublineNo, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
-        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpBySubLine(lineNo);
+        List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpBySubLine(sublineNo);
         if (fabEquipmentList.size() == 0) {
-            return MesResult.error("eqp not found");
+            return MesResult.error(sublineNo+" eqp not found");
         }
         int takeTime = 0;
         for (FabEquipment fabEquipment : fabEquipmentList) {
@@ -643,6 +650,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         return result;
     }
+
+
 
     public MesResult trackinWB(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
@@ -674,6 +683,14 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 result = trackoutLine(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
             }
         }
+        return result;
+    }
+
+
+    public MesResult apjTrackout(String subLineNo, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
+        MesResult result = MesResult.ok();
+        saveTrackLog(subLineNo, "TRACKOUT", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
+        result = trackoutLine(subLineNo, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
         return result;
     }
 
@@ -1153,6 +1170,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     for (int j = 7; j < ele.length; j++) {
                         str.add(ele[j]);
                     }
+
+
                 }
             }
         }
@@ -1186,7 +1205,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 String[] colum2 = row[2].split("-");
                 if (production.equals(colum2[0]) && lotNo.equals(colum2[1]) && row[4].equals("OK")) {
                     result.append(row[7] + "," + row[8] + "," + row[9] + "," + row[10] + "," + row[11] + "," + row[12] + "," + row[13] + "," + row[14] + ",");
-                    measureSx measure = new measureSx();
+                    MeasureSx measure = new MeasureSx();
+                    measure.setLineNo("SX");
                     measure.setMeaDate(df.parse(row[1]));
                     measure.setLotNo(colum2[1]);
                     measure.setProductionNo(colum2[0]);

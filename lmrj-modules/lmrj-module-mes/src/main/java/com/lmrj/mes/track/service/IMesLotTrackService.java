@@ -22,7 +22,11 @@ import java.util.Map;
 public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
     MesResult trackin(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId);
 
+    MesResult apjTrackin(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId);
+
     MesResult trackout(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId);
+
+    MesResult apjTrackout(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId);
 
     MesResult findRecipeName(String eqpId, String opId);
 

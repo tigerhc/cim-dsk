@@ -87,9 +87,6 @@
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
 		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
 		(
-		select param_value from edc_dsk_log_production prod where prod.start_time=chip.start_time and prod.eqp_id=chip.eqp_id limit 1
-		) as productionParam,
-		(
 		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
 		) as productionTitle,
 		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
@@ -312,5 +309,24 @@
 		from map_tray_chip_move
 		where chip_id=#{chipId} and dm_id is not null
 		GROUP BY dm_id,eqp_id
+	</select>
+
+	<select id="findNGProParam" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT param_value from edc_dsk_log_production_defective
+		where start_time=#{startTime}
+		and eqp_id=#{eqpId}
+		limit 1
+	</select>
+	<select id="findProParam" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT param_value from edc_dsk_log_production
+		where start_time=#{startTime}
+		and eqp_id=#{eqpId}
+		limit 1
+	</select>
+	<select id="findParamTitle" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT col_name as "colName",default_value as "defaultValue",limit_min as "limitMin",limit_max as "limitMax" from edc_config_file_csv
+		where file_type='PRODUCTION'
+		and eqp_model_name=#{eqpModelName}
+		order by sort_no
 	</select>
 </mapper>

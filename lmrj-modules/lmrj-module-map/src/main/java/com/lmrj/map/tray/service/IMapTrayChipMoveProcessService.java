@@ -16,4 +16,6 @@ public interface IMapTrayChipMoveProcessService extends ICommonService<MapTrayCh
     void traceData(MapTrayChipLog traceLog, String flag);
 
     List<Map<String, Object>> dmDetail(String chipId);
+
+    Map<String, Object> getProductionParam(long id);
 }

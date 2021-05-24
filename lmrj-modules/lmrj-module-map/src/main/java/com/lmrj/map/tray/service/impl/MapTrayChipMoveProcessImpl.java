@@ -8,7 +8,7 @@ import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
 import com.lmrj.map.tray.service.IMapTrayChipLogDetailService;
 import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
-import com.lmrj.map.tray.util.TraceDateUtil;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -24,6 +25,8 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
     private IMapTrayChipLogService mpTrayChipLogService;
     @Autowired
     private IMapTrayChipLogDetailService mapTrayChipLogDetailService;
+
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 //    @Override
 //    public void traceDataNeedSpace() {
 //        List<MapTrayChipMove> traceDatas = new ArrayList<>();
@@ -456,30 +459,52 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
     }
 
     @Override
-    public List<Map<String, Object>> dmDetail(String chipId) {
-        List<Map<String, Object>> list = baseMapper.dmDetail(chipId);
-        for(Map<String, Object> item : list){
-            String[] xs = MapUtils.getString(item, "dmX").split(",");
-            String[] ys = MapUtils.getString(item, "dmY").split(",");
-
-            String xy = xs[0]+"_"+ys[0];
-            List<Map<String, Integer>> dmXY = new ArrayList<>();
-            for(int i=0; i<xs.length; i++){
-                xy = xy + ","+ xs[i]+"_"+ys[i];
-                Map<String, Integer> xyMap = new HashMap<>();
-                xyMap.put("dmX", Integer.parseInt(xs[i]));
-                xyMap.put("dmY", Integer.parseInt(ys[i]));
-                dmXY.add(xyMap);
-                if(i==0){
-                    xy = xs[i]+"_"+ys[i];
-                }else{
-                    xy = xy + ","+ xs[i]+"_"+ys[i];
-                }
-            }
-            item.put("lightPst", dmXY);
-            item.put("pstDesc", xy);
+    public List<Map<String, Object>> dmDetail(String id) {
+        if(StringUtils.isEmpty(id)){
+            return null;
         }
-        return list;
+        MapTrayChipMove chipObj = baseMapper.selectById(Integer.parseInt(id));
+        if(chipObj!=null && StringUtil.isNotEmpty(chipObj.getChipId())){
+            List<Map<String, Object>> list = baseMapper.dmDetail(chipObj.getChipId());
+            for(Map<String, Object> item : list){
+                String[] xs = MapUtils.getString(item, "dmX").split(",");
+                String[] ys = MapUtils.getString(item, "dmY").split(",");
+
+                String xy = xs[0]+"_"+ys[0];
+                List<Map<String, Integer>> dmXY = new ArrayList<>();
+                for(int i=0; i<xs.length; i++){
+                    xy = xy + ","+ xs[i]+"_"+ys[i];
+                    Map<String, Integer> xyMap = new HashMap<>();
+                    xyMap.put("dmX", Integer.parseInt(xs[i]));
+                    xyMap.put("dmY", Integer.parseInt(ys[i]));
+                    dmXY.add(xyMap);
+                    if(i==0){
+                        xy = xs[i]+"_"+ys[i];
+                    }else{
+                        xy = xy + ","+ xs[i]+"_"+ys[i];
+                    }
+                }
+                item.put("lightPst", dmXY);//[{"dmX":1,"dmY":2},{"dmX":1,"dmY":2}]
+            }
+            return list;
+        } else {
+            List<Map<String, Object>> list = new ArrayList<>();
+            Map<String, Object> listItem = new HashMap();
+
+            //晶圆坐标信息
+            List<Map<String, Object>> positionList = new ArrayList<>();
+            Map<String, Object> positionItem = new HashMap();
+            positionItem.put("dmX", chipObj.getDmX());
+            positionItem.put("dmY", chipObj.getDmY());
+            positionList.add(positionItem);
+            listItem.put("lightPst", positionList);
+            //其他信息
+            listItem.put("eqpId", chipObj.getEqpId());
+            listItem.put("dmId", chipObj.getDmId());
+            listItem.put("startTime", DateUtil.formatDate(chipObj.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+            list.add(listItem);
+            return list;
+        }
     }
 
     public void clearBuff(List<MapTrayChipMove> buff, int mapFlag){
@@ -503,5 +528,30 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             }
             buff.clear();
         }
+    }
+
+    @Override
+    public Map<String, Object> getProductionParam(long id){
+        Map<String, Object> rs = new HashMap<>();
+        MapTrayChipMove data = baseMapper.selectById(id);
+        if(data == null){
+            return null;
+        }
+        if("APJ-HTRT1".equals(data.getEqpId())){//高温室温检查
+
+        } else {
+            Map<String, Object> param = new HashMap<>();
+            param.put("eqpId", data.getEqpId());
+            String startTime = sdf.format(data.getStartTime());
+            startTime = startTime.length()>23? startTime.substring(0,23):startTime;//2021-04-28 09:10:46.248
+            param.put("startTime",startTime);
+            if("N".equals(data.getJudgeResult())){//不良品
+                rs.put("paramValue", baseMapper.findNGProParam(param));
+            } else {
+                rs.put("paramValue", baseMapper.findProParam(param));
+            }
+            rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
+        }
+        return rs;
     }
 }
