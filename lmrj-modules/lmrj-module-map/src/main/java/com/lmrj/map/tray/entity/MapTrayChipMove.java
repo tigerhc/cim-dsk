@@ -83,4 +83,7 @@ public class MapTrayChipMove {
 
     @TableField(exist = false)
     private String lmtTime;
+
+    @TableField(exist = false)
+    private String mapLot;
 }
