@@ -42,7 +42,7 @@ public class RepeatAlarmJob {
     private EqpApiService eqptService ; //设备操作OPI接口
 
 
-    /*protected void run() {
+   /* protected void run() {
         log.info("start 检查报警信息");
         Integer jobCycle = 5;
         Date currentDate = new Date();

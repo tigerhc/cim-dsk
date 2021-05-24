@@ -3,6 +3,8 @@ package com.lmrj.edc.param.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.edc.param.entity.EdcParamDefineModel;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -16,4 +18,5 @@ import com.lmrj.edc.param.entity.EdcParamDefineModel;
 */
 public interface IEdcParamDefineModelService extends ICommonService<EdcParamDefineModel> {
 
+    List<String> getParamValues(String eqpId,String numType);
 }

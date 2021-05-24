@@ -50,6 +50,22 @@ public class EdcAmsDefineServiceImpl  extends CommonServiceImpl<EdcAmsDefineMapp
         return edcParamRecord;
     }
 
+    /**
+     * 获取警报定义
+     * edit by wdj
+     * @param alarmCode
+     * @return
+     */
+    @Override
+    public EdcAmsDefine selectByCode(String alarmCode){
+        EdcAmsDefine from = new EdcAmsDefine();
+        from.setAlarmCode(alarmCode);
+        EdcAmsDefine edcParamRecord = baseMapper.selectOne(from);
+        List<EdcAmsDefineI18n> edcParamRecordDtlList = edcAmsDefineI18nService.selectList(new EntityWrapper<EdcAmsDefineI18n>(EdcAmsDefineI18n.class).eq("alarm_id",edcParamRecord.getId()));
+        edcParamRecord.setEdcAmsDefineI18nList(edcParamRecordDtlList);
+        return edcParamRecord;
+    }
+
     @Override
     public boolean insert(EdcAmsDefine edcParamRecord) {
         // 保存主表

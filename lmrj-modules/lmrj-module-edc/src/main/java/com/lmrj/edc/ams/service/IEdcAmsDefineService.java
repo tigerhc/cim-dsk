@@ -17,4 +17,5 @@ import com.lmrj.edc.ams.entity.EdcAmsDefine;
 public interface IEdcAmsDefineService extends ICommonService<EdcAmsDefine> {
 
     boolean editFlag(String id, String flag);
+    public EdcAmsDefine selectByCode(String alarmCode);
 }

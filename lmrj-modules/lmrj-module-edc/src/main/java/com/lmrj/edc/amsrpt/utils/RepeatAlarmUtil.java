@@ -20,6 +20,8 @@ import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.impl.EqpApiService;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.rw.plan.entity.RwPlan;
+import com.lmrj.rw.plan.service.IRwPlanService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author hsg
@@ -64,6 +63,8 @@ public class RepeatAlarmUtil {
     private IEdcAmsDefineService edcAmsDefineService;
     @Autowired
     private IEdcAmsRptDefineActEmailService edAmsRptEamilService;
+    @Autowired
+    private IRwPlanService rwPlanService;
 
     public void queryAlarmDefine(){
         //先查询alarm配置保存在redis中
@@ -116,7 +117,7 @@ public class RepeatAlarmUtil {
 
                           //增加警报类型逻辑如果是rpt-alarm 则立刻发送邮件否则逻辑不变
                           if(!"param_check".equals(edcAmsRecord.getAlarmCode())){
-                              resolveRepeatAlarm(amsRptDefine, edcAmsRecord);
+                              resolveRepeatAlarm(amsRptDefine, edcAmsRecord,amsDefine);
                           }else{
                             //邮件发送
                             //获取邮件发送人
@@ -176,7 +177,7 @@ public class RepeatAlarmUtil {
 ////        }
     }
 
-    private void resolveRepeatAlarm(EdcAmsRptDefine amsRptDefine ,EdcAmsRecord edcAmsRecord){
+    private void resolveRepeatAlarm(EdcAmsRptDefine amsRptDefine ,EdcAmsRecord edcAmsRecord,EdcAmsDefine edcAmsDefine){
         String eventId = StringUtil.randomTimeUUID("RPT");
         log.info("start 判断是否触发重复报警{} : {}", edcAmsRecord.getEqpId(), edcAmsRecord.getAlarmCode());
         String key = edcAmsRecord.getEqpId() + edcAmsRecord.getAlarmCode();
@@ -188,8 +189,20 @@ public class RepeatAlarmUtil {
             if (lastAlarm.getCreateDate().getTime() - firstAlarm.getCreateDate().getTime() < amsRptDefine.getRepeatCycle() * 60 * 1000){
                 fabLogService.info(edcAmsRecord.getEqpId(),eventId,"","触发重复报警",edcAmsRecord.getLotNo(),"");
                 //如果集合中第一个报警和最后一个报警之间的间隔时间小于配置的报警时间
-                //锁住设备
-                eqptService.lockEqpt("1", edcAmsRecord.getEqpId(),"ALARM_LOCK");
+                if(edcAmsDefine.getAlarmCategory()!=null&&"2".equals(edcAmsDefine.getAlarmCategory())){//所有IOT采集生成警报  定义都是2方便判断是否发送工单
+                    RwPlan plan = new RwPlan();
+                    plan.setPlanId(edcAmsRecord.getId());
+                    plan.setEqpId(edcAmsRecord.getEqpId());
+                    plan.setAssignedTime(new Date());
+                    plan.setAssignedUser("robbort");//机器人时设备有权限都可指派
+                    plan.setPlanType("2");//警报类工单
+                    plan.setPlanStatus("1");//带一环节工单（生成）
+                    rwPlanService.createPlan(plan);
+                }else{
+                    //锁住设备
+                    eqptService.lockEqpt("1", edcAmsRecord.getEqpId(),"ALARM_LOCK");
+                }
+
                 //TODO  发送邮件
 //                .sendEmail("ALARM","","RepeatAlarm信息",
 //                        "机台:" + edcAmsRecord.getEqpId() + ",触发RepeatAlarm,报警信息如下：" + "\n"
