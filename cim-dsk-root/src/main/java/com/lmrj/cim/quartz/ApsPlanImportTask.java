@@ -33,14 +33,16 @@ public class ApsPlanImportTask {
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Value("${aps.dir}")
-    public String dir;
+    static public String dir;
+    static {
+        String year = DateUtil.getYear().substring(2,4);
+        dir = dir+"日次計画"+year+"年\\";
+    }
 
     public void rundskAps() {
         try {
             log.info("计划插入定时任务开始执行");
             String[] extensions = {"xls"};
-            String year = DateUtil.getYear().substring(2,4);
-            dir = dir+"日次計画"+year+"年\\";
             log.error("   dir:"+dir);
             List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
             if(files.size() == 0){
