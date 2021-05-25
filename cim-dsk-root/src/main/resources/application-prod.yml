@@ -187,7 +187,7 @@ upload:
     size: 52428800 #最大文件大小 50M
 
 aps:
-  dir: X:\General\半)生産管理部\Public\生産計画(社外秘)\日次投入計画(社外秘)\
+  dir: X:\General\半)生産管理部\Public\生産計画(社外秘)\日次投入計画(社外秘)\日次計画21年\
 
 dsk:
   lineNo: SIM
