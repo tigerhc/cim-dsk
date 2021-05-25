@@ -13,7 +13,9 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
+import com.lmrj.mes.measure.entity.MeasureSim;
 import com.lmrj.mes.measure.entity.MeasureSx;
+import com.lmrj.mes.measure.mapper.MeasureSimMapper;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
@@ -72,6 +74,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IMsMeasureKongdongService iMsMeasureKongdongService;
     @Autowired
     MeasureSxMapper measureSxMapper;
+    @Autowired
+    MeasureSimMapper measureSimMapper;
 
     /**
      * 按照eqp和line获取recipe
@@ -1080,10 +1084,29 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             log.info("基恩士:" + lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             if (ele2.length == 3) {
                 if (ele2[1].equals(lotNo) && ele2[0].equals(production) && ele[4].equals("OK")) {
+                    MeasureSim measureSim = new MeasureSim();
+                    measureSim.setLotNo(lotNo);
+                    measureSim.setLineNo("SIM6812M");
+                    measureSim.setMeasureType(mode);
+                    measureSim.setMeasureCounter(ele[6]);
+                    measureSim.setMeasureName(ele[5]);
+                    measureSim.setMeasureJudgment(ele[4]);
+                    try {
+                        measureSim.setMeaDate(df.parse(ele[1]));
+                        measureSim.setA1(Double.valueOf(ele[7]));
+                        measureSim.setB1(Double.valueOf(ele[8]));
+                        measureSim.setC1(Double.valueOf(ele[9]));
+                        measureSim.setC21(Double.valueOf(ele[28]));
+                    } catch (Exception e) {
+                        log.error("SIM分离数据解析出错！",e);
+                        e.printStackTrace();
+                    }
                     if (mode.equals("0")) {
                         if (ele[3].equals("0001-1") && one == 0) {
+                            measureSim.setSerialCounter("1-1");
                             Map<String, Object> map = new HashMap<>();
                             str.add(ele[7]);
                             str.add(ele[8]);
@@ -1091,6 +1114,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[28]);
                             one = 1;
                         } else if (ele[3].equals("0001-2") && two == 0) {
+                            measureSim.setSerialCounter("1-2");
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
@@ -1100,18 +1124,26 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     }
                     if (mode.equals("1")) {
                         if (ele[3].equals("0002-1") && three == 0) {
+                            measureSim.setSerialCounter("2-1");
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             three = 1;
                         } else if (ele[3].equals("0002-2") && four == 0) {
+                            measureSim.setSerialCounter("2-2");
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             four = 1;
                         }
+                    }
+                    EntityWrapper wrapper = new EntityWrapper();
+                    wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type",mode).eq("serial_counter",ele[6]);
+                    Integer nm = measureSimMapper.selectCount(wrapper);
+                    if (nm < 1) {
+                        measureSimMapper.insert(measureSim);
                     }
                 }
             }

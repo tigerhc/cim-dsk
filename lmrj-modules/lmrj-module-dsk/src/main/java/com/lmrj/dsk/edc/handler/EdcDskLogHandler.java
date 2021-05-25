@@ -782,6 +782,9 @@ public class EdcDskLogHandler {
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
+        if(eqpId.contains("TRM") && alarmCode.equals("E-0005")){
+            code = "E-0005";
+        }
         List<Map<String, Object>> users = new ArrayList<>();
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
