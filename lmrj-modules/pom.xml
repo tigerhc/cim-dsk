@@ -22,6 +22,8 @@
         <module>lmrj-module-mes</module>
         <module>lmrj-module-ms</module>
         <module>lmrj-module-map</module>
+        <module>lmrj-modules-iot</module>
+        <module>lmrj-modules-rw</module>
     </modules>
 
 </project>
