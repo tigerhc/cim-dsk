@@ -1188,7 +1188,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLineNo("5GI");
                             measureGi.setProductionNo(productionName);//机种名
                             measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3]);//串行计数器
+                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
@@ -1257,7 +1257,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLineNo("6GI");
                             measureGi.setProductionNo(productionName);//机种名
                             measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3]);//串行计数器
+                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
