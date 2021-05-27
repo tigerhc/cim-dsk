@@ -1193,23 +1193,24 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
                             measureGi.setMeaDate(df.parse(ele[1]));
-                            measureGi.setPinf1(Double.parseDouble(ele[7]));
-                            measureGi.setPinf2(Double.parseDouble(ele[8]));
-                            measureGi.setPinf3(Double.parseDouble(ele[9]));
-                            measureGi.setPinf4(Double.parseDouble(ele[10]));
-                            measureGi.setPinf5(Double.parseDouble(ele[11]));
-                            measureGi.setPinf6(Double.parseDouble(ele[12]));
-                            measureGi.setPinf1f2(Double.parseDouble(ele[13]));
-                            measureGi.setPinf2f3(Double.parseDouble(ele[14]));
-                            measureGi.setPinf3f4(Double.parseDouble(ele[15]));
-                            measureGi.setPinf4f5(Double.parseDouble(ele[16]));
-                            measureGi.setPinf5f6(Double.parseDouble(ele[17]));
-                            measureGi.setPins1(Double.parseDouble(ele[18]));
-                            measureGi.setPins2(Double.parseDouble(ele[19]));
-                            measureGi.setPins3(Double.parseDouble(ele[20]));
-                            measureGi.setPins4(Double.parseDouble(ele[21]));
-                            measureGi.setPins5(Double.parseDouble(ele[22]));
-                            measureGi.setPins6(Double.parseDouble(ele[23]));
+                            measureGi.setBurrf(Double.parseDouble(ele[7]));
+                            measureGi.setPinf1(Double.parseDouble(ele[8]));
+                            measureGi.setPinf2(Double.parseDouble(ele[9]));
+                            measureGi.setPinf3(Double.parseDouble(ele[10]));
+                            measureGi.setPinf4(Double.parseDouble(ele[11]));
+                            measureGi.setPinf5(Double.parseDouble(ele[12]));
+                            measureGi.setPinf6(Double.parseDouble(ele[13]));
+                            measureGi.setPinf1f2(Double.parseDouble(ele[14]));
+                            measureGi.setPinf2f3(Double.parseDouble(ele[15]));
+                            measureGi.setPinf3f4(Double.parseDouble(ele[16]));
+                            measureGi.setPinf4f5(Double.parseDouble(ele[17]));
+                            measureGi.setPinf5f6(Double.parseDouble(ele[18]));
+                            measureGi.setPins1(Double.parseDouble(ele[19]));
+                            measureGi.setPins2(Double.parseDouble(ele[20]));
+                            measureGi.setPins3(Double.parseDouble(ele[21]));
+                            measureGi.setPins4(Double.parseDouble(ele[22]));
+                            measureGi.setPins5(Double.parseDouble(ele[23]));
+                            measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
                             wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "5GI").eq("serial_counter", ele[6]);
                             Integer nm = measureGiMapper.selectCount(wrapper);
@@ -1262,23 +1263,24 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
                             measureGi.setMeaDate(df.parse(ele[1]));
-                            measureGi.setPinf1(Double.parseDouble(ele[7]));
-                            measureGi.setPinf2(Double.parseDouble(ele[8]));
-                            measureGi.setPinf3(Double.parseDouble(ele[9]));
-                            measureGi.setPinf4(Double.parseDouble(ele[10]));
-                            measureGi.setPinf5(Double.parseDouble(ele[11]));
-                            measureGi.setPinf6(Double.parseDouble(ele[12]));
-                            measureGi.setPinf1f2(Double.parseDouble(ele[13]));
-                            measureGi.setPinf2f3(Double.parseDouble(ele[14]));
-                            measureGi.setPinf3f4(Double.parseDouble(ele[15]));
-                            measureGi.setPinf4f5(Double.parseDouble(ele[16]));
-                            measureGi.setPinf5f6(Double.parseDouble(ele[17]));
-                            measureGi.setPins1(Double.parseDouble(ele[18]));
-                            measureGi.setPins2(Double.parseDouble(ele[19]));
-                            measureGi.setPins3(Double.parseDouble(ele[20]));
-                            measureGi.setPins4(Double.parseDouble(ele[21]));
-                            measureGi.setPins5(Double.parseDouble(ele[22]));
-                            measureGi.setPins6(Double.parseDouble(ele[23]));
+                            measureGi.setBurrf(Double.parseDouble(ele[7]));
+                            measureGi.setPinf1(Double.parseDouble(ele[8]));
+                            measureGi.setPinf2(Double.parseDouble(ele[9]));
+                            measureGi.setPinf3(Double.parseDouble(ele[10]));
+                            measureGi.setPinf4(Double.parseDouble(ele[11]));
+                            measureGi.setPinf5(Double.parseDouble(ele[12]));
+                            measureGi.setPinf6(Double.parseDouble(ele[13]));
+                            measureGi.setPinf1f2(Double.parseDouble(ele[14]));
+                            measureGi.setPinf2f3(Double.parseDouble(ele[15]));
+                            measureGi.setPinf3f4(Double.parseDouble(ele[16]));
+                            measureGi.setPinf4f5(Double.parseDouble(ele[17]));
+                            measureGi.setPinf5f6(Double.parseDouble(ele[18]));
+                            measureGi.setPins1(Double.parseDouble(ele[19]));
+                            measureGi.setPins2(Double.parseDouble(ele[20]));
+                            measureGi.setPins3(Double.parseDouble(ele[21]));
+                            measureGi.setPins4(Double.parseDouble(ele[22]));
+                            measureGi.setPins5(Double.parseDouble(ele[23]));
+                            measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
                             wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "6GI").eq("serial_counter", ele[6]);
                             Integer nm = measureGiMapper.selectCount(wrapper);
@@ -1347,6 +1349,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     Integer nm = measureSxMapper.selectCount(wrapper);
                     if (nm < 1) {
                         measureSxMapper.insert(measure);
+                    }else {
+
                     }
                 }
             }
