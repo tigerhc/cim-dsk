@@ -499,9 +499,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-IGBT-SORT1";
             } else if (eqpId1.contains("FED")) {
                 eqpId1 = "APJ-FRD-SORT1";
-            } else if (eqpId1.contains("IGBTUJH")) {
+            } else if (eqpId1.contains("IGBTYJH")) {
                 eqpId1 = "APJ-IGBT-SORT3";
-            } else if (eqpId1.contains("FRDUJH")) {
+            } else if (eqpId1.contains("FRDYJH")) {
                 eqpId1 = "APJ-FRD-SORT3";
             } else if (eqpId1.contains("RY1")) {
                 eqpId1 = "APJ-HB1-SORT2";
