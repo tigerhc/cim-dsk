@@ -145,7 +145,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String eqpId1 = subLineNo;
             if (subLineNo.contains("IGBT")) {
                 eqpId1 = "APJ-IGBT-SORT1";
-            } else if (eqpId1.contains("FED")) {
+            } else if (eqpId1.contains("FRD")) {
                 eqpId1 = "APJ-FRD-SORT1";
             } else if (eqpId1.contains("IGBTUJH")) {
                 eqpId1 = "APJ-IGBT-SORT3";
