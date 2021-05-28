@@ -1127,25 +1127,27 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                         }
                     }
                     try {
-                        MeasureSim measureSim = new MeasureSim();
-                        measureSim.setLotNo(lotNo);
-                        measureSim.setLineNo("SIM");
-                        measureSim.setProductionNo("SIM6812M(E)D-URA_F2971");
-                        measureSim.setMeasureType("IT");
-                        measureSim.setMeasureCounter(ele[6]);
-                        measureSim.setMeasureName(ele[5]);
-                        measureSim.setMeasureJudgment(ele[4]);
-                        measureSim.setMeaDate(df.parse(ele[1]));
-                        measureSim.setA1(Double.valueOf(ele[7]));
-                        measureSim.setB1(Double.valueOf(ele[8]));
-                        measureSim.setC1(Double.valueOf(ele[9]));
-                        measureSim.setC21(Double.valueOf(ele[28]));
-                        measureSim.setSerialCounter(serialCounter);
-                        EntityWrapper wrapper = new EntityWrapper();
-                        wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", mode).eq("serial_counter", ele[6]);
-                        Integer nm = measureSimMapper.selectCount(wrapper);
-                        if (nm < 1) {
-                            measureSimMapper.insert(measureSim);
+                        if(!"".equals(serialCounter)){
+                            MeasureSim measureSim = new MeasureSim();
+                            measureSim.setLotNo(lotNo);
+                            measureSim.setLineNo("SIM");
+                            measureSim.setProductionNo("SIM6812M(E)D-URA_F2971");
+                            measureSim.setMeasureType("IT");
+                            measureSim.setMeasureCounter(ele[6]);
+                            measureSim.setMeasureName(ele[5]);
+                            measureSim.setMeasureJudgment(ele[4]);
+                            measureSim.setMeaDate(df.parse(ele[1]));
+                            measureSim.setA1(Double.valueOf(ele[7]));
+                            measureSim.setB1(Double.valueOf(ele[8]));
+                            measureSim.setC1(Double.valueOf(ele[9]));
+                            measureSim.setC21(Double.valueOf(ele[28]));
+                            measureSim.setSerialCounter(serialCounter);
+                            EntityWrapper wrapper = new EntityWrapper();
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", serialCounter);
+                            Integer nm = measureSimMapper.selectCount(wrapper);
+                            if (nm < 1) {
+                                measureSimMapper.insert(measureSim);
+                            }
                         }
                     } catch (Exception e) {
                         log.error("SIM分离数据解析出错！", e);
@@ -1212,7 +1214,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "5GI").eq("serial_counter", ele[6]);
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
@@ -1282,7 +1284,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "6GI").eq("serial_counter", ele[6]);
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
