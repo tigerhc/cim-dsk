@@ -28,5 +28,8 @@ public interface EdcDskLogOperationMapper extends BaseMapper<EdcDskLogOperation>
     @Select("select distinct eqp_id from edc_dsk_log_operation where start_time between #{startTime} and #{endTime}")
     List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select("select  *  from edc_dsk_log_operation where eqp_id=#{eqpId} order by start_time desc  limit 1")
+    EdcDskLogOperation findOperationData(@Param("eqpId") String eqpId);
+
     int insertList(@Param("list") List<EdcDskLogOperation> list);
 }

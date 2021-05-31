@@ -906,6 +906,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
+    public MesLotTrack findNowLotByEqp(String eqpId){
+        return baseMapper.findNowLotByEqp(eqpId);
+    }
+    @Override
     public Map<String, Object> chartKongDong(String lineNo, String proName, String startDate, String endDate) {
         try {
 //            String productionName = baseMapper.findProName(proName);

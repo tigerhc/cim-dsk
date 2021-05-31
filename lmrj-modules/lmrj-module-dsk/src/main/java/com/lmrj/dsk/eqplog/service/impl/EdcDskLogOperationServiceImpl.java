@@ -52,57 +52,66 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
     FabEquipmentServiceImpl fabEquipmentService;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
+
     @Override
-    public int insertList(List<EdcDskLogOperation> list){
+    public int insertList(List<EdcDskLogOperation> list) {
         return baseMapper.insertList(list);
     }
+
     @Override
     public List<EdcDskLogOperation> findDataByTimeAndEqpId(String eqpId, Date startTime, Date endTime) {
         return baseMapper.findDataByTimeAndEqpId(eqpId, startTime, endTime);
     }
+
+    @Override
+    public EdcDskLogOperation findOperationData(String eqpId) {
+        return baseMapper.findOperationData(eqpId);
+    }
+
     @Override
     public List<String> findEqpId(Date startTime, Date endTime) {
         return baseMapper.findEqpId(startTime, endTime);
     }
-    public void fixOperationCsvYield(File file,String filePath)throws Exception{
+
+    public void fixOperationCsvYield(File file, String filePath) throws Exception {
         List<String> lines = FileUtil.readLines(file, "UTF-8");
-        List<String> newLines=new ArrayList<>();
+        List<String> newLines = new ArrayList<>();
         //标题
-        newLines.add(FileUtil.csvBom +lines.get(0));
-        String titlt=lines.get(0);
+        newLines.add(FileUtil.csvBom + lines.get(0));
+        String titlt = lines.get(0);
         lines.remove(0);
-        Boolean flag=true;
-        String repeatFileName=file.getName();
+        Boolean flag = true;
+        String repeatFileName = file.getName();
         String pattern = "yyyyMMddHHmm999";
         for (String line : lines) {
-            String lineData[]=line.split(",",-1);
-            EdcDskLogProduction edcDskLogProduction=iEdcDskLogProductionService.findLastYield(lineData[0],chanangeDate(lineData[6]));
-            if(edcDskLogProduction==null){
+            String lineData[] = line.split(",", -1);
+            EdcDskLogProduction edcDskLogProduction = iEdcDskLogProductionService.findLastYield(lineData[0], chanangeDate(lineData[6]));
+            if (edcDskLogProduction == null) {
                 log.info("数据异常");
                 return;
             }
-            String newLine = fixline(line,String.valueOf(edcDskLogProduction.getDayYield()),",",4);
-            newLine = fixline(newLine,String.valueOf(edcDskLogProduction.getLotYield()),",",5);
-            newLine = fixline(newLine,String.valueOf(edcDskLogProduction.getLotNo()),",",13);
+            String newLine = fixline(line, String.valueOf(edcDskLogProduction.getDayYield()), ",", 4);
+            newLine = fixline(newLine, String.valueOf(edcDskLogProduction.getLotYield()), ",", 5);
+            newLine = fixline(newLine, String.valueOf(edcDskLogProduction.getLotNo()), ",", 13);
             newLines.add(newLine);
-            if(flag){
-                String filename[]=repeatFileName.split("_");
-                repeatFileName=filename[0]+"_"+filename[1]+"_"+ DateUtil.formatDate(chanangeDate(lineData[6]), pattern)+"_"+filename[3];
-                flag=false;
+            if (flag) {
+                String filename[] = repeatFileName.split("_");
+                repeatFileName = filename[0] + "_" + filename[1] + "_" + DateUtil.formatDate(chanangeDate(lineData[6]), pattern) + "_" + filename[3];
+                flag = false;
             }
         }
-        String originalPath=filePath+"/"+"ORIGINAL";
+        String originalPath = filePath + "/" + "ORIGINAL";
         filePath = new String(filePath.getBytes("GBK"), "iso-8859-1");
         originalPath = new String(originalPath.getBytes("GBK"), "iso-8859-1");
         FileUtil.mkDir(filePath);
         FileUtil.move(filePath + "\\" + file.getName(), originalPath + "\\" + file.getName(), false);
-        FileUtil.writeLines(new File(filePath + "\\" +repeatFileName),"UTF-8",newLines,true);
+        FileUtil.writeLines(new File(filePath + "\\" + repeatFileName), "UTF-8", newLines, true);
         log.info(titlt);
     }
 
-    public String fixline(String str,String data,String regex,int targetIndex){
-        String str1[]=str.split(regex,-1);
-        Arrays.fill(str1, targetIndex, targetIndex+1, data);
+    public String fixline(String str, String data, String regex, int targetIndex) {
+        String str1[] = str.split(regex, -1);
+        Arrays.fill(str1, targetIndex, targetIndex + 1, data);
         String str2 = "";
         for (int i = 0; i < str1.length; i++) {
             if (i == 0) {
@@ -113,11 +122,12 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         }
         return str2;
     }
-    public List<File> getFileList(String strPath,Date startTime) throws Exception {
+
+    public List<File> getFileList(String strPath, Date startTime) throws Exception {
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(strPath), new String[]{"csv"}, false);
         List<File> newfileList = Lists.newArrayList();
         for (File file : fileList) {
-            if (file.getName().contains("Operationlog")&& file.lastModified()>startTime.getTime()) {
+            if (file.getName().contains("Operationlog") && file.lastModified() > startTime.getTime()) {
                 log.info("文件获取" + file.getName());
                 newfileList.add(file);
             }
@@ -136,7 +146,8 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         log.info("{}文件排序结束", strPath);
         return newfileList;
     }
-    public Date chanangeDate(String time){
+
+    public Date chanangeDate(String time) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//日期格式
         Date date = null;
         try {
@@ -200,20 +211,20 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         fancha(file.getName(),mesLotTrack.getLotNo(),newlines);
     }*/
     @Override
-    public Boolean exportTrmOperationFile(String eqpId,Date startTime,Date endTime){
-        List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId,startTime,endTime);
-        if(orerationList.size()>0){
+    public Boolean exportTrmOperationFile(String eqpId, Date startTime, Date endTime) {
+        List<EdcDskLogOperation> orerationList = baseMapper.findDataByTimeAndEqpId(eqpId, startTime, endTime);
+        if (orerationList.size() > 0) {
             try {
-                this.printOperlog(orerationList,"OPERATION");
+                this.printOperlog(orerationList, "OPERATION");
             } catch (Exception e) {
-                log.error("TRM Operation日志打印出错",e);
+                log.error("TRM Operation日志打印出错", e);
                 e.printStackTrace();
             }
         }
         return true;
     }
 
-    public void printOperlog(List<EdcDskLogOperation> operlist,String fileType) throws Exception {
+    public void printOperlog(List<EdcDskLogOperation> operlist, String fileType) throws Exception {
         String eqpNo = "";
         List<String> lines = new ArrayList<>();
         String filename = null;
@@ -230,7 +241,7 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
             //拼写文件存储路径及备份路径
             if (i == 0) {
                 String createTimeString = DateUtil.formatDate(oper.getCreateDate(), pattern1);
-                filename = "DSK_" + oper.getEqpId() + "_"  + createTimeString + "_Operationlog.csv";
+                filename = "DSK_" + oper.getEqpId() + "_" + createTimeString + "_Operationlog.csv";
                 FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(oper.getEqpId());
                 filePath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + oper.getEqpId() + "/" + DateUtil.getMonth();
                 fileBackUpPath = "E:/FTP/EQUIPMENT/SIM/" + DateUtil.getYear() + "/" + fabEquipment.getStepCode() + "/" + oper.getEqpId() + "/" + DateUtil.getMonth() + "/ORIGINAL";
@@ -240,13 +251,13 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
             String startTimeString = DateUtil.formatDate(oper.getStartTime(), pattern2);
             //拼写当前行字符串
             String line = oper.getEqpId() + "," + oper.getEqpModelName() + "," + eqpNo + "," + oper.getRecipeCode() + "," + oper.getDayYield() + "," + oper.getLotYield() + "," + startTimeString + "," +
-                    oper.getEventId() + "," +oper.getAlarmCode()+ "," +oper.getEventName()+ ",";
-            if(oper.getEventParams()!=null){
-                line = line+oper.getEventParams().replaceAll(",",";")+ ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
-            }else{
-                line = line+oper.getEventParams()+ ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
+                    oper.getEventId() + "," + oper.getAlarmCode() + "," + oper.getEventName() + ",";
+            if (oper.getEventParams() != null) {
+                line = line + oper.getEventParams().replaceAll(",", ";") + ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
+            } else {
+                line = line + oper.getEventParams() + ",," + oper.getOrderNo() + "," + oper.getLotNo() + "," + oper.getProductionNo();
             }
-            line = line ;
+            line = line;
             lines.add(line);
         }
         //创建文件路径
@@ -254,7 +265,7 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         File newFile = new File(filePath + "\\" + filename);
         FileUtil.writeLines(newFile, "UTF-8", lines);
         String eventId = StringUtil.randomTimeUUID("RPT");
-        fabLogService.info(filename.split("_")[1], eventId, "printOperlog", "生成Operation文件","", "");
+        fabLogService.info(filename.split("_")[1], eventId, "printOperlog", "生成Operation文件", "", "");
         //获取目录下所有文件判断是否有同名文件存在，若存在将文件备份
         List<File> fileList = (List<File>) FileUtil.listFiles(new File(filePath), new String[]{"csv"}, false);
         for (File file : fileList) {
