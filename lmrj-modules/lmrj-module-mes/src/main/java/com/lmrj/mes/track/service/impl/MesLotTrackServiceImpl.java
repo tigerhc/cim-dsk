@@ -13,7 +13,11 @@ import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.mes.kongdong.service.impl.MsMeasureKongdongServiceImpl;
+import com.lmrj.mes.measure.entity.MeasureGi;
+import com.lmrj.mes.measure.entity.MeasureSim;
 import com.lmrj.mes.measure.entity.MeasureSx;
+import com.lmrj.mes.measure.mapper.MeasureGiMapper;
+import com.lmrj.mes.measure.mapper.MeasureSimMapper;
 import com.lmrj.mes.measure.mapper.MeasureSxMapper;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.entity.MesLotTrackLog;
@@ -72,6 +76,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     IMsMeasureKongdongService iMsMeasureKongdongService;
     @Autowired
     MeasureSxMapper measureSxMapper;
+    @Autowired
+    MeasureSimMapper measureSimMapper;
+    @Autowired
+    MeasureGiMapper measureGiMapper;
 
     /**
      * 按照eqp和line获取recipe
@@ -638,7 +646,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         MesResult result = MesResult.ok();
         List<FabEquipment> fabEquipmentList = fabEquipmentService.findEqpBySubLine(sublineNo);
         if (fabEquipmentList.size() == 0) {
-            return MesResult.error(sublineNo+" eqp not found");
+            return MesResult.error(sublineNo + " eqp not found");
         }
         int takeTime = 0;
         for (FabEquipment fabEquipment : fabEquipmentList) {
@@ -650,7 +658,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         return result;
     }
-
 
 
     public MesResult trackinWB(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
@@ -899,6 +906,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
+    public MesLotTrack findNowLotByEqp(String eqpId){
+        return baseMapper.findNowLotByEqp(eqpId);
+    }
+    @Override
     public Map<String, Object> chartKongDong(String lineNo, String proName, String startDate, String endDate) {
         try {
 //            String productionName = baseMapper.findProName(proName);
@@ -1076,14 +1087,17 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String serialCounter = "";
         for (int i = 0; i < lines.size(); i++) {
             log.info("基恩士:" + lines.get(i));
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
+            SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             if (ele2.length == 3) {
                 if (ele2[1].equals(lotNo) && ele2[0].equals(production) && ele[4].equals("OK")) {
                     if (mode.equals("0")) {
                         if (ele[3].equals("0001-1") && one == 0) {
+                            serialCounter = "1-1";
                             Map<String, Object> map = new HashMap<>();
                             str.add(ele[7]);
                             str.add(ele[8]);
@@ -1091,6 +1105,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             str.add(ele[28]);
                             one = 1;
                         } else if (ele[3].equals("0001-2") && two == 0) {
+                            serialCounter = "1-2";
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
@@ -1100,18 +1115,47 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     }
                     if (mode.equals("1")) {
                         if (ele[3].equals("0002-1") && three == 0) {
+                            serialCounter = "2-1";
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             three = 1;
                         } else if (ele[3].equals("0002-2") && four == 0) {
+                            serialCounter = "2-2";
                             str.add(ele[7]);
                             str.add(ele[8]);
                             str.add(ele[9]);
                             str.add(ele[28]);
                             four = 1;
                         }
+                    }
+                    try {
+                        if(!"".equals(serialCounter)){
+                            MeasureSim measureSim = new MeasureSim();
+                            measureSim.setLotNo(lotNo);
+                            measureSim.setLineNo("SIM");
+                            measureSim.setProductionNo("SIM6812M(E)D-URA_F2971");
+                            measureSim.setMeasureType("IT");
+                            measureSim.setMeasureCounter(ele[6]);
+                            measureSim.setMeasureName(ele[5]);
+                            measureSim.setMeasureJudgment(ele[4]);
+                            measureSim.setMeaDate(df.parse(ele[1]));
+                            measureSim.setA1(Double.valueOf(ele[7]));
+                            measureSim.setB1(Double.valueOf(ele[8]));
+                            measureSim.setC1(Double.valueOf(ele[9]));
+                            measureSim.setC21(Double.valueOf(ele[28]));
+                            measureSim.setSerialCounter(serialCounter);
+                            EntityWrapper wrapper = new EntityWrapper();
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", serialCounter);
+                            Integer nm = measureSimMapper.selectCount(wrapper);
+                            if (nm < 1) {
+                                measureSimMapper.insert(measureSim);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("SIM分离数据解析出错！", e);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -1125,6 +1169,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         String[] temp = production.split("-");
         String pro = temp[1].substring(0, 4);
         String proOther = temp[1].substring(0, 5);
+        String productionName = production.replace("_", "");
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\5GI\\5GI(IT)\\5GI(IT).csv");
         List<String> lines = null;
         try {
@@ -1133,7 +1178,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             e.printStackTrace();
         }
         List<String> str = new ArrayList<>();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         for (int i = 0; i < lines.size(); i++) {
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
@@ -1141,6 +1186,47 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 if (ele[4].equals("OK") && ele2[1].equals(lotNo) && (ele2[0].equals(pro) || ele2[0].equals(proOther))) {
                     for (int j = 7; j < ele.length; j++) {
                         str.add(ele[j]);
+                    }
+                    if (str.size() > 0) {
+                        try {
+                            MeasureGi measureGi = new MeasureGi();
+                            measureGi.setLotNo(lotNo);
+                            measureGi.setLineNo("5GI");
+                            measureGi.setProductionNo(productionName);//机种名
+                            measureGi.setMeasureType("IT");
+                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setMeasureCounter(ele[6]);//测量次数
+                            measureGi.setMeasureName(ele[5]);//操作员编号
+                            measureGi.setMeasureJudgment("OK");
+                            measureGi.setMeaDate(df.parse(ele[1]));
+                            measureGi.setBurrf(Double.parseDouble(ele[7]));
+                            measureGi.setPinf1(Double.parseDouble(ele[8]));
+                            measureGi.setPinf2(Double.parseDouble(ele[9]));
+                            measureGi.setPinf3(Double.parseDouble(ele[10]));
+                            measureGi.setPinf4(Double.parseDouble(ele[11]));
+                            measureGi.setPinf5(Double.parseDouble(ele[12]));
+                            measureGi.setPinf6(Double.parseDouble(ele[13]));
+                            measureGi.setPinf1f2(Double.parseDouble(ele[14]));
+                            measureGi.setPinf2f3(Double.parseDouble(ele[15]));
+                            measureGi.setPinf3f4(Double.parseDouble(ele[16]));
+                            measureGi.setPinf4f5(Double.parseDouble(ele[17]));
+                            measureGi.setPinf5f6(Double.parseDouble(ele[18]));
+                            measureGi.setPins1(Double.parseDouble(ele[19]));
+                            measureGi.setPins2(Double.parseDouble(ele[20]));
+                            measureGi.setPins3(Double.parseDouble(ele[21]));
+                            measureGi.setPins4(Double.parseDouble(ele[22]));
+                            measureGi.setPins5(Double.parseDouble(ele[23]));
+                            measureGi.setPins6(Double.parseDouble(ele[24]));
+                            EntityWrapper wrapper = new EntityWrapper();
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            Integer nm = measureGiMapper.selectCount(wrapper);
+                            if (nm < 1) {
+                                measureGiMapper.insert(measureGi);
+                            }
+                        } catch (Exception e) {
+                            log.error("5GI分离数据导入失败");
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -1152,6 +1238,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     public String find6GI(String lotNo, String production) {
         String[] temp = production.split("-");
         String pro = temp[1].substring(0, 4);
+        String productionName = production.replace("_", "");
         File pathfile = new File("D:\\DSK1\\IT化データ（二課）\\キエンスー測定機\\6GI\\6GI(IT)\\6GI(IT).csv");
         List<String> lines = null;
         try {
@@ -1161,7 +1248,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         List<Map> maps = new ArrayList<>();
         List<String> str = new ArrayList<>();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         for (int i = 0; i < lines.size(); i++) {
             String[] ele = lines.get(i).split(",");
             String[] ele2 = ele[2].split("-");
@@ -1170,8 +1257,47 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     for (int j = 7; j < ele.length; j++) {
                         str.add(ele[j]);
                     }
-
-
+                    if (str.size() > 0) {
+                        try {
+                            MeasureGi measureGi = new MeasureGi();
+                            measureGi.setLotNo(lotNo);
+                            measureGi.setLineNo("6GI");
+                            measureGi.setProductionNo(productionName);//机种名
+                            measureGi.setMeasureType("IT");
+                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setMeasureCounter(ele[6]);//测量次数
+                            measureGi.setMeasureName(ele[5]);//操作员编号
+                            measureGi.setMeasureJudgment("OK");
+                            measureGi.setMeaDate(df.parse(ele[1]));
+                            measureGi.setBurrf(Double.parseDouble(ele[7]));
+                            measureGi.setPinf1(Double.parseDouble(ele[8]));
+                            measureGi.setPinf2(Double.parseDouble(ele[9]));
+                            measureGi.setPinf3(Double.parseDouble(ele[10]));
+                            measureGi.setPinf4(Double.parseDouble(ele[11]));
+                            measureGi.setPinf5(Double.parseDouble(ele[12]));
+                            measureGi.setPinf6(Double.parseDouble(ele[13]));
+                            measureGi.setPinf1f2(Double.parseDouble(ele[14]));
+                            measureGi.setPinf2f3(Double.parseDouble(ele[15]));
+                            measureGi.setPinf3f4(Double.parseDouble(ele[16]));
+                            measureGi.setPinf4f5(Double.parseDouble(ele[17]));
+                            measureGi.setPinf5f6(Double.parseDouble(ele[18]));
+                            measureGi.setPins1(Double.parseDouble(ele[19]));
+                            measureGi.setPins2(Double.parseDouble(ele[20]));
+                            measureGi.setPins3(Double.parseDouble(ele[21]));
+                            measureGi.setPins4(Double.parseDouble(ele[22]));
+                            measureGi.setPins5(Double.parseDouble(ele[23]));
+                            measureGi.setPins6(Double.parseDouble(ele[24]));
+                            EntityWrapper wrapper = new EntityWrapper();
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            Integer nm = measureGiMapper.selectCount(wrapper);
+                            if (nm < 1) {
+                                measureGiMapper.insert(measureGi);
+                            }
+                        } catch (Exception e) {
+                            log.error("6GI分离数据导入失败");
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -1184,6 +1310,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //        SimpleDateFormat df2 = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         List<String> lines = null;
+        String productionName = production.replace("_", "");
         StringBuilder result = new StringBuilder();
         File pathfile = new File("D:\\DSK1");
         if ("LF".equals(flag)) {
@@ -1209,7 +1336,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     measure.setLineNo("SX");
                     measure.setMeaDate(df.parse(row[1]));
                     measure.setLotNo(colum2[1]);
-                    measure.setProductionNo(colum2[0]);
+                    measure.setProductionNo(productionName);
                     measure.setSerialCounter(row[3].replaceFirst("^0*", ""));
                     measure.setMeasureJudgment(row[4]);
                     measure.setMeasureName(row[5]);
@@ -1224,10 +1351,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     measure.setD2(Double.parseDouble(row[14]));
                     measure.setMeasureType(flag);
                     EntityWrapper wrapper = new EntityWrapper();
-                    wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", flag).eq("serial_counter", row[3].replaceFirst("^0*", ""));
+                    wrapper.eq("lot_no", lotNo).eq("production_no", productionName).eq("measure_type", flag).eq("serial_counter", row[3].replaceFirst("^0*", ""));
                     Integer nm = measureSxMapper.selectCount(wrapper);
                     if (nm < 1) {
                         measureSxMapper.insert(measure);
+                    }else {
+
                     }
                 }
             }

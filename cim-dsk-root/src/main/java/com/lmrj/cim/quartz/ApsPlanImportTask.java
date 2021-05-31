@@ -33,16 +33,14 @@ public class ApsPlanImportTask {
     private IApsPlanPdtYieldDetailService apsPlanPdtYieldDetailService;
 
     @Value("${aps.dir}")
-    static public String dir;
-    static {
-        String year = DateUtil.getYear().substring(2,4);
-        dir = dir+"日次計画"+year+"年\\";
-    }
+    public String dir;
 
     public void rundskAps() {
         try {
             log.info("计划插入定时任务开始执行");
             String[] extensions = {"xls"};
+            String year = DateUtil.getYear().substring(2,4);
+            //dir = dir+"日次計画"+year+"年\\";
             log.error("   dir:"+dir);
             List<File> files = (List<File>) FileUtil.listFiles(new File(dir), extensions,false);
             if(files.size() == 0){
@@ -91,7 +89,8 @@ public class ApsPlanImportTask {
             int pdtEnd = 0;
             for (int i = pdtStart; i < list2.size(); i++) {
                 Object[] strings = list2.get(i);
-                if(StringUtil.isBlank(strings[22].toString())){
+                //修改日期行判定方式
+                if("1".equals(strings[22].toString())){
                     pdtEnd = i;
                     break;
                 }
@@ -169,6 +168,9 @@ public class ApsPlanImportTask {
                                 ApsPlanPdtYieldDetail detail = new ApsPlanPdtYieldDetail();
                                 detail.setProductionNo(productionNo.replace(".0",""));
                                 detail.setLotNo(s);
+                                if("".equals(dateMap.get(i1)) || null == dateMap.get(i1)){
+                                    log.error("计划信息日期获取失败!");
+                                }
                                 detail.setPlanDate(dateMap.get(i1));
                                 apsPlanPdtYieldDetailList.add(detail);
                             }

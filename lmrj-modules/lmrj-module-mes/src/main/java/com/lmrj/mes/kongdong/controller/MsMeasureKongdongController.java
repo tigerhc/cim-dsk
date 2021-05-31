@@ -11,6 +11,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
 import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,30 +88,63 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
 
 //            Map<String, Object> data = (Map) result.get("data");
             List<String> legend = (List<String>) data.get("legend");
-            ExcelExportEntity key = new ExcelExportEntity("批号",1);
+            ExcelExportEntity key = new ExcelExportEntity(" ",1);
             keyList.add(key);
+            ExcelExportEntity key1 = new ExcelExportEntity("批号",2);
+            keyList.add(key1);
             //时间
-            ExcelExportEntity timeTitle = new ExcelExportEntity("时间",2);
+            ExcelExportEntity timeTitle = new ExcelExportEntity("时间",3);
             keyList.add(timeTitle);
             for (int i = 0; i <legend.size() ; i++) {
-                ExcelExportEntity p = new ExcelExportEntity(String.valueOf(legend.get(i)),i+3);
-                keyList.add(p);
+                String legendV = String.valueOf(legend.get(i));
+                if(!legendV.contains("limit-")){
+                    ExcelExportEntity p = new ExcelExportEntity(legendV,i+4);
+                    keyList.add(p);
+                }
             }
+
+            List series = (List) data.get("series");
+            //处理上下限
+            if( series.size()>0){
+                Map<Integer, Object> data1 = new HashMap<>();
+                data1.put(1, "上限");
+                data1.put(2, "");
+                data1.put(3, "");
+
+                for(int i = 0; i <legend.size() ; i++){
+                    String legendV = String.valueOf(legend.get(i));
+                    if(!legendV.contains("limit-")){//筛选,不是上限的数据
+                        for(int j=0; j< series.size(); j++){
+                            Map ele = (Map) series.get(j);
+                            String findLimit = MapUtil.getString(ele,"name");//.replace("limit-", "")
+                            if(findLimit.contains("limit-")){
+                                findLimit = findLimit.replace("limit-", "");
+                                if(legendV.contains(findLimit)){//匹配到上限
+                                    List value1 = (List) ele.get("data");
+                                    data1.put(i+4,value1.get(i));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                dataList.add(data1);
+            }
+
             List xAxis = (List) data.get("xAxis");
             for (int i = 0; i <xAxis.size() ; i++) {
                 Map<Integer, Object> data1 = new HashMap<>() ;
-                data1.put(1,xAxis.get(i));
-                List series = (List) data.get("series");
+                data1.put(2,xAxis.get(i));
                 for (int j = 0; j <series.size() ; j++) {
                     Map ele = (Map) series.get(j);
                     List value1 = (List) ele.get("data");
-                    data1.put(j+3,value1.get(i));
+                    data1.put(j+4,value1.get(i));
                 }
                 //添加时间
                 if(timeList.size()>i){
-                    data1.put(2, timeList.get(i));
+                    data1.put(3, timeList.get(i));
                 } else {
-                    data1.put(2, "");
+                    data1.put(3, "");
                 }
                 dataList.add(data1);
             }

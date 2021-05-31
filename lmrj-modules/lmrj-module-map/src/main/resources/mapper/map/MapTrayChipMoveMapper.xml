@@ -249,7 +249,7 @@
 		<if test="lmtTime!=null and lmtTime!=''">
 			and m.start_time >= #{lmtTime}
 		</if>
-		<if test="mapLot='Y'">
+		<if test="mapLot!=null and mapLot!=''">
 			and m.lot_no=#{lotNo}
 		</if>
 	</select>
@@ -286,6 +286,7 @@
 	<select id="getLastStartTime" parameterType="java.lang.String" resultType="java.lang.String">
 		select date_format(begin_time, '%Y-%m-%d %H:%i:%s') from map_tray_chip_log
 		where tray_code=#{trayCode}
+		and end_time is null
 		order by begin_time desc limit 1
 	</select>
 
