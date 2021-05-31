@@ -294,8 +294,14 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         if (eqpId.equals("RY1")) {
             eqpId = "APJ-HB1-SINTERING1";
-        } else if (eqpId.equals("RY2")) {
-            eqpId = "APJ-HB2-SINTERING1";
+        } else if (eqpId.contains("RY2S1")) {//金型温度设定值
+            eqpId = "APJ-HB2-SINTERING1-1";
+        } else if(eqpId.contains("RY2S2")){//压力、温度设定值
+            eqpId = "APJ-HB2-SINTERING1-2";
+        }/* else if(eqpId.equals("RY2C")){//温度测定值
+            eqpId = "APJ-HB2-SINTERING1-3";
+        } */ else if(eqpId.contains("RY2DJ")){//点胶机数据
+            eqpId = "APJ-HB2-DISPENSING1";
         } else {
             log.error("设备名称错误！   " + eqpId);
         }

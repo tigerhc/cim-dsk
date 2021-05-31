@@ -205,7 +205,20 @@ public class EdcDskLogHandler {
                     this.temperatureList2(nextproList, nextLotTrack.getLotNo());
                 }
             }
-
+            FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+            if(!"RUN".equals(fabStatus.getEqpStatus())){
+                EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
+                if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
+                    fabStatus.setEqpStatus("RUN");
+                    fabEquipmentStatusService.updateById(fabStatus);
+                    EdcEqpState edcEqpState = new EdcEqpState();
+                    edcEqpState.setEqpId(eqpId);
+                    edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime());
+                    edcEqpState.setState("RUN");
+                    String stateJson = JsonUtil.toJsonString(edcEqpState);
+                    rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                }
+            }
         } else {
 
         }
