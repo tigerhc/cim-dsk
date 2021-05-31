@@ -143,33 +143,33 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String orderNo = lotNos[1]; //37368342
 
             String eqpId1 = subLineNo;
-            if (subLineNo.contains("IGBT")) {
+            if (subLineNo.equals("IGBT")) {
                 eqpId1 = "APJ-IGBT-SORT1";
-            } else if (eqpId1.contains("FRD")) {
+            } else if (eqpId1.equals("FRD")) {
                 eqpId1 = "APJ-FRD-SORT1";
-            } else if (eqpId1.contains("IGBTYJH")) {
+            } else if (eqpId1.equals("IGBTYJH")) {
                 eqpId1 = "APJ-IGBT-SORT3";
-            } else if (eqpId1.contains("FRDYJH")) {
+            } else if (eqpId1.equals("FRDYJH")) {
                 eqpId1 = "APJ-FRD-SORT3";
-            } else if (eqpId1.contains("RY1")) {
+            } else if (eqpId1.equals("RY1")) {
                 eqpId1 = "APJ-HB1-SORT2";
-            } else if (eqpId1.contains("RY2")) {
+            } else if (eqpId1.equals("RY2")) {
                 eqpId1 = "APJ-HB2-SORT2";
-            } else if (eqpId1.contains("ZJ")) {
+            } else if (eqpId1.equals("ZJ")) {
                 eqpId1 = "APJ-VI1";
-            } else if (eqpId1.contains("TOP")) {
+            } else if (eqpId1.equals("TOP")) {
                 eqpId1 = "APJ-DBCT-SORT2";
-            } else if (eqpId1.contains("BOTTOM")) {
+            } else if (eqpId1.equals("BOTTOM")) {
                 eqpId1 = "APJ-DBCB-SORT2";
-            } else if (eqpId1.contains("TRM")) {
+            } else if (eqpId1.equals("TRM")) {
                 eqpId1 = "APJ-TRM1";
-            } else if (eqpId1.contains("SAT")) {
+            } else if (eqpId1.equals("SAT")) {
                 eqpId1 = "APJ-SAT1";
             } else if (eqpId1.contains("AT") && !eqpId1.contains("S")) {
                 eqpId1 = "APJ-SAT1";
-            } else if (eqpId1.contains("LF")) {
+            } else if (eqpId1.equals("LF")) {
                 eqpId1 = "APJ-LF1";
-            } else if (eqpId1.contains("HTRT")) {
+            } else if (eqpId1.equals("HTRT")) {
                 eqpId1 = "APJ-HTRT1";
             }
             //判断批次数据入账是否符合逻辑
@@ -261,16 +261,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+
     //查找APJ-PRINTER设备参数，从产量日志中获取
     @RequestMapping(value = "/findPrinterParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findPrinterParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
-                            HttpServletRequest request, HttpServletResponse response) {
+                                   HttpServletRequest request, HttpServletResponse response) {
         log.info("findPrinterParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param7", "MesLotTrackController.findPrinterParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
-            if("".equals(opId) || opId == null){
+            if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
             MesResult result = mesLotTrackService.findPrinterParam(eqpId, opId);
@@ -289,13 +290,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     @RequestMapping(value = "/findApjRecipeCode/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findApjRecipeCode(Model model, @PathVariable String eqpId, @RequestParam String opId,
-                                   HttpServletRequest request, HttpServletResponse response) {
+                                    HttpServletRequest request, HttpServletResponse response) {
         log.info("findApjRecipeCode :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param8", "MesLotTrackController.findApjRecipeCode", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
-            if("".equals(opId) || opId == null){
+            if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
             MesResult result = mesLotTrackService.findApjRecipeCode(eqpId, opId);
@@ -314,13 +315,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     @RequestMapping(value = "/findReflowParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findReflowParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
-                                    HttpServletRequest request, HttpServletResponse response) {
+                                  HttpServletRequest request, HttpServletResponse response) {
         log.info("findReflowParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param9", "MesLotTrackController.findReflowParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
-            if("".equals(opId) || opId == null){
+            if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
             MesResult result = mesLotTrackService.findReflowParam(eqpId, opId);
@@ -345,7 +346,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         try {
             fabLogService.info(eqpId, "Param10", "MesLotTrackController.findSinterParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
-            if("".equals(opId) || opId == null){
+            if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
             MesResult result = mesLotTrackService.findSinterParam(eqpId, opId);
@@ -365,13 +366,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     //查找APJ二次热压设备参数，从产量日志中获取
     @RequestMapping(value = "/findViParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findViParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
-                                           HttpServletRequest request, HttpServletResponse response) {
+                              HttpServletRequest request, HttpServletResponse response) {
         log.info("findViParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param12", "MesLotTrackController.findViParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
-            if("".equals(opId) || opId == null){
+            if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
             MesResult result = mesLotTrackService.findViParam(eqpId, opId);
@@ -495,37 +496,41 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
             //对当前批次进行判断，若批次结束时间过快，阻止操做
             String eqpId1 = subLineNo;
-            if (subLineNo.contains("IGBT")) {
+            if (subLineNo.equals("IGBT")) {
                 eqpId1 = "APJ-IGBT-SORT1";
-            } else if (eqpId1.contains("FRD")) {
+            } else if (eqpId1.equals("FRD")) {
                 eqpId1 = "APJ-FRD-SORT1";
-            } else if (eqpId1.contains("IGBTYJH")) {
+            } else if (eqpId1.equals("IGBTYJH")) {
                 eqpId1 = "APJ-IGBT-SORT3";
-            } else if (eqpId1.contains("FRDYJH")) {
+            } else if (eqpId1.equals("FRDYJH")) {
                 eqpId1 = "APJ-FRD-SORT3";
-            } else if (eqpId1.contains("RY1")) {
+            } else if (eqpId1.equals("RY1")) {
                 eqpId1 = "APJ-HB1-SORT2";
-            } else if (eqpId1.contains("RY2")) {
+            } else if (eqpId1.equals("RY2")) {
                 eqpId1 = "APJ-HB2-SORT2";
-            } else if (eqpId1.contains("ZJ")) {
+            } else if (eqpId1.equals("ZJ")) {
                 eqpId1 = "APJ-VI1";
-            } else if (eqpId1.contains("TOP")) {
+            } else if (eqpId1.equals("TOP")) {
                 eqpId1 = "APJ-DBCT-SORT2";
-            } else if (eqpId1.contains("BOTTOM")) {
+            } else if (eqpId1.equals("BOTTOM")) {
                 eqpId1 = "APJ-DBCB-SORT2";
-            } else if (eqpId1.contains("TRM")) {
+            } else if (eqpId1.equals("TRM")) {
                 eqpId1 = "APJ-TRM1";
-            } else if (eqpId1.contains("SAT")) {
+            } else if (eqpId1.equals("SAT")) {
                 eqpId1 = "APJ-SAT1";
-            } else if (eqpId1.contains("AT") && !eqpId1.contains("S")) {
+            } else if (eqpId1.equals("AT") && !eqpId1.contains("S")) {
                 eqpId1 = "APJ-SAT1";
-            } else if (eqpId1.contains("LF")) {
+            } else if (eqpId1.equals("LF")) {
                 eqpId1 = "APJ-LF1";
-            } else if (eqpId1.contains("HTRT")) {
+            } else if (eqpId1.equals("HTRT")) {
                 eqpId1 = "APJ-HTRT1";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
+            if (nowLotTrack == null) {
+                log.error("nowLotTrack 为空" + eqpId1 + "  "+ lotNo +"  " + productionNo);
+                return "lot:" + lotNo +" is not trackin ,please trackin first!" ;
+            }
             Date nowTime = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(nowLotTrack.getStartTime());
@@ -545,6 +550,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
         } catch (Exception e) {
             fabLogService.info(subLineNo, "Error6", "MesLotTrackController.apjTrackout", "有异常", trackinfo, "wangdong");//日志记录
+            log.error("出账错误！", e);
             return e.getMessage();
         }
     }
@@ -675,10 +681,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/findSX", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findSX(@RequestParam String production ,@RequestParam String lotNo,@RequestParam String flag
+    public String findSX(@RequestParam String production, @RequestParam String lotNo, @RequestParam String flag
     ) throws IOException {
-        fabLogService.info("findSX", "Param", "MesLotTrackController.findSX", "production参数:"+production+",lotNo参数:"+lotNo+",flag参数:"+flag,lotNo , "jiafuxing");//日志记录参数
-        return mesLotTrackService.findSX(production,lotNo,flag);
+        fabLogService.info("findSX", "Param", "MesLotTrackController.findSX", "production参数:" + production + ",lotNo参数:" + lotNo + ",flag参数:" + flag, lotNo, "jiafuxing");//日志记录参数
+        return mesLotTrackService.findSX(production, lotNo, flag);
 
     }
 
