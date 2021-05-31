@@ -12,13 +12,13 @@ import java.util.Map;
 @Mapper
 public interface MeasureSxMapper extends BaseMapper<MeasureSx> {
 
-    @Select("select distinct production_no as 'label', production_no as 'value' from measure_sx_record where measure_type = #{type}")
+    @Select("select distinct production_no as 'label', production_no as 'value' from measure_sx_record where measure_type = #{type} and measure_judgment = 'OK'")
     List<Map<String, String>> findProductionNo(@Param("type") String type);
 
-    @Select("select distinct production_no as 'label', production_no as 'value' from measure_sim_record where measure_type = #{type}")
+    @Select("select distinct production_no as 'label', production_no as 'value' from measure_sim_record where measure_type = #{type} and measure_judgment = 'OK'")
     List<Map<String, String>> findSimProductionNo(@Param("type") String type);
 
-    @Select("select distinct production_no as 'label', production_no as 'value' from measure_gi_record where measure_type = #{type} and line_no=#{lineNo}")
+    @Select("select distinct production_no as 'label', production_no as 'value' from measure_gi_record where measure_type = #{type} and line_no=#{lineNo} and measure_judgment = 'OK'")
     List<Map<String, String>> findGiProductionNo(Map<String, Object> param);
 
     @Select("SELECT lot_no AS lotNo ,a1 ,b1 ,c1 ,d1 ,a2 ,b2 ,c2 ,d2,DATE_FORMAT(mea_date,'%Y-%m-%d %H:%i:%s') as 'meaDate' " +

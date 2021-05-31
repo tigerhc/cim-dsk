@@ -152,6 +152,10 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
     public List findSimNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
         List<Map<String, String>> dataList = measureSxMapper.findSimNumber(productionName, startDate, endDate, type);//所有线的原数据集合
         List<Map<String, String>> limitList = measureSxMapper.findSimLimit();
+        Map<String, Double> data1_1Map = new HashMap<>();
+        Map<String, Double> data1_2Map = new HashMap<>();
+        Map<String, Double> data2_1Map = new HashMap<>();
+        Map<String, Double> data2_2Map = new HashMap<>();
         List<Double> data1_1 = new ArrayList<>();
         List<Double> data1_2 = new ArrayList<>();
         List<Double> data2_1 = new ArrayList<>();
@@ -179,6 +183,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
             }
 
             String lineData = MapUtil.getString(data, local);
+
             //记录所有数据中最小的值,echart使用
             if(StringUtil.isNotEmpty(lineData)){
                 Double dataD = Double.parseDouble(lineData);
@@ -191,32 +196,31 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
             //拆分1-1,1-2,2-1,2-2数据
             if ("1-1".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data1_1.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data1_1.add(null);
+                    data1_1Map.put(curLotNo, Double.parseDouble(lineData));
                 }
-            } else if("1-2".equals(MapUtil.getString(data, "serialCounter"))) {
+            }else if("1-2".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data1_2.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data1_2.add(null);
+                    data1_2Map.put(curLotNo, Double.parseDouble(lineData));
                 }
-            } else if("2-1".equals(MapUtil.getString(data, "serialCounter"))) {
+            }else if("2-1".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data2_1.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data2_1.add(null);
+                    data2_1Map.put(curLotNo, Double.parseDouble(lineData));
                 }
-            } else if("2-2".equals(MapUtil.getString(data, "serialCounter"))) {
+            }else if("2-2".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data2_2.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data2_2.add(null);
+                    data2_2Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             }
         }
-        optionDatas.add(xAsix);
+        //缺失数据让线断开
+        for (String asix : xAsix) {
+            data1_1.add(MapUtil.getDouble(data1_1Map, asix));
+            data1_2.add(MapUtil.getDouble(data1_2Map, asix));
+            data2_1.add(MapUtil.getDouble(data2_1Map, asix));
+            data2_2.add(MapUtil.getDouble(data2_2Map, asix));
+        }
 
+        optionDatas.add(xAsix);
         //将数据的分配name并放入返回对象中
         List<Map<String, Object>> lines = new ArrayList<>();
         Map<String, Object> lineObj1_1 = new HashMap<>();
@@ -267,6 +271,11 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
     public List findGiNumber(String productionName, String lineNo, String startDate, String endDate, String type, String local) {
         List<Map<String, String>> dataList = measureSxMapper.findGiNumber(productionName, startDate, endDate, type);//所有线的原数据集合
         List<Map<String, String>> limitList = measureSxMapper.findGiLimit(lineNo);
+        Map<String, Double> data1Map = new HashMap<>();
+        Map<String, Double> data2Map = new HashMap<>();
+        Map<String, Double> data3Map = new HashMap<>();
+        Map<String, Double> data4Map = new HashMap<>();
+        Map<String, Double> data5Map = new HashMap<>();
         List<Double> data1 = new ArrayList<>();
         List<Double> data2 = new ArrayList<>();
         List<Double> data3 = new ArrayList<>();
@@ -307,38 +316,37 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
             //拆分1-5数据
             if ("1".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data1.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data1.add(null);
+                    data1Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             } else if("2".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data2.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data2.add(null);
+                    data2Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             } else if("3".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data3.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data3.add(null);
+                    data3Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             } else if("4".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data4.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data4.add(null);
+                    data4Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             } else if("5".equals(MapUtil.getString(data, "serialCounter"))) {
                 if(StringUtil.isNotEmpty(lineData)){
-                    data5.add(Double.parseDouble(lineData));
-                }else{//缺失数据让线断开
-                    data5.add(null);
+                    data5Map.put(curLotNo, Double.parseDouble(lineData));
                 }
             }
         }
-        optionDatas.add(xAsix);
 
+        //缺失数据让线断开
+        for (String asix : xAsix) {
+            data1.add(MapUtil.getDouble(data1Map, asix));
+            data2.add(MapUtil.getDouble(data2Map, asix));
+            data3.add(MapUtil.getDouble(data3Map, asix));
+            data4.add(MapUtil.getDouble(data4Map, asix));
+            data5.add(MapUtil.getDouble(data5Map, asix));
+        }
+
+        optionDatas.add(xAsix);
         //将数据的分配name并放入返回对象中
         List<Map<String, Object>> lines = new ArrayList<>();
         Map<String, Object> lineObj1 = new HashMap<>();
