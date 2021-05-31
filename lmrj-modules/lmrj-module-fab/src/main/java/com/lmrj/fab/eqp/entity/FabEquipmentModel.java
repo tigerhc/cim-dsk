@@ -33,6 +33,15 @@ public class FabEquipmentModel extends BaseDataEntity {
     @TableField(value = "class_code")
     @Excel(name = "设备类型", orderNum = "2", width = 20 )
 	private String classCode;
+    /**设备大类*/
+    @TableField(value = "parent_type")
+    private String parentType;
+    /**设备子类*/
+    @TableField(value = "type")
+    private String type;
+    /**单类型数量*/
+    @TableField(exist = false)
+    private String modelnumber;
     @TableField(exist = false)
     private String modelName;
     @TableField(value = "category")

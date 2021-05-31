@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -143,5 +144,72 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
+
+
+    /**
+     * 设备类型下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/modelTemplateList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void modelTemplateList(Model model, HttpServletRequest request,
+                              HttpServletResponse response) {
+        List<FabEquipmentModel> templateList = new ArrayList<>();
+        FabEquipmentModel a = new FabEquipmentModel();
+        a.setParentType("1");
+        a.setType("1");
+        a.setClassCode("1");
+        a.setModelnumber("1");
+        a.setModelName("速度传感器NB");
+        templateList.add(a);
+        a = new FabEquipmentModel();
+        a.setParentType("1");
+        a.setType("2");
+        a.setClassCode("1");
+        a.setModelnumber("1");
+        a.setModelName("温度传感器MM");
+        templateList.add(a);
+        a = new FabEquipmentModel();
+        a.setParentType("2");
+        a.setType("1");
+        a.setClassCode("1");
+        a.setModelnumber("1");
+        a.setModelName("电表");
+        templateList.add(a);
+
+        DateResponse listjson = new DateResponse(templateList);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+
+    /**
+     * 设备类型下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/oneTemplateList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void oneTemplateList(Model model, HttpServletRequest request,
+                                  HttpServletResponse response) {
+        List<FabEquipmentModel> templateList = new ArrayList<>();
+        FabEquipmentModel a = new FabEquipmentModel();
+        a.setParentType("1");
+        a.setType("1");
+        a.setClassCode("1");
+        a.setModelnumber("1");
+        a.setModelName("速度传感器NB");
+        templateList.add(a);
+
+        DateResponse listjson = new DateResponse(templateList);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+
+
 
 }
