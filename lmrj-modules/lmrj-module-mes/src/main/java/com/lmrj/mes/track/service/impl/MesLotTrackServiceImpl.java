@@ -296,11 +296,11 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             eqpId = "APJ-HB1-SINTERING1";
         } else if (eqpId.contains("RY2S1")) {//金型温度设定值
             eqpId = "APJ-HB2-SINTERING1-1";
-        } else if(eqpId.contains("RY2S2")){//压力、温度设定值
+        } else if (eqpId.contains("RY2S2")) {//压力、温度设定值
             eqpId = "APJ-HB2-SINTERING1-2";
         }/* else if(eqpId.equals("RY2C")){//温度测定值
             eqpId = "APJ-HB2-SINTERING1-3";
-        } */ else if(eqpId.contains("RY2DJ")){//点胶机数据
+        } */ else if (eqpId.contains("RY2DJ")) {//点胶机数据
             eqpId = "APJ-HB2-DISPENSING1";
         } else {
             log.error("设备名称错误！   " + eqpId);
@@ -732,6 +732,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         for (FabEquipment fabEquipment : fabEquipmentList) {
             if (yield == null || yield.equals("")) {
                 yield = "5712";
+            } else {
+                yield = (Integer.parseInt(yield) * 12) + "";
             }
             int yeild1 = Integer.parseInt(yield) / 2;
             String yield2 = "" + yeild1;
@@ -912,9 +914,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public MesLotTrack findNowLotByEqp(String eqpId){
+    public MesLotTrack findNowLotByEqp(String eqpId) {
         return baseMapper.findNowLotByEqp(eqpId);
     }
+
     @Override
     public Map<String, Object> chartKongDong(String lineNo, String proName, String startDate, String endDate) {
         try {
@@ -1137,7 +1140,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                         }
                     }
                     try {
-                        if(!"".equals(serialCounter)){
+                        if (!"".equals(serialCounter)) {
                             MeasureSim measureSim = new MeasureSim();
                             measureSim.setLotNo(lotNo);
                             measureSim.setLineNo("SIM");
@@ -1200,7 +1203,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLineNo("5GI");
                             measureGi.setProductionNo(productionName);//机种名
                             measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
@@ -1224,7 +1227,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000", ""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
@@ -1270,7 +1273,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLineNo("6GI");
                             measureGi.setProductionNo(productionName);//机种名
                             measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
@@ -1294,7 +1297,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000", ""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
@@ -1361,7 +1364,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     Integer nm = measureSxMapper.selectCount(wrapper);
                     if (nm < 1) {
                         measureSxMapper.insert(measure);
-                    }else {
+                    } else {
 
                     }
                 }
