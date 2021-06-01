@@ -11,6 +11,7 @@ import com.lmrj.fab.eqp.entity.FabEquipmentStatus;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,6 +50,9 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     @Autowired
     private IFabEquipmentService fabEquipmentService;
 
+    @Value("${dsk.lineNo}")
+    String lineNo2;
+
     @GetMapping("chart")
     public void chart(HttpServletRequest request) {
         List<Map> map=fabEquipmentStatusService.selectEqpStatusChart();
@@ -76,7 +80,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @GetMapping("listPdtStatus")
     public void listPdtStatus(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response){
-        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo);
+        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo2);
         //List<FabEquipment> fabEquipmentList =  fabEquipmentService.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo).eq("step_yield_flag","1"));
         //List<String> eqpIds = Lists.newArrayList();
         //fabEquipmentList.forEach(fabEquipment -> {
