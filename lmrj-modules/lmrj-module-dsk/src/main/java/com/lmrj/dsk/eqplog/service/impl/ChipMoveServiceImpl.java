@@ -21,8 +21,7 @@ import java.util.Map;
 @Service("mapTrayChipMoveService")
 @Slf4j
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
-    private SimpleDateFormat sdfSSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private SimpleDateFormat sdfS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+    private SimpleDateFormat sdfSSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); //客户端处理了统一的时间格式
 
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
@@ -66,11 +65,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 }
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 String dataStartTime = MapUtils.getString(item, "startTime");
-                if(dataStartTime.length() == 23){
-                    data.setStartTime(sdfSSS.parse(dataStartTime));
-                } else {
-                    data.setStartTime(sdfS.parse(dataStartTime));
-                }
+                data.setStartTime(sdfSSS.parse(dataStartTime));
 
                 data.setChipId(chipId);
                 data.setFileName(MapUtils.getString(item, "fileName"));
@@ -104,11 +99,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setToY(1);
                         data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                         String dataStartTime = MapUtils.getString(item, "startTime");
-                        if(dataStartTime.length() == 23){
-                            data.setStartTime(sdfSSS.parse(dataStartTime));
-                        } else {
-                            data.setStartTime(sdfS.parse(dataStartTime));
-                        }
+                        data.setStartTime(sdfSSS.parse(dataStartTime));
                         data.setFileName(MapUtils.getString(item, "fileName"));
                         data.setChipId(chipId);
                         data.setMapFlag(1);
