@@ -199,8 +199,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             bc = "APJ-BC1";
         } else if (eqpId.equals("RY1")) {
             bc = "APJ-BC3";
-        } else {
+        } else if (eqpId.equals("RY2")) {
             bc = "APJ-BC4";
+        }else if(eqpId.equals("XRAY") || eqpId.equals("US") || eqpId.equals("JET")){
+            bc = "APJ-BC6";
+        } else {
+            bc = "APJ-BC7";
         }
         log.info("findApjRecipeCode 参数" + map);
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));

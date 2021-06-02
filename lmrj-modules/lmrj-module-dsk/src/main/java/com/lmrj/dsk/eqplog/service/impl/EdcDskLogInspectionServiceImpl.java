@@ -1,9 +1,9 @@
 package com.lmrj.dsk.eqplog.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogLingouParam;
-import com.lmrj.dsk.eqplog.mapper.EdcDskLogLingouParamMapper;
-import com.lmrj.dsk.eqplog.service.IEdcDskLogLingouParamService;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogInspection;
+import com.lmrj.dsk.eqplog.mapper.EdcDskLogInspectionMapper;
+import com.lmrj.dsk.eqplog.service.IEdcDskLogInspectionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 @Service("edcDskLogLingouParamService")
-public class EdcDskLogLingouParamServiceImpl extends CommonServiceImpl<EdcDskLogLingouParamMapper, EdcDskLogLingouParam> implements IEdcDskLogLingouParamService {
+public class EdcDskLogInspectionServiceImpl extends CommonServiceImpl<EdcDskLogInspectionMapper, EdcDskLogInspection> implements IEdcDskLogInspectionService {
 
 }
