@@ -87,9 +87,6 @@
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
 		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
-		(
-		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
-		) as productionTitle,
 		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` chip
 		<where>
