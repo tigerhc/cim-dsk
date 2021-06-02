@@ -557,6 +557,18 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             } else {
                 rs.put("paramValue", baseMapper.findProParam(param));
             }
+            //同一种设备的modelName 报上来的却不一样
+            if(data.getEqpId().contains("3DAOI")){
+                data.setEqpModelName("PARMI-XCEED");
+            } else if(data.getEqpId().contains("DM")){
+                data.setEqpModelName("AFM15");
+            } else if(data.getEqpId().contains("SMT")){
+                data.setEqpModelName("YSM-10");
+            } else if(data.getEqpId().contains("APJ-HB2-SINTERING1")){
+                data.setEqpModelName("2ND SINTER");
+            } else if(data.getEqpId().contains("APJ-HB1-SINTERING1")){
+                data.setEqpModelName("1ST SINTER");
+            }
             rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
         }
         return rs;
