@@ -93,20 +93,36 @@
 		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` chip
 		<where>
-			<if test="chipId != null and chipId !=''">
-				and `chip_id` like concat('%', #{chipId})
-			</if>
-			<if test="eqpIds != null and eqpIds.size > 0">
-				AND eqp_id IN(
-				<foreach collection="eqpIds" item="eqp" separator=",">
-					#{eqp}
-				</foreach>
-				)
-			</if>
-			<if test="sTime!=null and sTime!=''">
-				AND `start_time` &gt;= #{sTime}
-				AND `start_time` &lt;= #{eTime}
-			</if>
+			<choose>
+				<when test="chipId != null and chipId !=''">
+					and `chip_id` like concat('%', #{chipId})
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</when>
+				<otherwise>
+					<if test="lotNo!=null and lotNo!=''">
+						and `lot_no`=#{lotNo}
+					</if>
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</otherwise>
+			</choose>
 		</where>
 		ORDER BY `start_time` DESC
 		LIMIT #{offset},#{pageSize}
@@ -116,20 +132,36 @@
 		SELECT COUNT(1)
 		FROM `map_tray_chip_move`
 		<where>
-			<if test="chipId != null and chipId !=''">
-				and `chip_id` like concat('%', #{chipId})
-			</if>
-			<if test="eqpIds != null and eqpIds.size > 0">
-				AND eqp_id IN(
-				<foreach collection="eqpIds" item="eqp" separator=",">
-					#{eqp}
-				</foreach>
-				)
-			</if>
-			<if test="sTime!=null and sTime!=''">
-				AND `start_time` &gt;= #{sTime}
-				AND `start_time` &lt;= #{eTime}
-			</if>
+			<choose>
+				<when test="chipId != null and chipId !=''">
+					and `chip_id` like concat('%', #{chipId})
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</when>
+				<otherwise>
+					<if test="lotNo!=null and lotNo!=''">
+						and `lot_no`=#{lotNo}
+					</if>
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</otherwise>
+			</choose>
 		</where>
 		ORDER BY `start_time` DESC
 		LIMIT #{offset},#{pageSize}
