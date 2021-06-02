@@ -158,10 +158,7 @@ public class EdcDskLogHandler {
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         System.out.println("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
-        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
-        });
-
-
+        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
 //        if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
 //            this.temperatureList(edcDskLogProductionList);}
 
