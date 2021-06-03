@@ -31,4 +31,9 @@ public class OvnBatchLotParamServiceImpl  extends CommonServiceImpl<OvnBatchLotP
     public List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime){
         return baseMapper.selectTempData(startTime,endTime);
     }
+
+    @Override
+    public List<OvnBatchLotParam> selectDataBybatchId(String batchId){
+        return baseMapper.selectDataBybatchId(batchId);
+    }
 }

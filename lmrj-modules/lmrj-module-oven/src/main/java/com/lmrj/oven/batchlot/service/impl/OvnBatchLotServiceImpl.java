@@ -47,6 +47,11 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
 
     @Override
+    public List<OvnBatchLot> findDataByTime(String beginTime, String endTime){
+        return baseMapper.findDataByTime(beginTime,endTime);
+    }
+
+    @Override
     public OvnBatchLot findBatchData(String eqpId , Date startTime){
         return baseMapper.findBatchData(eqpId,startTime);
     }

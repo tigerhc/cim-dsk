@@ -803,11 +803,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
             }
         }
-
-        log.info("[{}]更新设备状态数据, {}, {}", eqpId, lotNo, recipeCode);
+        /*log.info("[{}]更新设备状态数据, {}, {}", eqpId, lotNo, recipeCode);
         if (StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
             fabEquipmentStatusService.updateYield(eqpId, "RUN", lotNo, recipeCode, 0, 0);
-        }
+        }*/
         return result;
     }
 
@@ -1149,7 +1148,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureSim.setLotNo(lotNo);
                             measureSim.setLineNo("SIM");
                             measureSim.setProductionNo("SIM6812M(E)D-URA_F2971");
-                            measureSim.setMeasureType("IT");
+                            measureSim.setMeasureType("LF");
                             measureSim.setMeasureCounter(ele[6]);
                             measureSim.setMeasureName(ele[5]);
                             measureSim.setMeasureJudgment(ele[4]);
@@ -1206,7 +1205,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLotNo(lotNo);
                             measureGi.setLineNo("5GI");
                             measureGi.setProductionNo(productionName);//机种名
-                            measureGi.setMeasureType("IT");
+                            measureGi.setMeasureType("LF");
                             measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
@@ -1276,7 +1275,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLotNo(lotNo);
                             measureGi.setLineNo("6GI");
                             measureGi.setProductionNo(productionName);//机种名
-                            measureGi.setMeasureType("IT");
+                            measureGi.setMeasureType("LF");
                             measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号

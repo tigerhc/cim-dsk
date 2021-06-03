@@ -46,6 +46,12 @@ public class EdcDskLogInspection extends AbstractEntity {
     /**批次号*/
     @TableField(value = "chip_id")
     private String chipId;
+    @TableField(value = "tray_id")
+    private String trayId;
+    @TableField(value = "tray_x")
+    private String trayX;
+    @TableField(value = "tray_y")
+    private String trayY;
     /**批次号*/
     @TableField(value = "params")
     private String params;
