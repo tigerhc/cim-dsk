@@ -792,8 +792,6 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         for (FabEquipment fabEquipment : fabEquipmentList) {
             if (yield == null || yield.equals("")) {
                 yield = "5712";
-            } else {
-                yield = (Integer.parseInt(yield) * 12) + "";
             }
             result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
