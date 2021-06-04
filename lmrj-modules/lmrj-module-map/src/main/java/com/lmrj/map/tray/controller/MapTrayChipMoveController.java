@@ -148,4 +148,15 @@ public class MapTrayChipMoveController {
         rs.put("paramObj", productionParam);
         return rs;
     }
+
+    /** 追溯查询物料信息
+     */
+    @RequestMapping(value = "getPuctionGoods", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getPuctionGoods(@RequestParam String startTime, String eqpId){
+        Response rs = Response.ok();
+        startTime = startTime.replace("T", " ");
+        startTime = startTime.length()>19?startTime.substring(19):startTime;
+        System.out.println(startTime+","+eqpId);
+        return rs;
+    }
 }
