@@ -539,38 +539,57 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
 
     @Override
     public Map<String, Object> getProductionParam(long id){
-        Map<String, Object> rs = new HashMap<>();
-        MapTrayChipMove data = baseMapper.selectById(id);
-        if(data == null){
-            return null;
-        }
-        if("APJ-HTRT1".equals(data.getEqpId())){//高温室温检查
-
-        } else {
-            Map<String, Object> param = new HashMap<>();
-            param.put("eqpId", data.getEqpId());
-            String startTime = sdf.format(data.getStartTime());
-            startTime = startTime.length()>23? startTime.substring(0,23):startTime;//2021-04-28 09:10:46.248
-            param.put("startTime",startTime);
-            if("N".equals(data.getJudgeResult())){//不良品
-                rs.put("paramValue", baseMapper.findNGProParam(param));
+        try {
+            Map<String, Object> rs = new HashMap<>();
+            MapTrayChipMove data = baseMapper.selectById(id);
+            if (data == null) {
+                return null;
+            }
+            if ("APJ-HTRT1".equals(data.getEqpId()) || "APJ-VI1".equals(data.getEqpId()) || "APJ-AT1".equals(data.getEqpId())) {//高温室温检查
+                Map<String, Object> param = new HashMap<>();
+                param.put("eqpId", data.getEqpId());
+                if ("APJ-VI1".equals(data.getEqpId())) {
+                    param.put("trayId", data.getToTrayId());
+                    param.put("trayX", String.valueOf(data.getToX()));
+                    param.put("trayY", String.valueOf(data.getToY()));
+                } else {
+                    param.put("chipId", data.getChipId());
+                }
+                rs.put("paramValue", baseMapper.findLOProParam(param));
             } else {
-                rs.put("paramValue", baseMapper.findProParam(param));
+                Map<String, Object> param = new HashMap<>();
+                param.put("eqpId", data.getEqpId());
+                String startTime = sdf.format(data.getStartTime());
+                startTime = startTime.length() > 23 ? startTime.substring(0, 23) : startTime;//2021-04-28 09:10:46.248
+                param.put("startTime", startTime);
+                if ("N".equals(data.getJudgeResult())) {//不良品
+                    rs.put("paramValue", baseMapper.findNGProParam(param));
+                } else {
+                    rs.put("paramValue", baseMapper.findProParam(param));
+                }
             }
             //同一种设备的modelName 报上来的却不一样
-            if(data.getEqpId().contains("3DAOI")){
+            if (data.getEqpId().contains("3DAOI")) {
                 data.setEqpModelName("PARMI-XCEED");
-            } else if(data.getEqpId().contains("DM")){
+            } else if (data.getEqpId().contains("DM")) {
                 data.setEqpModelName("AFM15");
-            } else if(data.getEqpId().contains("SMT")){
+            } else if (data.getEqpId().contains("SMT")) {
                 data.setEqpModelName("YSM-10");
-            } else if(data.getEqpId().contains("APJ-HB2-SINTERING1")){
+            } else if (data.getEqpId().contains("APJ-HB2-SINTERING1")) {
                 data.setEqpModelName("2ND SINTER");
-            } else if(data.getEqpId().contains("APJ-HB1-SINTERING1")){
+            } else if (data.getEqpId().contains("APJ-HB1-SINTERING1")) {
                 data.setEqpModelName("1ST SINTER");
+            } else if (data.getEqpId().contains("APJ-VI")) {
+                data.setEqpModelName("VI");
+            } else if (data.getEqpId().contains("APJ-AT")) {
+                data.setEqpModelName("AT");
             }
+            //从数据库中获得标题
             rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
+            return rs;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
-        return rs;
     }
 }

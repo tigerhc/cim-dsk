@@ -360,4 +360,21 @@
 		and eqp_model_name=#{eqpModelName}
 		order by sort_no
 	</select>
+	<select id="findLOProParam" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT params from edc_dsk_log_inspection
+		where eqp_id=#{eqpId}
+		<if test="chipId!='' and chipId!=null">
+			and chip_id=#{chipId}
+		</if>
+		<if test="trayId!='' and trayId!=null">
+			and tray_id=#{trayId}
+		</if>
+		<if test="trayX!='' and trayX!=null">
+			and tray_x=#{trayX}
+		</if>
+		<if test="trayY!='' and trayY!=null">
+			and tray_y=#{trayY}
+		</if>
+		limit 1
+	</select>
 </mapper>
