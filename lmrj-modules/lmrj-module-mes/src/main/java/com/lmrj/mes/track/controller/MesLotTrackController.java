@@ -95,19 +95,22 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String eqpId1 = eqpId;
             if (eqpId.contains("WB")) {
                 eqpId1 = eqpId + "A";
-            } else if (eqpId1.contains("DM")) {
+            } else if (eqpId.contains("DM")) {
                 eqpId1 = "SIM-DM1";
+            }else if(eqpId.contains("LF1")){
+                eqpId1 = "SIM-LF1";
+            }else if(eqpId.contains("LF2")){
+                eqpId1 = "SIM-LF2";
             }
 
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
-
-            if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
-                log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
-                return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+            if(lastLotTrack != null){
+                if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
+                    log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                    return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+                }
             }
-
-
             //String eqpId ="SIM-DM1";
             MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
@@ -171,15 +174,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-LF1";
             } else if (eqpId1.equals("HTRT")) {
                 eqpId1 = "APJ-HTRT1";
+            } else if (eqpId1.equals("XRAY")) {
+                eqpId1 = "APJ-HB2-XRAY1";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
-            if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
-                log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
-                return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+            if(lastLotTrack!=null){
+                if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
+                    log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                    return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+                }
             }
-
-
             MesResult result = mesLotTrackService.apjTrackin(subLineNo, productionNo, productionName, orderNo, lotNo, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(subLineNo, "Result6", "MesLotTrackController.dskApjTrackin", jo.toString(), trackinfo, "wangdong");//日志记录
@@ -445,9 +450,12 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String eqpId1 = eqpId;
             if (eqpId1.contains("WB")) {
                 eqpId1 = eqpId + "A";
-            }
-            if (eqpId1.contains("DM")) {
+            } else if (eqpId1.contains("DM")) {
                 eqpId1 = "SIM-DM1";
+            }else if(eqpId.contains("LF1")){
+                eqpId1 = "SIM-LF1";
+            }else if(eqpId.contains("LF2")){
+                eqpId1 = "SIM-LF2";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
