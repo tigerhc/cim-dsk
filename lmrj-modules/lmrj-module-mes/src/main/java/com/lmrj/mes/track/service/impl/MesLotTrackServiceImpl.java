@@ -368,6 +368,39 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
+
+    public MesResult findCleanParam(String eqpId, String opId) {
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        if (eqpId.equals("JET")) {
+            eqpId = "APJ-CLEAN-JET1";
+        } else if(eqpId.equals("US")){
+            eqpId = "APJ-CLEAN-US1";
+        }else {
+            log.error("设备名称错误！   " + eqpId);
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_CLEAN_PARAM");
+        String bc = "APJ-BC6";
+        log.info("FIND_CLEAN_PARAM 参数" + map);
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+        if (replyMsg != null) {
+            result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.getFlag())) {
+                value = (String) result.getContent();
+            }
+            if ("ERROR: NOT FOUND".equals(value)) {
+                log.error("EQP_ID:" + eqpId + "洗净机数据数据获取失败");
+            }
+        } else {
+            return MesResult.error(eqpId + " not reply");
+        }
+        result.setContent(value);
+        return result;
+    }
+
     public MesResult findTemp(String eqpId, String opId) {
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         if (fabEquipment == null) {

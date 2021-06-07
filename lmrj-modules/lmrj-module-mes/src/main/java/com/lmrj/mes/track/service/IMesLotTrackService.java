@@ -44,6 +44,8 @@ public interface IMesLotTrackService extends ICommonService<MesLotTrack> {
 
     MesResult findViParam(String eqpId, String opId);
 
+    MesResult findCleanParam(String eqpId, String opId);
+
     MesLotTrack findLotNo(String startTime, String eqpId);
 
     MesLotTrack findNextStartTime(String endTime, String eqpId);

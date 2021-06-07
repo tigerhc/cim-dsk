@@ -395,6 +395,33 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
 
+    //查找APJ二次热压设备参数，从产量日志中获取
+    @RequestMapping(value = "/findCleanParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findCleanParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                              HttpServletRequest request, HttpServletResponse response) {
+        log.info("findCleanParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param13", "MesLotTrackController.findCleanParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            MesResult result = mesLotTrackService.findCleanParam(eqpId, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result13", "MesLotTrackController.findCleanParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error13", "MesLotTrackController.findCleanParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskTrackin2(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
