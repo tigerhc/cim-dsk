@@ -176,6 +176,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-HTRT1";
             } else if (eqpId1.equals("XRAY")) {
                 eqpId1 = "APJ-HB2-XRAY1";
+            } else if (eqpId1.equals("JET")) {
+                eqpId1 = "APJ-CLEAN-JET1";
+            } else if (eqpId1.equals("US")) {
+                eqpId1 = "APJ-CLEAN-US1";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
@@ -561,6 +565,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-HTRT1";
             } else if (eqpId1.equals("XRAY")) {
                 eqpId1 = "APJ-HB2-XRAY1";
+            } else if (eqpId1.equals("JET")) {
+                eqpId1 = "APJ-CLEAN-JET1";
+            } else if (eqpId1.equals("US")) {
+                eqpId1 = "APJ-CLEAN-US1";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
