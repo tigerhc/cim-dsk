@@ -126,6 +126,61 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
+//三垦干燥炉入帐   有时会出现两个批次同时入帐，将两个批次写在一起，/分隔
+    @RequestMapping(value = "/dskOventrackin/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String dskOvenTrackin(Model model, @PathVariable String eqpId, @RequestParam String trackinfo1, @RequestParam String trackinfo2, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        log.info("dsktrackin :  {} , {}", trackinfo1,trackinfo2);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"trackinfo1\":\"" + trackinfo1 + "\",\"trackinfo2\":\"" + trackinfo2 + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskOventrackin", eventDesc, trackinfo1+"/"+trackinfo2, "wangdong");//日志记录参数
+            if (trackinfo1.length() < 30) {
+                return "trackinfo too short";
+            }
+            String[] trackinfos = trackinfo1.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1].trim();
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
+            if(trackinfo2.length()>30){
+                String[] trackinfos2 = trackinfo2.split("\\.");
+                String lotorder2 = trackinfos2[0];
+                String[] lotNos2 = lotorder2.split("_");
+                String lotNo2 = lotNos2[0].substring(7, 12);
+                lotNo = lotNo+"/"+lotNo2;
+            }
+            String eqpId1 = eqpId;
+            if (eqpId.contains("SIM-OVEN1")) {
+                eqpId1 = "SIM-OVEN1";
+            }else if(eqpId.contains("SIM-OVEN2")){
+                eqpId1 = "SIM-OVEN2";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
+            if(lastLotTrack != null){
+                if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
+                    log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
+                    return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
+                }
+            }
+            //String eqpId ="SIM-DM1";
+            MesResult result = mesLotTrackService.trackin(eqpId, productionNo, productionName, orderNo, lotNo, "", opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dskOventrackin", jo.toString(), trackinfo1, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return "Y";
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskOventrackin", "有异常", trackinfo1, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
     @RequestMapping(value = "/dskapjtrackin/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
     public String dskApjTrackin(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("dsktrackin :  {}", trackinfo);
@@ -513,6 +568,63 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+
+    @RequestMapping(value = "/dskOventrackout/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String dskOventrackout(Model model, @PathVariable String eqpId, @RequestParam String trackinfo1, @RequestParam String trackinfo2, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+        //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo1\":\"" + trackinfo1+ "\",\"trackinfo2\":\"" + trackinfo2 + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskOventrackout", eventDesc, trackinfo1, "wangdong");//日志记录参数
+        try {
+            if (trackinfo1.length() < 30) {
+                return "trackinfo too short（过账信息不足！）";
+            }
+            String[] trackinfos = trackinfo1.split("\\.");
+            String lotorder = trackinfos[0];
+            String productionName = trackinfos[1].trim();
+            productionName = productionName.replace("_", " ");
+            String[] lotNos = lotorder.split("_");
+            String productionNo = lotNos[0].substring(0, 7); //5002915
+            String lotNo = lotNos[0].substring(7, 12); //0702D
+            String orderNo = lotNos[1]; //37368342
+            if(trackinfo2.length()>30){
+                String[] trackinfos2 = trackinfo2.split("\\.");
+                String lotorder2 = trackinfos2[0];
+                String[] lotNos2 = lotorder2.split("_");
+                String lotNo2 = lotNos2[0].substring(7, 12);
+                lotNo = lotNo+"/"+lotNo2;
+            }
+
+            //对当前批次进行判断，若批次结束时间过快，阻止操做
+            String eqpId1 = eqpId;
+            if (eqpId.contains("SIM-OVEN1")) {
+                eqpId1 = "SIM-OVEN1";
+            }else if(eqpId.contains("SIM-OVEN2")){
+                eqpId1 = "SIM-OVEN2";
+            }
+            //判断批次数据入账是否符合逻辑
+            MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
+            Date nowTime = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nowLotTrack.getStartTime());
+            calendar.add(Calendar.MINUTE, +5);
+            if (nowTime.before(calendar.getTime()) && !eqpId.contains("SIM-GW")) {
+                log.error("操做人员误操作，不允许提前结束批次" + lotNo);
+                return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator（不允许提前结束批次，最短时间五分钟）";
+            }
+            MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.dskOventrackout", jo.toString(), trackinfo1+"/"+trackinfo2, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return "Y";
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskOventrackout", "有异常", trackinfo1+"/"+trackinfo2, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
     @RequestMapping(value = "/dskapjtrackout/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
     public String apjTrackout(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
