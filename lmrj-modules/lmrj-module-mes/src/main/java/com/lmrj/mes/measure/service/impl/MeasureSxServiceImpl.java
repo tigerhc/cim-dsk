@@ -176,8 +176,18 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
                 xAsix.add(curLotNo);
                 //补充上限和下限
                 if(limitList.size()>1){//正常情况下, 该数组的长度为2,下标为0的是最小值,为1的是最大值
-                    minLimit.add(Double.parseDouble(MapUtil.getString(limitList.get(0), local)));
-                    maxLimit.add(Double.parseDouble(MapUtil.getString(limitList.get(1), local)));
+                    String min = MapUtil.getString(limitList.get(0), local);
+                    String max = MapUtil.getString(limitList.get(1), local);
+                    if(StringUtil.isNotEmpty(min)){
+                        minLimit.add(Double.parseDouble(min));
+                    }else{
+                        minLimit.add(0d);
+                    }
+                    if(StringUtil.isNotEmpty(max)){
+                        maxLimit.add(Double.parseDouble(max));
+                    }else{
+                        maxLimit.add(0d);
+                    }
                     limitMin = Double.parseDouble(MapUtil.getString(limitList.get(0), local));
                 }
             }
