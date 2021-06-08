@@ -910,10 +910,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
             }
         }
-        /*log.info("[{}]更新设备状态数据, {}, {}", eqpId, lotNo, recipeCode);
+        log.info("[{}]更新设备状态数据, {}, {}", eqpId, lotNo, recipeCode);
         if (StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
-            fabEquipmentStatusService.updateYield(eqpId, "RUN", lotNo, recipeCode, 0, 0);
-        }*/
+            fabEquipmentStatusService.updateYield(eqpId, lotNo, recipeCode, 0, 0);
+        }
         return result;
     }
 

@@ -49,9 +49,6 @@
 
     <update id="updateYield">
         update FAB_EQUIPMENT_STATUS set  update_date = now()
-        <if test="status != null and status != ''">
-            , EQP_STATUS = #{status}
-        </if>
         <if test="lotNo != null and lotNo != ''">
             , lot_no = #{lotNo}
         </if>
