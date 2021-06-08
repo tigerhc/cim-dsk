@@ -150,7 +150,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 String lotorder2 = trackinfos2[0];
                 String[] lotNos2 = lotorder2.split("_");
                 String lotNo2 = lotNos2[0].substring(7, 12);
-                lotNo = lotNo+"/"+lotNo2;
+                lotNo = lotNo+"|"+lotNo2;
             }
             String eqpId1 = eqpId;
             if (eqpId.contains("SIM-OVEN1")) {
@@ -591,7 +591,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 String lotorder2 = trackinfos2[0];
                 String[] lotNos2 = lotorder2.split("_");
                 String lotNo2 = lotNos2[0].substring(7, 12);
-                lotNo = lotNo+"/"+lotNo2;
+                lotNo = lotNo+"|"+lotNo2;
             }
 
             //对当前批次进行判断，若批次结束时间过快，阻止操做
@@ -813,11 +813,11 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     @RequestMapping(value = "/getKeyence", method = {RequestMethod.GET, RequestMethod.POST})
     public String getKeyence(@RequestParam String mode, @RequestParam String lotNo, @RequestParam String production
     ) throws IOException {
-        fabLogService.info("", "", "getKeyence", mode + "+" + production, lotNo, "wangdong");//日志记录
+        fabLogService.info("getKeyence", "", "getKeyence", mode + "+" + production, lotNo, "wangdong");//日志记录
         Response rs = new Response();
         String paramStr = production.substring(3, 8);
         String result = mesLotTrackService.getKeyence(mode, lotNo, paramStr);
-        fabLogService.info("", "", "getKeyence.result", result, lotNo, "wangdong");//日志记录
+        fabLogService.info("getKeyence", "", "getKeyence.result", result, lotNo, "wangdong");//日志记录
         return result;
     }
 
@@ -827,10 +827,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         Response rs = new Response();
         String result = null;
         if (category.equals("5GI")) {
-            fabLogService.info("", "", "find5GI", production, lotNo, "jiafuxing");//日志记录
+            fabLogService.info("", "findGI", "find5GI", production, lotNo, "jiafuxing");//日志记录
             result = mesLotTrackService.find5GI(lotNo, production);
         } else if (category.equals("6GI")) {
-            fabLogService.info("", "", "find6GI", production, lotNo, "jiafuxing");//日志记录
+            fabLogService.info("", "findGI", "find6GI", production, lotNo, "jiafuxing");//日志记录
             result = mesLotTrackService.find6GI(lotNo, production);
         }
         fabLogService.info("", "", "findGI.result", result, lotNo, "jiafuxing");//日志记录
