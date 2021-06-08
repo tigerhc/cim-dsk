@@ -42,7 +42,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/rwplanhislist", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/rwplanlist", method = { RequestMethod.GET, RequestMethod.POST })
     public void rwplanhislist(@RequestParam("id") String id,@RequestParam("eqpId") String eqpId, @RequestParam("assignedTime") String assignedTime,
                               @RequestParam("dealTime") String dealTime, @RequestParam("planStatus") String planStatus,
                               @RequestParam("assignedendTime") String assignedendTime, @RequestParam("dealendTime") String dealendTime,

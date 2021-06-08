@@ -3,8 +3,8 @@ package com.lmrj.iot.config.service.impl;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.User;
-import com.lmrj.core.userRole.service.IIotUserRoleService;
-import com.lmrj.core.userRole.service.IRoleEqpService;
+import com.lmrj.fab.userRole.service.IIotUserRoleService;
+import com.lmrj.fab.userRole.service.IIotRoleEqpService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.iot.config.entity.IotCollectDataHis;
 import com.lmrj.iot.config.mapper.IotCollectDataHisMapper;
@@ -28,7 +28,7 @@ import java.util.List;
 @Service("iotCollectDataHisService")
 public class IotCollectDataHisServiceImpl extends CommonServiceImpl<IotCollectDataHisMapper, IotCollectDataHis> implements IIotCollectDataHisService {
     @Autowired
-    private IRoleEqpService iroleEqpService;
+    private IIotRoleEqpService iroleEqpService;
     @Autowired
     private IIotUserRoleService iUserRoleService;
     /**

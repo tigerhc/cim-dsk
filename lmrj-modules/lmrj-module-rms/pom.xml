@@ -33,6 +33,12 @@
             <version>2.0.0.RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.lmrj</groupId>
+            <artifactId>lmrj-modules-iot</artifactId>
+            <version>2.0.0.RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 
