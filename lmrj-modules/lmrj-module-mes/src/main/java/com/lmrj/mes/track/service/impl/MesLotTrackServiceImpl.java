@@ -840,13 +840,13 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (fabEquipmentList.size() != 2) {
             return MesResult.error("eqp not found");
         }
+        if (yield == null || yield.equals("")) {
+            yield = "5712";
+        } else {
+            yield = (Integer.parseInt(yield) * 12) + "";
+        }
+        int yeild1 = Integer.parseInt(yield) / 2;
         for (FabEquipment fabEquipment : fabEquipmentList) {
-            if (yield == null || yield.equals("")) {
-                yield = "5712";
-            } else {
-                yield = (Integer.parseInt(yield) * 12) + "";
-            }
-            int yeild1 = Integer.parseInt(yield) / 2;
             String yield2 = "" + yeild1;
             result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield2, recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
@@ -1263,7 +1263,34 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureSim.setA1(Double.valueOf(ele[7]));
                             measureSim.setB1(Double.valueOf(ele[8]));
                             measureSim.setC1(Double.valueOf(ele[9]));
+                            measureSim.setC2(Double.valueOf(ele[10]));
+                            measureSim.setC3(Double.valueOf(ele[11]));
+                            measureSim.setC4(Double.valueOf(ele[12]));
+                            measureSim.setC5(Double.valueOf(ele[13]));
+                            measureSim.setC6(Double.valueOf(ele[14]));
+                            measureSim.setC7(Double.valueOf(ele[15]));
+                            measureSim.setC8(Double.valueOf(ele[16]));
+                            measureSim.setC9(Double.valueOf(ele[17]));
+                            measureSim.setC10(Double.valueOf(ele[18]));
+                            measureSim.setC11(Double.valueOf(ele[19]));
+                            measureSim.setC12(Double.valueOf(ele[20]));
+                            measureSim.setC13(Double.valueOf(ele[21]));
+                            measureSim.setC14(Double.valueOf(ele[22]));
+                            measureSim.setC15(Double.valueOf(ele[23]));
+                            measureSim.setC16(Double.valueOf(ele[24]));
+                            measureSim.setC17(Double.valueOf(ele[25]));
+                            measureSim.setC19(Double.valueOf(ele[26]));
+                            measureSim.setC20(Double.valueOf(ele[27]));
                             measureSim.setC21(Double.valueOf(ele[28]));
+                            measureSim.setC23(Double.valueOf(ele[29]));
+                            measureSim.setC24(Double.valueOf(ele[30]));
+                            measureSim.setC26(Double.valueOf(ele[31]));
+                            measureSim.setC28(Double.valueOf(ele[32]));
+                            measureSim.setC30(Double.valueOf(ele[33]));
+                            measureSim.setC31(Double.valueOf(ele[34]));
+                            measureSim.setC35(Double.valueOf(ele[35]));
+                            measureSim.setC37(Double.valueOf(ele[36]));
+                            measureSim.setC40(Double.valueOf(ele[37]));
                             measureSim.setSerialCounter(serialCounter);
                             EntityWrapper wrapper = new EntityWrapper();
                             wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", serialCounter);
