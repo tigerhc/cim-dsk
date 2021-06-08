@@ -1,7 +1,7 @@
 package com.lmrj.dsk.eqplog.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.lmrj.dsk.eqplog.entity.EdcDskLogLingouParam;
+import com.lmrj.dsk.eqplog.entity.EdcDskLogInspection;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,6 +16,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 @Mapper
-public interface EdcDskLogLingouParamMapper extends BaseMapper<EdcDskLogLingouParam> {
+public interface EdcDskLogInspectionMapper extends BaseMapper<EdcDskLogInspection> {
 
 }

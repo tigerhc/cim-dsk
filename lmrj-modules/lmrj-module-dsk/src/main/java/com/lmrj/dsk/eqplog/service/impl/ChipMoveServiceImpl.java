@@ -21,9 +21,7 @@ import java.util.Map;
 @Service("mapTrayChipMoveService")
 @Slf4j
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private String trmTrayId = "";
-    private int trmCount = 0;
+    private SimpleDateFormat sdfSSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); //客户端处理了统一的时间格式
 
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
@@ -66,7 +64,9 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setDmY(MapUtils.getInteger(item, "dmY"));
                 }
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
-                data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                String dataStartTime = MapUtils.getString(item, "startTime");
+                data.setStartTime(sdfSSS.parse(dataStartTime));
+
                 data.setChipId(chipId);
                 data.setFileName(MapUtils.getString(item, "fileName"));
                 data.setMapFlag(0);
@@ -98,7 +98,8 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setToX(1);
                         data.setToY(1);
                         data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
-                        data.setStartTime(sdf.parse(MapUtils.getString(item, "startTime")));
+                        String dataStartTime = MapUtils.getString(item, "startTime");
+                        data.setStartTime(sdfSSS.parse(dataStartTime));
                         data.setFileName(MapUtils.getString(item, "fileName"));
                         data.setChipId(chipId);
                         data.setMapFlag(1);

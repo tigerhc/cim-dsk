@@ -166,7 +166,7 @@ public class EqpStateTask {
         Date startTime = new Date();
         Date endTime = new Date();
         List<RptEqpStateDay> rptEqpStateDayList = new ArrayList<>();
-        for (int i = 150; i > 0; i--) {
+        for (int i = 30; i > 0; i--) {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
@@ -183,10 +183,19 @@ public class EqpStateTask {
                 if (dataNo == 0) {
                     RptEqpStateDay newData = new RptEqpStateDay();
                     newData.setEqpId(eqpId);
-                    if (iMesLotTrackService.findCorrectData(startTime, endTime).size() > 0) {
-                        Double run = 24 * 60 * 60 * 1000 * 0.001;
-                        newData.setRunTime(run);
-                        newData.setDownTime(0.0);
+                    List<MesLotTrack> lotList = iMesLotTrackService.findCorrectData(startTime, endTime);
+                    Boolean flag = false;
+                    if (lotList.size() > 0) {
+                        for (MesLotTrack mesLotTrack : lotList) {
+                            if (mesLotTrack.getEqpId().equals(eqpId)) {
+                                flag = true;
+                            }
+                        }
+                        if(flag){
+                            Double run = 24 * 60 * 60 * 1000 * 0.001;
+                            newData.setRunTime(run);
+                            newData.setDownTime(0.0);
+                        }
                     } else {
                         Double down = 24 * 60 * 60 * 1000 * 0.001;
                         newData.setRunTime(0.0);

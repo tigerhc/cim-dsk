@@ -55,12 +55,17 @@ public class MeasureSxController {
      */
     @RequestMapping(value = "/findSxNumber",method = {RequestMethod.GET, RequestMethod.POST})
     public List findSxNumber(@RequestParam String productionName,@RequestParam String number,@RequestParam String startDate, @RequestParam String endDate, @RequestParam String type, @RequestParam String local, @RequestParam String lineNo){
-        if(lineNo.contains("SX")){
-            return  measureSxService.findSxNumber(productionName,number, startDate,endDate,type,local);
-        } else if (lineNo.contains("SIM")) {
-            return  measureSxService.findSimNumber(productionName,number, startDate,endDate,type,local);
-        } else {
-            return  measureSxService.findGiNumber(productionName,lineNo, startDate,endDate,type,local);
+        try {
+            if (lineNo.contains("SX")) {
+                return measureSxService.findSxNumber(productionName, number, startDate, endDate, type, local);
+            } else if (lineNo.contains("SIM")) {
+                return measureSxService.findSimNumber(productionName, number, startDate, endDate, type, local);
+            } else {
+                return measureSxService.findGiNumber(productionName, lineNo, startDate, endDate, type, local);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -211,26 +216,43 @@ public class MeasureSxController {
 
     private List<ExcelExportEntity> getSimKeyList(){
         List<ExcelExportEntity> keyList = new LinkedList<>();
-        ExcelExportEntity key = new ExcelExportEntity(" ","1");
-        keyList.add(key);
-        ExcelExportEntity key1 = new ExcelExportEntity("类型","2");
-        keyList.add(key1);
-        ExcelExportEntity key2 = new ExcelExportEntity("机种名","3");
-        keyList.add(key2);
-        ExcelExportEntity key3 = new ExcelExportEntity("批量号","4");
-        keyList.add(key3);
-        ExcelExportEntity key4 = new ExcelExportEntity("串行计数器","5");
-        keyList.add(key4);
-        ExcelExportEntity key5 = new ExcelExportEntity("时间","6");
-        keyList.add(key5);
-        ExcelExportEntity key6 = new ExcelExportEntity("1:A","7");
-        keyList.add(key6);
-        ExcelExportEntity key7 = new ExcelExportEntity("1:B","8");
-        keyList.add(key7);
-        ExcelExportEntity key8 = new ExcelExportEntity("1:C","9");
-        keyList.add(key8);
-        ExcelExportEntity key9 = new ExcelExportEntity("1:C21","10");
-        keyList.add(key9);
+        keyList.add(new ExcelExportEntity(" ","1"));
+        keyList.add(new ExcelExportEntity("类型","2"));
+        keyList.add(new ExcelExportEntity("机种名","3"));
+        keyList.add(new ExcelExportEntity("批量号","4"));
+        keyList.add(new ExcelExportEntity("串行计数器","5"));
+        keyList.add(new ExcelExportEntity("时间","6"));
+        keyList.add(new ExcelExportEntity("1:A","7"));
+        keyList.add(new ExcelExportEntity("2:B","8"));
+        keyList.add(new ExcelExportEntity("3:C1","9"));
+        keyList.add(new ExcelExportEntity("3:C2","10"));
+        keyList.add(new ExcelExportEntity("3:C3","11"));
+        keyList.add(new ExcelExportEntity("3:C4","12"));
+        keyList.add(new ExcelExportEntity("3:C5","13"));
+        keyList.add(new ExcelExportEntity("3:C6","14"));
+        keyList.add(new ExcelExportEntity("3:C7","15"));
+        keyList.add(new ExcelExportEntity("3:C8","16"));
+        keyList.add(new ExcelExportEntity("3:C9","17"));
+        keyList.add(new ExcelExportEntity("3:C10","18"));
+        keyList.add(new ExcelExportEntity("3:C11","19"));
+        keyList.add(new ExcelExportEntity("3:C12","20"));
+        keyList.add(new ExcelExportEntity("3:C13","21"));
+        keyList.add(new ExcelExportEntity("3:C14","22"));
+        keyList.add(new ExcelExportEntity("3:C15","23"));
+        keyList.add(new ExcelExportEntity("3:C16","24"));
+        keyList.add(new ExcelExportEntity("3:C17","25"));
+        keyList.add(new ExcelExportEntity("3:C19","26"));
+        keyList.add(new ExcelExportEntity("3:C20","27"));
+        keyList.add(new ExcelExportEntity("3:C21","28"));
+        keyList.add(new ExcelExportEntity("3:C23","29"));
+        keyList.add(new ExcelExportEntity("3:C24","30"));
+        keyList.add(new ExcelExportEntity("3:C26","31"));
+        keyList.add(new ExcelExportEntity("3:C28","32"));
+        keyList.add(new ExcelExportEntity("3:C30","33"));
+        keyList.add(new ExcelExportEntity("3:C31","34"));
+        keyList.add(new ExcelExportEntity("3:C35","35"));
+        keyList.add(new ExcelExportEntity("3:C37","36"));
+        keyList.add(new ExcelExportEntity("3:C40","37"));
         return keyList;
     }
 
@@ -250,8 +272,35 @@ public class MeasureSxController {
             LimitData.put("6","");//时间
             LimitData.put("7", MapUtil.getString(limitData.get(1), "a"));
             LimitData.put("8", MapUtil.getString(limitData.get(1), "b"));
-            LimitData.put("9", MapUtil.getString(limitData.get(1), "c"));
-            LimitData.put("10", MapUtil.getString(limitData.get(1), "c21"));
+            LimitData.put("9", MapUtil.getString(limitData.get(1), "c1"));
+            LimitData.put("10", MapUtil.getString(limitData.get(1), "c2"));
+            LimitData.put("11", MapUtil.getString(limitData.get(1), "c3"));
+            LimitData.put("12", MapUtil.getString(limitData.get(1), "c4"));
+            LimitData.put("13", MapUtil.getString(limitData.get(1), "c5"));
+            LimitData.put("14", MapUtil.getString(limitData.get(1), "c6"));
+            LimitData.put("15", MapUtil.getString(limitData.get(1), "c7"));
+            LimitData.put("16", MapUtil.getString(limitData.get(1), "c8"));
+            LimitData.put("17", MapUtil.getString(limitData.get(1), "c9"));
+            LimitData.put("18", MapUtil.getString(limitData.get(1), "c10"));
+            LimitData.put("19", MapUtil.getString(limitData.get(1), "c11"));
+            LimitData.put("20", MapUtil.getString(limitData.get(1), "c12"));
+            LimitData.put("21", MapUtil.getString(limitData.get(1), "c13"));
+            LimitData.put("22", MapUtil.getString(limitData.get(1), "c14"));
+            LimitData.put("23", MapUtil.getString(limitData.get(1), "c15"));
+            LimitData.put("24", MapUtil.getString(limitData.get(1), "c16"));
+            LimitData.put("25", MapUtil.getString(limitData.get(1), "c17"));
+            LimitData.put("26", MapUtil.getString(limitData.get(1), "c19"));
+            LimitData.put("27", MapUtil.getString(limitData.get(1), "c20"));
+            LimitData.put("28", MapUtil.getString(limitData.get(1), "c21"));
+            LimitData.put("29", MapUtil.getString(limitData.get(1), "c23"));
+            LimitData.put("30", MapUtil.getString(limitData.get(1), "c24"));
+            LimitData.put("31", MapUtil.getString(limitData.get(1), "c26"));
+            LimitData.put("32", MapUtil.getString(limitData.get(1), "c28"));
+            LimitData.put("33", MapUtil.getString(limitData.get(1), "c30"));
+            LimitData.put("34", MapUtil.getString(limitData.get(1), "c31"));
+            LimitData.put("35", MapUtil.getString(limitData.get(1), "c35"));
+            LimitData.put("36", MapUtil.getString(limitData.get(1), "c37"));
+            LimitData.put("37", MapUtil.getString(limitData.get(1), "c40"));
             dataList.add(LimitData);
             LimitData = new HashMap<>() ;//%3行 下限
             LimitData.put("1","下限");
@@ -262,8 +311,35 @@ public class MeasureSxController {
             LimitData.put("6","");//时间
             LimitData.put("7", MapUtil.getString(limitData.get(0), "a"));
             LimitData.put("8", MapUtil.getString(limitData.get(0), "b"));
-            LimitData.put("9", MapUtil.getString(limitData.get(0), "c"));
-            LimitData.put("10", MapUtil.getString(limitData.get(0), "c21"));
+            LimitData.put("9", MapUtil.getString(limitData.get(0), "c1"));
+            LimitData.put("10", MapUtil.getString(limitData.get(0), "c2"));
+            LimitData.put("11", MapUtil.getString(limitData.get(0), "c3"));
+            LimitData.put("12", MapUtil.getString(limitData.get(0), "c4"));
+            LimitData.put("13", MapUtil.getString(limitData.get(0), "c5"));
+            LimitData.put("14", MapUtil.getString(limitData.get(0), "c6"));
+            LimitData.put("15", MapUtil.getString(limitData.get(0), "c7"));
+            LimitData.put("16", MapUtil.getString(limitData.get(0), "c8"));
+            LimitData.put("17", MapUtil.getString(limitData.get(0), "c9"));
+            LimitData.put("18", MapUtil.getString(limitData.get(0), "c10"));
+            LimitData.put("19", MapUtil.getString(limitData.get(0), "c11"));
+            LimitData.put("20", MapUtil.getString(limitData.get(0), "c12"));
+            LimitData.put("21", MapUtil.getString(limitData.get(0), "c13"));
+            LimitData.put("22", MapUtil.getString(limitData.get(0), "c14"));
+            LimitData.put("23", MapUtil.getString(limitData.get(0), "c15"));
+            LimitData.put("24", MapUtil.getString(limitData.get(0), "c16"));
+            LimitData.put("25", MapUtil.getString(limitData.get(0), "c17"));
+            LimitData.put("26", MapUtil.getString(limitData.get(0), "c19"));
+            LimitData.put("27", MapUtil.getString(limitData.get(0), "c20"));
+            LimitData.put("28", MapUtil.getString(limitData.get(0), "c21"));
+            LimitData.put("29", MapUtil.getString(limitData.get(0), "c23"));
+            LimitData.put("30", MapUtil.getString(limitData.get(0), "c24"));
+            LimitData.put("31", MapUtil.getString(limitData.get(0), "c26"));
+            LimitData.put("32", MapUtil.getString(limitData.get(0), "c28"));
+            LimitData.put("33", MapUtil.getString(limitData.get(0), "c30"));
+            LimitData.put("34", MapUtil.getString(limitData.get(0), "c31"));
+            LimitData.put("35", MapUtil.getString(limitData.get(0), "c35"));
+            LimitData.put("36", MapUtil.getString(limitData.get(0), "c37"));
+            LimitData.put("37", MapUtil.getString(limitData.get(0), "c40"));
             dataList.add(LimitData);
         }
 
@@ -276,8 +352,35 @@ public class MeasureSxController {
             data.put("6", MapUtil.getString(dataItem, "meaDate"));
             data.put("7", MapUtil.getString(dataItem, "a"));
             data.put("8", MapUtil.getString(dataItem, "b"));
-            data.put("9", MapUtil.getString(dataItem, "c"));
-            data.put("10", MapUtil.getString(dataItem, "c21"));
+            data.put("9", MapUtil.getString(dataItem, "c1"));
+            data.put("10", MapUtil.getString(dataItem, "c2"));
+            data.put("11", MapUtil.getString(dataItem, "c3"));
+            data.put("12", MapUtil.getString(dataItem, "c4"));
+            data.put("13", MapUtil.getString(dataItem, "c5"));
+            data.put("14", MapUtil.getString(dataItem, "c6"));
+            data.put("15", MapUtil.getString(dataItem, "c7"));
+            data.put("16", MapUtil.getString(dataItem, "c8"));
+            data.put("17", MapUtil.getString(dataItem, "c9"));
+            data.put("18", MapUtil.getString(dataItem, "c10"));
+            data.put("19", MapUtil.getString(dataItem, "c11"));
+            data.put("20", MapUtil.getString(dataItem, "c12"));
+            data.put("21", MapUtil.getString(dataItem, "c13"));
+            data.put("22", MapUtil.getString(dataItem, "c14"));
+            data.put("23", MapUtil.getString(dataItem, "c15"));
+            data.put("24", MapUtil.getString(dataItem, "c16"));
+            data.put("25", MapUtil.getString(dataItem, "c17"));
+            data.put("26", MapUtil.getString(dataItem, "c19"));
+            data.put("27", MapUtil.getString(dataItem, "c20"));
+            data.put("28", MapUtil.getString(dataItem, "c21"));
+            data.put("29", MapUtil.getString(dataItem, "c23"));
+            data.put("30", MapUtil.getString(dataItem, "c24"));
+            data.put("31", MapUtil.getString(dataItem, "c26"));
+            data.put("32", MapUtil.getString(dataItem, "c28"));
+            data.put("33", MapUtil.getString(dataItem, "c30"));
+            data.put("34", MapUtil.getString(dataItem, "c31"));
+            data.put("35", MapUtil.getString(dataItem, "c35"));
+            data.put("36", MapUtil.getString(dataItem, "c37"));
+            data.put("37", MapUtil.getString(dataItem, "c40"));
             dataList.add(data);
         }
         return dataList;

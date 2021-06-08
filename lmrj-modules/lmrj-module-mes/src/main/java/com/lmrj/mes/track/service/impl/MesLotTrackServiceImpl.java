@@ -199,8 +199,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             bc = "APJ-BC1";
         } else if (eqpId.equals("RY1")) {
             bc = "APJ-BC3";
-        } else {
+        } else if (eqpId.equals("RY2")) {
             bc = "APJ-BC4";
+        } else if (eqpId.equals("XRAY") || eqpId.equals("US") || eqpId.equals("JET")) {
+            bc = "APJ-BC6";
+        } else {
+            bc = "APJ-BC7";
         }
         log.info("findApjRecipeCode 参数" + map);
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
@@ -294,8 +298,14 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         Map<String, String> map = Maps.newHashMap();
         if (eqpId.equals("RY1")) {
             eqpId = "APJ-HB1-SINTERING1";
-        } else if (eqpId.equals("RY2")) {
-            eqpId = "APJ-HB2-SINTERING1";
+        } else if (eqpId.contains("RY2S1")) {//金型温度设定值
+            eqpId = "APJ-HB2-SINTERING1-1";
+        } else if (eqpId.contains("RY2S2")) {//压力、温度设定值
+            eqpId = "APJ-HB2-SINTERING1-2";
+        }/* else if(eqpId.equals("RY2C")){//温度测定值
+            eqpId = "APJ-HB2-SINTERING1-3";
+        } */ else if (eqpId.contains("RY2DJ")) {//点胶机数据
+            eqpId = "APJ-HB2-DISPENSING1";
         } else {
             log.error("设备名称错误！   " + eqpId);
         }
@@ -350,6 +360,39 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             }
             if ("ERROR: NOT FOUND".equals(value)) {
                 log.error("EQP_ID:" + eqpId + "中间耐压数据获取失败");
+            }
+        } else {
+            return MesResult.error(eqpId + " not reply");
+        }
+        result.setContent(value);
+        return result;
+    }
+
+
+    public MesResult findCleanParam(String eqpId, String opId) {
+        MesResult result = MesResult.ok("default");
+        String value = "";
+        Map<String, String> map = Maps.newHashMap();
+        if (eqpId.equals("JET")) {
+            eqpId = "APJ-CLEAN-JET1";
+        } else if(eqpId.equals("US")){
+            eqpId = "APJ-CLEAN-US1";
+        }else {
+            log.error("设备名称错误！   " + eqpId);
+            return MesResult.error(eqpId + "设备名称不正确");
+        }
+        map.put("EQP_ID", eqpId);
+        map.put("METHOD", "FIND_CLEAN_PARAM");
+        String bc = "APJ-BC6";
+        log.info("FIND_CLEAN_PARAM 参数" + map);
+        String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
+        if (replyMsg != null) {
+            result = JsonUtil.from(replyMsg, MesResult.class);
+            if ("Y".equals(result.getFlag())) {
+                value = (String) result.getContent();
+            }
+            if ("ERROR: NOT FOUND".equals(value)) {
+                log.error("EQP_ID:" + eqpId + "洗净机数据数据获取失败");
             }
         } else {
             return MesResult.error(eqpId + " not reply");
@@ -606,12 +649,15 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             if (eqpId.contains("WB")) {
                 result = trackinWB(eqpId, productionNo, productionName, orderNo, lotNo, recipeCode, opId);
+            } else if (eqpId.contains("LF")) {
+                result = trackinLFAndHTRT(eqpId, productionNo, productionName, orderNo, lotNo, recipeCode, opId);
             } else {
                 result = trackinLine(eqpId, productionNo, productionName, orderNo, lotNo, recipeCode, opId);
             }
         }
         return result;
     }
+
 
     public MesResult apjTrackin(String subLineNo, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
@@ -677,6 +723,40 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
+    public MesResult trackinLFAndHTRT(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String recipeCode, String opId) {
+        MesResult result = MesResult.ok();
+        List<FabEquipment> fabEquipmentList = new ArrayList<>();
+        if (eqpId.contains("LF1")) {
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode("SIM-LF1");
+            fabEquipmentList.add(fabEquipment);
+            FabEquipment fabEquipment1 = fabEquipmentService.findEqpByCode("SIM-HTRT1");
+            if (fabEquipment1 != null) {
+                fabEquipmentList.add(fabEquipment1);
+            }
+        } else if(eqpId.contains("LF2")){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode("SIM-LF2");
+            fabEquipmentList.add(fabEquipment);
+            FabEquipment fabEquipment1 = fabEquipmentService.findEqpByCode("SIM-HTRT2");
+            if (fabEquipment1 != null) {
+                fabEquipmentList.add(fabEquipment1);
+            }
+        }else {
+            return MesResult.error("eqp not found");
+        }
+        if (fabEquipmentList.size() != 2) {
+            return MesResult.error("eqp not found");
+        }
+        int takeTime = 0;
+        for (FabEquipment fabEquipment : fabEquipmentList) {
+            result = doTrackIn(fabEquipment, productionNo, productionName, orderNo, lotNo, recipeCode, opId, takeTime);
+            if (!"Y".equals(result.getFlag())) {
+                return result; //失败提前退出
+            }
+            takeTime = takeTime + fabEquipment.getTakeTime();
+        }
+        return result;
+    }
+
     public MesResult trackout(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
         saveTrackLog(eqpId, "TRACKOUT", productionNo, productionName, orderNo, lotNo, recipeCode, opId);
@@ -686,7 +766,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             if (eqpId.contains("WB")) {
                 result = trackoutWB(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
-            } else {
+            } else if(eqpId.contains("LF")){
+                trackoutLFAndHTRT(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
+            }else {
                 result = trackoutLine(eqpId, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
             }
         }
@@ -717,9 +799,26 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         return result;
     }
 
-    public MesResult trackoutWB(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
+    public MesResult trackoutLFAndHTRT(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
         MesResult result = MesResult.ok();
-        List<FabEquipment> fabEquipmentList = fabEquipmentService.findWbEqp(eqpId);
+        List<FabEquipment> fabEquipmentList = new ArrayList<>();
+        if (eqpId.contains("LF1")) {
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode("SIM-LF1");
+            fabEquipmentList.add(fabEquipment);
+            FabEquipment fabEquipment1 = fabEquipmentService.findEqpByCode("SIM-HTRT1");
+            if (fabEquipment1 != null) {
+                fabEquipmentList.add(fabEquipment1);
+            }
+        } else if(eqpId.contains("LF2")){
+            FabEquipment fabEquipment = fabEquipmentService.findEqpByCode("SIM-LF2");
+            fabEquipmentList.add(fabEquipment);
+            FabEquipment fabEquipment1 = fabEquipmentService.findEqpByCode("SIM-HTRT2");
+            if (fabEquipment1 != null) {
+                fabEquipmentList.add(fabEquipment1);
+            }
+        }else {
+            return MesResult.error("eqp not found");
+        }
         if (fabEquipmentList.size() != 2) {
             return MesResult.error("eqp not found");
         }
@@ -727,7 +826,27 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             if (yield == null || yield.equals("")) {
                 yield = "5712";
             }
-            int yeild1 = Integer.parseInt(yield) / 2;
+            result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield, recipeCode, opId);
+            if (!"Y".equals(result.getFlag())) {
+                return result; //失败提前退出
+            }
+        }
+        return result;
+    }
+
+    public MesResult trackoutWB(String eqpId, String productionNo, String productionName, String orderNo, String lotNo, String yield, String recipeCode, String opId) {
+        MesResult result = MesResult.ok();
+        List<FabEquipment> fabEquipmentList = fabEquipmentService.findWbEqp(eqpId);
+        if (fabEquipmentList.size() != 2) {
+            return MesResult.error("eqp not found");
+        }
+        if (yield == null || yield.equals("")) {
+            yield = "5712";
+        } else {
+            yield = (Integer.parseInt(yield) * 12) + "";
+        }
+        int yeild1 = Integer.parseInt(yield) / 2;
+        for (FabEquipment fabEquipment : fabEquipmentList) {
             String yield2 = "" + yeild1;
             result = doTrackout(fabEquipment, productionNo, productionName, orderNo, lotNo, yield2, recipeCode, opId);
             if (!"Y".equals(result.getFlag())) {
@@ -780,7 +899,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             String bc = fabEquipment.getBcCode();
             if (true) {
                 String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.MES.COMMAND", bc, JsonUtil.toJsonString(map));
-                if (replyMsg != null) {
+                if (replyMsg != null ) {
                     result = JsonUtil.from(replyMsg, MesResult.class);
                     //客户端修改成功后插入数据库
                     this.insertOrUpdate(mesLotTrack);
@@ -791,10 +910,9 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 }
             }
         }
-
         log.info("[{}]更新设备状态数据, {}, {}", eqpId, lotNo, recipeCode);
         if (StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
-            fabEquipmentStatusService.updateYield(eqpId, "RUN", lotNo, recipeCode, 0, 0);
+            fabEquipmentStatusService.updateYield(eqpId, lotNo, recipeCode, 0, 0);
         }
         return result;
     }
@@ -906,9 +1024,10 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
     }
 
     @Override
-    public MesLotTrack findNowLotByEqp(String eqpId){
+    public MesLotTrack findNowLotByEqp(String eqpId) {
         return baseMapper.findNowLotByEqp(eqpId);
     }
+
     @Override
     public Map<String, Object> chartKongDong(String lineNo, String proName, String startDate, String endDate) {
         try {
@@ -1131,12 +1250,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                         }
                     }
                     try {
-                        if(!"".equals(serialCounter)){
+                        if (!"".equals(serialCounter)) {
                             MeasureSim measureSim = new MeasureSim();
                             measureSim.setLotNo(lotNo);
                             measureSim.setLineNo("SIM");
                             measureSim.setProductionNo("SIM6812M(E)D-URA_F2971");
-                            measureSim.setMeasureType("IT");
+                            measureSim.setMeasureType("LF");
                             measureSim.setMeasureCounter(ele[6]);
                             measureSim.setMeasureName(ele[5]);
                             measureSim.setMeasureJudgment(ele[4]);
@@ -1144,7 +1263,34 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureSim.setA1(Double.valueOf(ele[7]));
                             measureSim.setB1(Double.valueOf(ele[8]));
                             measureSim.setC1(Double.valueOf(ele[9]));
+                            measureSim.setC2(Double.valueOf(ele[10]));
+                            measureSim.setC3(Double.valueOf(ele[11]));
+                            measureSim.setC4(Double.valueOf(ele[12]));
+                            measureSim.setC5(Double.valueOf(ele[13]));
+                            measureSim.setC6(Double.valueOf(ele[14]));
+                            measureSim.setC7(Double.valueOf(ele[15]));
+                            measureSim.setC8(Double.valueOf(ele[16]));
+                            measureSim.setC9(Double.valueOf(ele[17]));
+                            measureSim.setC10(Double.valueOf(ele[18]));
+                            measureSim.setC11(Double.valueOf(ele[19]));
+                            measureSim.setC12(Double.valueOf(ele[20]));
+                            measureSim.setC13(Double.valueOf(ele[21]));
+                            measureSim.setC14(Double.valueOf(ele[22]));
+                            measureSim.setC15(Double.valueOf(ele[23]));
+                            measureSim.setC16(Double.valueOf(ele[24]));
+                            measureSim.setC17(Double.valueOf(ele[25]));
+                            measureSim.setC19(Double.valueOf(ele[26]));
+                            measureSim.setC20(Double.valueOf(ele[27]));
                             measureSim.setC21(Double.valueOf(ele[28]));
+                            measureSim.setC23(Double.valueOf(ele[29]));
+                            measureSim.setC24(Double.valueOf(ele[30]));
+                            measureSim.setC26(Double.valueOf(ele[31]));
+                            measureSim.setC28(Double.valueOf(ele[32]));
+                            measureSim.setC30(Double.valueOf(ele[33]));
+                            measureSim.setC31(Double.valueOf(ele[34]));
+                            measureSim.setC35(Double.valueOf(ele[35]));
+                            measureSim.setC37(Double.valueOf(ele[36]));
+                            measureSim.setC40(Double.valueOf(ele[37]));
                             measureSim.setSerialCounter(serialCounter);
                             EntityWrapper wrapper = new EntityWrapper();
                             wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", serialCounter);
@@ -1193,8 +1339,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLotNo(lotNo);
                             measureGi.setLineNo("5GI");
                             measureGi.setProductionNo(productionName);//机种名
-                            measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setMeasureType("LF");
+                            measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
@@ -1218,7 +1364,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000", ""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
@@ -1263,8 +1409,8 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setLotNo(lotNo);
                             measureGi.setLineNo("6GI");
                             measureGi.setProductionNo(productionName);//机种名
-                            measureGi.setMeasureType("IT");
-                            measureGi.setSerialCounter(ele[3].replace("000",""));//串行计数器
+                            measureGi.setMeasureType("LF");
+                            measureGi.setSerialCounter(ele[3].replace("000", ""));//串行计数器
                             measureGi.setMeasureCounter(ele[6]);//测量次数
                             measureGi.setMeasureName(ele[5]);//操作员编号
                             measureGi.setMeasureJudgment("OK");
@@ -1288,7 +1434,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                             measureGi.setPins5(Double.parseDouble(ele[23]));
                             measureGi.setPins6(Double.parseDouble(ele[24]));
                             EntityWrapper wrapper = new EntityWrapper();
-                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000",""));
+                            wrapper.eq("lot_no", lotNo).eq("production_no", production).eq("measure_type", "IT").eq("serial_counter", ele[3].replace("000", ""));
                             Integer nm = measureGiMapper.selectCount(wrapper);
                             if (nm < 1) {
                                 measureGiMapper.insert(measureGi);
@@ -1355,7 +1501,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                     Integer nm = measureSxMapper.selectCount(wrapper);
                     if (nm < 1) {
                         measureSxMapper.insert(measure);
-                    }else {
+                    } else {
 
                     }
                 }

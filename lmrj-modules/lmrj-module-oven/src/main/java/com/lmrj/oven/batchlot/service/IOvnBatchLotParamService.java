@@ -20,4 +20,6 @@ import java.util.List;
 public interface IOvnBatchLotParamService extends ICommonService<OvnBatchLotParam> {
 
     List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime);
+
+    List<OvnBatchLotParam> selectDataBybatchId(String batchId);
 }

@@ -87,26 +87,39 @@
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
 		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
-		(
-		select GROUP_CONCAT(col_name SEPARATOR ',') from edc_config_file_csv title where title.eqp_model_name=chip.eqp_model_name
-		) as productionTitle,
 		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
 		FROM `map_tray_chip_move` chip
 		<where>
-			<if test="chipId != null and chipId !=''">
-				and `chip_id` like concat('%', #{chipId})
-			</if>
-			<if test="eqpIds != null and eqpIds.size > 0">
-				AND eqp_id IN(
-				<foreach collection="eqpIds" item="eqp" separator=",">
-					#{eqp}
-				</foreach>
-				)
-			</if>
-			<if test="sTime!=null and sTime!=''">
-				AND `start_time` &gt;= #{sTime}
-				AND `start_time` &lt;= #{eTime}
-			</if>
+			<choose>
+				<when test="chipId != null and chipId !=''">
+					and `chip_id` like concat('%', #{chipId})
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</when>
+				<otherwise>
+					<if test="lotNo!=null and lotNo!=''">
+						and `lot_no`=#{lotNo}
+					</if>
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</otherwise>
+			</choose>
 		</where>
 		ORDER BY `start_time` DESC
 		LIMIT #{offset},#{pageSize}
@@ -116,20 +129,36 @@
 		SELECT COUNT(1)
 		FROM `map_tray_chip_move`
 		<where>
-			<if test="chipId != null and chipId !=''">
-				and `chip_id` like concat('%', #{chipId})
-			</if>
-			<if test="eqpIds != null and eqpIds.size > 0">
-				AND eqp_id IN(
-				<foreach collection="eqpIds" item="eqp" separator=",">
-					#{eqp}
-				</foreach>
-				)
-			</if>
-			<if test="sTime!=null and sTime!=''">
-				AND `start_time` &gt;= #{sTime}
-				AND `start_time` &lt;= #{eTime}
-			</if>
+			<choose>
+				<when test="chipId != null and chipId !=''">
+					and `chip_id` like concat('%', #{chipId})
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</when>
+				<otherwise>
+					<if test="lotNo!=null and lotNo!=''">
+						and `lot_no`=#{lotNo}
+					</if>
+					<if test="eqpIds != null and eqpIds.size > 0">
+						AND eqp_id IN(
+						<foreach collection="eqpIds" item="eqp" separator=",">
+							#{eqp}
+						</foreach>
+						)
+					</if>
+					<if test="sTime!=null and sTime!=''">
+						AND `start_time` between   #{sTime} and #{eTime}
+					</if>
+				</otherwise>
+			</choose>
 		</where>
 		ORDER BY `start_time` DESC
 		LIMIT #{offset},#{pageSize}
@@ -330,5 +359,22 @@
 		where file_type='PRODUCTION'
 		and eqp_model_name=#{eqpModelName}
 		order by sort_no
+	</select>
+	<select id="findLOProParam" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT params from edc_dsk_log_inspection
+		where eqp_id=#{eqpId}
+		<if test="chipId!='' and chipId!=null">
+			and chip_id=#{chipId}
+		</if>
+		<if test="trayId!='' and trayId!=null">
+			and tray_id=#{trayId}
+		</if>
+		<if test="trayX!='' and trayX!=null">
+			and tray_x=#{trayX}
+		</if>
+		<if test="trayY!='' and trayY!=null">
+			and tray_y=#{trayY}
+		</if>
+		limit 1
 	</select>
 </mapper>

@@ -79,4 +79,7 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     String findProParam(Map<String, Object> param);
 
     List<Map<String, Object>> findParamTitle(String eqpModelName);
+
+    //凌欧设备的生产条件
+    String findLOProParam(Map<String, Object> param);
 }

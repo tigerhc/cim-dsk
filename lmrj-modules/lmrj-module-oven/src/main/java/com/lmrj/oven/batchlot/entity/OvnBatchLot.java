@@ -27,6 +27,8 @@ import java.util.List;
 @Data
 public class OvnBatchLot extends BaseDataEntity {
 
+    @TableField(value = "id")
+    private String id;
     /**设备号*/
     @TableField(value = "eqp_id")
 	private String eqpId;

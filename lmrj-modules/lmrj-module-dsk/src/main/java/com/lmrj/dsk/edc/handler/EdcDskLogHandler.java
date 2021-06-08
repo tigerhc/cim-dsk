@@ -157,15 +157,10 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.PRODUCTIONLOG.DATA"})
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
-        System.out.println("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
-        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {
-        });
-
-
+        log.info("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
+        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
 //        if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
 //            this.temperatureList(edcDskLogProductionList);}
-
-
         List<EdcDskLogProduction> proList = new ArrayList<>();
         List<EdcDskLogProduction> nextproList = new ArrayList<>();
 
@@ -205,7 +200,20 @@ public class EdcDskLogHandler {
                     this.temperatureList2(nextproList, nextLotTrack.getLotNo());
                 }
             }
-
+            FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+            if(!"RUN".equals(fabStatus.getEqpStatus())){
+                EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
+                if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
+                    fabStatus.setEqpStatus("RUN");
+                    fabEquipmentStatusService.updateById(fabStatus);
+                    EdcEqpState edcEqpState = new EdcEqpState();
+                    edcEqpState.setEqpId(eqpId);
+                    edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime());
+                    edcEqpState.setState("RUN");
+                    String stateJson = JsonUtil.toJsonString(edcEqpState);
+                    rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                }
+            }
         } else {
 
         }

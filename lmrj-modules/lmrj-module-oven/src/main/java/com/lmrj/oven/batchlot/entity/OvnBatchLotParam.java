@@ -25,6 +25,8 @@ public class OvnBatchLotParam extends BaseDataEntity {
     //@TableField(value = "batch_id",el="ovnBatchLot.id")
     //private OvnBatchLot ovnBatchLot;
     /**编号*/
+    @TableField(value = "id")
+    private String id;
     @TableField(value = "batch_id")
 	private String batchId;
     /**温度PV*/

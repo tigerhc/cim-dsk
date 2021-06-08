@@ -44,4 +44,6 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     OvnBatchLot findBatchData(String eqpId , Date startTime);
 
     OvnBatchLot findBatchDataByLot(String eqpId , String lotNo);
+
+    List<OvnBatchLot> findDataByTime(String beginTime, String endTime);
 }
