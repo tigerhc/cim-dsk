@@ -19,6 +19,7 @@ import com.lmrj.core.sys.entity.User;
 import com.lmrj.cim.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -145,69 +146,77 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
         ServletUtils.printJson(response, content);
     }
 
-
     /**
-     * 设备类型下拉框
+     * 无模板设备类型下拉框
      * @param model
      * @param request
      * @param response
      * @return
      */
-    @RequestMapping(value = "/modelTemplateList", method = { RequestMethod.GET, RequestMethod.POST })
-    public void modelTemplateList(Model model, HttpServletRequest request,
+    @RequestMapping(value = "/noTemClassCodeList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void noTemClassCodeList(Model model, HttpServletRequest request,
                               HttpServletResponse response) {
-        List<FabEquipmentModel> templateList = new ArrayList<>();
-        FabEquipmentModel a = new FabEquipmentModel();
-        a.setParentType("1");
-        a.setType("1");
-        a.setClassCode("1");
-        a.setModelnumber("1");
-        a.setModelName("速度传感器NB");
-        templateList.add(a);
-        a = new FabEquipmentModel();
-        a.setParentType("1");
-        a.setType("2");
-        a.setClassCode("1");
-        a.setModelnumber("1");
-        a.setModelName("温度传感器MM");
-        templateList.add(a);
-        a = new FabEquipmentModel();
-        a.setParentType("2");
-        a.setType("1");
-        a.setClassCode("1");
-        a.setModelnumber("1");
-        a.setModelName("电表");
-        templateList.add(a);
+        List<String> classCodeList = fabEquipmentModelService.noTemClassCodeList();
+        List<Map> list = Lists.newArrayList();
+        for (String classCode : classCodeList) {
+            Map map = Maps.newHashMap();
+            map.put("id", classCode);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
 
-        DateResponse listjson = new DateResponse(templateList);
+
+
+    /**
+     * 设备大类下拉框
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/parentTypeList/{modelId}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void parentTypeList(Model model, @PathVariable("modelId") String modelId, HttpServletRequest request,
+                               HttpServletResponse response) {
+        List<String> classCodeList = fabEquipmentModelService.getTypeList("1",modelId);
+        List<Map> list = Lists.newArrayList();
+        for (String classCode : classCodeList) {
+            Map map = Maps.newHashMap();
+            map.put("id", classCode);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
 
 
     /**
-     * 设备类型下拉框
+     * 设备小类下拉框
      * @param model
      * @param request
      * @param response
      * @return
      */
-    @RequestMapping(value = "/oneTemplateList", method = { RequestMethod.GET, RequestMethod.POST })
-    public void oneTemplateList(Model model, HttpServletRequest request,
-                                  HttpServletResponse response) {
-        List<FabEquipmentModel> templateList = new ArrayList<>();
-        FabEquipmentModel a = new FabEquipmentModel();
-        a.setParentType("1");
-        a.setType("1");
-        a.setClassCode("1");
-        a.setModelnumber("1");
-        a.setModelName("速度传感器NB");
-        templateList.add(a);
-
-        DateResponse listjson = new DateResponse(templateList);
+    @RequestMapping(value = "/typeList/{parentType}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void typeList(Model model,@PathVariable("parentType") String parentType, HttpServletRequest request,
+                              HttpServletResponse response) {
+        List<String> classCodeList = fabEquipmentModelService.getTypeList("2",parentType);
+        List<Map> list = Lists.newArrayList();
+        for (String classCode : classCodeList) {
+            Map map = Maps.newHashMap();
+            map.put("id", classCode);
+            list.add(map);
+        }
+        DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
+
+
+
 
 
 

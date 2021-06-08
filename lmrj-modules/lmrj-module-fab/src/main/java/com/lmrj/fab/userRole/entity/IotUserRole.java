@@ -1,4 +1,4 @@
-package com.lmrj.core.userRole.entity;
+package com.lmrj.fab.userRole.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
@@ -7,18 +7,18 @@ import lombok.Data;
 
 /**
  * @author wdj
- * @date 2021-05-19 8:52
+ * @date 2021-05-19 8:51
  */
-@TableName("iot_role_eqp")
+@TableName("iot_user_role")
 @SuppressWarnings("serial")
 @Data
-public class IotRoleEqp extends BaseDataEntity {
+public class IotUserRole extends BaseDataEntity {
     /**主键*/
     @TableField(value = "id")
     private String id;
-    /**设备编号*/
-    @TableField(value = "eqp_id")
-    private String eqpId;
+    /**用户编号*/
+    @TableField(value = "user_id")
+    private String userId;
     /**角色编号*/
     @TableField(value = "role_id")
     private String roleId;

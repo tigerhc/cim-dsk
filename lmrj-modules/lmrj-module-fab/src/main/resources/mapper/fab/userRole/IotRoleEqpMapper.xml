@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.core.userRole.mapper.RoleEqpMapper" >
+<mapper namespace="com.lmrj.fab.userRole.mapper.IotRoleEqpMapper" >
 
     <sql id="Base_Column_List" >
        t.id,
@@ -8,7 +8,7 @@
        t.role_id
 	</sql>
 
-    <select id="getEqpByRoleList" resultType="com.lmrj.core.userRole.entity.IotRoleEqp">
+    <select id="getEqpByRoleList" resultType="com.lmrj.fab.userRole.entity.IotRoleEqp">
        select
        <include refid="Base_Column_List"></include>
        from iot_role_eqp
@@ -17,4 +17,9 @@
            #{role}
        </foreach>
     </select>
+
+
+    <select id="listOrgIds" parameterType="String" resultType="String">
+		select id from sys_organization where parent_ids like concat(#{orgid}, '%')
+	</select>
 </mapper>

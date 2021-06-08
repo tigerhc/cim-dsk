@@ -34,9 +34,11 @@ public class FabEquipmentModel extends BaseDataEntity {
     @Excel(name = "设备类型", orderNum = "2", width = 20 )
 	private String classCode;
     /**设备大类*/
+    @Excel(name = "设备大类", orderNum = "3", width = 20 )
     @TableField(value = "parent_type")
     private String parentType;
     /**设备子类*/
+    @Excel(name = "设备小类", orderNum = "4", width = 20 )
     @TableField(value = "type")
     private String type;
     /**单类型数量*/
@@ -54,7 +56,7 @@ public class FabEquipmentModel extends BaseDataEntity {
 	private String hostJavaClass;
     /**有效标志*/
     @TableField(value = "active_flag")
-    @Excel(name = "有效标志", orderNum = "3")
+    @Excel(name = "有效标志", orderNum = "5")
 	private String activeFlag;
     /**图片路径*/
     @TableField(value = "icon_path")

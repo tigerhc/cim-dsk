@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.eqp.mapper.FabSensorMapper" >
+
+    <sql id="Base_Column_List" >
+       t.id,
+       t.sor_id,
+       t.sor_name,
+       t.sor_no,
+       t.office_id,
+       t.step_id,
+       t.step_code,
+       t.active_flag,
+       t.bc_code,
+       t.ip,
+       t.port,
+       t.device_id,
+       t.model_id,
+       t.model_name,
+       t.protocol_name,
+       t.fab,
+       t.line_no,
+       t.eqp_param,
+       t.location,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+	</sql>
+   <update id="updateActiveFlag">
+		update FAB_SENSOR set ACTIVE_FLAG = #{activeFlag} where id = #{id}
+	</update>
+
+   <select id="findEqpIdList" resultType="string">
+        select sor_id from FAB_SENSOR
+        where del_flag = '0'
+          and active_flag = 'Y'
+        order by sort_no, step_id
+    </select>
+   <select id="findEqpMap" resultType="map">
+        select sor_id id, sor_name name  from FAB_SENSOR
+        where del_flag = '0'
+          and active_flag = 'Y'
+        order by sort_no, step_id
+    </select>
+
+    <select id="findNoSorMap" resultType="map">
+        select a.sor_id id, a.sor_name name
+        from fab_sensor a,fab_equipment_model c
+        where not EXISTS (select * from iot_equipment_bind b where a.sor_id = b.eqp_id)
+        and a.model_id = c.id
+        and c.class_code =#{classCode}
+    </select>
+
+
+
+   <select id="findEqpMsMap" resultType="map">
+        select sor_id id, sor_name name from FAB_SENSOR
+        where del_flag = '0'
+          and active_flag = 'Y'
+          and model_id in (select eqp_model_id from ms_eqp_param)
+        order by sort_no, step_id
+    </select>
+
+   <select id="findDepartment" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT
+	    department as department
+        FROM
+	    fab_sensor
+        WHERE
+	    eqp_id = #{eqpId}
+    </select>
+
+   <select id="findEmailALL" resultType="java.util.Map" parameterType="java.lang.String">
+       SELECT
+       b.user_name AS name,
+	   b.user_email AS email
+       FROM
+	   edc_ams_rpt_define a
+	   LEFT JOIN edc_ams_rpt_define_act_email b
+	   ON
+       a.id =b.rpt_alarm_id
+       WHERE
+	   a.alarm_id = #{code} AND
+	   a.del_flag = '0' AND
+	   b.del_flag = '0' AND
+	   a.active_flag = '1'
+    </select>
+
+
+</mapper>

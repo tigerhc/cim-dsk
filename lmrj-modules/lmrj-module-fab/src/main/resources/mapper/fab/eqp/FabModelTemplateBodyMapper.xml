@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.eqp.mapper.FabModelTemplateBodyMapper" >
+    <sql id="Base_Column_List" >
+   t.id,
+   t.template_id,
+   t.template_name,
+  t.manufacturer_name,
+  t.parent_type,
+  t.type,
+  t.sub_class_code,
+  t.office_id,
+  t.active_flag,
+  t.remarks,
+  t.create_by,
+  t.create_date,
+  t.update_by,
+  t.update_date,
+  t.del_flag
+	</sql>
+
+    <select id="getOneTemplateList" resultType="java.util.Map" parameterType="java.lang.String">
+
+        select a.parent_type parentType,a.type type,a.sub_class_code subClassCode,count(a.sub_class_code) num
+        from fab_model_template_body a
+        where a.del_flag = '0'
+        and a.template_id = #{id}
+        GROUP BY a.parent_type,a.type,a.sub_class_code;
+    </select>
+
+    <select id="getNoBindInfo" parameterType="java.lang.String" resultType="com.lmrj.fab.eqp.entity.FabModelTemplateBody">
+        select
+        <include refid="Base_Column_List" />
+        from fab_equipment a,fab_model_template b, fab_model_template_body t,fab_equipment_model m
+        where a.model_id = m.id
+        and b.class_code = m.class_code
+        and b.id = t.template_id
+        and a.eqp_id = #{eqpId}
+    </select>
+
+
+</mapper>

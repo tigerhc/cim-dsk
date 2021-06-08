@@ -21,4 +21,9 @@ public interface IFabEquipmentModelService extends ICommonService<FabEquipmentMo
     public List<Map> findLookup();
     List<String> manufacturerNameList();
     List<String> classCodeList();
+    List<String> noTemClassCodeList();
+
+    List<String> getTypeList(String flag, String ID);
+    public List<Map> getAlltemplateList();
+    String manufacturerName(String modelId);
 }

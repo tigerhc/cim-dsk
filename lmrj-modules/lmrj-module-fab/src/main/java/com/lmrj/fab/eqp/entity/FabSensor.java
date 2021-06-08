@@ -6,25 +6,14 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
 
-import java.util.List;
-
 /**
- * All rights Reserved, Designed By www.gzst.gov.cn
- *
- * @version V1.0
- * @package com.lmrj.fab.entity
- * @title: fab_equipment实体
- * @description: fab_equipment实体
- * @author: 张伟江
- * @date: 2019-06-04 16:03:56
- * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
+ * @author wdj
+ * @date 2021-05-31 22:11
  */
-
-@TableName("fab_equipment")
+@TableName("fab_sensor")
 @SuppressWarnings("serial")
 @Data
-public class FabEquipment extends BaseDataEntity {
-
+public class FabSensor  extends BaseDataEntity {
     /**
      * ID
      */
@@ -32,18 +21,18 @@ public class FabEquipment extends BaseDataEntity {
     /**
      * 设备号
      */
-    @TableField(value = "eqp_id")
-    @Excel(name = "设备id", orderNum = "1")
-    private String eqpId;
+    @TableField(value = "sor_id")
+    @Excel(name = "传感器id", orderNum = "1")
+    private String sorId;
     @TableField(value = "line_yield_flag")
     @Excel(name = "线别产量标记", orderNum = "1")
     private String lineYieldFlag;
-    @TableField(value = "eqp_name")
-    @Excel(name = "设备Name", orderNum = "1")
-    private String eqpName;
-    @Excel(name = "设备no", orderNum = "1")
-    @TableField(value = "eqp_no")
-    private String eqpNo;
+    @TableField(value = "sor_name")
+    @Excel(name = "传感器Name", orderNum = "1")
+    private String sorName;
+    @Excel(name = "传感器no", orderNum = "1")
+    @TableField(value = "sor_no")
+    private String sorNo;
     /**
      * 部门ID
      */
@@ -149,17 +138,6 @@ public class FabEquipment extends BaseDataEntity {
     @Excel(name = "位置号", orderNum = "16")
     @TableField(value = "location")
     private String location;
-
-    /**
-     * 位置号
-     */
-    @Excel(name = "经度", orderNum = "18")
-    @TableField(value = "location_x")
-    private String locationX;
-
-    @Excel(name = "经度", orderNum = "18")
-    @TableField(value = "location_y")
-    private String locationY;
     /**
      * 节拍 毫秒
      */
@@ -175,14 +153,4 @@ public class FabEquipment extends BaseDataEntity {
 
     @TableField(value = "sort_no")
     private Integer sortNo;
-
-    @TableField(exist = false)
-    private List<IotEquipmentBind> iotEquipmentBindList;
-    /**
-     * 是否角色管控中
-     */
-    @TableField(exist = false)
-    private String isFlag;
-
-
 }

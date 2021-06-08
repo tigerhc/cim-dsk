@@ -1,6 +1,7 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.mapper.FabEquipmentMapper;
@@ -72,6 +73,11 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     }
 
     @Override
+    public List<Map> findEqpMapByCode(String classCode) {
+        return baseMapper.findEqpMapByCode(classCode);
+    }
+
+    @Override
     public List<Map> findEqpMsMap() {
         return baseMapper.findEqpMsMap();
     }
@@ -93,6 +99,20 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
 
     @Override
     public List<FabEquipment> getTempEqpList() {
+
         return baseMapper.findTempEqpList();
+
+    }
+
+    /**
+     * 获取所有的设备
+     * @param offId
+     * @return
+     */
+    @Override
+    public List<FabEquipment>  selectPageByOffId(String offId) {
+        return   baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("office_id", offId));
+       // page.setRecords(baseMapper.selectPage(page,new EntityWrapper<FabEquipment>().eq("office_id", offId))) ;
+      //  return page;
     }
 }

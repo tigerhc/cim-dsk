@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.eqp.mapper.IotEquipmentBindMapper" >
+
+    <sql id="Base_Column_List" >
+       t.id,
+  t.eqp_id,
+  t.parent_eqp_id,
+  t.template_id,
+  t.template_body_id,
+  t.office_id,
+  t.remarks,
+  t.create_by,
+  t.create_date,
+  t.update_by,
+  t.update_date
+	</sql>
+
+
+
+</mapper>

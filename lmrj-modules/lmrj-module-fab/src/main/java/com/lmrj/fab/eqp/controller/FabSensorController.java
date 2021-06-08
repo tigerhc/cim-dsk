@@ -15,8 +15,9 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
-import com.lmrj.fab.eqp.entity.FabEquipment;
-import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.fab.eqp.entity.FabSensor;
+import com.lmrj.fab.eqp.entity.FabSensor;
+import com.lmrj.fab.eqp.service.IFabSensorService;
 import com.lmrj.fab.eqp.service.IIotEquipmentBindService;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,14 +28,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,26 +41,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * All rights Reserved, Designed By www.lmrj.com
- *
- * @version V1.0
- * @package com.lmrj.fab.controller
- * @title: fab_equipment控制器
- * @description: fab_equipment控制器
- * @author: 张伟江/list
- * @date: 2019-06-04 15:42:26
- * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
+ * @author wdj
+ * @date 2021-06-01 8:59
  */
-
 @RestController
-@RequestMapping("fab/fabequipment")
-@ViewPrefix("modules/FabEquipment")
-@RequiresPathPermission("FabEquipment")
-@LogAspectj(title = "fab_equipment")
-public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
+@RequestMapping("fab/fabSensor")
+@ViewPrefix("fab/fabSensor")
+@RequiresPathPermission("fab:fabSensor")
+public class FabSensorController extends BaseCRUDController<FabSensor> {
 
     @Autowired
-    private IFabEquipmentService fabEquipmentService;
+    private IFabSensorService FabSensorService;
     @Autowired
     private IIotEquipmentBindService iIotEquipmentBindService;
     String title = "设备信息";
@@ -79,7 +64,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      * @return
      * Queryable queryable,
      * QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
-     *         List<FabEquipment>  eqps = fabEquipmentService.listWithNoPage(queryable);
+     *         List<FabSensor>  eqps = FabSensorService.listWithNoPage(queryable);
      */
     @RequestMapping(value = "/eqpIdlist", method = { RequestMethod.GET, RequestMethod.POST })
     public void eqpIdList(Model model, @RequestParam(required = false) String param, HttpServletRequest request,
@@ -88,27 +73,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
             eqpIdMsList2(model, request, response);
             return;
         }
-        List<Map> list = fabEquipmentService.findEqpMap();
-        DateResponse listjson = new DateResponse(list);
-        String content = JSON.toJSONString(listjson);
-        ServletUtils.printJson(response, content);
-    }
-
-    /**
-     * 设备列表下拉框
-     * @param model
-     * @param request
-     * @param response
-     * @return
-     * Queryable queryable,
-     * QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
-     *         List<FabEquipment>  eqps = fabEquipmentService.listWithNoPage(queryable);
-     */
-    @RequestMapping(value = "/eqpIdlistByCode/{classcode}", method = { RequestMethod.GET, RequestMethod.POST })
-    public void eqpIdlistByCode(Model model,@PathVariable String classcode, HttpServletRequest request,
-                          HttpServletResponse response) {
-
-        List<Map> list = fabEquipmentService.findEqpMapByCode(classcode);
+        List<Map> list = FabSensorService.findEqpMap();
         DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
@@ -116,9 +81,29 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
     @RequestMapping(value = "/eqpIdMsList", method = { RequestMethod.GET, RequestMethod.POST })
     public void eqpIdMsList2(Model model, HttpServletRequest request,
-                            HttpServletResponse response) {
-        List<Map> eqpids = fabEquipmentService.findEqpMsMap();
+                             HttpServletResponse response) {
+        List<Map> eqpids = FabSensorService.findEqpMsMap();
         DateResponse listjson = new DateResponse(eqpids);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+    /**
+     * 传感器列表下拉框（设备绑定添加页面）
+     * @param model
+     * @param request
+     * @param response
+     * @return
+     * Queryable queryable,
+     * QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
+     *         List<FabSensor>  eqps = FabSensorService.listWithNoPage(queryable);
+     */
+    @RequestMapping(value = "/sorIdlist/{classCode}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void sorIdlist(Model model, @PathVariable String classCode, HttpServletRequest request,
+                          HttpServletResponse response) {
+
+        List<Map> list = FabSensorService.findNoSorMap(classCode);
+        DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
     }
@@ -131,7 +116,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      * @param entity
      */
     @Override
-    public void afterFind(FabEquipment entity) {
+    public void afterFind(FabSensor entity) {
         //组织机构
         Organization office = OfficeUtils.getOffice(entity.getOfficeId());
         if(office != null){
@@ -139,36 +124,23 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         }
         UserUtil.updateUserName(entity);
         //查询绑定信息并展示对应的传感器信息
-     //   entity.setIotEquipmentBindList(iIotEquipmentBindService.getIotEquipmenetBindList(entity.getId())) ;
+      //  entity.setIotEquipmentBindList(iIotEquipmentBindService.getIotEquipmenetBindList(entity.getId())) ;
     }
 
-    /**
-     * 保存完主题表后处理
-     *
-     * @param entity
-     * @param request
-     * @param response
-     */
-    @Override
-    public void afterSave(FabEquipment entity, HttpServletRequest request, HttpServletResponse response) {
-    //1.保存绑定表
-    //    iIotEquipmentBindService.saveBindList(entity.getIotEquipmentBindList());
-    //2.保存传感器表
 
-    }
     /**
      * 在返回list数据之前编辑数据
      *
      * @param pagejson
      */
     @Override
-    public void afterPage(PageResponse<FabEquipment> pagejson, HttpServletRequest request, HttpServletResponse response) {
-        List<FabEquipment> list = pagejson.getResults();
-        for(FabEquipment fabEquipment: list){
-            if(fabEquipment.getOfficeId() != null){
-                Organization office = OfficeUtils.getOffice(fabEquipment.getOfficeId());
+    public void afterPage(PageResponse<FabSensor> pagejson, HttpServletRequest request, HttpServletResponse response) {
+        List<FabSensor> list = pagejson.getResults();
+        for(FabSensor FabSensor: list){
+            if(FabSensor.getOfficeId() != null){
+                Organization office = OfficeUtils.getOffice(FabSensor.getOfficeId());
                 if(office != null){
-                    fabEquipment.setOfficeName(office.getName());
+                    FabSensor.setOfficeName(office.getName());
                 }
             }
         }
@@ -179,7 +151,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     @ResponseBody
     public Response update(@PathVariable String id, @PathVariable String flag,
                            HttpServletRequest request, HttpServletResponse response) {
-        fabEquipmentService.activeEqp(id, flag);
+        FabSensorService.activeEqp(id, flag);
         return Response.ok("修改成功");
     }
 
@@ -194,7 +166,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 //        super.export(queryable,  propertyPreFilterable,  request,  response);
 //        Response response2 = Response.ok("导出成功");
 //        try {
-//            EntityWrapper<FabEquipment> entityWrapper = new EntityWrapper(this.entityClass);
+//            EntityWrapper<FabSensor> entityWrapper = new EntityWrapper(this.entityClass);
 //            this.preList(queryable, entityWrapper, request, response);
 //            propertyPreFilterable.addQueryProperty(new String[]{"id"});
 //            QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
@@ -207,7 +179,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 //            String title = "设备信息";
 //            TemplateExportParams params = new TemplateExportParams("");
 //            Workbook book = ExcelExportUtil.exportExcel(new ExportParams(
-//                    title, title, ExcelType.XSSF), FabEquipment.class, newList);
+//                    title, title, ExcelType.XSSF), FabSensor.class, newList);
 //            ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //            book.write(bos);
 //            byte[] bytes = bos.toByteArray();
@@ -236,7 +208,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         if (file == null) {
             return Response.error(999998,"文件不能为空，导出失败");
         }
-        List<FabEquipment> list = Lists.newArrayList();
+        List<FabSensor> list = Lists.newArrayList();
         try {
             InputStream inp = file.getInputStream();
 
@@ -245,10 +217,10 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                 inp = new PushbackInputStream(inp, 8);
             }
             if(POIFSFileSystem.hasPOIFSHeader(inp)) {
-                 workbook = new HSSFWorkbook(new POIFSFileSystem(file.getInputStream()));
+                workbook = new HSSFWorkbook(new POIFSFileSystem(file.getInputStream()));
             }
             if(POIXMLDocument.hasOOXMLHeader(inp)) {
-                 workbook = new XSSFWorkbook(file.getInputStream());
+                workbook = new XSSFWorkbook(file.getInputStream());
             }
             // 有多少个sheet
             int sheets = workbook.getNumberOfSheets();
@@ -256,36 +228,36 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                 Sheet sheet = workbook.getSheetAt(i);
                 // 获取多少行
                 int rows = sheet.getPhysicalNumberOfRows();
-                FabEquipment fabEquipment = null;
+                FabSensor FabSensor = null;
                 // 遍历每一行，注意：第 0 行为标题
                 for (int j = 1; j < rows; j++) {
-                    fabEquipment = new FabEquipment();
+                    FabSensor = new FabSensor();
                     // 获得第 j 行
                     Row row = sheet.getRow(j);
                     // 调整类型
-                    fabEquipment.setEqpId(String.valueOf(row.getCell(0)));
-                    fabEquipment.setOfficeId(String.valueOf(row.getCell(1)));
-                    fabEquipment.setStepId(String.valueOf(row.getCell(2)));
-                    fabEquipment.setStepCode(String.valueOf(row.getCell(3)));
-                    fabEquipment.setActiveFlag(String.valueOf(row.getCell(4)));
-                    fabEquipment.setBcCode(String.valueOf(row.getCell(5)));
-                    fabEquipment.setIp(String.valueOf(row.getCell(6)));
-                    fabEquipment.setPort(String.valueOf(row.getCell(7)));
-                    fabEquipment.setDeviceId(String.valueOf(row.getCell(8)));
-                    fabEquipment.setModelId(String.valueOf(row.getCell(9)));
-                    fabEquipment.setModelName(String.valueOf(row.getCell(10)));
-                    fabEquipment.setProtocolName(String.valueOf(row.getCell(11)));
-                    fabEquipment.setFab(String.valueOf(row.getCell(12)));
-                    fabEquipment.setLineNo(String.valueOf(row.getCell(13)));
-                    fabEquipment.setLocation(String.valueOf(row.getCell(14)));
-                    fabEquipment.setUpdateBy("4028ea815a3d2a8c015a3d2f8d2a0002");
-                    fabEquipment.setUpdateDate(new Date());
-                    fabEquipment.setCreateDate(new Date());
-                    fabEquipment.setCreateBy("4028ea815a3d2a8c015a3d2f8d2a0002");
-                    list.add(fabEquipment);
+                    FabSensor.setSorId(String.valueOf(row.getCell(0)));
+                    FabSensor.setOfficeId(String.valueOf(row.getCell(1)));
+                    FabSensor.setStepId(String.valueOf(row.getCell(2)));
+                    FabSensor.setStepCode(String.valueOf(row.getCell(3)));
+                    FabSensor.setActiveFlag(String.valueOf(row.getCell(4)));
+                    FabSensor.setBcCode(String.valueOf(row.getCell(5)));
+                    FabSensor.setIp(String.valueOf(row.getCell(6)));
+                    FabSensor.setPort(String.valueOf(row.getCell(7)));
+                    FabSensor.setDeviceId(String.valueOf(row.getCell(8)));
+                    FabSensor.setModelId(String.valueOf(row.getCell(9)));
+                    FabSensor.setModelName(String.valueOf(row.getCell(10)));
+                    FabSensor.setProtocolName(String.valueOf(row.getCell(11)));
+                    FabSensor.setFab(String.valueOf(row.getCell(12)));
+                    FabSensor.setLineNo(String.valueOf(row.getCell(13)));
+                    FabSensor.setLocation(String.valueOf(row.getCell(14)));
+                    FabSensor.setUpdateBy("4028ea815a3d2a8c015a3d2f8d2a0002");
+                    FabSensor.setUpdateDate(new Date());
+                    FabSensor.setCreateDate(new Date());
+                    FabSensor.setCreateBy("4028ea815a3d2a8c015a3d2f8d2a0002");
+                    list.add(FabSensor);
                 }
             }
-            fabEquipmentService.insertBatch(list,100);
+            FabSensorService.insertBatch(list,100);
         } catch (IOException e) {
             e.printStackTrace();
             return Response.error(999998,"导出失败");
@@ -304,8 +276,8 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      */
     @RequestMapping(value = "/{id}/find2", method = { RequestMethod.GET, RequestMethod.POST })
     public Response find2(Model model, @PathVariable("id") String id, HttpServletRequest request,
-                     HttpServletResponse response) {
-        FabEquipment entity = get(id);
+                          HttpServletResponse response) {
+        FabSensor entity = get(id);
         afterGet(entity);
         Response res;
         if(entity == null){

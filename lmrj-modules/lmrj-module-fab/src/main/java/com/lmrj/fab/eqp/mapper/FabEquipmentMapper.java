@@ -35,7 +35,7 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
     List<String> findEqpIdList();
 
     List<Map> findEqpMap();
-
+    List<Map> findEqpMapByCode(@Param("classCode") String classCode);
     //List<String> eqpIdMsList();
     List<Map> findEqpMsMap();
 
