@@ -121,7 +121,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskTrackin", "有异常", trackinfo, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskTrackin", "有异常"+e, trackinfo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -176,7 +176,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskOventrackin", "有异常", trackinfo1, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.dskOventrackin", "有异常"+e, trackinfo1, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -235,6 +235,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-CLEAN-JET1";
             } else if (eqpId1.equals("US")) {
                 eqpId1 = "APJ-CLEAN-US1";
+            } else if (eqpId1.equals("OVEN1")) {
+                eqpId1 = "APJ-OVEN1";
+            } else if (eqpId1.equals("OVEN2")) {
+                eqpId1 = "APJ-OVEN2";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
@@ -570,9 +574,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/dskOventrackout/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String dskOventrackout(Model model, @PathVariable String eqpId, @RequestParam String trackinfo1, @RequestParam String trackinfo2, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    public String dskOventrackout(Model model, @PathVariable String eqpId, @RequestParam String trackinfo1, @RequestParam String trackinfo2, @RequestParam String yield1, @RequestParam String yield2, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
-        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo1\":\"" + trackinfo1+ "\",\"trackinfo2\":\"" + trackinfo2 + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"trackinfo1\":\"" + trackinfo1+ "\",\"trackinfo2\":\"" + trackinfo2 + "\",\"yield1\":\"" + yield1 + "\",\"yield2\":\"" + yield2 + "\"}";//日志记录参数
         fabLogService.info(eqpId, "Param6", "MesLotTrackController.dskOventrackout", eventDesc, trackinfo1, "wangdong");//日志记录参数
         try {
             if (trackinfo1.length() < 30) {
@@ -592,6 +596,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 String[] lotNos2 = lotorder2.split("_");
                 String lotNo2 = lotNos2[0].substring(7, 12);
                 lotNo = lotNo+"|"+lotNo2;
+                yield1 = Integer.parseInt(yield1)+Integer.parseInt(yield2)+"";
             }
 
             //对当前批次进行判断，若批次结束时间过快，阻止操做
@@ -611,7 +616,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("操做人员误操作，不允许提前结束批次" + lotNo);
                 return "Warning : " + lotNo + " lot Working too short! If it is not misoperation , please contact the administrator（不允许提前结束批次，最短时间五分钟）";
             }
-            MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield, "", opId);
+
+            MesResult result = mesLotTrackService.trackout(eqpId, productionNo, productionName, orderNo, lotNo, yield1, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result6", "MesLotTrackController.dskOventrackout", jo.toString(), trackinfo1+"/"+trackinfo2, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -681,6 +687,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 eqpId1 = "APJ-CLEAN-JET1";
             } else if (eqpId1.equals("US")) {
                 eqpId1 = "APJ-CLEAN-US1";
+            } else if (eqpId1.equals("OVEN1")) {
+                eqpId1 = "APJ-OVEN1";
+            } else if (eqpId1.equals("OVEN2")) {
+                eqpId1 = "APJ-OVEN2";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
