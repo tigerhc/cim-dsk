@@ -158,17 +158,17 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
                     "{\"eqpId\":\"APJ-DBCT-REFLOW1\",\"eqpName\":\"APJ-DBCT-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-DBCB-REFLOW1\",\"eqpName\":\"APJ-DBCB-REFLOW1\"},\n" +
                     "{\"eqpId\":\"APJ-AT1\",\"eqpName\":\"APJ-AT1\"},\n" +
-                    "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-CLEAN-US1\"},\n" +
+                    "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-CLEAN-US1温度仪\"},\n" +
                     "{\"eqpId\":\"APJ-TRM1\",\"eqpName\":\"APJ-TRM1\"},\n" +
-                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"APJ-RT\"},\n" +
-                    "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"APJ-HT\"},\n" +
+                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"高温二(温度仪)\"},\n" +
+                    "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"高温一(温度仪)\"},\n" +
                     "{\"eqpId\":\"APJ-HTRT1\",\"eqpName\":\"APJ-HTRT1\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-OVEN1(JET洗净后恒温槽)\"},\n" +
+                    "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-OVEN1温度仪(JET洗净后恒温槽)\"},\n" +
                     "{\"eqpId\":\"APJ-AT2\",\"eqpName\":\"APJ-AT2温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER3\",\"eqpName\":\"APJ-FREEZER3(树脂)\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN2\",\"eqpName\":\"APJ-OVEN2(TRM恒温槽)\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER2\",\"eqpName\":\"APJ-FREEZER2(半田)\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER1\",\"eqpName\":\"APJ-FREEZER1(AgNps)\"}]";
+                    "{\"eqpId\":\"APJ-FREEZER3\",\"eqpName\":\"APJ-FREEZER3温度仪(树脂)\"},\n" +
+                    "{\"eqpId\":\"APJ-OVEN2\",\"eqpName\":\"APJ-OVEN2温度仪(TRM恒温槽)\"},\n" +
+                    "{\"eqpId\":\"APJ-FREEZER2\",\"eqpName\":\"APJ-FREEZER2温度仪(半田)\"},\n" +
+                    "{\"eqpId\":\"APJ-FREEZER1\",\"eqpName\":\"APJ-FREEZER1温度仪(AgNps)\"}]";
             List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
             rs.put("eqpId", list);
         } else {
