@@ -536,7 +536,13 @@ public class EdcDskLogHandler {
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
                 String alarmCode = edcDskLogOperation.getAlarmCode();
                 edcAmsRecord.setAlarmCode(alarmCode);
-                edcAmsRecord.setAlarmName(edcDskLogOperation.getEventName());
+                String alarmName = edcDskLogOperation.getEventName();
+                if(edcDskLogOperation.getEventDetail()!=null && !"".equals(edcDskLogOperation.getEventDetail())){
+                    if(!alarmName.equals(edcDskLogOperation.getEventDetail())){
+                        alarmName = alarmName+":"+edcDskLogOperation.getEventDetail();
+                    }
+                }
+                edcAmsRecord.setAlarmName(alarmName);
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
