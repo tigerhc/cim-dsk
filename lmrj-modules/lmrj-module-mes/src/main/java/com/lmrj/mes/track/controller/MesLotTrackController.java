@@ -342,7 +342,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            MesResult result = mesLotTrackService.findPrinterParam(eqpId, opId);
+            if (eqpId.equals("TOP")) {
+                eqpId = "APJ-DBCT-PRINTER1";
+            } else if (eqpId.equals("BOTTOM")) {
+                eqpId = "APJ-DBCB-PRINTER1";
+            } else if (eqpId.equals("FRD")) {
+                eqpId = "APJ-FRD-PRINTER1";
+            } else if (eqpId.equals("IGBT")) {
+                eqpId = "APJ-IGBT-PRINTER1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_PRINTER_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result7", "MesLotTrackController.findPrinterParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -392,7 +405,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            MesResult result = mesLotTrackService.findReflowParam(eqpId, opId);
+            if (eqpId.equals("TOP")) {
+                eqpId = "APJ-DBCT-REFLOW1";
+            } else if (eqpId.equals("BOTTOM")) {
+                eqpId = "APJ-DBCB-REFLOW1";
+            } else if (eqpId.equals("FRD")) {
+                eqpId = "APJ-FRD-REFLOW1";
+            } else if (eqpId.equals("IGBT")) {
+                eqpId = "APJ-IGBT-REFLOW1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_REFLOW_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result9", "MesLotTrackController.findReflowParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -417,7 +443,22 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            MesResult result = mesLotTrackService.findSinterParam(eqpId, opId);
+            if (eqpId.equals("RY1")) {
+                eqpId = "APJ-HB1-SINTERING1";
+            } else if (eqpId.contains("RY2S1")) {//金型温度设定值
+                eqpId = "APJ-HB2-SINTERING1-1";
+            } else if (eqpId.contains("RY2S2")) {//压力、温度设定值
+                eqpId = "APJ-HB2-SINTERING1-2";
+            }/* else if(eqpId.equals("RY2C")){//温度测定值
+            eqpId = "APJ-HB2-SINTERING1-3";
+        } */ else if (eqpId.contains("RY2DJ")) {//点胶机数据
+                eqpId = "APJ-HB2-DISPENSING1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_SINTERING_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result10", "MesLotTrackController.findSinterParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -443,7 +484,14 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            MesResult result = mesLotTrackService.findViParam(eqpId, opId);
+            if (eqpId.equals("ZJ")) {
+                eqpId = "APJ-VI1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_SINTERING_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result12", "MesLotTrackController.findViParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -470,7 +518,16 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            MesResult result = mesLotTrackService.findCleanParam(eqpId, opId);
+            if (eqpId.equals("JET")) {
+                eqpId = "APJ-CLEAN-JET1";
+            } else if (eqpId.equals("US")) {
+                eqpId = "APJ-CLEAN-US1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_CLEAN_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result13", "MesLotTrackController.findCleanParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
@@ -483,6 +540,39 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+
+    @RequestMapping(value = "/findOvenParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findOvenParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                  HttpServletRequest request, HttpServletResponse response) {
+        log.info("findOvenParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param10", "MesLotTrackController.findOvenParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("APJ-OVEN1")) {
+                eqpId = "APJ-OVEN1";
+            }else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:"+eqpId;
+            }
+            String methodName = "FIND_OVEN_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result10", "MesLotTrackController.findOvenParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error10", "MesLotTrackController.findOvenParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
 
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
