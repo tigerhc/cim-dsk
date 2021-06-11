@@ -4,6 +4,7 @@ import com.lmrj.edc.lot.service.impl.RptLotYieldDayServiceImpl;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -14,13 +15,16 @@ import java.util.List;
 @Slf4j
 @Component
 public class RptYieldDayTask {
+
     @Autowired
     RptLotYieldDayServiceImpl rptLotYieldDayService;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
+
+    @Value("${dsk.lineNo}")
+    String lineNo;
     /**
      * 计算产量,写入报表 edc_dsk_log_production -- >   rpt_lot_yield_day
-     *
      * rpt_lot_yield: 批次产量,当前站点的产量
      */
     //@Scheduled(cron = "0 0/20 * * * ?")
@@ -36,7 +40,6 @@ public class RptYieldDayTask {
             cal.add(Calendar.DAY_OF_MONTH,-1);
             Date startTime=cal.getTime();
             log.info("日产量计算定时任务开始执行");
-            String lineNo="SIM";
             SimpleDateFormat sim = new SimpleDateFormat("yyyyMMdd");
             try {
                 rptLotYieldDayService.deleteByDate(sim.format(startTime),lineNo);

@@ -221,25 +221,37 @@ public class EdcDskLogHandler {
 
 
     }
-
+    //重新计算投入数
     //修正数据   先把所有数据的批量内连番改为每次加一的顺序 再对特殊设备做特殊处理
     public void fixProData(List<EdcDskLogProduction> proList, MesLotTrack mesLotTrack) {
-        int i = 1;
+        int yield = 1;
+        int input = 1;
         String eqpId = mesLotTrack.getEqpId();
+        //mesLotTrack当前批次良品产量数据
         List<EdcDskLogProduction> productionList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
-        //修正批量内连番
+        List<EdcDskLogProductionDefective> efectiveProductionList = iEdcDskLogProductionDefectiveService.findDataBylotNo(mesLotTrack.getLotNo(), mesLotTrack.getEqpId(), mesLotTrack.getProductionNo());
         if (productionList.size() > 0) {
-            i = productionList.size() + 1;
+            yield = productionList.size() + 1;
         }
+        if (efectiveProductionList.size() > 0) {
+            input = efectiveProductionList.size() + 1;
+        }
+        //修复产量数据
         for (EdcDskLogProduction edcDskLogProduction : proList) {
+            edcDskLogProduction.setProductionNo(mesLotTrack.getProductionNo());
+            edcDskLogProduction.setOrderNo(mesLotTrack.getOrderNo());
+            //修正批量内生产数
             if("N".equals(edcDskLogProduction.getJudgeResult())){
                 edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
-                edcDskLogProduction.setLotYield(i);
+                edcDskLogProduction.setLotYield(yield);
             }else{
                 edcDskLogProduction.setLotNo(mesLotTrack.getLotNo());
-                edcDskLogProduction.setLotYield(i);
-                i++;
+                edcDskLogProduction.setLotYield(yield);
+                yield++;
             }
+            //修正批量内投入数
+            edcDskLogProduction.setLotInput(input);
+            input++;
         }
         //如果为REFLOW 或 PRINTER 再乘以12
         if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
@@ -259,7 +271,7 @@ public class EdcDskLogHandler {
                 }
             });
         }
-        //将重复数据去除
+        //将SIM-DM重复数据去除
         if (eqpId.contains("SIM-DM")) {
             Iterator it = proList.iterator();
             while (it.hasNext()) {
@@ -304,6 +316,7 @@ public class EdcDskLogHandler {
             allProList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
             lastPro = goodPro.get(goodPro.size() - 1);
             mesLotTrack.setLotYieldEqp(allProList.size());
+            mesLotTrack.setLotInput(proList.get(proList.size()-1).getLotInput());
             if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
                 mesLotTrack.setLotYieldEqp(allProList.size() * 12);
             }
@@ -489,6 +502,8 @@ public class EdcDskLogHandler {
                 if (pro != null) {
                     edcDskLogOperation.setLotYield(pro.getLotYield());
                     edcDskLogOperation.setDayYield(pro.getDayYield());
+                    edcDskLogOperation.setDayInput(pro.getDayInput());
+                    edcDskLogOperation.setLotInput(pro.getLotInput());
                 }
                 edcDskLogOperation.setEqpNo(fabEquipment.getEqpNo());
                 edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());

@@ -457,7 +457,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:"+eqpId;
             }
-            String methodName = "FIND_SINTERING_PARAM";
+            String methodName = "FIND_SINTER_PARAM";
             MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result10", "MesLotTrackController.findSinterParam", jo.toString(), eqpId, "wangdong");//日志记录
@@ -490,7 +490,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:"+eqpId;
             }
-            String methodName = "FIND_SINTERING_PARAM";
+            String methodName = "FIND_VI_PARAM";
             MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result12", "MesLotTrackController.findViParam", jo.toString(), eqpId, "wangdong");//日志记录

@@ -3,6 +3,10 @@ package com.lmrj.dsk.eqplog.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionDefective;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -18,4 +22,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface EdcDskLogProductionDefectiveMapper extends BaseMapper<EdcDskLogProductionDefective> {
 
+    @Select("select * from edc_dsk_log_production_defective where lot_no = #{lotNo} and eqp_id = #{eqpId} and production_no = #{productionNo} order by start_time")
+    List<EdcDskLogProductionDefective> findDataBylotNo(@Param("lotNo") String lotNo, @Param("eqpId") String eqpId, @Param("productionNo") String productionNo);
 }

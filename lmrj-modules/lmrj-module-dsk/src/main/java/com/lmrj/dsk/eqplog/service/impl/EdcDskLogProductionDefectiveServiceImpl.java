@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -25,4 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class EdcDskLogProductionDefectiveServiceImpl extends CommonServiceImpl<EdcDskLogProductionDefectiveMapper, EdcDskLogProductionDefective> implements IEdcDskLogProductionDefectiveService {
 
+    @Override
+    public List<EdcDskLogProductionDefective> findDataBylotNo(String lotNo, String eqpId, String productionNo) {
+        return baseMapper.findDataBylotNo(lotNo, eqpId, productionNo);
+    }
 }

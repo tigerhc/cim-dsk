@@ -3,6 +3,8 @@ package com.lmrj.dsk.eqplog.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionDefective;
 
+import java.util.List;
+
 /**
  * All rights Reserved, Designed By www.lmrj.com
  *
@@ -15,5 +17,7 @@ import com.lmrj.dsk.eqplog.entity.EdcDskLogProductionDefective;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 public interface IEdcDskLogProductionDefectiveService extends ICommonService<EdcDskLogProductionDefective> {
+
+    List<EdcDskLogProductionDefective> findDataBylotNo(String lotNo, String eqpId, String productionNo);
 
 }
