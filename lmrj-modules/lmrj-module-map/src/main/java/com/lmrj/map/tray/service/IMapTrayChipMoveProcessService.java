@@ -17,5 +17,5 @@ public interface IMapTrayChipMoveProcessService extends ICommonService<MapTrayCh
 
     List<Map<String, Object>> dmDetail(String chipId);
 
-    Map<String, Object> getProductionParam(long id);
+    Map<String, Object> getProductionParam(long id, String btn);
 }

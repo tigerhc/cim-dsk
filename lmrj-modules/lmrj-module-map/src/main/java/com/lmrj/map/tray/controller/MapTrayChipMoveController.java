@@ -142,9 +142,9 @@ public class MapTrayChipMoveController {
     }
 
     @RequestMapping(value = "getProductionParam", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response getProductionParam(@RequestParam String id){
+    public Response getProductionParam(@RequestParam String id, @RequestParam String btn){
         Response rs = Response.ok();
-        Map<String, Object> productionParam = mapTrayChipMoveProcessService.getProductionParam(Long.parseLong(id));
+        Map<String, Object> productionParam = mapTrayChipMoveProcessService.getProductionParam(Long.parseLong(id), btn);
         rs.put("paramObj", productionParam);
         return rs;
     }

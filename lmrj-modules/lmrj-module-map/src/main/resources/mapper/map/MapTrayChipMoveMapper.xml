@@ -375,6 +375,9 @@
 		<if test="trayY!='' and trayY!=null">
 			and tray_y=#{trayY}
 		</if>
+		<if test="checkType!='' and checkType!=null">
+			and check_type=#{checkType}
+		</if>
 		limit 1
 	</select>
 </mapper>

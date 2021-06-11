@@ -538,16 +538,20 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
     }
 
     @Override
-    public Map<String, Object> getProductionParam(long id){
+    public Map<String, Object> getProductionParam(long id, String btn){
         try {
             Map<String, Object> rs = new HashMap<>();
             MapTrayChipMove data = baseMapper.selectById(id);
             if (data == null) {
                 return null;
             }
-            if ("APJ-HTRT1".equals(data.getEqpId()) || "APJ-VI1".equals(data.getEqpId()) || "APJ-AT1".equals(data.getEqpId())) {//高温室温检查
-                Map<String, Object> param = new HashMap<>();
-                param.put("eqpId", data.getEqpId());
+            Map<String, Object> param = new HashMap<>();
+            param.put("eqpId", data.getEqpId());
+            if ("APJ-HTRT1".equals(data.getEqpId())) {
+                param.put("chipId", data.getChipId());
+                param.put("checkType", btn);
+                rs.put("paramValue", baseMapper.findLOProParam(param));
+            } else if ("APJ-VI1".equals(data.getEqpId()) || "APJ-AT1".equals(data.getEqpId())) {//高温室温检查
                 if ("APJ-VI1".equals(data.getEqpId())) {
                     param.put("trayId", data.getToTrayId());
                     param.put("trayX", String.valueOf(data.getToX()));
@@ -557,8 +561,6 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 }
                 rs.put("paramValue", baseMapper.findLOProParam(param));
             } else {
-                Map<String, Object> param = new HashMap<>();
-                param.put("eqpId", data.getEqpId());
                 String startTime = sdf.format(data.getStartTime());
                 startTime = startTime.length() > 23 ? startTime.substring(0, 23) : startTime;//2021-04-28 09:10:46.248
                 param.put("startTime", startTime);
@@ -585,7 +587,11 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 data.setEqpModelName("AT");
             }
             //从数据库中获得标题
-            rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
+            if("APJ-HTRT1".equals(data.getEqpId())){
+                rs.put("title", baseMapper.findParamTitle(btn));
+            } else {
+                rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));
+            }
             return rs;
         }catch (Exception e){
             e.printStackTrace();

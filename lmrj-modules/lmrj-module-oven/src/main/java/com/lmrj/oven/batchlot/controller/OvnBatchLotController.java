@@ -160,8 +160,8 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
                     "{\"eqpId\":\"APJ-AT1\",\"eqpName\":\"APJ-AT1\"},\n" +
                     "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-CLEAN-US1温度仪\"},\n" +
                     "{\"eqpId\":\"APJ-TRM1\",\"eqpName\":\"APJ-TRM1\"},\n" +
-                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"高温二(温度仪)\"},\n" +
                     "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"高温一(温度仪)\"},\n" +
+                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"高温二(温度仪)\"},\n" +
                     "{\"eqpId\":\"APJ-HTRT1\",\"eqpName\":\"APJ-HTRT1\"},\n" +
                     "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-OVEN1温度仪(JET洗净后恒温槽)\"},\n" +
                     "{\"eqpId\":\"APJ-AT2\",\"eqpName\":\"APJ-AT2温度仪\"},\n" +
