@@ -842,7 +842,6 @@ public class EdcDskLogHandler {
         }
         String[] params = new String[param.size()];
         param.toArray(params);
-        log.error("params:",params.toString());
         if(fabEquipment!=null){
             msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
         }
