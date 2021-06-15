@@ -31,6 +31,9 @@ public class MsMeasureConfig extends BaseDataEntity {
     /**设备型号名称*/
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    /**工序*/
+    @TableField(value = "process_no")
+    private String processNo;
     /**机种*/
     @TableField(value = "production_no")
     private String productionNo;

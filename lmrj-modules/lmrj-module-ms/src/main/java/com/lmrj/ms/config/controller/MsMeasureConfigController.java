@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -83,7 +85,9 @@ public class MsMeasureConfigController extends BaseCRUDController<MsMeasureConfi
             List<MsMeasureConfigDetail> edcParamRecordDtlList = msMeasureConfigDetailService.selectList(new com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper<MsMeasureConfigDetail>(MsMeasureConfigDetail.class).eq("ms_config_id",id));
             msMeasureConfig.setDetail(edcParamRecordDtlList);
         });
-        String content = JSON.toJSONString(list);
+
+        Map<String, List<MsMeasureConfig>> map = list.stream().collect(Collectors.groupingBy(MsMeasureConfig::getProcessNo));
+        String content = JSON.toJSONString(map);
         ServletUtils.printJson(response, content);
         //res.put("data",detail);
         //return res;

@@ -1,0 +1,5 @@
+量测系统添加工序字段-北京中试线要求
+ALTER TABLE `dskcim`.`ms_measure_config`
+ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `eqp_model_name`;
+ALTER TABLE `dskcim`.`ms_measure_record`
+ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `lot_no`;
