@@ -419,12 +419,41 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
 //                            }
 //                        }
                         if(upperData!=null && upperData.size()>0){
-                            for(MapTrayChipMove upperItem : upperData){
-                                if(StringUtils.isEmpty(upperItem.getChipId())){
-                                    upperItem.setChipId(item.getChipId());
+                            // 由于坐标可以重复,
+                            if(item.getEqpType()!=4){
+                                //不是贴片机,取一个
+                                boolean findFlag = false;
+                                for(MapTrayChipMove upperItem : upperData){
+                                    boolean existFlag = false;
+                                    for(MapTrayChipMove exist : traceList){//遍历本次已经追过的数据,检查是否是同一个坐标,也可以说该坐标不能算作本次追溯的第二个新坐标
+                                        if(exist.getId() == upperItem.getId()){//该upperItem 在 本次追溯数据中已经算过一次了
+                                            existFlag = true;
+                                            break;
+                                        }
+                                    }
+                                    if(!existFlag){//该upperItem 在 本次追溯数据中没有重复出现;是要找的坐标数据
+                                        traceList.add(0,upperItem);
+                                        findFlag = true;
+                                        break;
+                                    }
                                 }
-                                traceList.add(0,upperItem);
-                                buff.add(upperItem);
+                                if(!findFlag){//没有找到上游坐标数据
+                                    clearBuff(buff, 2);
+                                    error++;
+                                }
+                            } else {
+                                //是贴片机,(取6个+1个下基板共7个)
+                                int index = 0;
+                                for(MapTrayChipMove upperItem : upperData){
+                                    if(index == 7){
+                                        break;
+                                    } else if(StringUtils.isEmpty(upperItem.getChipId())){
+                                        upperItem.setChipId(item.getChipId());
+                                    }
+                                    traceList.add(0,upperItem);
+                                    buff.add(upperItem);
+                                    index ++;
+                                }
                             }
                         }else if(item.getEqpType()!=1){//没有找到记录，并且非开始设备
                             clearBuff(buff, 2);
