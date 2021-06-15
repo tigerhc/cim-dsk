@@ -105,7 +105,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
-            if(lastLotTrack != null){
+            if(lastLotTrack != null && !eqpId.contains("SIM-LF")){
                 if (!lastLotTrack.getLotNo().equals(lotNo) && lastLotTrack.getEndTime() == null) {
                     log.error("人员误操作记录，" + eqpId1 + ":" + lastLotTrack.getLotNo() + "批次未结束,无法对" + lotNo + "进行入账");
                     return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
@@ -542,12 +542,12 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/findOvenParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findOvenParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+    public String findOvenParam(Model model, @PathVariable String eqpId, @RequestParam String param, @RequestParam String opId,
                                   HttpServletRequest request, HttpServletResponse response) {
         log.info("findOvenParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId, "Param10", "MesLotTrackController.findOvenParam", eventDesc, "", "wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param14", "MesLotTrackController.findOvenParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
@@ -558,17 +558,24 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:"+eqpId;
             }
-            String methodName = "FIND_OVEN_PARAM";
+            String methodName = "";
+            if("1".equals(param)){
+                methodName = "FIND_OVEN_PARAM_1";
+            }else if("2".equals(param)){
+                methodName = "FIND_OVEN_PARAM_2";
+            }else {
+                return "param error!:"+param;
+            }
             MesResult result = mesLotTrackService.findApjParam(eqpId,methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId, "Result10", "MesLotTrackController.findOvenParam", jo.toString(), eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Result14", "MesLotTrackController.findOvenParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error10", "MesLotTrackController.findOvenParam", "有异常", eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error14", "MesLotTrackController.findOvenParam", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();
         }
     }
