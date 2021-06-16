@@ -817,22 +817,43 @@ public class EdcDskLogHandler {
         List<Map<String, Object>> users = new ArrayList<>();
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
-        if(!alarmCode.equals(":网络断开连接!")){
+        if(alarmCode.equals(":网络断开连接!")){
+            code = "RTP_ALARM";
+            if (department.get(0).get("department").equals("YK")) {
+                users = fabEquipmentService.findEmailALL("E-0007");
+            } else if (department.get(0).get("department").equals("EK")) {
+                users = fabEquipmentService.findEmailALL("E-0008");
+            }else if (department.get(0).get("department").equals("APJ")) {
+                users = fabEquipmentService.findEmailALL("E-0001");
+            }
+        }else if(alarmCode.equals(":网络连接恢复!")){
+            code = "RTP_RECOVER";
+            if (department.get(0).get("department").equals("YK")) {
+                users = fabEquipmentService.findEmailALL("A-0007");
+            } else if (department.get(0).get("department").equals("EK")) {
+                users = fabEquipmentService.findEmailALL("A-0008");
+            }else if (department.get(0).get("department").equals("APJ")) {
+                users = fabEquipmentService.findEmailALL("A-0001");
+            }
+        }else {
             users = fabEquipmentService.findEmailALL(alarmCode);
-            /*if("E-0009".equals(alarmCode)){
+        }
+        /*if(!alarmCode.equals(":网络断开连接!")){
+            users = fabEquipmentService.findEmailALL(alarmCode);
+            *//*if("E-0009".equals(alarmCode)){
                 code = alarmCode;
             }else if("E-0010".equals(alarmCode)){
                 code = alarmCode;
             }else if("E-0011".equals(alarmCode)){
                 code = alarmCode;
-            }*/
+            }*//*
         }else if (department.get(0).get("department").equals("YK")) {
             users = fabEquipmentService.findEmailALL("E-0007");
         } else if (department.get(0).get("department").equals("EK")) {
             users = fabEquipmentService.findEmailALL("E-0008");
         }else if (department.get(0).get("department").equals("APJ")) {
             users = fabEquipmentService.findEmailALL("E-0001");
-        }
+        }*/
         List<String> param = new ArrayList<>();
         if (!users.isEmpty()) {
             for (Map<String, Object> map : users) {
