@@ -79,6 +79,32 @@ public class EqpStateTask {
         }
         log.info("EqpStateTask定时任务结束执行");
     }
+    //计算前一天设备OEE
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void eqpOldStateDay() {
+        log.info("EqpStateTask定时任务开始执行");
+        try {
+            //当天时间
+            Date endTime = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            endTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date startTime = cal.getTime();
+            log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+            List<String> eqpIdList = edcEqpStateService.findEqpId(startTime, endTime);
+            for (String eqpId : eqpIdList) {
+                edcEqpStateService.syncEqpSate(startTime, endTime, eqpId);
+            }
+            edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
+        } catch (Exception e) {
+            log.error("EqpStateTask; ", e);
+        }
+        log.info("EqpStateTask定时任务结束执行");
+    }
 
     /**
      * 修正前天的设备OEE数据
@@ -87,29 +113,11 @@ public class EqpStateTask {
     //@Scheduled(cron = "0 0 8 * * ?")
     public void fixeqpState(Date startTime, Date endTime) {
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-        //List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
-        List<String> eqpIdList = new ArrayList<>();
-        /*eqpIdList.add("SIM-WB-1A");
-        eqpIdList.add("SIM-WB-1B");
-        eqpIdList.add("SIM-WB-2A");
-        eqpIdList.add("SIM-WB-2B");
-        eqpIdList.add("SIM-WB-3A");
-        eqpIdList.add("SIM-WB-3B");
-        eqpIdList.add("SIM-WB-4A");
-        eqpIdList.add("SIM-WB-4B");
-        eqpIdList.add("SIM-WB-5A");
-        eqpIdList.add("SIM-WB-5B");
-        eqpIdList.add("SIM-WB-6A");
-        eqpIdList.add("SIM-WB-6B");*/
-        eqpIdList.add("SIM-DM2");
-        for (String eqpId : eqpIdList) {
-            edcEqpStateServiceImpl.syncOldEqpSate(startTime, endTime, eqpId);
-        }
         edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
     }
 
     //数据补充：为昨日没有生成OEE数据的设备生成一条数据，保证页面可以查到
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void dataSupplement() {
         Date startTime = new Date();
         Calendar cal = Calendar.getInstance();
@@ -141,13 +149,12 @@ public class EqpStateTask {
                 if (flag) {
                     Double run = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(run);
-                    rptEqpStateDay.setDownTime(0.0);
+                    rptEqpStateDay.setIdleTime(0.0);
                 } else {
-                    Double down = 24 * 60 * 60 * 1000 * 0.001;
+                    Double idle = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(0.0);
-                    rptEqpStateDay.setDownTime(down);
+                    rptEqpStateDay.setIdleTime(idle);
                 }
-                rptEqpStateDay.setIdleTime(0.0);
                 rptEqpStateDay.setPmTime(0.0);
                 rptEqpStateDay.setOtherTime(0.0);
                 rptEqpStateDayList.add(rptEqpStateDay);

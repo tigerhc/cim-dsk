@@ -59,15 +59,16 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
                 map.put("periodDate", getTimes((String) map.get("periodDate")));
                 String runTime =String.valueOf(map.get("runTime"));
                 BigDecimal runTimeR =new BigDecimal(runTime);
-                String idleTime =String.valueOf(map.get("idleTime"));
-                BigDecimal idleTimeR =new BigDecimal(idleTime);
+                /*String idleTime =String.valueOf(map.get("idleTime"));
+                BigDecimal idleTimeR =new BigDecimal(idleTime);*/
                 String downTime =String.valueOf(map.get("downTime"));
                 BigDecimal downTimeR =new BigDecimal(downTime);
-                BigDecimal add =runTimeR.add(idleTimeR);
-                BigDecimal result= add.add(downTimeR);
+                //BigDecimal add =runTimeR.add(idleTimeR);
+                BigDecimal result= runTimeR.add(downTimeR);
                 BigDecimal temp =new BigDecimal(24);
-                BigDecimal other =temp.subtract(result);
-                map.put("otherTime",Double.valueOf(other.toString()));
+                BigDecimal idle =temp.subtract(result);
+                map.put("idleTime",Double.valueOf(idle.toString()));
+                map.remove("otherTime");
             });
         }
 
@@ -76,19 +77,20 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
             list2.forEach(map -> {
                 String runTime =String.valueOf(map.get("runTime"));
                 BigDecimal runTimeR =new BigDecimal(runTime);
-                String idleTime =String.valueOf(map.get("idleTime"));
-                BigDecimal idleTimeR =new BigDecimal(idleTime);
+                /*String idleTime =String.valueOf(map.get("idleTime"));
+                BigDecimal idleTimeR =new BigDecimal(idleTime);*/
                 String downTime =String.valueOf(map.get("downTime"));
                 BigDecimal downTimeR =new BigDecimal(downTime);
-                BigDecimal add =runTimeR.add(idleTimeR);
-                BigDecimal result= add.add(downTimeR);
+                //BigDecimal add =runTimeR.add(idleTimeR);
+                BigDecimal result= runTimeR.add(downTimeR);
                 long countDay =(long)map.get("countDay");
                 BigDecimal temp =new BigDecimal(24 * countDay);
-                BigDecimal other =temp.subtract(result);
-                if(Double.valueOf(other.toString())<0){
-                        other =new BigDecimal(0);
+                BigDecimal idle =temp.subtract(result);
+                if(Double.valueOf(idle.toString())<0){
+                    idle =new BigDecimal(0);
                 }
-                map.put("otherTime",Double.valueOf(other.toString()));
+                map.put("idleTime",Double.valueOf(idle.toString()));
+                map.remove("otherTime");
             });
         }
         response.put("count",list.size());

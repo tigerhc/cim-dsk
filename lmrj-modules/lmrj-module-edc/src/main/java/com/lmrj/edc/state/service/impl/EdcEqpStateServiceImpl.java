@@ -281,10 +281,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             }
             rptEqpStateDay.setRunTime(run / 1000);
             rptEqpStateDay.setDownTime(down / 1000);
-            rptEqpStateDay.setIdleTime(idle / 1000);
             rptEqpStateDay.setPmTime(pm);
-            Double other = 24 * 60 * 60 * 1000 - run - down - idle - pm;
-            rptEqpStateDay.setOtherTime(other / 1000);
+            idle = 24 * 60 * 60 * 1000 - run - down  - pm;
+            rptEqpStateDay.setIdleTime(idle / 1000);
+            //rptEqpStateDay.setOtherTime(other / 1000);
             rptEqpStateDayList.add(rptEqpStateDay);
         }
         String eventId = StringUtil.randomTimeUUID("RPT");

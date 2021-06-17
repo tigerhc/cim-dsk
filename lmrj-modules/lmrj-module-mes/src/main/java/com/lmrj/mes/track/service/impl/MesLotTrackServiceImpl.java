@@ -129,6 +129,12 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         String bc = "";
         String value = "";
         Map<String, String> map = Maps.newHashMap();
+        String lotNo ="";
+        if(eqpId.contains("OVEN") && eqpId.split("_").length>1){
+            lotNo = eqpId.split("_")[1];
+            eqpId = eqpId.split("_")[0];
+            map.put("LOTNO",lotNo);
+        }
         map.put("EQP_ID", eqpId);
         map.put("METHOD", methodName);
         if (eqpId.split("-").length > 3) {
