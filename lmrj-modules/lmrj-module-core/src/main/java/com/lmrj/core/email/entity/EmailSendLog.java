@@ -1,5 +1,7 @@
 package com.lmrj.core.email.entity;
 
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
@@ -58,6 +60,11 @@ public class EmailSendLog extends AbstractEntity {
     /**发送状态*/
     @TableField(value = "status")
 	private String status;
+
+	@TableField(value = "create_date", fill = FieldFill.INSERT)
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+	protected Date createDate; // 创建日期
     /**删除标记（0：正常；1：删除）*/
     @TableField(value = "del_flag")
 	private String delFlag;
@@ -244,6 +251,13 @@ public class EmailSendLog extends AbstractEntity {
 	 */
 	public void setRemarks(String remarks){
 		this.remarks = remarks;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 
 }

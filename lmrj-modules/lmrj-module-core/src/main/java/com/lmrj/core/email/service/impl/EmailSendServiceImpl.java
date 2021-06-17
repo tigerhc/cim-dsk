@@ -49,9 +49,12 @@ public class EmailSendServiceImpl implements IEmailSendService {
     private String sender; //昵称
 
     @Override
-    public void send(String email, String code, Map<String, Object> datas) {
-        String[] emails = { email };
-        send(emails,code,datas);
+    public void send(String to, String code, Map<String, Object> datas) {
+        String[] tos = {to};
+        if(to.indexOf(",")>0){
+            tos = to.split(",");
+        }
+        send(tos, code, datas);
     }
 
     @Override
@@ -60,15 +63,91 @@ public class EmailSendServiceImpl implements IEmailSendService {
         if (datas == null) {
             datas = new HashMap<>();
         }
-        if (template == null){
-            return ;
+        if (template == null) {
+            return;
         }
         String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
         String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
         // List<EmailSendLog> emailSendLogList = new ArrayList<EmailSendLog>();
-        for (String email: emails) {
+        EmailSendLog emailSendLog = new EmailSendLog();
+        String email = StringUtil.join(emails, ",");
+        emailSendLog.setEmail(email);
+        emailSendLog.setSubject(subject);
+        emailSendLog.setContent(content);
+        emailSendLog.setMsg("发送成功");
+        emailSendLog.setSendCode(code);
+        emailSendLog.setResponseDate(new Date());
+        emailSendLog.setSendData(JsonUtil.toJsonString(datas));
+        emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
+        emailSendLog.setTryNum(0);
+        emailSendLog.setDelFlag("0");
+        // emailSendLogList.add(emailSendLog);
+        emailSendLogService.insert(emailSendLog);
+        String id = emailSendLog.getId();
+        // 发送邮件
+        this.doSend(id, emails, subject, content);
+    }
+
+    @Override
+    public void send(String eventId, String email, String code, Map<String, Object> datas) {
+        String[] emails = {email};
+        send(eventId, emails, code, datas);
+    }
+
+    @Override
+    public void send(String eventId, String[] emails, String code, Map<String, Object> datas) {
+        EmailTemplate template = emailTemplateService.selectOne(new EntityWrapper<EmailTemplate>().eq("code", code));
+        if (datas == null) {
+            datas = new HashMap<>();
+        }
+        if (template == null) {
+            return;
+        }
+        String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
+        String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
+        doSend(eventId, emails, subject, content);
+    }
+
+
+    @Override
+    public void doSend(String eventId, String to, String subject, String text) {
+        String[] tos = {to};
+        if(to.indexOf(",")>0){
+            tos = to.split(",");
+        }
+        doSend(eventId, tos, subject, text);
+    }
+
+    @Override
+    public void doSend(String eventId, String[] tos, String subject, String text) {
+        try {
+            MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
+            //true表示需要创建一个multipart message
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(sender);
+            helper.setTo(tos);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            emailHelper.sendAsync(eventId, message, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void sendOneByOne(String[] emails, String code, Map<String, Object> datas) {
+        EmailTemplate template = emailTemplateService.selectOne(new EntityWrapper<EmailTemplate>().eq("code", code));
+        if (datas == null) {
+            datas = new HashMap<>();
+        }
+        if (template == null) {
+            return;
+        }
+        String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
+        String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
+        for (String to : emails) {
             EmailSendLog emailSendLog = new EmailSendLog();
-            emailSendLog.setEmail(email);
+            emailSendLog.setEmail(to);
             emailSendLog.setSubject(subject);
             emailSendLog.setContent(content);
             emailSendLog.setMsg("发送成功");
@@ -78,33 +157,13 @@ public class EmailSendServiceImpl implements IEmailSendService {
             emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
             emailSendLog.setTryNum(0);
             emailSendLog.setDelFlag("0");
-            // emailSendLogList.add(emailSendLog);
             emailSendLogService.insert(emailSendLog);
             // 发送邮件
-            sendEmail(emailSendLog.getId(),email,subject,content);
+            doSend(emailSendLog.getId(), to, subject, content);
         }
-        /*if (emailSendLogList.size()>0) {
-            emailSendLogService.insertBatch(emailSendLogList);
-        }*/
     }
 
-    @Override
-    public void sendEmail(String eventId, String to, String subject, String text){
-        try {
-            MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
-            //true表示需要创建一个multipart message
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sender);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(text,true);
-            emailHelper.sendAsync(eventId,message,null);
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
-     }
-
-    private String parseContent(String content,Map<String, Object> dataMap) {
+    private String parseContent(String content, Map<String, Object> dataMap) {
         try {
             String tempname = StringUtil.hashKeyForDisk(content);
             Configuration configuration = new Configuration();
@@ -116,90 +175,10 @@ public class EmailSendServiceImpl implements IEmailSendService {
             template.process(dataMap, stringWriter);
             configuration.setTemplateLoader(stringLoader);
             content = stringWriter.toString();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("模板解析失败");
         }
         return content;
-    }
-
-
-    @Override
-    public void send(String eventId, String email, String code, Map<String, Object> datas) {
-        String[] emails = { email };
-        send(eventId,emails,code,datas);
-    }
-
-    @Override
-    public void send(String eventId, String[] emails, String code, Map<String, Object> datas) {
-        EmailTemplate template = emailTemplateService.selectOne(new EntityWrapper<EmailTemplate>().eq("code", code));
-        if (datas == null) {
-            datas = new HashMap<>();
-        }
-        if (template == null){
-            return ;
-        }
-        String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
-        String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
-        for (String email: emails) {
-            // 发送邮件
-            sendEmail(eventId,email,subject,content);
-        }
-    }
-
-    @Override
-    public void blockSend(String[] emails, String code, Map<String, Object> datas) {
-        EmailTemplate template = emailTemplateService.selectOne(new EntityWrapper<EmailTemplate>().eq("code", code));
-        if (datas == null) {
-            datas = new HashMap<>();
-        }
-        if (template == null){
-            return ;
-        }
-        String content = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateContent()), datas);
-        String subject = parseContent(StringEscapeUtils.unescapeHtml4(template.getTemplateSubject()), datas);
-        // List<EmailSendLog> emailSendLogList = new ArrayList<EmailSendLog>();
-        String id = null;
-        for (int i = 0; i <emails.length ; i++) {
-
-
-            EmailSendLog emailSendLog = new EmailSendLog();
-            String email = StringUtil.join(emails, ",");
-            emailSendLog.setEmail(emails[i]);
-            emailSendLog.setSubject(subject);
-            emailSendLog.setContent(content);
-            emailSendLog.setMsg("发送成功");
-            emailSendLog.setSendCode(code);
-            emailSendLog.setResponseDate(new Date());
-            emailSendLog.setSendData(JsonUtil.toJsonString(datas));
-            emailSendLog.setStatus(EmailSendLog.EMAIL_SEND_STATUS_IN);
-            emailSendLog.setTryNum(0);
-            emailSendLog.setDelFlag("0");
-            // emailSendLogList.add(emailSendLog);
-            emailSendLogService.insert(emailSendLog);
-            id = emailSendLog.getId();
-            // 发送邮件
-        }
-        this.blockSendEmail(id,emails,subject,content);
-
-        /*if (emailSendLogList.size()>0) {
-            emailSendLogService.insertBatch(emailSendLogList);
-        }*/
-    }
-
-    @Override
-    public void blockSendEmail(String eventId, String[] emails, String subject, String text){
-        try {
-            MimeMessage message = emailHelper.createMimeMessage(null);//创建一个MINE消息
-            //true表示需要创建一个multipart message
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(sender);
-            helper.setTo(emails);
-            helper.setSubject(subject);
-            helper.setText(text,true);
-            emailHelper.sendAsync(eventId,message,null);
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
     }
 }

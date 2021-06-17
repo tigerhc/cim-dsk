@@ -615,7 +615,7 @@ public class EdcDskLogHandler {
                             datas.put("PARAM_CODE", eventParams);
                             datas.put("OLD_VAL", "");
                             datas.put("NEW_VAL", "");
-                            emailSendService.blockSend(emails,"PARAM_CHANGE",datas);
+                            emailSendService.send(emails,"PARAM_CHANGE",datas);
                             //emailSendService.send(emails, "PARAM_CHANGE", datas);
                             break;
                         }
@@ -866,7 +866,7 @@ public class EdcDskLogHandler {
         if(fabEquipment!=null){
             msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
         }
-        emailSendService.blockSend(params, code, msgMap);
+        emailSendService.send(params, code, msgMap);
     }
 
     //检测客户端传来的温度数据

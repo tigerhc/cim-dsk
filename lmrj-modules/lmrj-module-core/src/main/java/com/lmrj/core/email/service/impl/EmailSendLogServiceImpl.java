@@ -43,7 +43,7 @@ public class EmailSendLogServiceImpl  extends CommonServiceImpl<EmailSendLogMapp
             }
             this.insertOrUpdate(sendLog);
             //smsSendLogList.add(sendLog);
-            emailSendService.sendEmail(sendLog.getId(),sendLog.getEmail(),sendLog.getSubject(),sendLog.getContent());
+            emailSendService.doSend(sendLog.getId(),sendLog.getEmail(),sendLog.getSubject(),sendLog.getContent());
         }
         //insertOrUpdateBatch(smsSendLogList);
         return false;

@@ -1,5 +1,10 @@
-量测系统添加工序字段-北京中试线要求
+--量测系统添加工序字段-北京中试线要求
 ALTER TABLE `dskcim`.`ms_measure_config`
 ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `eqp_model_name`;
 ALTER TABLE `dskcim`.`ms_measure_record`
 ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `lot_no`;
+
+-- 发送邮件日志添加插入时间
+ALTER TABLE `dskcim`.`email_send_log`
+ADD COLUMN `create_date` datetime(6) COMMENT '创建日期' AFTER `remarks`,
+MODIFY COLUMN `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标记（0：正常；1：删除）' AFTER `create_date`;
