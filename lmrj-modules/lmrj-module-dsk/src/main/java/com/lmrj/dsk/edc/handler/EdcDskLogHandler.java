@@ -3,6 +3,8 @@ package com.lmrj.dsk.edc.handler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lmrj.core.email.entity.EmailSendLog;
+import com.lmrj.core.email.service.IEmailSendLogService;
 import com.lmrj.core.email.service.IEmailSendService;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.dsk.eqplog.entity.*;
@@ -134,7 +136,8 @@ public class EdcDskLogHandler {
     IEdcDskLogProductionService iEdcDskLogProductionService;
     @Autowired
     EdcEqpLogParamServiceImpl edcEqpLogParamService;
-
+    @Autowired
+    IEmailSendLogService iEmailSendLogService;
     StringBuffer alarmEmailLog = new StringBuffer();//当温度数据异常时，记录发送邮件情况 TODO
     long lastSendMailTime = 0L;//最后一次发送邮件的时间
 
@@ -811,6 +814,15 @@ public class EdcDskLogHandler {
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
+        EmailSendLog emailSendLog = iEmailSendLogService.selectEmailLog(alarmCode);
+        if(emailSendLog!=null && emailSendLog.getCreateDate()!=null){
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.HOUR_OF_DAY,-1);
+            if(cal.getTime().after(emailSendLog.getCreateDate())){
+                log.info("报警邮件在1小时内重复出现，停止发送！  "+JsonUtil.toJsonString(msgMap));
+                return;
+            }
+        }
         if(eqpId.contains("TRM") && alarmCode.equals("E-0005")){
             code = "E-0005";
         }
@@ -866,6 +878,7 @@ public class EdcDskLogHandler {
         if(fabEquipment!=null){
             msgMap.put("EQP_ID",eqpId+"("+fabEquipment.getEqpName()+")    发送时间："+DateUtil.formatDateTime(new Date()));
         }
+
         emailSendService.send(params, code, msgMap);
     }
 
