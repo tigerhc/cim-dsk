@@ -336,6 +336,34 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             } else {
                 return MesResult.error(eqpId + " not reply");
             }
+        }else if(eqpId.contains("SIM-LF")){
+            map.put("PARAM", param);
+            map.put("LOTNO", lotNo);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC2", JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }else {
+                    return MesResult.error(eqpId +"lotNo:"+lotNo  + "data not fond");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
+        } else if(eqpId.contains("SIM-HTRT")){
+            map.put("PARAM", param);
+            map.put("LOTNO", lotNo);
+            String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", "SIM-BC2", JsonUtil.toJsonString(map));
+            if (replyMsg != null) {
+                result = JsonUtil.from(replyMsg, MesResult.class);
+                if ("Y".equals(result.getFlag())) {
+                    value = (String) result.getContent();
+                }else {
+                    return MesResult.error(eqpId +"lotNo:"+lotNo  + "data not fond");
+                }
+            } else {
+                return MesResult.error(eqpId + " not reply");
+            }
         } else {
             value = "TEMPTEST";
         }

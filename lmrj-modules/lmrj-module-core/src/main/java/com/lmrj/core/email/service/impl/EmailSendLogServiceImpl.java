@@ -49,4 +49,9 @@ public class EmailSendLogServiceImpl  extends CommonServiceImpl<EmailSendLogMapp
         return false;
     }
 
+    @Override
+    public EmailSendLog selectEmailLog(String data){
+        return baseMapper.selectEmailLog(data);
+    }
+
 }

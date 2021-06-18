@@ -28,4 +28,6 @@ public interface IEmailSendLogService extends ICommonService<EmailSendLog> {
      * @return boolean
      */
     boolean retrySend(List<? extends Serializable> idList);
+
+    EmailSendLog selectEmailLog(String data);
 }

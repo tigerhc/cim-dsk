@@ -3,6 +3,8 @@ package com.lmrj.core.email.mapper;
 import com.lmrj.core.email.entity.EmailSendLog;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -18,4 +20,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface EmailSendLogMapper extends BaseMapper<EmailSendLog> {
 
+    @Select("select * from email_send_log where send_data like '%#{data}%' order by create_date desc limit 1" )
+    EmailSendLog selectEmailLog(@Param("data") String data);
 }

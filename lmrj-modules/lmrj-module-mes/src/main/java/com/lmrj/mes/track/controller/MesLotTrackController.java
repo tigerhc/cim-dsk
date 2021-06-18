@@ -505,7 +505,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
-
     //查找APJ二次热压设备参数，从产量日志中获取
     @RequestMapping(value = "/findCleanParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findCleanParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
@@ -578,6 +577,45 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
         } catch (Exception e) {
             fabLogService.info(eqpId, "Error14", "MesLotTrackController.findOvenParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+
+    @RequestMapping(value = "/findLFANDHTRTParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findLFANDHTRTParam(Model model, @PathVariable String eqpId, @RequestParam String opId, @RequestParam String param,@RequestParam String lotNo,
+                                     HttpServletRequest request, HttpServletResponse response) {
+        log.info("findLFANDHTRTParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param15", "MesLotTrackController.findLFANDHTRTParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("LF1")) {
+                eqpId = "SIM-LF1";
+            }else if(eqpId.equals("LF2")){
+                eqpId = "SIM-LF2";
+            } else if(eqpId.equals("HTRT1")){
+                eqpId = "SIM-HTRT1";
+            } else if(eqpId.equals("HTRT2")){
+                eqpId = "SIM-HTRT2";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:" + eqpId;
+            }
+            String methodName = "findLFANDHTRTParam";
+            MesResult result = mesLotTrackService.findParam(eqpId,param,opId,lotNo,"");
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result15", "MesLotTrackController.findLFANDHTRTParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error15", "MesLotTrackController.findLFANDHTRTParam", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();
         }
     }
