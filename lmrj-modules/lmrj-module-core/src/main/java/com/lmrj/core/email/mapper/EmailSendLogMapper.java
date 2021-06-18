@@ -20,6 +20,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface EmailSendLogMapper extends BaseMapper<EmailSendLog> {
 
-    @Select("select * from email_send_log where send_data like '%#{data}%' order by create_date desc limit 1" )
+    @Select("select * from email_send_log where send_data like concat('%',#{data},'%') order by create_date desc limit 1" )
     EmailSendLog selectEmailLog(@Param("data") String data);
 }
