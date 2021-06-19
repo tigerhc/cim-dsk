@@ -67,7 +67,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-    url: jdbc:mysql://116.196.70.56:3316/dskcim?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true
+    url: jdbc:mysql://116.196.70.56:3316/dskcim9?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true
     password: Pp123!@#
 
     type: com.alibaba.druid.pool.DruidDataSource   #这里是配置druid连接池，以下都是druid的配置信息
@@ -193,3 +193,6 @@ aps:
 
 dsk:
   lineNo: APJ
+
+mapping:
+  jobenabled: false

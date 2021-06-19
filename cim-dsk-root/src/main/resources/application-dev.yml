@@ -71,7 +71,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
-    url: jdbc:mysql://localhost:3316/dskcim?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true
+    url: jdbc:mysql://10.160.144.9:3316/dskcim?useUnicode=true&characterEncoding=UTF-8
     password: root123
     type: com.alibaba.druid.pool.DruidDataSource   #这里是配置druid连接池，以下都是druid的配置信息
     filters: stat,wall,slf4j
@@ -192,3 +192,6 @@ aps:
 
 dsk:
   lineNo: APJ
+
+mapping:
+  jobenabled: false

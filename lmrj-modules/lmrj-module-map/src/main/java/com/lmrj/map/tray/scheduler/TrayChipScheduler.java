@@ -3,6 +3,7 @@ package com.lmrj.map.tray.scheduler;
 import com.lmrj.map.tray.entity.MapTrayChipLog;
 import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
+//import com.lmrj.map.tray.service.IMapTrayChipMovePseudoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,13 +21,15 @@ public class TrayChipScheduler {
     private IMapTrayChipMoveProcessService mapTrayChipMoveProcessService;
     @Autowired
     private IMapTrayChipLogService mpTrayChipLogService;
+//    @Autowired
+//    private IMapTrayChipMovePseudoService mapTrayChipMovePseudoService;
 
-    @Value("${dsk.lineNo}")
-    private String lineNo;
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
 
     @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipData(){
-        if("APJ".equals(lineNo)){
+        if(jobenabled){
             log.info("---------------------------------------------------执行执行TrayChipData开始");
             MapTrayChipLog traceLog = new MapTrayChipLog();
             try{
@@ -43,7 +46,7 @@ public class TrayChipScheduler {
 
     @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipErrData(){
-        if("APJ".equals(lineNo)){
+        if(jobenabled){
             log.info("---------------------------------------------------执行执行TrayChipErrData开始");
             MapTrayChipLog traceLog = new MapTrayChipLog();
             try{
@@ -59,7 +62,7 @@ public class TrayChipScheduler {
 
     @Scheduled(cron = "0 0/2 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void TrayChipNG(){
-        if("APJ".equals(lineNo)){
+        if(jobenabled){
             log.info("---------------------------------------------------执行执行TrayChipNG开始");
             MapTrayChipLog traceLog = new MapTrayChipLog();
             try{
@@ -73,4 +76,36 @@ public class TrayChipScheduler {
             }
         }
     }
+
+    private boolean flag = true;
+//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+//    @Scheduled(cron = "0/5 * * * * ?")
+//    public void tracePseudo(){
+//        if("APJ".equals(lineNo)){
+//            try{
+//                if(flag){
+//                    flag = false;
+//                    log.info("伪码追溯开始:APJ-DBCT-SORT2");
+//                    mapTrayChipMovePseudoService.tracePseudoData("APJ-DBCT-SORT2");
+//                }
+//            } catch (Exception e){
+//                log.error("伪码追溯遇到了一个异常",e);
+//            }
+//        }
+//    }
+
+//    @Scheduled(cron = "0/5 * * * * ?")
+//    public void tracePseudo(){
+//        if(jobenabled){
+//            try{
+//                if(flag){
+//                    flag = false;
+//                    log.info("伪码追溯开始:APJ-DBCB-SORT2");
+//                    mapTrayChipMovePseudoService.tracePseudoData("APJ-DBCB-SORT2");
+//                }
+//            } catch (Exception e){
+//                log.error("伪码追溯遇到了一个异常",e);
+//            }
+//        }
+//    }
 }
