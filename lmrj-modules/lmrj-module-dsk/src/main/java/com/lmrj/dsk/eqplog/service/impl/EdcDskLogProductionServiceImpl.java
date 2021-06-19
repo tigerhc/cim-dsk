@@ -417,7 +417,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
         String filePath = null;
         String fileBackUpPath = null;
         //获取表格title添加到lines中
-        lines.add(FileUtil.csvBom + "模腔1计数,模腔2计数,模腔3计数,模腔1 LF预热器温度L,模腔2 LF预热器温度L,模腔3 LF预热器温度L,模腔1 LF预热器温度R,模腔2 LF预热器温度R,模腔3 LF预热器温度R,模腔1夹持位置,模腔2夹持位置,模腔3夹持位置,模腔1夹持压力,模腔2夹持压力,模腔3夹持压力");
+        lines.add(FileUtil.csvBom + "事件发生时刻,模腔1计数,模腔2计数,模腔3计数,模腔1预热器L温度,模腔2预热器L温度,模腔3预热器L温度,模腔1预热器R温度,模腔2预热器R温度,模腔3预热器R温度,模具1温度上型,模具2温度上型,模具3温度上型,模具1温度下型,模具2温度下型,模具3温度下型");
         for (int i = 0; i < prolist.size(); i++) {
             pro = prolist.get(i);
             //拼写文件存储路径及备份路径
@@ -432,8 +432,12 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             }
             String startTimeString = DateUtil.formatDate(pro.getStartTime(), pattern2);
             //拼写当前行字符串
-            String line = startTimeString+","+pro.getParamValue();
-            lines.add(line);
+            if(null!=pro.getParamValue() && !"".equals(pro.getParamValue())){
+                String tempStrs[] = pro.getParamValue().split(",");
+                String temp=StringUtil.join(tempStrs,",",0,15);
+                String line = startTimeString+","+temp;
+                lines.add(line);
+            }
         }
         //创建文件路径
         if(fileBackUpPath!=null && filePath!=null){
