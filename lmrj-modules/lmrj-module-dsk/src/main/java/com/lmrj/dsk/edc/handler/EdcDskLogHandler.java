@@ -500,7 +500,7 @@ public class EdcDskLogHandler {
         fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数：" + edcDskLogOperationlist.size(), "", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-            edcDskLogOperationlist.forEach(edcDskLogOperation -> {
+            for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
                 EdcDskLogProduction pro = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
                 if (pro != null) {
                     edcDskLogOperation.setLotYield(pro.getLotYield());
@@ -523,7 +523,7 @@ public class EdcDskLogHandler {
                         edcDskLogOperation.setEventDetail("IDLE(制品等待)");
                     }
                 }
-            });
+            }
         }
         try {
             edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);

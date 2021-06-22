@@ -27,6 +27,8 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
 
     List<Map> selectDaypdt(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
 
+    List<Map> selectDaypdtWB(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode);
+
     List<Map> selectDaypdtById(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") List<String> eqpId);
 
     List<Map> selectDaypdtByIds(@Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("lineNo") String lineNo, @Param("stationCode") String stationCode,@Param("eqpId") List<String> eqpId);
