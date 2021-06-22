@@ -107,7 +107,12 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
 
     @Override
     public List<Map> pdtChart(String beginTime, String endTime, String lineNo, String stationCode) {
-        List<Map> yieldDayList = baseMapper.selectDaypdt(beginTime, endTime, lineNo, stationCode);
+        List<Map> yieldDayList = new ArrayList<>();
+        if(stationCode.equals("WireBond")){
+            yieldDayList = baseMapper.selectDaypdtWB(beginTime, endTime, lineNo, stationCode);
+        }else {
+            yieldDayList = baseMapper.selectDaypdt(beginTime, endTime, lineNo, stationCode);
+        }
         List<ApsPlanPdtYieldDetail> apsPlanPdtYieldDetails = apsPlanPdtYieldDetailService.selectDayYield(beginTime, endTime, lineNo);
         Map<String, Integer> planYieldmap = Maps.newHashMap();
         for (ApsPlanPdtYieldDetail apsPlanPdtYieldDetail : apsPlanPdtYieldDetails) {
