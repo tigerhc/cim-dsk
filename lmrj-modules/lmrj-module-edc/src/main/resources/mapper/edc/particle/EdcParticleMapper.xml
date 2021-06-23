@@ -31,7 +31,7 @@
            from fab_equipment
           where del_flag='0'
             and temp_flag='2'
-          order by eqp_id
+          order by eqp_no
     </select>
 
     <!-- <insert id="backData" >
