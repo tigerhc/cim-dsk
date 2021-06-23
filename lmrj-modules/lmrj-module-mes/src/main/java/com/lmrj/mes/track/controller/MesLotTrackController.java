@@ -554,6 +554,12 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             if (eqpId.equals("APJ-OVEN1")) {
                 eqpId = "APJ-OVEN1";
+            }else if(eqpId.equals("SIM-OVEN1")){
+                eqpId = "SIM-OVEN1";
+            } else if(eqpId.equals("SIM-OVEN2")){
+                eqpId = "SIM-OVEN2";
+            }  else if(eqpId.equals("SMA-OVEN1")){
+                eqpId = "SMA-OVEN1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
