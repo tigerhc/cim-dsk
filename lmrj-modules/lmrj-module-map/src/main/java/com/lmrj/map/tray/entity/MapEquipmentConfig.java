@@ -23,7 +23,6 @@ import java.util.Date;
 @SuppressWarnings("serial")
 @Data
 public class MapEquipmentConfig extends BaseDataEntity {
-
     /**设备ID*/
     @TableField(value = "eqp_id")
     private String eqpId;
@@ -32,6 +31,20 @@ public class MapEquipmentConfig extends BaseDataEntity {
     private String downEqpId;
     /**设备类型*/
     @TableField(value = "eqp_type")
-    private Byte eqpType;
-
+    private String eqpType;
+    /**子线别*/
+    @TableField(value = "sub_line_no")
+    private String subLineNo;
+    /**子线别头或尾*/
+    @TableField(value = "sub_line_type")
+    private String subLineType;
+    /**最小间隔时间*/
+    @TableField(value = "interval_time_min")
+    private long intervalTimeMin;
+    /**最大间隔时间*/
+    @TableField(value = "interval_time_max")
+    private long intervalTimeMax;
+    /**是否同批次*/
+    @TableField(value = "same_lot_flag")
+    private String sameLotFlag;
 }

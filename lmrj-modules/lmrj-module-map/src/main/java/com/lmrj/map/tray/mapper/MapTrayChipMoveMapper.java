@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.lmrj.map.tray.entity.MapEquipmentConfig;
 import com.lmrj.map.tray.entity.MapTrayChipMove;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -82,4 +83,29 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     //凌欧设备的生产条件
     String findLOProParam(Map<String, Object> param);
+
+    //伪码追溯相关
+    List<MapTrayChipMove> getPseudoStart(String eqpId);
+
+    List<MapTrayChipMove> getPseudoLine(MapTrayChipMove param);
+
+    List<MapEquipmentConfig> getMapEqpConfig();
+
+    List<MapTrayChipMove> findBeforeLineEnd(Map<String, Object> param);
+
+    /**更新上一段的伪码数据的状态为8*/
+    void updateBeforeTempMapFlag(String PseudoCode);//上一段的PseudoCode
+    /**更新状态为8的数据的伪码是PseudoCode*/
+    void updateBeforePseudoCode(String PseudoCode);//最新的PseudoCode
+
+    List<MapTrayChipMove> getHB2Start();
+    List<MapTrayChipMove> getBeforeData(MapTrayChipMove param);
+
+    List<MapEquipmentConfig> getHB2EqpConfig();
+
+    List<MapTrayChipMove> getHB2Line(MapTrayChipMove param);
+
+    void HB2Finish(Map<String, Object> param);
+
+    List<MapEquipmentConfig> getCfgEqpForLine(String eqpId);
 }

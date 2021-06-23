@@ -34,6 +34,9 @@ public class MapTrayChipMove {
     private String productionNo;
     @TableField(value = "eqp_model_name")
     private String eqpModelName;
+    /** 伪码 */
+    @TableField(value = "pseudo_code")
+    private String pseudoCode;
     /** 批次号 */
     @TableField(value = "lot_no")
     private String lotNo;
@@ -85,5 +88,16 @@ public class MapTrayChipMove {
     private String lmtTime;
 
     @TableField(exist = false)
-    private String mapLot;
+    private String sameLotFlag;
+    /**子线别头或尾*/
+    @TableField(exist = false)
+    private String subLineType;
+    /**最小间隔时间*/
+    @TableField(exist = false)
+    private long intervalTimeMin;
+    /**最大间隔时间*/
+    @TableField(exist = false)
+    private long intervalTimeMax;
+    @TableField(exist = false)
+    private String fromEqpId;
 }
