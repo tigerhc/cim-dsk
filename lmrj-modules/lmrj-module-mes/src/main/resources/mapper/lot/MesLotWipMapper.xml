@@ -54,6 +54,7 @@
               select production_name, order_no, lot_no ,station_id step_id  ,station_code step_code ,
                      case when  sum(lot_yield)=0 then sum(lot_yield_eqp) else sum(lot_yield)   end  lot_yield
               from mes_lot_wip
+              where del_flag = 0
               group by production_name, order_no, lot_no ,station_id,station_code
     </select>
 

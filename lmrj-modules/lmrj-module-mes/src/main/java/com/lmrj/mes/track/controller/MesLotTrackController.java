@@ -141,7 +141,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-
             String productionNo = lotNos[0].substring(0, 7); //5002915
             String lotNo = lotNos[0].substring(7, 12); //0702D
             String orderNo = lotNos[1]; //37368342
@@ -150,7 +149,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 String lotorder2 = trackinfos2[0];
                 String[] lotNos2 = lotorder2.split("_");
                 String lotNo2 = lotNos2[0].substring(7, 12);
-                lotNo = lotNo + "|" + lotNo2;
+                lotNo = lotNo + "~" + lotNo2;
             }
             String eqpId1 = eqpId;
             if (eqpId.contains("SIM-OVEN1")) {
