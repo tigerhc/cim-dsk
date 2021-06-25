@@ -3,12 +3,12 @@
 <mapper namespace="com.lmrj.edc.particle.mapper.EdcParticleMapper" >
     <resultMap id="particleMap" type="com.lmrj.edc.particle.entity.ParticleDataBean">
         <result property="eqpId" column="eqp_id"/>
-        <result property="particle03His" column="particle03_his"/>
-        <result property="particle05His" column="particle05_his"/>
-        <result property="particle1His" column="particle1_his"/>
-        <result property="particle3His" column="particle3_his"/>
-        <result property="particle5His" column="particle5_his"/>
-        <result property="particle10His" column="particle10_his"/>
+        <result property="particle03" column="particle03"/>
+        <result property="particle05" column="particle05"/>
+        <result property="particle1" column="particle1"/>
+        <result property="particle3" column="particle3"/>
+        <result property="particle5" column="particle5"/>
+        <result property="particle10" column="particle10"/>
         <result property="temp" column="temp"/>
         <result property="humidity" column="humidity"/>
         <result property="samplingFlow" column="sampling_flow"/>
@@ -17,7 +17,7 @@
         <result property="startTimeStr" column="start_time"/>
     </resultMap>
     <select id="getList" parameterType="java.util.Map" resultMap="particleMap">
-        select eqp_id, particle03_his, particle05_his, particle1_his, particle3_his, particle5_his, particle10_his, temp, humidity, sampling_flow, wind_speed, pressure_diff, start_time
+        select eqp_id, particle03, particle05, particle1, particle3, particle5, particle10, temp, humidity, sampling_flow, wind_speed, pressure_diff, start_time
         from edc_particle_record
         where eqp_id=#{eqpId}
         and start_time between #{beginTime} and #{endTime}
