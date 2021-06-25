@@ -18,3 +18,18 @@ ADD COLUMN `sub_line_type` char(1) COMMENT '子线别头或尾,S:start;E:end' AF
 ADD COLUMN `interval_time_min` int(11) COMMENT '作业间隔最小时间' AFTER `sub_line_type`,
 ADD COLUMN `interval_time_max` int(11) COMMENT '作业间隔最大时间' AFTER `interval_time_min`,
 ADD COLUMN `same_lot_flag` char(1) COMMENT '是否同批次' AFTER `interval_time_max`;
+
+-- 2021-06-25 尘埃粒子计数器表结构调整
+ALTER TABLE `edc_particle_record`
+DROP COLUMN `particle03_cur`,
+DROP COLUMN `particle05_cur`,
+DROP COLUMN `particle1_cur`,
+DROP COLUMN `particle3_cur`,
+DROP COLUMN `particle5_cur`,
+DROP COLUMN `particle10_cur`,
+CHANGE COLUMN `particle03_his` `particle03`  int(11) NULL DEFAULT NULL COMMENT '0.3μm上个周期完整值' AFTER `eqp_id`,
+CHANGE COLUMN `particle05_his` `particle05`  int(11) NULL DEFAULT NULL COMMENT '0.5μm上个周期完整值' AFTER `particle03`,
+CHANGE COLUMN `particle1_his` `particle1`  int(11) NULL DEFAULT NULL COMMENT '1μm上个周期完整值' AFTER `particle05`,
+CHANGE COLUMN `particle3_his` `particle3`  int(11) NULL DEFAULT NULL COMMENT '3μm上个周期完整值' AFTER `particle1`,
+CHANGE COLUMN `particle5_his` `particle5`  int(11) NULL DEFAULT NULL COMMENT '5μm上个周期完整值' AFTER `particle3`,
+CHANGE COLUMN `particle10_his` `particle10`  int(11) NULL DEFAULT NULL COMMENT '10μm上个周期完整值' AFTER `particle5`;
