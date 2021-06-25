@@ -330,6 +330,7 @@ public class EdcDskLogHandler {
             if(fabStatus!=null){
                 fabStatus.setLotYield(allProList.size());
                 fabStatus.setRecipeCode(lastPro.getRecipeCode());
+                fabStatus.setDayYield(lastPro.getDayYield());
                 fabEquipmentStatusService.updateById(fabStatus);
             }
         } catch (Exception e) {
@@ -755,6 +756,7 @@ public class EdcDskLogHandler {
                 }
             }
             edcDskLogRecipeService.insert(edcDskLogRecipe);
+            fabEquipmentStatusService.updateYield(edcDskLogRecipe.getEqpId(),"",edcDskLogRecipe.getRecipeCode(),-1,-1);
         });
     }
 
