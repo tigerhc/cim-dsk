@@ -10,6 +10,7 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
+import com.lmrj.mes.measure.controller.MyExcelExportUtil;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -149,7 +150,7 @@ public class MsMeasureKongdongController extends BaseCRUDController<MsMeasureKon
                 dataList.add(data1);
             }
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测空洞"+productionName.replace("J.",""),"量测详细信息"),keyList,dataList);
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("量测空洞"+productionName.replace("J.",""),"量测详细信息"),keyList,dataList, 3);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();

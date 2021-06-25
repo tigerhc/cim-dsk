@@ -88,7 +88,7 @@ public class MeasureSxController {
                 dataList = getGiDataList(productionName, startDate, endDate, type, lineNo);
             }
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测分离"+productionName,"量测详细信息"),keyList,dataList);
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("量测分离"+productionName,"量测详细信息"),keyList,dataList, 4);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();
