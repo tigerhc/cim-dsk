@@ -61,7 +61,11 @@ public class MeasureSxController {
             } else if (lineNo.contains("SIM")) {
                 return measureSxService.findSimNumber(productionName, number, startDate, endDate, type, local);
             } else {
-                return measureSxService.findGiNumber(productionName, lineNo, startDate, endDate, type, local);
+                if(StringUtil.isEmpty(local)){
+                    return measureSxService.findGiNumberAll(productionName, lineNo, startDate, endDate, type);
+                } else {
+                    return measureSxService.findGiNumber(productionName, lineNo, startDate, endDate, type, local);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
