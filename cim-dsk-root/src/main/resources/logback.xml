@@ -138,7 +138,7 @@
             <charset>utf-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
@@ -153,7 +153,7 @@
         </encoder>
         <!-- 此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
     </appender>
 
@@ -179,7 +179,7 @@
     </appender>
 
     <!-- MQ单独配置 -->
-    <logger name="com.lmrj.core.mq" level="DEBUG" additivity="false">
+    <logger name="com.lmrj.core.mq" level="INFO" additivity="false">
         <appender-ref ref="rollingFile_mq"/>
     </logger>
     <!--<logger name="java.sql.Connection" level="DEBUG"/>-->
@@ -193,7 +193,7 @@
     </logger>
 
     <!-- 生产环境，将此级别配置为适合的级别(至少WARN)，以免日志文件太多或影响程序性能 -->
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="FILEDEBUG"/>
         <appender-ref ref="stdout"/>
 
