@@ -571,7 +571,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             } else {
                 return "param error!:" + param;
             }
-
+            if("".equals(lotNo) || lotNo == null){
+                lotNo = "test";
+            }
             MesResult result = mesLotTrackService.findApjParam(eqpId+"_"+lotNo, methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "Result14", "MesLotTrackController.findOvenParam", jo.toString(), eqpId, "wangdong");//日志记录
