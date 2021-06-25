@@ -204,7 +204,7 @@ public class EdcDskLogHandler {
                 }
             }
             FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-            if(!"RUN".equals(fabStatus.getEqpStatus())){
+            if(!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")){
                 EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
                 if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
                     fabStatus.setEqpStatus("RUN");
