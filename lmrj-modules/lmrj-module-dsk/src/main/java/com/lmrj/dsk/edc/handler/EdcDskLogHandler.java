@@ -329,6 +329,7 @@ public class EdcDskLogHandler {
             FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
             if(fabStatus!=null){
                 fabStatus.setLotYield(allProList.size());
+                fabStatus.setRecipeCode(lastPro.getRecipeCode());
                 fabEquipmentStatusService.updateById(fabStatus);
             }
         } catch (Exception e) {
