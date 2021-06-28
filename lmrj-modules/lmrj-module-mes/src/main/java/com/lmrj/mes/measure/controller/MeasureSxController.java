@@ -61,7 +61,11 @@ public class MeasureSxController {
             } else if (lineNo.contains("SIM")) {
                 return measureSxService.findSimNumber(productionName, number, startDate, endDate, type, local);
             } else {
-                return measureSxService.findGiNumber(productionName, lineNo, startDate, endDate, type, local);
+                if(StringUtil.isEmpty(local)){
+                    return measureSxService.findGiNumberAll(productionName, lineNo, startDate, endDate, type);
+                } else {
+                    return measureSxService.findGiNumber(productionName, lineNo, startDate, endDate, type, local);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -402,39 +406,39 @@ public class MeasureSxController {
         keyList.add(key5);
         ExcelExportEntity key6 = new ExcelExportEntity("毛刺","7");
         keyList.add(key6);
-        ExcelExportEntity key7 = new ExcelExportEntity("1:1PIN","8");
+        ExcelExportEntity key7 = new ExcelExportEntity("正面弯曲1(1:1PIN)","8");
         keyList.add(key7);
-        ExcelExportEntity key8 = new ExcelExportEntity("1:2PIN","9");
+        ExcelExportEntity key8 = new ExcelExportEntity("正面弯曲2(1:2PIN)","9");
         keyList.add(key8);
-        ExcelExportEntity key9 = new ExcelExportEntity("1:3PIN","10");
+        ExcelExportEntity key9 = new ExcelExportEntity("正面弯曲3(1:3PIN)","10");
         keyList.add(key9);
-        ExcelExportEntity key10 = new ExcelExportEntity("1:4PIN","11");
+        ExcelExportEntity key10 = new ExcelExportEntity("正面弯曲4(1:4PIN)","11");
         keyList.add(key10);
-        ExcelExportEntity key11 = new ExcelExportEntity("1:5PIN","12");
+        ExcelExportEntity key11 = new ExcelExportEntity("正面弯曲5(1:5PIN)","12");
         keyList.add(key11);
-        ExcelExportEntity key12 = new ExcelExportEntity("1:6PIN","13");
+        ExcelExportEntity key12 = new ExcelExportEntity("正面弯曲6(1:6PIN)","13");
         keyList.add(key12);
-        ExcelExportEntity key13 = new ExcelExportEntity("1:1PIN-2PIN","14");
+        ExcelExportEntity key13 = new ExcelExportEntity("横筋间距1_2(1:1PIN-2PIN)","14");
         keyList.add(key13);
-        ExcelExportEntity key14 = new ExcelExportEntity("1:2PIN-3PIN","15");
+        ExcelExportEntity key14 = new ExcelExportEntity("横筋间距2_3(1:2PIN-3PIN)","15");
         keyList.add(key14);
-        ExcelExportEntity key15 = new ExcelExportEntity("1:3PIN-4PIN","16");
+        ExcelExportEntity key15 = new ExcelExportEntity("横筋间距3_4(1:3PIN-4PIN)","16");
         keyList.add(key15);
-        ExcelExportEntity key16 = new ExcelExportEntity("1:4PIN-5PIN","17");
+        ExcelExportEntity key16 = new ExcelExportEntity("横筋间距4_5(1:4PIN-5PIN)","17");
         keyList.add(key16);
-        ExcelExportEntity key17 = new ExcelExportEntity("1:5PIN-6PIN","18");
+        ExcelExportEntity key17 = new ExcelExportEntity("横筋间距5_6(1:5PIN-6PIN)","18");
         keyList.add(key17);
-        ExcelExportEntity key18 = new ExcelExportEntity("2:1PIN","19");
+        ExcelExportEntity key18 = new ExcelExportEntity("侧面弯曲1(2:1PIN)","19");
         keyList.add(key18);
-        ExcelExportEntity key19 = new ExcelExportEntity("2:2PIN","20");
+        ExcelExportEntity key19 = new ExcelExportEntity("侧面弯曲2(2:2PIN)","20");
         keyList.add(key19);
-        ExcelExportEntity key20 = new ExcelExportEntity("2:3PIN","21");
+        ExcelExportEntity key20 = new ExcelExportEntity("侧面弯曲3(2:3PIN)","21");
         keyList.add(key20);
-        ExcelExportEntity key21 = new ExcelExportEntity("2:4PIN","22");
+        ExcelExportEntity key21 = new ExcelExportEntity("侧面弯曲4(2:4PIN)","22");
         keyList.add(key21);
-        ExcelExportEntity key22 = new ExcelExportEntity("2:5PIN","23");
+        ExcelExportEntity key22 = new ExcelExportEntity("侧面弯曲5(2:5PIN)","23");
         keyList.add(key22);
-        ExcelExportEntity key23 = new ExcelExportEntity("2:6PIN","24");
+        ExcelExportEntity key23 = new ExcelExportEntity("侧面弯曲6(2:6PIN)","24");
         keyList.add(key23);
         return keyList;
     }

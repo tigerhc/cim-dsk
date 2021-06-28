@@ -14,4 +14,6 @@ public interface MeasureSxService extends ICommonService<MeasureSx> {
     List findSimNumber(String productionName, String number,String startDate, String endDate,String type,String local);
 
     List findGiNumber(String productionName, String number,String startDate, String endDate,String type,String local);
+
+    List findGiNumberAll(String productionName, String number,String startDate, String endDate,String type);
 }

@@ -81,8 +81,7 @@ public class TrayChipScheduler {
         }
     }
 
-//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0 0/45 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
     public void tracePseudo(){
         if(jobenabled){
             if(!pseduoDoingFlag){
