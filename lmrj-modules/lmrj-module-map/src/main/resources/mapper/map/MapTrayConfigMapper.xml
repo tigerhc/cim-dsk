@@ -24,5 +24,6 @@
 		select eqp_id as "eqpId", eqp_name as "eqpName"
 		from fab_equipment
 		where tray_flag='Y'
+		order by sort_no
 	</select>
 </mapper>
