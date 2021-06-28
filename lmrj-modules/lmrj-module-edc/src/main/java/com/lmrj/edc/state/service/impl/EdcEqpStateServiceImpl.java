@@ -149,10 +149,19 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 }*/
             }
         }
-        if (CollectionUtils.isEmpty(eqpStateList)) {
+        if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size()==0) {
+            EdcEqpState edcEqpState = new EdcEqpState();
+            edcEqpState.setEqpId(eqpId);
+            edcEqpState.setStartTime(startTime);
+            EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+            if(lastData == null){
+                edcEqpState.setState("IDLE");
+            }else {
+                edcEqpState.setState(lastData.getState());
+            }
+            baseMapper.insert(edcEqpState);
             return 0;
         } else {
-
             if (neweqpStateList.size() > 0) {
                 if (this.updateBatchById(neweqpStateList,1000)) {
                     log.info("edc_eqp_state更新成功");

@@ -2,6 +2,7 @@ package com.lmrj.cim.quartz;
 
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.edc.state.service.impl.EdcEqpStateServiceImpl;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class EqpStateTask {
     private IEdcEqpStateService edcEqpStateService;
     @Autowired
     EdcEqpStateServiceImpl edcEqpStateServiceImpl;
+    @Autowired
+    IFabEquipmentService fabEquipmentService;
     /**
      * 计算当天的设备OEE数据
      * 每隔10分钟一次
@@ -41,7 +44,8 @@ public class EqpStateTask {
             cal.add(Calendar.DAY_OF_MONTH, 1);
             Date endTime = cal.getTime();
             log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-            List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+            //List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+            List<String> eqpIdList=fabEquipmentService.findEqpIdList();
             for (String eqpId : eqpIdList) {
                 edcEqpStateService.syncEqpSate(startTime, endTime,eqpId);
             }
