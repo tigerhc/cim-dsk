@@ -64,15 +64,13 @@ public class TrayChipScheduler {
         }
     }
 
-//    @Scheduled(cron = "0 0/2 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+    @Scheduled(cron = "0 0/30 * * * ?") // 不良品追溯 30分钟
     public void TrayChipNG(){
         if(jobenabled){
             log.info("---------------------------------------------------执行执行TrayChipNG开始");
             MapTrayChipLog traceLog = new MapTrayChipLog();
             try{
-                //是否正在追溯中【正在追溯中的特点是，在log表中有一条记录只有开始时间，没有结束时间】
-                traceLog.setTrayCode(IMapTrayChipMoveProcessService.processNgDataFlag);
-                mapTrayChipMoveProcessService.traceData(traceLog, IMapTrayChipMoveProcessService.processNgDataFlag);
+                mapTrayChipMovePseudoService.traceNGData();
             } catch (Exception e){
                 log.error("追溯NG数据时遇到了一个异常",e);
                 traceLog.setEndTime(new Date());

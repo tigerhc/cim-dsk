@@ -94,9 +94,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 }
             }
         }
-        if(traceLogs.size()>0){
-            mpTrayChipLogService.insertBatch(traceLogs, 1000);
-        }
+        saveTracLog(traceLogs);
     }
 
     /** 获得每段线中的结束点的设备
@@ -251,6 +249,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 }
             }
         }
+        saveTracLog(traceLogs);
     }
 
     private String traceBeforeLine(Map<String, Object> beforeLineParam, Date date){
@@ -272,5 +271,114 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
         traceLog.setEndTime(new Date());
         traceLog.setRemarks(errMsg);
         list.add(traceLog);
+    }
+
+    @Override
+    public void traceNGData(){
+        List<MapTrayChipLog> traceLogs = new ArrayList<>();
+        List<MapTrayChipMove> ngStartList = baseMapper.findNGStart();
+        String spEqpId = "APJ-VI1,APJ-IGBT-SORT2,APJ-FRD-SORT2,APJ-HB1-SORT1,APJ-HB2-SORT1";//特殊设备,本段第一个点设备
+        String firstEqpId = "APJ-IGBT-SORT1,APJ-FRD-SORT1,APJ-DBCT-SORT1,APJ-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
+        if(ngStartList!=null && ngStartList.size()>0){
+            //先追溯本段数据,然后追上一段伪码成功的数据,VI不需要追本段数据,
+            for(MapTrayChipMove ngStart: ngStartList){//(一)组立机的不良的追溯是需要跟良品追溯一样的,追溯制品码;(二)中间段的ng不追,因为会在对应的移栽机追溯到
+                if(spEqpId.contains(ngStart.getEqpId())){//段首位置上的设备
+                    Map<String, Object> beforeLineParam = new HashMap<>();
+                    beforeLineParam.put("eqpId", "APJ-HB1-SORT2");//beforeLineParam 就是 APJ-HB1-SORT2
+                    beforeLineParam.put("fromTrayId", ngStart.getFromEqpId());
+                    beforeLineParam.put("fromX", ngStart.getFromX());
+                    beforeLineParam.put("fromY", ngStart.getFromY());
+                    //获得上段伪码
+                    String viPseudoCode = traceBeforeLine(beforeLineParam, ngStart.getStartTime());
+                    //更新伪码段数据的chip_id
+                    Map<String, Object> finishParam = new HashMap<>();
+                    finishParam.put("chipId", ngStart.getChipId());
+                    finishParam.put("pseudoCode", viPseudoCode);
+                    baseMapper.HB2Finish(finishParam);
+                } else if(firstEqpId.contains(ngStart.getEqpId())){//第一段数据
+                    //追溯本段
+                    List<MapTrayChipMove> sublineData = traceSubLine(ngStart,true);
+                    if(sublineData==null){
+                        addLog(traceLogs,"追溯NG异常,缺少数据,数据Id:"+ngStart.getId());
+                        continue;
+                    }
+                    //更新本段数据
+                    sublineData.add(ngStart);
+                    ngStart.setMapFlag(2);
+                    updateBatchById(sublineData, 100);
+                } else if(ngStart.getEqpId().contains("SORT")){//中间段结尾数据
+                    //追溯本段
+                    List<MapTrayChipMove> sublineData = traceSubLine(ngStart,true);
+                    if(sublineData==null){
+                        addLog(traceLogs,"追溯NG异常,缺少数据,数据Id:"+ngStart.getId());
+                        continue;
+                    }
+                    //获得上段伪码
+                    Map<String, Object> beforeLineParam = new HashMap<>();
+                    beforeLineParam.put("eqpId", "APJ-HB1-SORT2");//beforeLineParam 就是 APJ-HB1-SORT2
+                    beforeLineParam.put("fromTrayId", ngStart.getFromEqpId());
+                    beforeLineParam.put("fromX", ngStart.getFromX());
+                    beforeLineParam.put("fromY", ngStart.getFromY());
+                    String viPseudoCode = traceBeforeLine(beforeLineParam, ngStart.getStartTime());
+                    if(StringUtil.isEmpty(viPseudoCode)){
+                        addLog(traceLogs,"追溯NG异常,上段数据没有找到,数据Id:"+ngStart.getId());
+                        continue;
+                    }
+                    //更新伪码段数据的chip_id
+                    Map<String, Object> finishParam = new HashMap<>();
+                    finishParam.put("chipId", ngStart.getChipId());
+                    finishParam.put("pseudoCode", viPseudoCode);
+                    baseMapper.HB2Finish(finishParam);
+                    //更新本段数据
+                    sublineData.add(ngStart);
+                    ngStart.setMapFlag(2);
+                    updateBatchById(sublineData, 100);
+                }
+            }
+        }
+        saveTracLog(traceLogs);
+    }
+
+    /** 追溯本段数据
+     * startData : 本段数据尾点数据
+     * ngFlag:true 是NG,false:是伪码追溯
+     * 注意: VI 不会进来
+     */
+    private List<MapTrayChipMove> traceSubLine(MapTrayChipMove startData, boolean ngFlag){
+        List<MapTrayChipMove> pseudoData = new ArrayList<>();
+        List<MapEquipmentConfig> lineCfgEqp = baseMapper.getCfgEqpForLine(startData.getEqpId());
+        List<MapTrayChipMove> lineData = baseMapper.getPseudoLine(startData);
+        Date curDate = startData.getStartTime();
+        for(MapEquipmentConfig cfgEqp : lineCfgEqp){
+            boolean unfind = true;
+            for(MapTrayChipMove item : lineData){
+                //符合条件是时间间隔在cfgEqp中设置的间隔内(sql中以满足坐标相等)
+                long timeChk = TraceDateUtil.getDiffSec(curDate, item.getStartTime());
+                if(cfgEqp.getEqpId().equals(item.getEqpId()) && timeChk < cfgEqp.getIntervalTimeMax()){
+                    unfind = false;
+                    curDate = item.getStartTime();
+                    if(ngFlag){
+                        item.setChipId(startData.getChipId());
+                        item.setMapFlag(2);
+                    } else {
+                        item.setPseudoCode(startData.getPseudoCode());
+                        item.setMapFlag(6);
+                    }
+                    pseudoData.add(item);
+                    break;
+                }
+            }
+            if(unfind){
+                return null;
+            }
+        }
+        return pseudoData;
+    }
+
+    //保存追溯日志信息
+    private void saveTracLog(List<MapTrayChipLog> traceLogs){
+        if(traceLogs.size()>0){
+            mpTrayChipLogService.insertBatch(traceLogs, 1000);
+        }
     }
 }
