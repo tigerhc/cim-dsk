@@ -15,4 +15,6 @@ public interface IMapTrayChipMovePseudoService extends ICommonService<MapTrayChi
     List<MapEquipmentConfig> getLineEndEqp();
 
     void traceHB2();
+
+    void traceNGData();
 }

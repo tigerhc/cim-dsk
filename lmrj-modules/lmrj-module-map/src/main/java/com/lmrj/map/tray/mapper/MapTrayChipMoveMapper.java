@@ -108,4 +108,6 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     void HB2Finish(Map<String, Object> param);
 
     List<MapEquipmentConfig> getCfgEqpForLine(String eqpId);
+
+    List<MapTrayChipMove> findNGStart();
 }

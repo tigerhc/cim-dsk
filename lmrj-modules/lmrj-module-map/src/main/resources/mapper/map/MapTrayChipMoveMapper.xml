@@ -474,4 +474,10 @@
 		 and eqp_id != #{eqpId}
 		 order by sub_line_sort_no
 	</select>
+	<select id="findNGStart" resultMap="TrayMap">
+		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no
+		from map_tray_chip_move m
+		where m.judge_result='N' and map_flag='0'
+		order by m.start_time
+	</select>
 </mapper>
