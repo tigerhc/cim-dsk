@@ -13,6 +13,8 @@ import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.mes.kongdong.entity.MsMeasureThrust;
+import com.lmrj.mes.kongdong.service.IMsMeasureThrustService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
@@ -53,7 +55,8 @@ import java.util.Map;
 @LogAspectj(title = "mes_lot_track")
 @Slf4j
 public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
-
+    @Autowired
+    IMsMeasureThrustService iMsMeasureThrustService;
     @Autowired
     IMesLotTrackService mesLotTrackService;
     @Autowired
@@ -930,10 +933,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
 
-    @RequestMapping(value = "/thrustAndPullDataUpload", method = {RequestMethod.GET, RequestMethod.POST})
-    public String thrustAndPullDataUpload(@RequestParam String trackinfo, @RequestParam String thrust, @RequestParam String pattern, @RequestParam String pull, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/thrustAndPullDataUpload/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String thrustAndPullDataUpload(@PathVariable String eqpId,@RequestParam String trackinfo, @RequestParam String thrust, @RequestParam String pull, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
-        String eventDesc = "{\"thrust\":\"" + thrust + "\",\"pattern\":\"" + pattern+ "\",\"pull\":\"" + pull + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\"}";//日志记录参数
+        String eventDesc = "{\"thrust\":\"" + thrust + "\",\"pull\":\"" + pull + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\"}";//日志记录参数
         fabLogService.info("thrustAndPull", "Param6", "MesLotTrackController.thrustAndPullDataUpload", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
@@ -944,11 +947,21 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionName = trackinfos[1].trim();
             productionName = productionName.replace("_", " ");
             String[] lotNos = lotorder.split("_");
-
+            String wbNo = eqpId;
             String productionNo = lotNos[0].substring(0, 7); //5002915
             String lotNo = lotNos[0].substring(7, 12); //0702D
             String orderNo = lotNos[1]; //37368342
-            log.info("lotNo:"+lotNo+"  productionNo:"+productionNo+"  productionName:"+productionName+"  thrust:"+thrust+"  pattern:"+pattern+"  pull:"+pull);
+            log.info("lotNo:"+lotNo+"  productionNo:"+productionNo+"  productionName:"+productionName+"  thrust:"+thrust+"  pull:"+pull);
+            MsMeasureThrust msMeasureThrust = new MsMeasureThrust();
+            msMeasureThrust.setEqpId(wbNo);
+            msMeasureThrust.setLineNo(productionName);
+            msMeasureThrust.setLotNo(lotNo);
+            msMeasureThrust.setProductionName(productionName);
+            msMeasureThrust.setProductionNo(productionNo);
+            msMeasureThrust.setPull(pull);
+            msMeasureThrust.setThrust(thrust);
+            msMeasureThrust.setCreateBy("GXJ");
+            iMsMeasureThrustService.insert(msMeasureThrust);
             fabLogService.info("thrustAndPull", "Result6", "MesLotTrackController.thrustAndPullDataUpload","数据上传成功", trackinfo, "wangdong");//日志记录
             return "Y";
         } catch (Exception e) {
