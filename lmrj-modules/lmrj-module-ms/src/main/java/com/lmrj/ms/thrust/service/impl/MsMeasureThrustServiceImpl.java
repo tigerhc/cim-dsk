@@ -20,4 +20,9 @@ public class MsMeasureThrustServiceImpl extends CommonServiceImpl<MsMeasureThrus
     public List<MsMeasureThrust> findDataByTime(String produictionName , String startTime , String endTime){
         return baseMapper.findDataByTime(produictionName,startTime,endTime);
     }
+
+    @Test
+    public List<String> findProductionNameList(String lineNo){
+        return baseMapper.findProductionNameList(lineNo);
+    }
 }

@@ -17,6 +17,7 @@ import java.util.List;
  * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
  */
 public interface IMsMeasureThrustService extends ICommonService<MsMeasureThrust> {
+    List<String> findProductionNameList(String lineNo);
 
     List<MsMeasureThrust> findDataByTime(String produictionName , String startTime , String endTime);
 }
