@@ -33,3 +33,11 @@ CHANGE COLUMN `particle1_his` `particle1`  int(11) NULL DEFAULT NULL COMMENT '1�
 CHANGE COLUMN `particle3_his` `particle3`  int(11) NULL DEFAULT NULL COMMENT '3μm上个周期完整值' AFTER `particle1`,
 CHANGE COLUMN `particle5_his` `particle5`  int(11) NULL DEFAULT NULL COMMENT '5μm上个周期完整值' AFTER `particle3`,
 CHANGE COLUMN `particle10_his` `particle10`  int(11) NULL DEFAULT NULL COMMENT '10μm上个周期完整值' AFTER `particle5`;
+
+-- 2021-06-29 更新所有子表的索引
+ALTER TABLE `edc_dsk_log_recipe_body`  ADD INDEX `recipe_log_id_ix1` (`recipe_log_id`) ;
+ALTER TABLE `edc_param_define_model`  ADD INDEX `param_define_id_idx1` (`param_define_id`) ;
+ALTER TABLE `edc_param_record_dtl`  ADD INDEX `record_id_idx1` (`record_id`) ;
+ALTER TABLE `ms_measure_config_detail`  ADD INDEX `ms_config_id_idx1` (`ms_config_id`) ;
+ALTER TABLE `ms_measure_record_detail`  ADD INDEX `ms_record_id_idx1` (`ms_record_id`) ;
+ALTER TABLE `edc_ams_define`  ADD INDEX `eqp_model_id_idx1` (`eqp_model_id`) ;
