@@ -1,7 +1,9 @@
-package com.lmrj.mes.kongdong.service;
+package com.lmrj.ms.thrust.service;
 
-        import com.lmrj.common.mybatis.mvc.service.ICommonService;
-import com.lmrj.mes.kongdong.entity.MsMeasureThrust;
+import com.lmrj.common.mybatis.mvc.service.ICommonService;
+import com.lmrj.ms.thrust.entity.MsMeasureThrust;
+
+import java.util.List;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -16,4 +18,5 @@ import com.lmrj.mes.kongdong.entity.MsMeasureThrust;
  */
 public interface IMsMeasureThrustService extends ICommonService<MsMeasureThrust> {
 
+    List<MsMeasureThrust> findDataByTime(String produictionName , String startTime , String endTime);
 }

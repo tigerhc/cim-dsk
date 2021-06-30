@@ -13,10 +13,10 @@ import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.log.service.IFabLogService;
-import com.lmrj.mes.kongdong.entity.MsMeasureThrust;
-import com.lmrj.mes.kongdong.service.IMsMeasureThrustService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
+import com.lmrj.ms.thrust.entity.MsMeasureThrust;
+import com.lmrj.ms.thrust.service.IMsMeasureThrustService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -937,7 +937,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     public String thrustAndPullDataUpload(@PathVariable String eqpId,@RequestParam String trackinfo, @RequestParam String thrust, @RequestParam String pull, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
         String eventDesc = "{\"thrust\":\"" + thrust + "\",\"pull\":\"" + pull + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\"}";//日志记录参数
-        fabLogService.info("thrustAndPull", "Param6", "MesLotTrackController.thrustAndPullDataUpload", eventDesc, trackinfo, "wangdong");//日志记录参数
+        fabLogService.info(eqpId, "Param6", "MesLotTrackController.thrustAndPullDataUpload", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";
@@ -954,18 +954,20 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             log.info("lotNo:"+lotNo+"  productionNo:"+productionNo+"  productionName:"+productionName+"  thrust:"+thrust+"  pull:"+pull);
             MsMeasureThrust msMeasureThrust = new MsMeasureThrust();
             msMeasureThrust.setEqpId(wbNo);
-            msMeasureThrust.setLineNo(productionName);
+            msMeasureThrust.setLineNo(productionName.split("-")[0]);
             msMeasureThrust.setLotNo(lotNo);
             msMeasureThrust.setProductionName(productionName);
             msMeasureThrust.setProductionNo(productionNo);
             msMeasureThrust.setPull(pull);
             msMeasureThrust.setThrust(thrust);
             msMeasureThrust.setCreateBy("GXJ");
+            msMeasureThrust.setOpId(opId);
             iMsMeasureThrustService.insert(msMeasureThrust);
-            fabLogService.info("thrustAndPull", "Result6", "MesLotTrackController.thrustAndPullDataUpload","数据上传成功", trackinfo, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Result6", "MesLotTrackController.thrustAndPullDataUpload","数据上传成功", trackinfo, "wangdong");//日志记录
             return "Y";
         } catch (Exception e) {
-            fabLogService.info("thrustAndPull", "Error6", "MesLotTrackController.thrustAndPullDataUpload", "数据解析或保存异常"+e, trackinfo, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error6", "MesLotTrackController.thrustAndPullDataUpload", "数据解析或保存异常"+e, trackinfo, "wangdong");//日志记录
+            log.error("MesLotTrackController.thrustAndPullDataUpload.error",e);
             return e.getMessage();
         }
     }

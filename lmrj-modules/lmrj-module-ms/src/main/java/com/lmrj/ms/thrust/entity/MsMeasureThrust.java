@@ -1,4 +1,4 @@
-package com.lmrj.mes.kongdong.entity;
+package com.lmrj.ms.thrust.entity;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -58,6 +58,9 @@ public class MsMeasureThrust extends BaseDataEntity {
     @TableField(value = "eqp_id")
     @Excel(name = "设备名称", orderNum = "7", width = 20)
     private String eqpId;
+    @TableField(value = "opId")
+    @Excel(name = "操作员编号", orderNum = "8", width = 20)
+    private String opId;
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     protected String createBy; // 创建者
     /**发生时刻*/
