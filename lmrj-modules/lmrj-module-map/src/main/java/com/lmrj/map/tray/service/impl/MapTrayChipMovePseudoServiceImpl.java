@@ -88,6 +88,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                                 startData.setPseudoCode(pseudoCode);
                                 pseudoData.add(startData);
                                 updateBatchById(pseudoData, 100);
+                                baseMapper.finishPseudoCode(pseudoCode);
                             }
                         }
                     }
