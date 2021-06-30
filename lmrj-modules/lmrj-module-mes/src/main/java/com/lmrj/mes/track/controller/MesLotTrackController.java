@@ -945,7 +945,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
             String productionName = trackinfos[1].trim();
-            productionName = productionName.replace("_", " ");
+            productionName = productionName.replace("_", " ").trim();
             String[] lotNos = lotorder.split("_");
             String wbNo = eqpId;
             String productionNo = lotNos[0].substring(0, 7); //5002915
