@@ -102,7 +102,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setStartTime(sdfSSS.parse(dataStartTime));
                         data.setFileName(MapUtils.getString(item, "fileName"));
                         data.setChipId(chipId);
-                        data.setMapFlag(1);
+                        data.setMapFlag(2);
                         moveList.add(data);
                     }
                     if (EqpNameConstant.EQP_JET.equals(eqpId)) {
