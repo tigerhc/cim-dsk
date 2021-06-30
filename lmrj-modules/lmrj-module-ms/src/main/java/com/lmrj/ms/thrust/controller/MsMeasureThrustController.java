@@ -152,4 +152,12 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         }
     }
 
+    @RequestMapping(value = "/thrustProductionName", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response exportData(String lineNo , HttpServletRequest request, HttpServletResponse response){
+        List<String>  productionNameList = msMeasureThrustService.findProductionNameList(lineNo);
+        Response res = new Response();
+        res.put("productionNameList",productionNameList);
+        return res;
+    }
+
 }
