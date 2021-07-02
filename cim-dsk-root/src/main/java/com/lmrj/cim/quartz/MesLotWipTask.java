@@ -1,5 +1,6 @@
 package com.lmrj.cim.quartz;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.lot.entity.MesLotWip;
 import com.lmrj.mes.lot.service.IMesLotWipService;
@@ -32,7 +33,7 @@ public class MesLotWipTask {
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         Date startTime = calendar.getTime();
         List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
-        if(mesList.size()>0){
+        if (mesList.size() > 0) {
             for (MesLotTrack mes :
                     mesList) {
                 MesLotWip mesLotWip1 = iMesLotWipService.findStep(mes.getEqpId());
@@ -70,8 +71,8 @@ public class MesLotWipTask {
                     //判断设备前后顺序 若新数据站点在已存在数据站点之后 则更新 否则 不更新
                     int oldSortNo = iMesLotWipService.findSortNo(oldmesLotWip.getEqpId());
                     String eqpid = mes.getEqpId();
-                    if(eqpid.contains("SIM-WB") && eqpid.contains("A")){
-                        eqpid = eqpid.replace("A","B");
+                    if (eqpid.contains("SIM-WB") && eqpid.contains("A")) {
+                        eqpid = eqpid.replace("A", "B");
                     }
                     int newSortNo = iMesLotWipService.findSortNo(eqpid);
                     if (newSortNo >= oldSortNo) {
@@ -85,7 +86,7 @@ public class MesLotWipTask {
                         }
                         oldmesLotWip.setStartTime(mes.getStartTime());
                         oldmesLotWip.setEndTime(mes.getEndTime());
-                        if(mes.getEndTime()==null){
+                        if (mes.getEndTime() == null) {
                             iMesLotWipService.updateEndTime(oldmesLotWip.getId());
                         }
                         oldmesLotWip.setEqpId(eqpId);
@@ -108,6 +109,26 @@ public class MesLotWipTask {
                     iMesLotWipService.deleteEndData(mesLotWip.getLotNo(), mesLotWip.getProductionNo());
                     String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info(mesLotWip.getEqpId(), eventId, "Wip表数据更新结束", "删除已结束批次数据", mesLotWip.getLotNo(), "");
+                }
+            }
+
+            //判端OVEN处双批次数据是否已进行至下一批次
+            wipList = iMesLotWipService.selectWip();
+            System.out.println(" ```````````````````"+wipList.size());
+            for (MesLotWip mesLotWip : wipList) {
+                if (mesLotWip.getLotNo().contains("~") && mesLotWip.getEqpId().contains("OVEN")) {
+                    String lotNos[] = mesLotWip.getLotNo().split("~");
+                    String lotNo1 = lotNos[0];
+                    String lotNo2 = lotNos[1];
+                    MesLotTrack lotTrack1 = iMesLotTrackService.selectOne(new EntityWrapper<MesLotTrack>().like("eqp_id", "SIM-HTRT").eq("lot_no",lotNo1));
+                    MesLotTrack lotTrack2 = iMesLotTrackService.selectOne(new EntityWrapper<MesLotTrack>().like("eqp_id", "SIM-HTRT").eq("lot_no",lotNo2));
+                    if(lotTrack1!=null && lotTrack2!=null){
+                        if(iMesLotWipService.deleteById(mesLotWip)){
+                            log.info("SIM-OVEN已结束批次仕挂数据删除完毕！    mesLotWip:"+mesLotWip.getLotNo());
+                        }else {
+                            log.error("SIM-OVEN已结束批次仕挂数据删除失败！    mesLotWip:"+mesLotWip.getLotNo());
+                        }
+                    }
                 }
             }
         }

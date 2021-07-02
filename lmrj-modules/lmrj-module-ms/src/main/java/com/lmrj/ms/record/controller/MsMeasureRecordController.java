@@ -139,6 +139,14 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         ServletUtils.printJson(response, content);
     }
 
+    @RequestMapping(value = "/msrecordbyfirst/{eqpId}", method = { RequestMethod.GET, RequestMethod.POST })
+    public void msrecordbyfirst(@PathVariable String eqpId, @RequestParam String processNo ,@RequestParam String productionNo, @RequestParam String lotNo ,@RequestParam String waferId,
+                                  HttpServletRequest request, HttpServletResponse response){
+        MsMeasureRecord record =  msMeasureRecordService.findMsrecordbyfirst(eqpId, processNo, productionNo, lotNo,waferId);
+        String content = JSON.toJSONStringWithDateFormat(record, JSON.DEFFAULT_DATE_FORMAT);
+        ServletUtils.printJson(response, content);
+    }
+
     @Override
     @GetMapping("export")
     //@LogAspectj(logType = LogType.EXPORT)
@@ -324,7 +332,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
                 dataList.add(data);
             });
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("量测重量"+productionNo,"量测详细信息"),keyList,dataList);
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("量测重量"+productionNo,"量测详细信息"),keyList,dataList, 4);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();

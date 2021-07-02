@@ -413,4 +413,129 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
 
         return optionDatas;
     }
+
+    /**56GI总的*/
+    public List findGiNumberAll(String productionName, String lineNo, String startDate, String endDate, String type) {
+        List<Map<String, String>> dataList = measureSxMapper.findGiNumber(productionName, startDate, endDate, type);//所有线的原数据集合
+        Map<String, Double> data1Map = new HashMap<>();
+        Map<String, Double> data2Map = new HashMap<>();
+        Map<String, Double> data3Map = new HashMap<>();
+        Map<String, Double> data4Map = new HashMap<>();
+        List<Double> data1 = new ArrayList<>();
+        List<Double> data2 = new ArrayList<>();
+        List<Double> data3 = new ArrayList<>();
+        List<Double> data4 = new ArrayList<>();
+        List<String> xAsix = new ArrayList<>();//echart 横轴数据
+        Double echartMin = null;
+
+        List optionDatas = new ArrayList();//echart 需要的各个线
+        String curLotNo = "";
+        //将数据库中的原数据拆分出echart 需要的各个线
+        for(Map<String, String> data : dataList){
+            //拆分横轴数据
+            if(!curLotNo.equals(MapUtil.getString(data, "lotNo"))){
+                curLotNo = MapUtil.getString(data, "lotNo");
+                xAsix.add(curLotNo);
+            }
+
+            String lineDataBurr = MapUtil.getString(data, "burr_f");
+            String lineDataPin = MapUtil.getString(data, "pin_f1");
+            String lineDataPinf2f = MapUtil.getString(data, "pin_f1_f2");
+            String lineDataPins = MapUtil.getString(data, "pin_s1");
+            //记录所有数据中最小的值,echart使用
+            echartMin = getMin(echartMin, lineDataBurr);
+            echartMin = getMin(echartMin, lineDataPin);
+            echartMin = getMin(echartMin, lineDataPinf2f);
+            echartMin = getMin(echartMin, lineDataPins);
+
+            //拆分1-5数据
+            if ("1".equals(MapUtil.getString(data, "serialCounter"))) {
+                if(StringUtil.isNotEmpty(lineDataBurr)){
+                    data1Map.put(curLotNo, Double.parseDouble(lineDataBurr));
+                }
+                if(StringUtil.isNotEmpty(lineDataPin)){
+                    data2Map.put(curLotNo, Double.parseDouble(lineDataPin));
+                }
+                if(StringUtil.isNotEmpty(lineDataPinf2f)){
+                    data3Map.put(curLotNo, Double.parseDouble(lineDataPinf2f));
+                }
+                if(StringUtil.isNotEmpty(lineDataPins)){
+                    data4Map.put(curLotNo, Double.parseDouble(lineDataPins));
+                }
+            }
+        }
+
+        //缺失数据让线断开
+        for (String asix : xAsix) {
+            data1.add(MapUtil.getDouble(data1Map, asix));
+            data2.add(MapUtil.getDouble(data2Map, asix));
+            data3.add(MapUtil.getDouble(data3Map, asix));
+            data4.add(MapUtil.getDouble(data4Map, asix));
+        }
+
+        optionDatas.add(xAsix);
+        //将数据的分配name并放入返回对象中
+        List<Map<String, Object>> lines = new ArrayList<>();
+        Map<String, Object> lineObj1 = new HashMap<>();
+        lineObj1.put("name","1-毛刺");
+        lineObj1.put("type","line");
+        lineObj1.put("data", data1);
+        lines.add(lineObj1);
+        Map<String, Object> lineObj2 = new HashMap<>();
+        lineObj2.put("name","1-1:1PIN");
+        lineObj2.put("type","line");
+        lineObj2.put("data", data2);
+        lines.add(lineObj2);
+
+        Map<String, Object> minLimitLine = new HashMap<>();
+//        minLimitLine.put("name","下限");
+        minLimitLine.put("type","line");
+        minLimitLine.put("data", new ArrayList<>());
+        lines.add(minLimitLine);
+        Map<String, Object> maxLimitLine = new HashMap<>();
+//        maxLimitLine.put("name","上限");
+        maxLimitLine.put("type","line");
+        maxLimitLine.put("data", new ArrayList<>());
+        lines.add(maxLimitLine);
+
+        Map<String, Object> lineObj3 = new HashMap<>();
+        lineObj3.put("name","1-1:1PIN-2PIN");
+        lineObj3.put("type","line");
+        lineObj3.put("data", data3);
+        lines.add(lineObj3);
+        Map<String, Object> lineObj4 = new HashMap<>();
+        lineObj4.put("name","1-2:1PIN");
+        lineObj4.put("type","line");
+        lineObj4.put("data", data4);
+        lines.add(lineObj4);
+
+        optionDatas.add(lines);
+
+        //echart Y轴最小值
+        Map min = new HashMap();
+        if(0== echartMin){
+            echartMin = -0.1;
+        } else {
+            echartMin = echartMin * 0.98;//为了数据线不贴在x轴上
+        }
+        java.text.DecimalFormat   df   =new   java.text.DecimalFormat("#.00");
+        min.put("min", df.format(echartMin));
+        optionDatas.add(min);
+
+        return optionDatas;
+    }
+
+    private Double getMin(Double echartMin, String dataDouble){
+        if(StringUtil.isNotEmpty(dataDouble)){
+            Double dataD = Double.parseDouble(dataDouble);
+            if(echartMin==null){
+                echartMin = dataD;
+            } else {
+                echartMin = echartMin > dataD ? dataD : echartMin;
+            }
+            return echartMin;
+        } else {
+            return echartMin;
+        }
+    }
 }

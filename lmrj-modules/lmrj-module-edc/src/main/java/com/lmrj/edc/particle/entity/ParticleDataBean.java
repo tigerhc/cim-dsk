@@ -12,30 +12,18 @@ import java.util.Date;
 public class ParticleDataBean extends BaseDataEntity {
     @TableField(value = "eqp_id")
     private String eqpId;
-    @TableField(value = "particle03_his")
-    private int particle03His;//上一周期的值
-    @TableField(value = "particle03_cur")
-    private int particle03Cur;//累计值，当前（变化）值
-    @TableField(value = "particle05_his")
-    private int particle05His;
-    @TableField(value = "particle05_cur")
-    private int particle05Cur;
-    @TableField(value = "particle1_his")
-    private int particle1His;
-    @TableField(value = "particle1_cur")
-    private int particle1Cur;
-    @TableField(value = "particle3_his")
-    private int particle3His;
-    @TableField(value = "particle3_cur")
-    private int particle3Cur;
-    @TableField(value = "particle5_his")
-    private int particle5His;
-    @TableField(value = "particle5_cur")
-    private int particle5Cur;
-    @TableField(value = "particle10_his")
-    private int particle10His;
-    @TableField(value = "particle10_cur")
-    private int particle10Cur;
+    @TableField(value = "particle03")
+    private int particle03;//上一周期的值
+    @TableField(value = "particle05")
+    private int particle05;
+    @TableField(value = "particle1")
+    private int particle1;
+    @TableField(value = "particle3")
+    private int particle3;
+    @TableField(value = "particle5")
+    private int particle5;
+    @TableField(value = "particle10")
+    private int particle10;
     @TableField(value = "temp")
     private double temp;//<!--温度（带1位小数，数值100表示10.0）-->
     @TableField(value = "humidity")

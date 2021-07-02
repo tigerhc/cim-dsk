@@ -21,8 +21,9 @@
 	</sql>
 
     <select id="getAllTrayEqp" resultType="java.util.Map">
-		select eqp_id as "eqpId", eqp_name as "eqpName"
+		select eqp_id as "eqpId", eqp_name as "eqpName", eqp_id as "eqpIdCopy"
 		from fab_equipment
 		where tray_flag='Y'
+		order by sort_no
 	</select>
 </mapper>

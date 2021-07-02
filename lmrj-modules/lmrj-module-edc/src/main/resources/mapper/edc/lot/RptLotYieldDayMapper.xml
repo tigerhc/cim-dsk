@@ -35,6 +35,16 @@
             order by a.period_date
        </select>
 
+    <select id="selectDaypdtWB" resultType="map">
+            select period_date, sum(lot_yield) lot_yield , sum(lot_yield_eqp) lot_yield_eqp
+              from rpt_lot_yield_day
+              where line_no = #{lineNo}
+              and station_code = #{stationCode}
+              and period_date between #{beginTime} and #{endTime}
+              group by period_date
+              order by period_date
+       </select>
+
     <select id="selectDaypdtById" resultType="map">
         select period_date, sum(lot_yield) lot_yield , sum(lot_yield_eqp) lot_yield_eqp ,eqp_id
         from rpt_lot_yield_day

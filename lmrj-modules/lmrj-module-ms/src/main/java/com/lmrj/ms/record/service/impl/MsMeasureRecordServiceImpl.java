@@ -11,6 +11,7 @@ import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -111,6 +112,20 @@ public class MsMeasureRecordServiceImpl  extends CommonServiceImpl<MsMeasureReco
     public List<Map> findDetailBytime(String eqpId, String beginTime, String endTime) {
         List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
         return detail;
+    }
+    @Override
+    public MsMeasureRecord findMsrecordbyfirst(String eqpId,  String processNo ,  String productionNo,  String lotNo ,  String waferId){
+        MsMeasureRecord msMeasureRecord = selectOne(new EntityWrapper<MsMeasureRecord>(MsMeasureRecord.class).eq("eqp_id",eqpId).eq("process_no",processNo).eq("production_no",productionNo).eq("lot_no",lotNo).eq("wafer_id",waferId).orderBy("create_date",false));
+        if(msMeasureRecord == null){
+            //如果不存在,就不带wafer id查询
+            msMeasureRecord = selectOne(new EntityWrapper<MsMeasureRecord>(MsMeasureRecord.class).eq("eqp_id",eqpId).eq("process_no",processNo).eq("production_no",productionNo).eq("lot_no",lotNo).orderBy("create_date", false));
+            if(msMeasureRecord == null){
+                return new MsMeasureRecord();
+            }
+        }
+        List<MsMeasureRecordDetail> edcParamRecordDtlList = msMeasureRecordDetailService.selectList(new EntityWrapper<MsMeasureRecordDetail>(MsMeasureRecordDetail.class).eq("ms_record_id",msMeasureRecord.getId()).orderBy("sort_no"));
+        msMeasureRecord.setDetail(edcParamRecordDtlList);
+        return msMeasureRecord;
     }
 
     @Override

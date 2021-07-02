@@ -199,7 +199,34 @@ public class EdcSecsLogHandler {
             edcAmsRecord.setLotNo(lotTrack.getLotNo());
             edcAmsRecord.setLotYield(lotTrack.getLotYieldEqp());
         }
-        edcAmsRecordService.insert(edcAmsRecord);EdcEqpState edcEqpState = new EdcEqpState();
+
+        //新建Operation数据
+        if(edcAmsRecordService.insert(edcAmsRecord)){
+            EdcDskLogOperation edcDskLogOperation = new EdcDskLogOperation();
+            FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(fabEquipment.getEqpId());
+            if (equipmentStatus != null) {
+                edcDskLogOperation.setLotNo(equipmentStatus.getLotNo());
+                edcDskLogOperation.setLotYield(equipmentStatus.getLotYield());
+                edcDskLogOperation.setDayYield(equipmentStatus.getDayYield());
+                edcDskLogOperation.setRecipeCode(equipmentStatus.getRecipeCode());
+                edcDskLogOperation.setProductionNo(equipmentStatus.getProductionNo());
+            }
+            edcDskLogOperation.setOrderNo(lotTrack.getOrderNo());
+            edcDskLogOperation.setEqpId(fabEquipment.getEqpId());
+            edcDskLogOperation.setEqpModelId(fabEquipment.getModelId());
+            edcDskLogOperation.setEqpModelName(fabEquipment.getModelName());
+            edcDskLogOperation.setAlarmCode(alarmCode);
+            String eventId = "2";
+            edcDskLogOperation.setEventId(eventId);
+            edcDskLogOperation.setCreateDate(new Date());
+            edcDskLogOperation.setStartTime(edcAmsRecord.getStartDate());
+            edcDskLogOperation.setEventParams(edcAmsRecord.getAlarmName());
+            edcDskLogOperation.setEventName(edcAmsRecord.getAlarmName());
+            edcDskLogOperation.setEventDetail(edcAmsRecord.getAlarmDetail());
+            edcDskLogOperationService.insert(edcDskLogOperation);
+        }
+        //新建状态数据
+        EdcEqpState edcEqpState = new EdcEqpState();
         edcEqpState.setEqpId(edcAmsRecord.getEqpId());
         edcEqpState.setStartTime(edcAmsRecord.getStartDate());
         if("0".equals(edcAmsRecord.getAlarmSwitch())){

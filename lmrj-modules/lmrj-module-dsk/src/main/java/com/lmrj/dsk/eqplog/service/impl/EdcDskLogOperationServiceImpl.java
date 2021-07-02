@@ -230,7 +230,7 @@ public class EdcDskLogOperationServiceImpl extends CommonServiceImpl<EdcDskLogOp
         String filename = null;
         EdcDskLogOperation oper;
         String pattern1 = "yyyyMMddHHmm999";
-        String pattern2 = "yyyy-MM-dd HH:mm:ss SSS";
+        String pattern2 = "yyyy-MM-dd HH:mm:ss.SSS";
         String filePath = null;
         String fileBackUpPath = null;
         //获取表格title添加到lines中

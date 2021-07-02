@@ -31,10 +31,10 @@
     </insert>
 
     <select id="findXrayData" parameterType="java.lang.String" resultType="java.lang.String">
-        select chip_id from map_tray_chip_move where to_tray_id=#{toTrayId} and eqp_id='APJ-HB2-XRAY' and map_flag=0
+        select chip_id from map_tray_chip_move where to_tray_id=#{toTrayId} and eqp_id='APJ-XRAY1' and map_flag=0
     </select>
 
     <update id="finishXrayData" parameterType="java.lang.String">
-        update map_tray_chip_move set map_flag='1' where map_flag=0 and eqp_id='APJ-HB2-XRAY' and to_tray_id=#{toTrayId}
+        update map_tray_chip_move set map_flag='2' where map_flag=0 and eqp_id='APJ-XRAY1' and to_tray_id=#{toTrayId}
     </update>
 </mapper>

@@ -204,7 +204,7 @@ public class EdcDskLogHandler {
                 }
             }
             FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-            if(!"RUN".equals(fabStatus.getEqpStatus())){
+            if(!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")){
                 EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
                 if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
                     fabStatus.setEqpStatus("RUN");
@@ -329,6 +329,8 @@ public class EdcDskLogHandler {
             FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
             if(fabStatus!=null){
                 fabStatus.setLotYield(allProList.size());
+                fabStatus.setRecipeCode(lastPro.getRecipeCode());
+                fabStatus.setDayYield(lastPro.getDayYield());
                 fabEquipmentStatusService.updateById(fabStatus);
             }
         } catch (Exception e) {
@@ -500,7 +502,7 @@ public class EdcDskLogHandler {
         fabLogService.info(eqpId, eventId1, "parseOperationlog ", "Operation解析 本次接收数据条数：" + edcDskLogOperationlist.size(), "", "gxj");
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-            edcDskLogOperationlist.forEach(edcDskLogOperation -> {
+            for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
                 EdcDskLogProduction pro = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
                 if (pro != null) {
                     edcDskLogOperation.setLotYield(pro.getLotYield());
@@ -523,7 +525,7 @@ public class EdcDskLogHandler {
                         edcDskLogOperation.setEventDetail("IDLE(制品等待)");
                     }
                 }
-            });
+            }
         }
         try {
             edcDskLogOperationService.insertBatch(edcDskLogOperationlist,100);
@@ -754,6 +756,7 @@ public class EdcDskLogHandler {
                 }
             }
             edcDskLogRecipeService.insert(edcDskLogRecipe);
+            fabEquipmentStatusService.updateYield(edcDskLogRecipe.getEqpId(),"",edcDskLogRecipe.getRecipeCode(),-1,-1);
         });
     }
 
@@ -887,6 +890,7 @@ public class EdcDskLogHandler {
         if(ovnBatchLot!=null && ovnBatchLot.getOvnBatchLotParamList()!=null){
             String eqpId = ovnBatchLot.getEqpId();
             List<OvnBatchLotParam> paramList = ovnBatchLot.getOvnBatchLotParamList();
+            String curDesc = "当前设备"+eqpId;
             for (OvnBatchLotParam ovnBatchLotParam : paramList) {
                 //首个温度的判断
                 double tempPv = Double.parseDouble(ovnBatchLotParam.getTempPv());
@@ -899,11 +903,13 @@ public class EdcDskLogHandler {
                 }else if(tempPv > tempMax){
                     tempFlag = false;
                     sendFlag = _handleEmailLog(eqpId, "HEIGHT");
+                    curDesc = curDesc+"超过温度的上限首个温度:"+tempPv+",其上下限为"+tempMin+"到"+tempMax;
                 }else if(tempPv < tempMin){
                     tempFlag = false;
                     if(!sendFlag){
                         sendFlag = _handleEmailLog(eqpId, "LOW");
                     }
+                    curDesc = curDesc+"低于温度的下限首个温度:"+tempPv+",其上下限为"+tempMin+"到"+tempMax;
                 }
                 if(tempFlag){//检测除首个温度外的其他温度
                     String temp = ovnBatchLotParam.getOtherTempsValue();
@@ -919,18 +925,20 @@ public class EdcDskLogHandler {
                                 break;
                             } else {
                                 sendFlag = _handleEmailLog(eqpId, "LOW");
+                                curDesc = curDesc + "低于温度的下限位于第"+(i+2)+"个温度:"+tempOtherPv+",其上下限为"+tempOtherMin+"到"+tempOtherMax;
                             }
                         }else if(tempOtherPv < tempOtherMax){
                             if(sendFlag){
                                 break;
                             } else {
                                 sendFlag = _handleEmailLog(eqpId, "HEIGHT");
+                                curDesc = curDesc + "超过温度的上限位于第"+(i+2)+"个温度:"+tempOtherPv+",其上下限为"+tempOtherMin+"到"+tempOtherMax;
                             }
                         }
                     }
                 }
                 if(sendFlag){
-                    _sendTempAlarmEmail(eqpId, dataMsg);
+                    _sendTempAlarmEmail(curDesc, dataMsg);
                     break;
                 }
             }
@@ -969,12 +977,12 @@ public class EdcDskLogHandler {
     }
 
     //发送温度异常的邮件
-    private void _sendTempAlarmEmail(String eqpId, String mqDataMsg){
+    private void _sendTempAlarmEmail(String msg, String mqDataMsg){
         long compareTime = before30Minute();//30分钟前
         if(compareTime > lastSendMailTime){//距上次发送邮件的时间已超过半小时
             lastSendMailTime = new Date().getTime();
             Map<String, Object> mailMsg = new HashMap<>();
-            mailMsg.put("EQP_ID","当前检测温度异常的设备是"+eqpId+",目前温度异常的设备有"+alarmEmailLog.toString()+"。");
+            mailMsg.put("EQP_ID",msg+",目前温度异常的设备有"+alarmEmailLog.toString()+"。");
             mailMsg.put("ALARM_CODE", "E-1000");
 //            System.out.println(JSONObject.fromObject(mailMsg).toString()); TODO 配合下方的main 测试
             rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", JSONObject.fromObject(mailMsg).toString());

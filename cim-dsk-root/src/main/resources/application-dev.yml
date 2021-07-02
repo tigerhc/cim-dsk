@@ -192,3 +192,6 @@ aps:
 
 dsk:
   lineNo: APJ
+
+mapping:
+  jobenabled: false

@@ -1,10 +1,43 @@
---量测系统添加工序字段-北京中试线要求
-ALTER TABLE `dskcim`.`ms_measure_config`
+-- 量测系统添加工序字段-北京中试线要求
+ALTER TABLE `ms_measure_config`
 ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `eqp_model_name`;
-ALTER TABLE `dskcim`.`ms_measure_record`
+ALTER TABLE ms_measure_record`
 ADD COLUMN `process_no` varchar(32) COMMENT '工序' AFTER `lot_no`;
 
 -- 发送邮件日志添加插入时间
-ALTER TABLE `dskcim`.`email_send_log`
+ALTER TABLE `email_send_log`
 ADD COLUMN `create_date` datetime(6) COMMENT '创建日期' AFTER `remarks`,
 MODIFY COLUMN `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标记（0：正常；1：删除）' AFTER `create_date`;
+
+-- map追溯系统新增子线别追溯
+ALTER TABLE `map_equipment_config`
+DROP COLUMN `map_lot`,
+ADD COLUMN `sub_line_no` varchar(32) COMMENT '子线别' AFTER `eqp_type`,
+ADD COLUMN `sub_line_sort_no` int(11) COMMENT '子线别排序号' AFTER `sub_line_no`,
+ADD COLUMN `sub_line_type` char(1) COMMENT '子线别头或尾,S:start;E:end' AFTER `sub_line_sort_no`,
+ADD COLUMN `interval_time_min` int(11) COMMENT '作业间隔最小时间' AFTER `sub_line_type`,
+ADD COLUMN `interval_time_max` int(11) COMMENT '作业间隔最大时间' AFTER `interval_time_min`,
+ADD COLUMN `same_lot_flag` char(1) COMMENT '是否同批次' AFTER `interval_time_max`;
+
+-- 2021-06-25 尘埃粒子计数器表结构调整
+ALTER TABLE `edc_particle_record`
+DROP COLUMN `particle03_cur`,
+DROP COLUMN `particle05_cur`,
+DROP COLUMN `particle1_cur`,
+DROP COLUMN `particle3_cur`,
+DROP COLUMN `particle5_cur`,
+DROP COLUMN `particle10_cur`,
+CHANGE COLUMN `particle03_his` `particle03`  int(11) NULL DEFAULT NULL COMMENT '0.3μm上个周期完整值' AFTER `eqp_id`,
+CHANGE COLUMN `particle05_his` `particle05`  int(11) NULL DEFAULT NULL COMMENT '0.5μm上个周期完整值' AFTER `particle03`,
+CHANGE COLUMN `particle1_his` `particle1`  int(11) NULL DEFAULT NULL COMMENT '1μm上个周期完整值' AFTER `particle05`,
+CHANGE COLUMN `particle3_his` `particle3`  int(11) NULL DEFAULT NULL COMMENT '3μm上个周期完整值' AFTER `particle1`,
+CHANGE COLUMN `particle5_his` `particle5`  int(11) NULL DEFAULT NULL COMMENT '5μm上个周期完整值' AFTER `particle3`,
+CHANGE COLUMN `particle10_his` `particle10`  int(11) NULL DEFAULT NULL COMMENT '10μm上个周期完整值' AFTER `particle5`;
+
+-- 2021-06-29 更新所有子表的索引
+ALTER TABLE `edc_dsk_log_recipe_body`  ADD INDEX `recipe_log_id_ix1` (`recipe_log_id`) ;
+ALTER TABLE `edc_param_define_model`  ADD INDEX `param_define_id_idx1` (`param_define_id`) ;
+ALTER TABLE `edc_param_record_dtl`  ADD INDEX `record_id_idx1` (`record_id`) ;
+ALTER TABLE `ms_measure_config_detail`  ADD INDEX `ms_config_id_idx1` (`ms_config_id`) ;
+ALTER TABLE `ms_measure_record_detail`  ADD INDEX `ms_record_id_idx1` (`ms_record_id`) ;
+ALTER TABLE `edc_ams_define`  ADD INDEX `eqp_model_id_idx1` (`eqp_model_id`) ;

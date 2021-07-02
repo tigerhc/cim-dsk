@@ -91,28 +91,31 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 log.error("数据插入失败",e);
                 e.printStackTrace();
             }
-        } else*/ if (eqpStateList.get(0).getStartTime().after(startTime)) {
-            try {
-                EdcEqpState firstData = new EdcEqpState();
-                //当天0点前最后一条数据
-                EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
-                lastData.setEndTime(startTime);
-                Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
-                lastData.setStateTimes(state);
-                this.updateById(lastData);
-                firstData.setStartTime(startTime);
-                firstData.setEndTime(eqpStateList.get(0).getStartTime());
-                Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
-                firstData.setStateTimes(state1);
-                //把第一条数据的状态值设为当天八点前最后一条数据的状态
-                firstData.setState(lastData.getState());
-                firstData.setEqpId(eqpId);
-                this.insert(firstData);
-            } catch (Exception e) {
-                log.error("日OEE数据解析出错",e);
-                e.printStackTrace();
+        } else*/
+        if(eqpStateList.size()>0){
+            if (eqpStateList.get(0).getStartTime().after(startTime)) {
+                try {
+                    EdcEqpState firstData = new EdcEqpState();
+                    //当天0点前最后一条数据
+                    EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+                    lastData.setEndTime(startTime);
+                    Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
+                    lastData.setStateTimes(state);
+                    this.updateById(lastData);
+                    firstData.setStartTime(startTime);
+                    firstData.setEndTime(eqpStateList.get(0).getStartTime());
+                    Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
+                    firstData.setStateTimes(state1);
+                    //把第一条数据的状态值设为当天八点前最后一条数据的状态
+                    firstData.setState(lastData.getState());
+                    firstData.setEqpId(eqpId);
+                    this.insert(firstData);
+                } catch (Exception e) {
+                    log.error("日OEE数据解析出错",e);
+                    e.printStackTrace();
+                }
+                log.info("插入记录成功");
             }
-            log.info("插入记录成功");
         }
         if (eqpStateList.size() >= 2) {
             //若当天最后一条数据结束时间大于当日24点，将数据结束时间更改为当日24点
@@ -146,10 +149,19 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 }*/
             }
         }
-        if (CollectionUtils.isEmpty(eqpStateList)) {
+        if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size()==0) {
+            EdcEqpState edcEqpState = new EdcEqpState();
+            edcEqpState.setEqpId(eqpId);
+            edcEqpState.setStartTime(startTime);
+            EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+            if(lastData == null){
+                edcEqpState.setState("IDLE");
+            }else {
+                edcEqpState.setState(lastData.getState());
+            }
+            baseMapper.insert(edcEqpState);
             return 0;
         } else {
-
             if (neweqpStateList.size() > 0) {
                 if (this.updateBatchById(neweqpStateList,1000)) {
                     log.info("edc_eqp_state更新成功");

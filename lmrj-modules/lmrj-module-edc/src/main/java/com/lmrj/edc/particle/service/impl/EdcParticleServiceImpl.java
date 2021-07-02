@@ -36,12 +36,12 @@ public class EdcParticleServiceImpl extends CommonServiceImpl<EdcParticleMapper,
         if(dataList.size()>0){
             for(ParticleDataBean item : dataList){
                 time.add(item.getStartTimeStr());
-                particle03.add(item.getParticle03His());
-                particle05.add(item.getParticle05His());
-                particle1.add(item.getParticle1His());
-                particle3.add(item.getParticle3His());
-                particle5.add(item.getParticle5His());
-                particle10.add(item.getParticle10His());
+                particle03.add(item.getParticle03());
+                particle05.add(item.getParticle05());
+                particle1.add(item.getParticle1());
+                particle3.add(item.getParticle3());
+                particle5.add(item.getParticle5());
+                particle10.add(item.getParticle10());
                 temp.add(item.getTemp());
                 humidity.add(item.getHumidity());
                 samplingFlow.add(item.getSamplingFlow());

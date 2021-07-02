@@ -11,6 +11,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.edc.particle.entity.ParticleDataBean;
 import com.lmrj.edc.particle.service.IEdcParticleService;
 import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -129,7 +130,15 @@ public class EdcParticleController extends BaseCRUDController<ParticleDataBean> 
             ExcelExportEntity key12 = new ExcelExportEntity("压差","12");
             keyList.add(key12);
 
-            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("尘埃粒子计数器","量测详细信息"),keyList,dataList);
+            //获得eqpId 对应的中文
+            List<Map<String, Object>> particleEqp = particleService.getParticleEqps();
+            String eqpName = eqpId;
+            for(Map<String, Object> item : particleEqp){
+                if(eqpId.equals(MapUtil.getString(item, "eqpId"))){
+                    eqpName = MapUtil.getString(item, "eqpName");
+                }
+            }
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("尘埃粒子计数器" + eqpName,"量测详细信息"),keyList,dataList);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();
@@ -145,7 +154,5 @@ public class EdcParticleController extends BaseCRUDController<ParticleDataBean> 
             var16.printStackTrace();
             return Response.error(999998, "导出失败");
         }
-
-
     }
 }

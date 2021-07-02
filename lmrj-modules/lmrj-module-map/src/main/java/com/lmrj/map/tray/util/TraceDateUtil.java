@@ -33,9 +33,28 @@ public class TraceDateUtil {
         return sdf.format(date);
     }
 
+    /** 获得两个时间之间差多少秒
+     */
+    public static long getDiffSec(Date date1, Date date2){
+        long dateLong1 = date1.getTime();
+        long dateLong2 = date2.getTime();
+        long diff = dateLong2 - dateLong1;
+        if(diff < 0){
+            diff = diff * (-1);
+        }
+        return diff / 1000;
+    }
+
     public static void main(String[] args) {
 //        String test = getBeforeTime();
-        String test = getChkTime(new Date(), -1);
-        System.out.println(test);
+//        String test = getChkTime(new Date(), -1);
+//        System.out.println(test);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置时间格式
+            long test = getDiffSec(sdf.parse("2021-06-21 11:26:51"), sdf.parse("2021-06-21 11:21:50"));
+            System.out.println(test);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
