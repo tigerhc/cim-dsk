@@ -25,6 +25,15 @@
         order by start_time
     </select>
 
+    <!--<select id="getParticleDataBean" resultType="particleMap">-->
+        <!--select eqp_id, particle03_his, particle05_his, particle1_his, particle3_his, particle5_his, particle10_his, temp, humidity, sampling_flow, wind_speed, pressure_diff, start_time-->
+        <!--from edc_particle_sumary-->
+        <!--where eqp_id=#{eqpId}-->
+        <!--and start_time &gt; #{beginTime}-->
+        <!--and start_time &lt; #{endTime}-->
+        <!--order by start_time-->
+    <!--</select>-->
+
     <select id="getParticleEqps" resultType="java.util.Map">
          select eqp_id as eqpId,
                 eqp_name as eqpName
