@@ -556,7 +556,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
             if (eqpId.equals("APJ-OVEN1")) {
                 eqpId = "APJ-OVEN1";
-            }else if(eqpId.equals("SIM-OVEN1")){
+            }else if(eqpId.equals("APJ-OVEN2")){
+                eqpId = "APJ-OVEN2";
+            } else if(eqpId.equals("SIM-OVEN1")){
                 eqpId = "SIM-OVEN1";
             } else if(eqpId.equals("SIM-OVEN2")){
                 eqpId = "SIM-OVEN2";
