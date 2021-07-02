@@ -80,6 +80,8 @@ public class MapTrayChipMove {
     private String dmX;
     @TableField(value = "dm_y")
     private String dmY;
+    @TableField(value = "smt_count")
+    private Integer smtCount;
 
     @TableField(exist = false)
     private Integer searchFlag;

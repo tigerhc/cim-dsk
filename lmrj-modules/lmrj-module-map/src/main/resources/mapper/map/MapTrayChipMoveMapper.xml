@@ -22,6 +22,7 @@
 		<result column="interval_time_min" property="intervalTimeMin"></result>
 		<result column="interval_time_max" property="intervalTimeMax"></result>
 		<result column="pseudo_code" property="pseudoCode"></result>
+		<result column="smt_count" property="smtCount"></result>
 	</resultMap>
 	<resultMap id="EqpCfg" type="com.lmrj.map.tray.entity.MapEquipmentConfig">
 		<result column="eqp_id" property="eqpId"></result>
@@ -418,12 +419,20 @@
 		order by sub_line_sort_no
 	</select>
 
-	<select id="findBeforeLineEnd" parameterType="java.util.Map" resultMap="TrayMap">
+	<select id="findBeforeLineEnd" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no, m.map_flag,
 				c.down_eqp_id as 'from_eqp_id',c.interval_time_min,c.interval_time_max,c.same_lot_flag,c.sub_line_type,m.pseudo_code
 		from map_tray_chip_move m
 		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
 		where m.map_flag=6 and to_tray_id=#{fromTrayId} and to_x=#{fromX} and to_y=#{fromY} and c.down_eqp_id=#{eqpId}
+		order by m.start_time
+	</select>
+	<select id="findVI" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
+		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no, m.map_flag,
+				c.down_eqp_id as 'from_eqp_id',c.interval_time_min,c.interval_time_max,c.same_lot_flag,c.sub_line_type,m.pseudo_code
+		from map_tray_chip_move m
+		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
+		where m.map_flag=0 and to_tray_id=#{fromTrayId} and to_x=#{fromX} and to_y=#{fromY} and c.down_eqp_id=#{eqpId}
 		order by m.start_time
 	</select>
 	<update id="updateBeforeTempMapFlag" parameterType="java.lang.String">
@@ -433,18 +442,18 @@
 		update map_tray_chip_move set pseudo_code=#{pseudoCode} where map_flag=8
 	</update>
 	<select id="getHB2Start" resultMap="TrayMap">
-		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no,m.map_flag,c.eqp_id as 'from_eqp_id'
+		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no,m.map_flag
 		from map_tray_chip_move m
-		left join map_equipment_config c on c.down_eqp_id=m.eqp_id and c.del_flag='0'
 		where m.map_flag=0 and m.eqp_id='APJ-HB2-ASSEMBLY1'
 		order by m.start_time
 	</select>
 	<select id="getHB2Line" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no,m.map_flag,
-		c.down_eqp_id as 'from_eqp_id',c.interval_time_max,c.same_lot_flag,c.sub_line_type
+		c.down_eqp_id as 'from_eqp_id',c.interval_time_max,c.same_lot_flag,c.sub_line_type,m.smt_count
 		from map_tray_chip_move m
 		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
-		where m.map_flag=0 and to_tray_id=#{toTrayId} and to_x=#{toX} and to_y=#{toY}
+		where m.map_flag=0 and to_tray_id=#{toTrayId} and to_x=#{toX} and to_y=#{toY} and m.lot_no=#{lotNo}
+		and c.sub_line_no='HB2'
 		order by m.start_time
 	</select>
 
@@ -475,7 +484,7 @@
 		SELECT eqp_id,sub_line_no,sub_line_type,interval_time_min,interval_time_max,same_lot_flag,eqp_type
 		 from map_equipment_config where sub_line_no = (SELECT sub_line_no from map_equipment_config where eqp_id=#{eqpId} )
 		 and eqp_id != #{eqpId}
-		 order by sub_line_sort_no
+		 order by sub_line_sort_no desc
 	</select>
 	<select id="findNGStart" resultMap="TrayMap">
 		select m.id,m.chip_id,m.eqp_id,m.from_tray_id,m.from_x,m.from_y,m.to_tray_id,m.to_x,m.to_y,m.start_time,m.lot_no
