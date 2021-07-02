@@ -47,4 +47,8 @@
 	   </if>
   </select>
 
+  <select id="selectTestPeople" resultMap="BaseResultMap">
+    select * from sys_user_role,sys_user, sys_role where sys_user_role.id=sys_user.id and sys_user_role.id=sys_role.id
+  </select>
+
 </mapper>

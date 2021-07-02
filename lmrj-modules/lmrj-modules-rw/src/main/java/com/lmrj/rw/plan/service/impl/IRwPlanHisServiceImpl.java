@@ -4,6 +4,8 @@ import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.rw.plan.entity.RwPlanHis;
 import com.lmrj.rw.plan.mapper.RwPlanHisMapper;
 import com.lmrj.rw.plan.service.IRwPlanHisService;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,9 +29,8 @@ public class IRwPlanHisServiceImpl extends CommonServiceImpl<RwPlanHisMapper, Rw
      * @param planHis
      */
     @Override
-    public void enddata(RwPlanHis planHis) {
-        baseMapper.insert(planHis);
-
+    public Integer enddata(RwPlanHis planHis) {
+        return baseMapper.insert(planHis);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class IRwPlanHisServiceImpl extends CommonServiceImpl<RwPlanHisMapper, Rw
         Date endAssign = null;
         Date startDeal = null;
         Date endDeal = null;
+
         List<RwPlanHis> retList = new ArrayList<RwPlanHis>();
 
         try {
@@ -60,5 +63,12 @@ public class IRwPlanHisServiceImpl extends CommonServiceImpl<RwPlanHisMapper, Rw
             e.printStackTrace();
         }
         return retList;
+    }
+
+    @Override
+    public List<RwPlanHis> test1(String id) {
+        List<RwPlanHis> List = new ArrayList<RwPlanHis>();
+        List =  baseMapper.test1(id);
+        return List;
     }
 }

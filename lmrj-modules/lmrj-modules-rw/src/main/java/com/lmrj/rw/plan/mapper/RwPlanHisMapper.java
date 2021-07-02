@@ -15,11 +15,12 @@ import java.util.List;
 @Mapper
 public interface RwPlanHisMapper extends BaseMapper<RwPlanHis> {
 
-
     List<RwPlanHis> rwplanhislist(@Param("id") String id, @Param("eqpId") String eqpId, @Param("officeId") String officeId,
                                   @Param("startAssign") Date startAssign, @Param("endAssign") Date endAssign,
                                   @Param("startDeal") Date startDeal, @Param("endDeal") Date endDeal,
-                                  @Param("planStatus") String planStatus, @Param("planType") String planType
-            ,                       @Param("flag") String flag);
+                                  @Param("planStatus") String planStatus, @Param("planType") String planType,
+                                  @Param("flag") String flag);
+
+    List<RwPlanHis> test1(@Param("id") String id);
 
 }

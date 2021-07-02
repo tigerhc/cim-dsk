@@ -2,6 +2,7 @@ package com.lmrj.rw.plan.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.rw.plan.entity.RwPlanHis;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -11,7 +12,9 @@ import java.util.List;
  */
 public interface IRwPlanHisService extends ICommonService<RwPlanHis> {
 
-    void enddata(RwPlanHis planHis);
+    Integer enddata(RwPlanHis planHis);
 
     List<RwPlanHis> rwplanhislist(String id, String eqpId, String officeId, String assignedTime, String assignedendTime, String dealTime, String dealendTime, String planStatus, String planType,String flag);
+
+    List<RwPlanHis> test1(String id);
 }

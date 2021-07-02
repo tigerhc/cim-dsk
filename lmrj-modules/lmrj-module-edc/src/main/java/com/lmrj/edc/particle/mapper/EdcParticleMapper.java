@@ -13,5 +13,10 @@ public interface EdcParticleMapper extends BaseMapper<ParticleDataBean> {
 
     List<Map<String, Object>> getParticleEqps();
 
+    /**
+     * 后加上的，获取ParticleDataBean对象
+     */
+//    List<ParticleDataBean> getParticleDataBean();
+
 //    void backData();
 }

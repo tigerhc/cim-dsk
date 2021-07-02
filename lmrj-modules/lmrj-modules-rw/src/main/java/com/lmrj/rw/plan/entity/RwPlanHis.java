@@ -19,7 +19,7 @@ import java.util.Date;
 @Data
 public class RwPlanHis  extends BaseDataEntity {
     /**主键*/
-    @TableField(value = "Id")
+    @TableField(value = "id")
     private String id;
     /**计划/报警 编号*/
     @TableField(value = "plan_id")
