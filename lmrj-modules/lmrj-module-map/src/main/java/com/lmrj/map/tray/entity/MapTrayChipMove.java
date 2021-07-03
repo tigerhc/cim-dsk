@@ -82,6 +82,10 @@ public class MapTrayChipMove {
     private String dmY;
     @TableField(value = "smt_count")
     private Integer smtCount;
+    @TableField(value = "experiment_chk")
+    private Integer experimentChk;
+    @TableField(value = "experiment_remark")
+    private String experimentRemark;
 
     @TableField(exist = false)
     private Integer searchFlag;
