@@ -16,5 +16,4 @@ public interface IRwPlanHisService extends ICommonService<RwPlanHis> {
 
     List<RwPlanHis> rwplanhislist(String id, String eqpId, String officeId, String assignedTime, String assignedendTime, String dealTime, String dealendTime, String planStatus, String planType,String flag);
 
-    List<RwPlanHis> test1(String id);
 }
