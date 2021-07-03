@@ -24,6 +24,4 @@ public interface UserMapper extends BaseMapper<User> {
 	 */
 	List<User> selectUserList(Pagination page, @Param("ew") Wrapper<User> wrapper);
 
-//	自己加的
-	List<User> selectTestPeople();
 }
