@@ -13,6 +13,7 @@
 		<result column="to_x" property="toX"></result>
 		<result column="to_y" property="toY"></result>
 		<result column="start_time" property="startTime"></result>
+		<result column="judge_result" property="judgeResult"></result>
 		<!--		<result column="down_eqp_id" property="downEqpId"></result>-->
 		<result column="eqp_type" property="eqpType"></result>
 		<result column="same_lot_flag" property="sameLotFlag"></result>
@@ -53,6 +54,7 @@
 		m.dm_id,
 		m.dm_x,
 		m.dm_y,
+		m.judge_result,
 		m.map_flag,
 		m.experiment_chk,
 		m.experiment_remark
@@ -485,18 +487,15 @@
 		 and eqp_id != #{eqpId}
 		 order by sub_line_sort_no desc
 	</select>
-	<select id="findNGStart" parameterType="java.lang.String" resultMap="TrayMap">
+	<select id="findNGStart" resultMap="TrayMap">
 		select <include refid="Base_Column_List"></include>
 		from map_tray_chip_move m
 		LEFT JOIN map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
-		where m.judge_result='N' and map_flag='0'
-		and c.sub_line_type=#{subLineType}
-		order by m.start_time
-	</select>
-	<select id="findNGVI" resultMap="TrayMap">
+		where m.judge_result='N' and m.map_flag='0' and c.sub_line_type='S'
+		union
 		select <include refid="Base_Column_List"></include>
 		from map_tray_chip_move m
-		where m.judge_result='N' and map_flag='0' and m.eqp_id='APJ-VI1'
-		order by m.start_time
+		where m.judge_result='N' and m.map_flag='0' and m.eqp_id='APJ-VI1'
+		order by start_time
 	</select>
 </mapper>

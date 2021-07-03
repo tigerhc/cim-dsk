@@ -16,5 +16,5 @@ public interface IMapTrayChipMovePseudoService extends ICommonService<MapTrayChi
 
     void traceHB2();
 
-    void traceNGData(String subLineType);
+    void traceNGData();
 }
