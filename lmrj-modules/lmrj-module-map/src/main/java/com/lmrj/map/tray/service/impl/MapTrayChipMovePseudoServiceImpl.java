@@ -49,7 +49,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                                     Map<String, Object> param = new HashMap<>();
                                     param.put("pseudoCode", beforeLineCode);
                                     param.put("experimentRemark", pseudoCode);
-                                    baseMapper.updateTempPseudoCode(param);//将最新的伪码更新到experimentRemark字段中暂存
+                                    baseMapper.updateTempPseudoCode(param);//将最新的伪码更新到experimentRemark字段中暂存(同时map_flag由6变为8,使本段数据不会被再次找到,如果mapFlag不变会再次成为另一段的数据的上一段)
                                     baseMapper.updateBeforePseudoCode(pseudoCode);// 将暂存的最新的伪码更新到伪码字段中
                                 }else{
                                     Map<String, Object> finishParam = new HashMap<>();
