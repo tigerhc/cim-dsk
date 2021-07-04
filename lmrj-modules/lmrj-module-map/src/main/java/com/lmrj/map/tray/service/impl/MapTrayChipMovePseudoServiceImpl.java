@@ -46,8 +46,11 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                                 continue;
                             } else{
                                 if("Y".equals(startData.getJudgeResult())){
-                                    baseMapper.updateBeforeTempMapFlag(beforeLineCode);//将此段数据的状态由6 --> 8
-                                    baseMapper.updateBeforePseudoCode(pseudoCode);// 更新伪码为本段的新伪码
+                                    Map<String, Object> param = new HashMap<>();
+                                    param.put("pseudoCode", beforeLineCode);
+                                    param.put("experimentRemark", pseudoCode);
+                                    baseMapper.updateTempPseudoCode(param);//将最新的伪码更新到experimentRemark字段中暂存
+                                    baseMapper.updateBeforePseudoCode(pseudoCode);// 将暂存的最新的伪码更新到伪码字段中
                                 }else{
                                     Map<String, Object> finishParam = new HashMap<>();
                                     finishParam.put("chipId", startData.getChipId());
@@ -58,17 +61,12 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         }
                         //更新本段数据
                         if("Y".equals(startData.getJudgeResult())){
-                            //更新本段的伪码
-                            startData.setMapFlag(6);
-                            subLineData.add(startData);
-                            updateBatchById(subLineData, 100);
-                            baseMapper.finishPseudoCode(pseudoCode);// 将追溯上一段数据为更新伪码而产生的mapFlag=8 更新为6
+                            startData.setMapFlag(6);//更新本段的伪码
                         } else{
-                            //获得上段伪码
-                            startData.setMapFlag(2);
-                            subLineData.add(startData);
-                            updateBatchById(subLineData, 100);
+                            startData.setMapFlag(2);//获得上段伪码
                         }
+                        subLineData.add(startData);
+                        updateBatchById(subLineData, 100);
                     }
                 }
             }

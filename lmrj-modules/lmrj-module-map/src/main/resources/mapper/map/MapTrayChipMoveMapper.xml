@@ -438,11 +438,11 @@
 		where m.map_flag=0 and to_tray_id=#{fromTrayId} and to_x=#{fromX} and to_y=#{fromY} and c.down_eqp_id=#{eqpId}
 		order by m.start_time
 	</select>
-	<update id="updateBeforeTempMapFlag" parameterType="java.lang.String">
-		update map_tray_chip_move set map_flag=8 where pseudo_code=#{pseudoCode}
+	<update id="updateTempPseudoCode" parameterType="java.util.Map">
+		update map_tray_chip_move set experiment_remark=#{experimentRemark},map_flag=8 where pseudo_code=#{pseudoCode}
 	</update>
 	<update id="updateBeforePseudoCode" parameterType="java.lang.String">
-		update map_tray_chip_move set pseudo_code=#{pseudoCode} where map_flag=8
+		update map_tray_chip_move set pseudo_code=experiment_remark where experiment_remark=#{pseudoCode}
 	</update>
 	<select id="getHB2Start" resultMap="TrayMap">
 		select <include refid="Base_Column_List"></include>
@@ -476,9 +476,6 @@
 	</select>
 	<update id="HB2Finish" parameterType="java.util.Map">
 		update map_tray_chip_move set map_flag=2,chip_id=#{chipId} where pseudo_code=#{pseudoCode}
-	</update>
-	<update id="finishPseudoCode" parameterType="java.lang.String">
-		update map_tray_chip_move set map_flag=6 where pseudo_code=#{pseudoCode}
 	</update>
 
 	<select id="getCfgEqpForLine" parameterType="java.lang.String" resultMap="EqpCfg">
