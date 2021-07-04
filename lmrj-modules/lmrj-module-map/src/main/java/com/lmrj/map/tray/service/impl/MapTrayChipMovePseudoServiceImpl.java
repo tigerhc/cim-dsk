@@ -34,7 +34,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 startData.setPseudoCode(pseudoCode);//追溯本段前,先将伪码更新好
                 List<MapTrayChipMove> subLineData = traceSubLine(startData);//  ******追溯本段******
                 if(subLineData==null || subLineData.size()==0){//缺数据
-                    saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有找到", false);
+                    saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有全部找到", false);
                 } else {
                     boolean chkErr = true;
                     if(chkErr){
