@@ -29,7 +29,7 @@ public class RptYieldDayTask {
      */
     //@Scheduled(cron = "0 0/20 * * * ?")
     public void updateDayYield() {
-        for (int i = 15; i >0 ; i--) {
+        for (int i = 15; i >=0 ; i--) {
             Date endTime=new Date();
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY,8);
