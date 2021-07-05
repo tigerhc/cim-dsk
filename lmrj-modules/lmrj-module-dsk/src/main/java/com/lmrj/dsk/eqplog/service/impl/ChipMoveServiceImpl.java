@@ -39,6 +39,9 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 if(("APJ-DBCB-SORT1".equals(data.getEqpId())|| "APJ-DBCT-SORT1".equals(data.getEqpId()) ) && "N".equals(data.getJudgeResult())){
                     continue;
                 }
+                if(data.getEqpId().contains("SMT")){//贴片机的数据
+                    data.setSmtCount(MapUtils.getInteger(item, "smtCount"));
+                }
                 data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));

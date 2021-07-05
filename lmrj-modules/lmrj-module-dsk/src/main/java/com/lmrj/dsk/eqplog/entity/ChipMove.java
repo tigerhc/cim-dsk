@@ -83,4 +83,6 @@ public class ChipMove extends AbstractEntity {
     private Integer dmX;
     @TableField(value = "dm_y")
     private Integer dmY;
+    @TableField(value = "smt_count")
+    private Integer smtCount;
 }
