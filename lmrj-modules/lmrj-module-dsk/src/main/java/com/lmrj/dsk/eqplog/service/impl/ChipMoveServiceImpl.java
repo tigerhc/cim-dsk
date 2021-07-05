@@ -34,6 +34,11 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     chipId = null;
                 }
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
+                data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
+                //过滤掉起始移栽机的不良品数据
+                if(("APJ-DBCB-SORT1".equals(data.getEqpId())|| "APJ-DBCT-SORT1".equals(data.getEqpId()) ) && "N".equals(data.getJudgeResult())){
+                    continue;
+                }
                 data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
@@ -63,7 +68,6 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setDmX(MapUtils.getInteger(item, "dmX"));
                     data.setDmY(MapUtils.getInteger(item, "dmY"));
                 }
-                data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 String dataStartTime = MapUtils.getString(item, "startTime");
                 data.setStartTime(sdfSSS.parse(dataStartTime));
 
