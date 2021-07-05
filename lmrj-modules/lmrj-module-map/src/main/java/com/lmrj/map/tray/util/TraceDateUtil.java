@@ -35,13 +35,10 @@ public class TraceDateUtil {
 
     /** 获得两个时间之间差多少秒
      */
-    public static long getDiffSec(Date date1, Date date2){
-        long dateLong1 = date1.getTime();
-        long dateLong2 = date2.getTime();
+    public static long getDiffSec(Date startDate, Date endDate){
+        long dateLong1 = startDate.getTime();
+        long dateLong2 = endDate.getTime();
         long diff = dateLong2 - dateLong1;
-        if(diff < 0){
-            diff = diff * (-1);
-        }
         return diff / 1000;
     }
 

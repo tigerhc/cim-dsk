@@ -12,9 +12,13 @@ import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
+import com.lmrj.common.security.shiro.authc.UsernamePasswordToken;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.common.utils.IpUtils;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
+import com.lmrj.core.sys.entity.User;
+import com.lmrj.core.sys.service.IUserService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
@@ -26,7 +30,11 @@ import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +73,8 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
     IMsMeasureRecordService msMeasureRecordService;
     @Autowired
     private IFabEquipmentService fabEquipmentService;
+    @Autowired
+    private IUserService userService;
 
     /**
      * 在返回list数据之前编辑数据
@@ -83,6 +93,26 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
                 }
             }
         }
+    }
+
+    @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
+    private void login(@RequestParam  String username, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
+        User user = new User();
+        if(StringUtil.isEmpty(username) || StringUtil.isEmpty(password)) {
+        }else{
+            Subject subject = SecurityUtils.getSubject();
+            try{
+                UsernamePasswordToken token= new UsernamePasswordToken(username, password.toCharArray(), false, "", "");
+                subject.login(token);
+                user=userService.findByUsername(username);
+                user.setPassword("");
+                user.setSalt("");
+            }catch (AuthenticationException e) {
+                request.setAttribute("error", "用户名或密码错误");
+            }
+        }
+        String content = JSON.toJSONStringWithDateFormat(user, JSON.DEFFAULT_DATE_FORMAT);
+        ServletUtils.printJson(response, content);
     }
 
 

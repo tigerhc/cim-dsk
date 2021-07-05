@@ -65,10 +65,4 @@ public class IRwPlanHisServiceImpl extends CommonServiceImpl<RwPlanHisMapper, Rw
         return retList;
     }
 
-    @Override
-    public List<RwPlanHis> test1(String id) {
-        List<RwPlanHis> List = new ArrayList<RwPlanHis>();
-        List =  baseMapper.test1(id);
-        return List;
-    }
 }

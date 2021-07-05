@@ -21,6 +21,4 @@ public interface RwPlanHisMapper extends BaseMapper<RwPlanHis> {
                                   @Param("planStatus") String planStatus, @Param("planType") String planType,
                                   @Param("flag") String flag);
 
-    List<RwPlanHis> test1(@Param("id") String id);
-
 }

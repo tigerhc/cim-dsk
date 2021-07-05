@@ -91,14 +91,13 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     List<MapEquipmentConfig> getMapEqpConfig();
 
-    List<MapTrayChipMove> findBeforeLineEnd(Map<String, Object> param);
+    List<MapTrayChipMove> findBeforeLineEnd(MapTrayChipMove param);
+    List<MapTrayChipMove> findVI(MapTrayChipMove param);
 
     /**更新上一段的伪码数据的状态为8*/
-    void updateBeforeTempMapFlag(String PseudoCode);//上一段的PseudoCode
+    void updateTempPseudoCode(Map<String, Object> param);//上一段的PseudoCode
     /**更新状态为8的数据的伪码是PseudoCode*/
     void updateBeforePseudoCode(String PseudoCode);//最新的PseudoCode
-    /**更新所有伪码为PseudoCode的状态为伪码完成状态6*/
-    void finishPseudoCode(String PseudoCode);
 
     List<MapTrayChipMove> getHB2Start();
     List<MapTrayChipMove> getBeforeData(MapTrayChipMove param);

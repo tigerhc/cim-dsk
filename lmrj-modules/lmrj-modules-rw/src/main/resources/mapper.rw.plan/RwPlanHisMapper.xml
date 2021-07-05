@@ -56,10 +56,4 @@
 
     </select>
 
-    <select id="test1" resultType="com.lmrj.rw.plan.entity.RwPlanHis" parameterType="java.lang.String">
-        select
-        <include refid="Base_Column_List" />
-        from rw_plan_his t
-        WHERE t.id = #{id}
-    </select>
 </mapper>

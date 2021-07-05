@@ -60,12 +60,4 @@ public class RwPlanHisController extends BaseCRUDController<RwPlanHis> {
         ServletUtils.printJson(response, content);
     }
 
-    @RequestMapping(value = "/test/{id}", method = { RequestMethod.GET, RequestMethod.POST })
-    public String rwTest(@PathVariable String id , HttpServletRequest request, HttpServletResponse response){
-        List<RwPlanHis> test = rwPlanHisService.test1( id );
-        String s = JSON.toJSONString( new DateResponse( test ) );
-        ServletUtils.printJson(response, s);
-        System.out.println("啊啊啊啊");
-        return "吴虎成";
-    }
 }
