@@ -15,7 +15,13 @@
        t.plan_type,
        t.deal_advice,
        t.deal_des,
-       t.end_date
+       t.end_date,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
 	</sql>
 
     <select id="rwplanhislist" resultType="com.lmrj.rw.plan.entity.RwPlanHis">
