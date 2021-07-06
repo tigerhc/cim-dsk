@@ -2,6 +2,7 @@ package com.lmrj.cim.quartz;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.lmrj.core.entity.MesResult;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import com.lmrj.mes.track.service.IMesLotTrackService;
@@ -55,18 +56,22 @@ public class ClientCheckTask {
             map.put("METHOD", "CLIENT_CHECK");
             String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bcCode, JsonUtil.toJsonString(map));
             if (replyMsg != null && !"".equals(replyMsg)) {
-                successFlag = true;
-                if(successFlag){
-                    log.info("客户端：" + bcCode + "运行状态判断结束！  客户端运行正常");
-                }else {
-                    JSONObject jsonObject = new JSONObject();
-                    String jsonString = "";
-                    jsonObject.put("EQP_ID", "客户端：" + bcCode + "连接失败，请立刻检查上位机客户端eap程序运行情况及网络连接情况，若软件关闭，请立即将程序开启！");
-                    jsonObject.put("ALARM_CODE", "E-0020");
-                    jsonString = jsonObject.toJSONString();
-                    rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
-                    log.error("客户端 "+bcCode+" 连接失败，已发送邮件通知！请开发人员及时处理");
+                MesResult result = JsonUtil.from(replyMsg, MesResult.class);
+                String value = (String) result.getContent();
+                if (!"".equals(value) && value != null) {
+                    successFlag = true;
                 }
+            }
+            if (successFlag) {
+                log.info("客户端：" + bcCode + "运行状态判断结束！  客户端运行正常");
+            } else {
+                JSONObject jsonObject = new JSONObject();
+                String jsonString = "";
+                jsonObject.put("EQP_ID", "客户端：" + bcCode + "连接失败，请立刻检查上位机客户端eap程序运行情况及网络连接情况，若软件关闭，请立即将程序开启！");
+                jsonObject.put("ALARM_CODE", "E-0020");
+                jsonString = jsonObject.toJSONString();
+                rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
+                log.error("客户端 " + bcCode + " 连接失败，已发送邮件通知！请开发人员及时处理");
             }
         }
     }
