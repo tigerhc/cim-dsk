@@ -12,25 +12,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQZsxConfig {
 
-    @Autowired
-    private RabbitAdmin rabbitAdmin;
-    @Bean
-    public String[] operationLogQueue() {
-        String[] queueNames = {"C2S.Q.FAB_LOG_D", "C2S.Q.EVENT.DATA","C2S.Q.ALARM.DATA","C2S.Q.STATE.DATA",
-                "C2S.Q.PRODUCTIONLOG.DATA", "C2S.Q.OPERATIONLOG.DATA","C2S.Q.RECIPELOG.DATA","C2S.Q.TEMPLOG.DATA",
-                "C2S.Q.MEASURE.DATA",
-                "C2S.Q.ALARMRPT.DATA",
-                //RMS
-                "C2S.Q.RMS.UPLOAD"
-
-
-        };
-        for(String queueName :queueNames){
-            Queue queue=new Queue(queueName,true,false,false);
-            rabbitAdmin.declareQueue(queue);
-        }
-        return queueNames;
-    }
+    //@Autowired
+    //private RabbitAdmin rabbitAdmin;
+    //@Bean
+    //public String[] operationLogQueue() {
+    //    String[] queueNames = {"C2S.Q.FAB_LOG_D", "C2S.Q.EVENT.DATA","C2S.Q.ALARM.DATA","C2S.Q.STATE.DATA",
+    //            "C2S.Q.PRODUCTIONLOG.DATA", "C2S.Q.OPERATIONLOG.DATA","C2S.Q.RECIPELOG.DATA","C2S.Q.TEMPLOG.DATA",
+    //            "C2S.Q.MEASURE.DATA",
+    //            "C2S.Q.ALARMRPT.DATA",
+    //            //RMS
+    //            "C2S.Q.RMS.UPLOAD"
+    //
+    //
+    //    };
+    //    for(String queueName :queueNames){
+    //        Queue queue=new Queue(queueName,true,false,false);
+    //        rabbitAdmin.declareQueue(queue);
+    //    }
+    //    return queueNames;
+    //}
 
 }
 
