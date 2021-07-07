@@ -109,7 +109,9 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                     //把第一条数据的状态值设为当天八点前最后一条数据的状态
                     firstData.setState(lastData.getState());
                     firstData.setEqpId(eqpId);
-                    this.insert(firstData);
+                    if(null == baseMapper.findFirstData(startTime,eqpId)){
+                        this.insert(firstData);
+                    }
                 } catch (Exception e) {
                     log.error("日OEE数据解析出错",e);
                     e.printStackTrace();
