@@ -194,11 +194,26 @@
 	    IFNULL(mv.`to_tray_id`,mv.`chip_id`) AS toTrayId, IFNULL(mv.`to_x`,1) AS toX, IFNULL(mv.`to_y`,1) AS toY, mv.`to_z` AS toZ,
 	    mv.`judge_result` AS judgeResult, mv.`start_time` AS startTime,
 	    ec.down_eqp_id as 'nextEqpId',
-	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
+	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr, mv.pseudo_code as 'pseudoCode'
 		FROM `map_tray_chip_move` mv
 		LEFT JOIN `map_tray_config` cf ON mv.`to_tray_id` = cf.`tray_id`
 		LEFT JOIN `map_equipment_config` ec ON mv.`eqp_id` = ec.`eqp_id` and ec.del_flag='0'
 		WHERE `chip_id` = #{chipId}
+		order by mv.`start_time`
+	</select>
+
+	<select id="queryByPseudoCode" parameterType="string" resultType="map">
+		select mv.`id`, mv.`chip_id` AS chipId, mv.`eqp_id` AS eqpId, ec.`eqp_type` AS eqpType,
+	    IFNULL(cf.`tray_row`,1) AS trayRow, IFNULL(cf.`tray_col`,1) AS trayCol,
+	    mv.`from_tray_id` AS fromTrayId, mv.`from_x` AS fromX, mv.`from_y` AS fromY,
+	    IFNULL(mv.`to_tray_id`,mv.`chip_id`) AS toTrayId, IFNULL(mv.`to_x`,1) AS toX, IFNULL(mv.`to_y`,1) AS toY,
+	    mv.`judge_result` AS judgeResult, mv.`start_time` AS startTime,
+	    ec.down_eqp_id as 'nextEqpId',
+	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr, mv.pseudo_code as 'pseudoCode'
+		FROM `map_tray_chip_move` mv
+		LEFT JOIN `map_tray_config` cf ON mv.`to_tray_id` = cf.`tray_id`
+		LEFT JOIN `map_equipment_config` ec ON mv.`eqp_id` = ec.`eqp_id` and ec.del_flag='0'
+		WHERE `pseudo_code` = #{pseudoCode}
 		order by mv.`start_time`
 	</select>
 

@@ -95,6 +95,7 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     List<MapTrayChipMove> findVI(MapTrayChipMove param);
 
     /**更新上一段的伪码数据的状态为8*/
+    List<Map<String, Object>> queryByPseudoCode(String pseudoCode);
     void updateTempPseudoCode(Map<String, Object> param);//上一段的PseudoCode
     /**更新状态为8的数据的伪码是PseudoCode*/
     void updateBeforePseudoCode(String PseudoCode);//最新的PseudoCode
