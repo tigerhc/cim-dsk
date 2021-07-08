@@ -274,12 +274,14 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 //符合条件是时间间隔在cfgEqp中设置的间隔内(sql中以满足坐标相等)
                 long timeChk = TraceDateUtil.getDiffSec(item.getStartTime(), curDate);
                 if(cfgEqp.getEqpId().equals(item.getEqpId()) && timeChk < cfgEqp.getIntervalTimeMax() && timeChk >= 0){
-                    unfind = false;
-                    curDate = item.getStartTime();
-                    if("Y".equals(startData.getJudgeResult())){
+                    if("Y".equals(startData.getJudgeResult()) && item.getMapFlag() == 0){
+                        unfind = false;
+                        curDate = item.getStartTime();
                         item.setPseudoCode(startData.getPseudoCode());
                         item.setMapFlag(6);
-                    } else {
+                    } else if(item.getMapFlag() == 0){//不能追良品追过的数据
+                        unfind = false;
+                        curDate = item.getStartTime();
                         item.setChipId(startData.getChipId());
                         item.setMapFlag(2);
                     }

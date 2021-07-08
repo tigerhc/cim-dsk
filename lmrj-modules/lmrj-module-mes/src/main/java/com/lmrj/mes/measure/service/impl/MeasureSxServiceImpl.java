@@ -109,7 +109,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
                     } else if (local.equals("b")) {
                         elementArr.add(0.4);
                     } else if (local.equals("c")) {
-                        elementArr.add(0.07);
+                        elementArr.add(0.02);//elementArr.add(0.07);
                     } else if (local.equals("d")) {
                         elementArr.add(0);
                     }
