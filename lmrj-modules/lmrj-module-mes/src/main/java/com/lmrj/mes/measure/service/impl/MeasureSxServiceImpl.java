@@ -38,6 +38,12 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
     }
 
     public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
+        double cMin = 0;
+        if("LF".equals(type)){
+            cMin = 0.02;
+        } else {
+            cMin = 0.07;
+        }
         number = "1";
         List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
         number = "2";
@@ -109,7 +115,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
                     } else if (local.equals("b")) {
                         elementArr.add(0.4);
                     } else if (local.equals("c")) {
-                        elementArr.add(0.02);//elementArr.add(0.07);
+                        elementArr.add(cMin);//elementArr.add(0.07);
                     } else if (local.equals("d")) {
                         elementArr.add(0);
                     }
