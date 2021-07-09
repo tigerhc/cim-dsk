@@ -95,7 +95,7 @@ public class MapTrayChipMoveController {
         if(list!=null && list.size()>0){
             Map<String, Object> item = list.get(0);
             String dataChipId = MapUtil.getString(item, "chipId");
-            if(StringUtil.isEmpty(dataChipId) || dataChipId.contains("NG")){//查询伪码
+            if(StringUtil.isEmpty(dataChipId)){//查询伪码
                 String pseudoCode = MapUtil.getString(item, "pseudoCode");
                 if(StringUtil.isNotEmpty(pseudoCode)){
                     List<Map<String, Object>> pseudoCodeList = mapper.queryByPseudoCode(pseudoCode);
