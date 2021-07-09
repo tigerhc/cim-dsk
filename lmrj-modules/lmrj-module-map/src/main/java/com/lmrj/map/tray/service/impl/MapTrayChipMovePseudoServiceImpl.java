@@ -42,7 +42,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         if(!firstEqpId.contains(subLineData.get(subLineData.size()-1).getEqpId())){
                             String beforeLineCode = traceBeforeLine(subLineData.get(subLineData.size()-1)); //前一段伪码
                             if(StringUtil.isEmpty(beforeLineCode)){
-                                saveErrData(traceLogs, startData, "伪码追溯异常,前一段数据没有找到", false);
+                                saveErrData(traceLogs, startData, "伪码追溯异常,前一段数据没有找到sort2:"+subLineData.get(subLineData.size()-1).getId(), false);
                                 continue;
                             } else{
                                 if("Y".equals(startData.getJudgeResult())){
