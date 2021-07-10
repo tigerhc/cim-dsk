@@ -373,9 +373,10 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         boolean flag = false;
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
-            Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
             //获取rmsRecipe参数
-            RmsRecipe rmsRecipe = (RmsRecipe)contentMap.get("rmsRecipe");
+            //RmsRecipe rmsRecipe = (RmsRecipe)mesResult.getContent();
+            String rmsRecipe1 = (String)mesResult.getContent();
+            RmsRecipe rmsRecipe = JsonUtil.from(rmsRecipe1, RmsRecipe.class);
             flag = repeatUpload(rmsRecipe);
         }
         return flag;
@@ -438,12 +439,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             rmsRecipe.setApproveStep("1");
             rmsRecipe.setEqpModelId(fabEquipment.getModelId());
             rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-            baseMapper.insert(rmsRecipe);
-            for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
-                rmsRecipeBodyService.insert(recipeBody);
-            }
+            insert(rmsRecipe);
+            //baseMapper.insert(rmsRecipe);
+            //for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
+            //    rmsRecipeBodyService.insert(recipeBody);
+            //}
             flag = true;
         }
+        // todo 2021-07-11 01:14判断模板中是否有数据,没有数据则添加一条数据
         return flag;
     }
 
