@@ -112,7 +112,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
      *  查询recipe列表
      * @param request
      */
-    @RequestMapping(value = "getRecipeList", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "findRecipeList", method = { RequestMethod.GET, RequestMethod.POST })
     public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request, HttpServletResponse response) {
         Response res = null;
         try {
