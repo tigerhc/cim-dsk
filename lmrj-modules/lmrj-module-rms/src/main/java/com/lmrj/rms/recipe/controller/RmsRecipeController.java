@@ -116,7 +116,7 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
     public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request, HttpServletResponse response) {
         Response res = null;
         try {
-            List<String> recipeList = rmsRecipeService.selectRecipeList(eqpId);
+            List<String> recipeList = rmsRecipeService.findRecipeList(eqpId);
             if (recipeList.size() == 0){
                 res = Response.error(999998, "未查询到配方");
             } else {

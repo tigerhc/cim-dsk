@@ -18,7 +18,7 @@ import java.util.List;
 */
 public interface IRmsRecipeService extends ICommonService<RmsRecipe> {
     boolean uploadRecipe(String eqpId, List<String> recipeList) throws Exception;
-    List<String> selectRecipeList(String eqpId) throws Exception;
+    List<String> findRecipeList(String eqpId) throws Exception;
     boolean downloadRecipe(String eqpId, String recipeName) throws Exception;
     RmsRecipe findLastByRecipeCode(RmsRecipe rmsRecipe, String versionType);
     RmsRecipe findLastByRecipeCode(String id);

@@ -313,9 +313,9 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
     }
 
     @Override
-    public List<String> selectRecipeList(String eqpId) throws Exception {
+    public List<String> findRecipeList(String eqpId) throws Exception {
         Map<String, String> map = Maps.newHashMap();
-        map.put("METHOD", "SELECT_RECIPE_LIST");
+        map.put("METHOD", "FIND_RECIPE_LIST");
         map.put("EQP_ID", eqpId);
         Object principal = SecurityUtils.getSubject().getPrincipal();
         String userId = ShiroExt.getPrincipalProperty(principal, "id");
@@ -333,9 +333,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         List<String> recipeList = new ArrayList<>();
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
-            Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
-            //获取recipeList
-            recipeList = (List<String>)contentMap.get("recipeList");
+            recipeList = (List) mesResult.getContent();
         }
         return recipeList;
     }
