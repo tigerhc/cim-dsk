@@ -41,7 +41,7 @@ public class RptEqpStateDay extends BaseDataEntity {
     @TableField(value = "pm_time")
     private Double pmTime;
     /**其他持续时间*/
-    @TableField(value = "other_time")
-    private Double otherTime;
+    @TableField(value = "alarm_time")
+    private Double alarmTime;
 
 }
