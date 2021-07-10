@@ -312,6 +312,34 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return flag;
     }
 
+    @Override
+    public List<String> selectRecipeList(String eqpId) throws Exception {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "SELECT_RECIPE_LIST");
+        map.put("EQP_ID", eqpId);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        String bc = fabEquipment.getBcCode();
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        List<String> recipeList = new ArrayList<>();
+        //判断返回值flag是否正确
+        if ("Y".equals(mesResult.getFlag())) {
+            Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
+            //获取recipeList
+            recipeList = (List<String>)contentMap.get("recipeList");
+        }
+        return recipeList;
+    }
+
     /**
      * 上传recipe
      * @param eqpId
