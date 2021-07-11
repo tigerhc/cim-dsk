@@ -71,7 +71,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
 
 //    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
-    public static String[] FTP94 = new String[]{"127.0.0.1", "21", "FTP", "FTP"};
+    public static String[] FTP94 = new String[]{"118.195.191.202", "21", "yjftp", "Ivo123!@#"};
     private static String rootPath = "/RECIPE/";
 
     @Override
@@ -330,10 +330,12 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
         String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        Map<String, Object> content = new HashMap<>();
         List<String> recipeList = new ArrayList<>();
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
-            recipeList = (List) mesResult.getContent();
+            content = (Map<String, Object>) mesResult.getContent();
+            recipeList = (List<String>)content.get("recipeList");
         }
         return recipeList;
     }
@@ -532,6 +534,10 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         Object principal = SecurityUtils.getSubject().getPrincipal();
         String userId = ShiroExt.getPrincipalProperty(principal, "id");
         map.put("USER_ID", userId);
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("eqp_id", eqpId).eq("version_type", versionType).orderBy("version_no", false));
+        if (rmsRecipes != null & rmsRecipes.size() > 0) {
+            map.put("RECIPE_FILE_PATH", rmsRecipes.get(0).getRecipeFilePath());
+        }
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
         String bc = fabEquipment.getBcCode();
