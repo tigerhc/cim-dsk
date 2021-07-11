@@ -523,6 +523,38 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return download(eqpId, recipeCode);
     }
 
+    @Override
+    public boolean selectRecipe(String eqpId, String recipeCode) throws Exception{
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        //去下载配置中找到优先下载的版本类型
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "SELECT_RECIPE");
+        map.put("RECIPE_CODE", recipeCode);
+        map.put("EQP_ID", eqpId);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
+        String bc = fabEquipment.getBcCode();
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        //判断返回值flag是否正确
+        if (!"Y".equals(mesResult.getFlag())){
+            return false;
+        }
+        RmsRecipe rmsRecipe = new RmsRecipe();
+        rmsRecipe.setRecipeName(recipeCode);
+        rmsRecipeLogService.addLog(rmsRecipe, "SELECT_RECIPE", eqpId);
+        return true;
+    }
+
+
+
     /**
      * 下载recipe
      * @param eqpId
