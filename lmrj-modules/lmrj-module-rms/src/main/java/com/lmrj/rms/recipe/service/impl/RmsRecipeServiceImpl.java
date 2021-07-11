@@ -330,12 +330,25 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
         String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
         MesResult mesResult = JsonUtil.from(msg, MesResult.class);
-        Map<String, Object> content = new HashMap<>();
+        Map<String, Object> content = Maps.newHashMap();
         List<String> recipeList = new ArrayList<>();
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
             content = (Map<String, Object>) mesResult.getContent();
             recipeList = (List<String>)content.get("recipeList");
+            if (recipeList.size() > 0) {
+                String recipeName = content.get("recipeName").toString();
+                int index = 0;
+                if (recipeName != null && !"".equals(recipeName)) {
+                    for (int i = 0; i < recipeList.size(); i++) {
+                        if (recipeName.equals(recipeList.get(i))) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+                Collections.swap(recipeList, index, 0);
+            }
         }
         return recipeList;
     }
