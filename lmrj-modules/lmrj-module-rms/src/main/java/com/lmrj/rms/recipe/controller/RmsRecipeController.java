@@ -152,6 +152,26 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         return response;
     }
 
+    /**
+     *  切换recipe
+     * @param request
+     */
+    @RequestMapping(value = "selectrecipe")
+    public Response selectRecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
+        Response response = Response.ok("切换成功");
+        boolean flag = false;
+        try {
+            flag = rmsRecipeService.selectRecipe(eqpId, recipeName);
+            if (!flag){
+                response = Response.error(999998, "切换失败");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response = Response.error(999998,e.getMessage());
+        }
+        return response;
+    }
+
     @Override
     @GetMapping("export")
     public Response export(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) {
