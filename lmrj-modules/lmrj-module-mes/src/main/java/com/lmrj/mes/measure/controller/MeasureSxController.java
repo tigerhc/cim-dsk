@@ -145,7 +145,7 @@ public class MeasureSxController {
 
     private List<Map<String, String>> getSxDataList(String productionName, String startDate, String endDate, String type){
         String cMin = "";
-        if("LF".equals(type)){
+        if(!"LF".equals(type)){
             cMin = "0.02";
         } else {
             cMin = "0.07";

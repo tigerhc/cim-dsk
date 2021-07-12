@@ -39,7 +39,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
 
     public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
         double cMin = 0;
-        if("LF".equals(type)){
+        if(!"LF".equals(type)){
             cMin = 0.02;
         } else {
             cMin = 0.07;
