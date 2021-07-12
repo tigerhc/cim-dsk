@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -160,4 +163,78 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         return res;
     }
 
+    @RequestMapping(value = "/getEchartsData", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response getEchartsData(String productionName ,String startTime,String endTime, HttpServletRequest request, HttpServletResponse response, String type){
+        List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName,startTime,endTime);
+        List<String> xAxis = new ArrayList<>();
+        List<Double> XData = new ArrayList<>();//实测值:单例(单批次)数据的平均值所连成的线
+        List<Double> RData = new ArrayList<>();//差值
+        List<Double> XCL = new ArrayList<>();
+        List<Double> XUCL = new ArrayList<>();
+        List<Double> XLCL = new ArrayList<>();
+        List<Double> LCL = new ArrayList<>();
+        List<Double> RCL = new ArrayList<>();
+        List<Double> RUCL = new ArrayList<>();
+        List<Double> RLCL = new ArrayList<>();
+        Map<String, Object> cast = new HashMap<String, Object>();
+        String xAxisStr = "";
+        //对原始数据进行处理
+        if(dataList!=null && dataList.size()>0){
+            for(MsMeasureThrust item : dataList){
+                String handleData = "";
+                if("pull".equals(type)){
+                    handleData = item.getThrust().replace("~",",").replace(",-","");
+                } else{
+                    handleData = item.getPull().replace("~",",").replace(",-","");
+                }
+                String[] dataArr = handleData.split(",");
+                //处理X轴
+                if(!xAxisStr.equals(item.getLotNo())){  //一个批次有两个 ?? TODO 待确认 高
+                    xAxisStr = item.getLotNo();
+                    xAxis.add(xAxisStr);
+                }
+                //将数据库中的数据转换为double,为了接下来便于计算
+                if(dataArr!=null && dataArr.length>0){
+                    Double min = null;//excel 单列数据中的最小值
+                    Double max = null;//excel 单列数据中的最大值
+                    Double sum = 0d;//excel 单列数据总和
+                    int cnt = 0;//有效数据个数
+                    for(String lineData: dataArr){
+                        if(StringUtil.isNotEmpty(lineData)){
+                            cnt = cnt + 1;
+                            Double curD = Double.parseDouble(lineData);
+                            //处理最小值
+                            if(min==null){
+                                min = Double.parseDouble(lineData);
+                            } else if(min > curD){
+                                min = curD;
+                            }
+                            //处理最大值
+                            if(max==null){
+                                max = Double.parseDouble(lineData);
+                            } else if(max < curD){
+                                max = curD;
+                            }
+                            sum = sum + curD;
+                        }
+                    }
+                    if(cnt>0){//XData
+                        XData.add(sum / cnt);
+                        RData.add(max - min);
+                    } else {
+                        XData.add(null);//没有有效数据, 此处不同于零
+                        RData.add(null);
+                    }
+                }else{//各项为null处理 TODO
+                    XData.add(null);
+                    RData.add(null);
+                }
+            }
+        }
+        Response res = new Response();
+        res.put("xAxis", xAxis);
+        res.put("XData", XData);
+        res.put("RData", RData);
+        return res;
+    }
 }
