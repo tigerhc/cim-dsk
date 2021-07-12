@@ -457,7 +457,7 @@ public class DashboardController {
             Map<String, Object> SMAObj = new HashMap<>();
             SMAObj.put("bay_id", "101A-7");
             SMAObj.put("bay_index", "07");
-            SMAObj.put("bay_name", "IGBT");
+            SMAObj.put("bay_name", "FRD");
             SMAObj.put("run_time", 132);
             SMAObj.put("toolg_id", "101A-9");
             SMAObj.put("total_time", 132);
@@ -465,7 +465,7 @@ public class DashboardController {
             Map<String, Object> SXObj = new HashMap<>();
             SXObj.put("bay_id", "101A-6");
             SXObj.put("bay_index", "06");
-            SXObj.put("bay_name", "FRD");
+            SXObj.put("bay_name", "IGBT");
             SXObj.put("run_time", 132);
             SXObj.put("toolg_id", "101A-6");
             SXObj.put("total_time", 132);
@@ -473,7 +473,7 @@ public class DashboardController {
             Map<String, Object> GI6Obj = new HashMap<>();
             GI6Obj.put("bay_id", "101A-8");
             GI6Obj.put("bay_index", "08");
-            GI6Obj.put("bay_name", "DBCB");
+            GI6Obj.put("bay_name", "DBCT");
             GI6Obj.put("run_time", 132);
             GI6Obj.put("toolg_id", "101A-8");
             GI6Obj.put("total_time", 132);
@@ -481,7 +481,7 @@ public class DashboardController {
             Map<String, Object> GI5Obj = new HashMap<>();
             GI5Obj.put("bay_id", "101A-10");
             GI5Obj.put("bay_index", "10");
-            GI5Obj.put("bay_name", "DBCT");
+            GI5Obj.put("bay_name", "DBCB");
             GI5Obj.put("run_time", 132);
             GI5Obj.put("toolg_id", "101A-10");
             GI5Obj.put("total_time", 132);

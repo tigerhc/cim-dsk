@@ -11,6 +11,7 @@
        t.down_time,
        t.pm_time,
        t.other_time,
+       t.alarm_time
        t.create_by,
        t.create_date,
        t.update_by,
@@ -24,7 +25,8 @@
         round(sum(idle_time)/3600,2) idleTime,
         round(sum(down_time)/3600,2) downTime,
         round(sum(pm_time)/3600,2) pmTime,
-        round(sum(other_time)/3600,2) otherTime
+        round(sum(other_time)/3600,2) otherTime,
+        round(sum(alarm_time)/3600,2) alarmTime
         from rpt_eqp_state_day
         where period_date between #{beginTime} and #{endTime}
         and eqp_id in
@@ -39,7 +41,8 @@
         round(sum(idle_time)/3600,2) idleTime,
         round(sum(down_time)/3600,2) downTime,
         round(sum(pm_time)/3600,2) pmTime,
-        round(sum(other_time)/3600,2) otherTime
+        round(sum(other_time)/3600,2) otherTime,
+        round(sum(alarm_time)/3600,2) alarmTime
         from rpt_eqp_state_day
         where period_date between #{beginTime} and #{endTime}
         and eqp_id in
@@ -57,7 +60,8 @@
         sum(idle_time) idleTime,
         sum(down_time) downTime,
         sum(pm_time) pmTime,
-        sum(other_time) otherTime
+        sum(other_time) otherTime,
+        sum(alarm_time) alarmTime
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
@@ -81,7 +85,8 @@
         sum(idle_time) idleTime,
         sum(down_time) downTime,
         sum(pm_time) pmTime,
-        sum(other_time) otherTime
+        sum(other_time) otherTime,
+        sum(alarm_time) alarmTime
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
@@ -106,7 +111,8 @@
         sum(down_time)/60 downTime,
         sum(pm_time)/60 pmTime,
         sum(other_time)/60 otherTime,
-        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
+        sum(alarm_time) alarmTime,
+        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time)+sum(alarm_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
@@ -124,7 +130,8 @@
         sum(down_time)/60 downTime,
         sum(pm_time)/60 pmTime,
         sum(other_time)/60 otherTime,
-        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time))/60 as "totalTime"
+        sum(alarm_time) alarmTime,
+        (sum(run_time)+sum(idle_time)+sum(down_time)+sum(pm_time)+sum(other_time)+sum(alarm_time))/60 as "totalTime"
         FROM
         rpt_eqp_state_day t
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0 and f.active_flag = 'Y'
