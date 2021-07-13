@@ -177,7 +177,7 @@ public class FabEquipment extends BaseDataEntity {
     private Integer sortNo;
 
     @TableField(exist = false)
-    private List<IotEquipmentBind> iotEquipmentBindList;
+    private List<FabEquipmentBind> iotEquipmentBindList;
     /**
      * 是否角色管控中
      */

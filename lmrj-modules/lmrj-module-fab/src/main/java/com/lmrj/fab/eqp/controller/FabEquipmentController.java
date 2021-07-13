@@ -17,7 +17,7 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
-import com.lmrj.fab.eqp.service.IIotEquipmentBindService;
+import com.lmrj.fab.eqp.service.IFabEquipmentBindService;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -68,7 +68,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     @Autowired
     private IFabEquipmentService fabEquipmentService;
     @Autowired
-    private IIotEquipmentBindService iIotEquipmentBindService;
+    private IFabEquipmentBindService iIotEquipmentBindService;
     String title = "设备信息";
 
     /**

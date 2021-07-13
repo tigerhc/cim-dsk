@@ -3,8 +3,8 @@ package com.lmrj.rw.plan.service.impl;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.User;
-import com.lmrj.fab.userRole.service.IIotRoleEqpService;
-import com.lmrj.fab.userRole.service.IIotUserRoleService;
+import com.lmrj.fab.userRole.service.IFabRoleEqpService;
+import com.lmrj.fab.userRole.service.IFabUserRoleService;
 import com.lmrj.rw.plan.entity.RwPlan;
 import com.lmrj.rw.plan.entity.RwPlanHis;
 import com.lmrj.rw.plan.mapper.RwPlanMapper;
@@ -33,9 +33,9 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
     @Autowired
     private IRwPlanHisService rwPlanHisService;
     @Autowired
-    private IIotRoleEqpService iroleEqpService;
+    private IFabRoleEqpService iroleEqpService;
     @Autowired
-    private IIotUserRoleService iUserRoleService;
+    private IFabUserRoleService iUserRoleService;
     /**
      * 写入工单
      * @param plan

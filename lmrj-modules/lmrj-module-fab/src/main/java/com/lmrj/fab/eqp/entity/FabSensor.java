@@ -153,4 +153,6 @@ public class FabSensor  extends BaseDataEntity {
 
     @TableField(value = "sort_no")
     private Integer sortNo;
+
+
 }

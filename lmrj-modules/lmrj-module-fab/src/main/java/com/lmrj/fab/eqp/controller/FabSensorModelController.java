@@ -1,11 +1,11 @@
 package com.lmrj.fab.eqp.controller;
 
-
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
@@ -14,15 +14,15 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.common.utils.ServletUtils;
-import com.lmrj.fab.eqp.entity.FabEquipmentModel;
-import com.lmrj.fab.eqp.entity.FabModelTemplate;
-import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
-import com.lmrj.fab.eqp.service.IFabModelTemplateBodyService;
-import com.lmrj.fab.eqp.service.IFabModelTemplateService;
-import com.lmrj.util.lang.StringUtil;
+import com.lmrj.core.api.entity.EdcparamApi;
+import com.lmrj.core.api.service.IEdcparamApiService;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
-import com.lmrj.cim.utils.UserUtil;
+import com.lmrj.fab.eqp.entity.FabNumType;
+import com.lmrj.fab.eqp.entity.FabSensorModel;
+import com.lmrj.fab.eqp.service.IFabNumTypeservice;
+import com.lmrj.fab.eqp.service.IFabSensorModelService;
+import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,43 +30,29 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-/**
- * All rights Reserved, Designed By www.lmrj.com
- *
- * @version V1.0
- * @package com.lmrj.fab.controller
- * @title: fab_equipment_model控制器
- * @description: fab_equipment_model控制器
- * @author: kang
- * @date: 2019-06-07 22:18:19
- * @copyright: 2018 www.lmrj.com Inc. All rights reserved.
- */
-
 @RestController
-@RequestMapping("fab/fabequipmentmodel")
-@ViewPrefix("eqpmodel/fabequipmentmodel")
-@RequiresPathPermission("FabEquipmentModel")
-@LogAspectj(title = "fab_equipment_model")
-public class FabEquipmentModelController extends BaseCRUDController<FabEquipmentModel> {
+@RequestMapping("fab/fabsensormodel")
+@ViewPrefix("eqpmodel/fabsensormodel")
+@RequiresPathPermission("FabSensorModel")
+@LogAspectj(title = "fab_sensor_model")
+public class FabSensorModelController extends BaseCRUDController<FabSensorModel> {
 
     @Autowired
-    private IFabEquipmentModelService fabEquipmentModelService;
+    private IFabSensorModelService fabEquipmentModelService;
     @Autowired
-    private IFabModelTemplateService fabModelTemplateService;
+    private IFabNumTypeservice fabNumTypeservice;
     @Autowired
-    private IFabModelTemplateBodyService fabModelTemplateBodyService;
+    private IEdcparamApiService iEdcparamApiService;
     /**
      * 在返回对象之前编辑数据
      *
      * @param entity
      */
     @Override
-    public void afterFind(FabEquipmentModel entity) {
+    public void afterFind(FabSensorModel entity) {
         //创建人
         if(StringUtil.isNotBlank(entity.getCreateBy())){
             User creater = UserUtil.getUser(entity.getCreateBy());
@@ -81,10 +67,16 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
                 entity.setUpdateByName(updater.getUsername());
             }
         }
-        //查询模板名称以及模板ID
-      FabModelTemplate fabModelTemplate =  fabModelTemplateService.selectOne(new EntityWrapper<FabModelTemplate>().eq("class_code",entity.getClassCode()));
-        entity.setTemplateId(fabModelTemplate.getId());
-        entity.setTemplateName(fabModelTemplate.getName());
+
+        //查询对应的示数类型信息以及对应的参数信息
+        EdcparamApi edcparamApi = iEdcparamApiService.selectOne(new EntityWrapper<EdcparamApi>().eq("param_define_id",entity.getId()));
+        entity.setDefineId(edcparamApi.getId());
+        entity.setMaxValue(edcparamApi.getMaxValue());
+        entity.setMinValue(edcparamApi.getMinValue());
+        entity.setParamCode(edcparamApi.getParamCode());
+        entity.setParamName(edcparamApi.getParamName());
+        entity.setSetValue(edcparamApi.getSetValue());
+        entity.setNumType(fabNumTypeservice.getNumType(edcparamApi.getTypeId()));
     }
 
     /**
@@ -94,8 +86,8 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
      */
     @Override
     public void afterList(DateResponse pagejson, HttpServletRequest request, HttpServletResponse response) {
-        List<FabEquipmentModel> list = (List<FabEquipmentModel>) pagejson.getResults();
-        for(FabEquipmentModel fabEquipmentModel: list){
+        List<FabSensorModel> list = (List<FabSensorModel>) pagejson.getResults();
+        for(FabSensorModel fabEquipmentModel: list){
             fabEquipmentModel.setModelName(fabEquipmentModel.getManufacturerName()+"-"+fabEquipmentModel.getClassCode());
         }
     }
@@ -123,7 +115,7 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
      */
     @RequestMapping(value = "/manufacturerNameList", method = { RequestMethod.GET, RequestMethod.POST })
     public void manufacturerNameList(Model model, HttpServletRequest request,
-                          HttpServletResponse response) {
+                                     HttpServletResponse response) {
         List<String> manufacturerNameList = fabEquipmentModelService.manufacturerNameList();
         List<Map> list = Lists.newArrayList();
         for (String manufacturerName : manufacturerNameList) {
@@ -145,7 +137,7 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
      */
     @RequestMapping(value = "/classCodeList", method = { RequestMethod.GET, RequestMethod.POST })
     public void classCodeList(Model model, HttpServletRequest request,
-                          HttpServletResponse response) {
+                              HttpServletResponse response) {
         List<String> classCodeList = fabEquipmentModelService.classCodeList();
         List<Map> list = Lists.newArrayList();
         for (String classCode : classCodeList) {
@@ -167,7 +159,7 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
      */
     @RequestMapping(value = "/noTemClassCodeList", method = { RequestMethod.GET, RequestMethod.POST })
     public void noTemClassCodeList(Model model, HttpServletRequest request,
-                              HttpServletResponse response) {
+                                   HttpServletResponse response) {
         List<String> classCodeList = fabEquipmentModelService.noTemClassCodeList();
         List<Map> list = Lists.newArrayList();
         for (String classCode : classCodeList) {
@@ -214,7 +206,7 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
      */
     @RequestMapping(value = "/typeList/{parentType}", method = { RequestMethod.GET, RequestMethod.POST })
     public void typeList(Model model,@PathVariable("parentType") String parentType, HttpServletRequest request,
-                              HttpServletResponse response) {
+                         HttpServletResponse response) {
         List<String> classCodeList = fabEquipmentModelService.getTypeList("2",parentType);
         List<Map> list = Lists.newArrayList();
         for (String classCode : classCodeList) {
@@ -228,19 +220,25 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
     }
 
     @Override
-    public void afterSave(FabEquipmentModel entity, HttpServletRequest request, HttpServletResponse response) {
-    //保存完主表信息后将自动生成对应的模板信息
-        //此时无需生成body表
-        FabModelTemplate fabModelTemplate = new FabModelTemplate();
-        fabModelTemplate.setClassCode(entity.getClassCode());
-        fabModelTemplate.setActiveFlag("Y");
-        fabModelTemplate.setDelFlag("0");
-        fabModelTemplate.setName(entity.getTemplateName());
-        fabModelTemplate.setManufacturerName(entity.getManufacturerName());
-        fabModelTemplate.setId(entity.getTemplateId());
-        FabModelTemplate fabModelTemplateAfter =  fabModelTemplateService.insertOrUpdate(fabModelTemplate,"");
-//如果变更了模板名称则修改  否则无操作
-        fabModelTemplateBodyService.chageName(fabModelTemplateAfter.getId(),fabModelTemplateAfter.getName());
+    public void afterSave(FabSensorModel entity, HttpServletRequest request, HttpServletResponse response) {
+        //生成参数并关联示数类型
+        FabSensorModel fabSensorModel = fabEquipmentModelService.selectOne(new EntityWrapper<FabSensorModel>().eq("class_code",entity.getClassCode()));
+        String typeId = fabNumTypeservice.getTypeId(entity.getClassCode(),entity.getNumType());
+        //获取示数类型对应的所需信息
+        FabNumType fabNumType = fabNumTypeservice.selectById(typeId);
+        EdcparamApi edcparamApi = new EdcparamApi();
+        edcparamApi.setParamDefineId(fabSensorModel.getId());//暂存传感器类型ID
+        edcparamApi.setModelName(entity.getModelName());
+        edcparamApi.setParamCode(entity.getParamCode());
+        edcparamApi.setParamName(entity.getParamName());
+        edcparamApi.setTypeId(typeId);
+        edcparamApi.setSetValue(entity.getSetValue());
+        edcparamApi.setMaxValue(entity.getMaxValue());
+        edcparamApi.setMinValue(entity.getMinValue());
+        edcparamApi.setId(entity.getDefineId());
+        edcparamApi.setParamUnit(fabNumType==null?"":fabNumType.getParamUnit());
+        //新增或更新对应的参数信息
+        iEdcparamApiService.insertOrUpdateAll(edcparamApi);
 
     }
 
@@ -251,10 +249,9 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
     )
     @ResponseBody
     public Response delete(@PathVariable("id") String id) {
-        //删除对应的模板
-      String classCode =  fabEquipmentModelService.selectById(id).getClassCode();
-      fabModelTemplateService.deleteAll(classCode);
-      return super.delete(id);
+        //删除对应的参数信息
+        iEdcparamApiService.delete(new EntityWrapper<EdcparamApi>().eq("param_define_id",id));
+        return super.delete(id);
 
     }
 
@@ -266,18 +263,11 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
     @ResponseBody
     public Response batchDelete(@RequestParam(value = "ids",required = false) String[] ids) {
         List idList = Arrays.asList(ids);
-        //删除对应的模板
         for (Object id:idList) {
-            String classCode =  fabEquipmentModelService.selectById(String.valueOf(id)).getClassCode();
-            fabModelTemplateService.deleteAll(classCode);
+            iEdcparamApiService.delete(new EntityWrapper<EdcparamApi>().eq("param_define_id",id));
         }
+
         return  super.batchDelete(ids);
     }
-
-
-
-
-
-
 
 }

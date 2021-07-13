@@ -1,0 +1,108 @@
+package com.lmrj.fab.eqp.entity;
+
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.lmrj.core.entity.BaseDataEntity;
+import lombok.Data;
+
+@TableName("fab_sensor_model")
+@SuppressWarnings("serial")
+@Data
+public class FabSensorModel  extends BaseDataEntity {
+
+    /**ID*/
+    private String id;
+    /**设备厂家*/
+    @TableField(value = "manufacturer_name")
+    @Excel(name = "设备厂家", orderNum = "1", width = 12 )
+    private String manufacturerName;
+    /**设备类型*/
+    @TableField(value = "class_code")
+    @Excel(name = "设备类型", orderNum = "2", width = 20 )
+    private String classCode;
+    /**设备大类*/
+    @Excel(name = "设备大类", orderNum = "3", width = 20 )
+    @TableField(value = "parent_type")
+    private String parentType;
+    /**设备子类*/
+    @Excel(name = "设备小类", orderNum = "4", width = 20 )
+    @TableField(value = "type")
+    private String type;
+    /**单类型数量*/
+    @TableField(exist = false)
+    private String modelnumber;
+    @TableField(exist = false)
+    private String modelName;
+    @TableField(value = "category")
+    private String category;
+    /**SML文件路径*/
+    @TableField(value = "sml_path")
+    private String smlPath;
+    /**设备对应的JAVA类*/
+    @TableField(value = "host_java_class")
+    private String hostJavaClass;
+    /**有效标志*/
+    @TableField(value = "active_flag")
+    @Excel(name = "有效标志", orderNum = "5")
+    private String activeFlag;
+    /**图片路径*/
+    @TableField(value = "icon_path")
+    private String iconPath;
+    @TableField(exist = false)
+    private String fileType;
+    //模板名称
+    @TableField(exist = false)
+    private String templateName;
+    //模板ID
+    @TableField(exist = false)
+    private String templateId;
+
+    /**edc_param_define_model的id*/
+    @TableField(exist = false)
+    private String defineId;
+    /**参数制程名称*/
+    @TableField(exist = false)
+    private String paramDefineId;
+    /**参数CODE, 格式: 厂商缩写+model字母+1000001 ~ 1999999,各型号不可重复*/
+
+    /**示数类型ID(外键)*/
+    @TableField(exist = false)
+    private String typeId;
+    @TableField(exist = false)
+    private String paramCode;
+    /**参数名称*/
+    @TableField(exist = false)
+    private String paramName;
+    /**参数简称*/
+    @TableField(exist = false)
+    private String paramShortname;
+    /**计量单位*/
+    @TableField(exist = false)
+    private String paramUnit;
+    /**通讯协议 格式:A,B*/
+    @TableField(exist = false)
+    private String protocol;
+    /**子通讯协议 格式:SV EC*/
+    @TableField(exist = false)
+    private String protocolSub;
+    /**通讯协议值*/
+    @TableField(exist = false)
+    private String protocolValue;
+    /**设定值*/
+    @TableField(exist = false)
+    private String setValue;
+    /**默认值*/
+    @TableField(exist = false)
+    private String defValue;
+    /**最小值*/
+    @TableField(exist = false)
+    private String minValue;
+    /**最大值*/
+    @TableField(exist = false)
+    private String maxValue;
+    /**示数类型*/
+    @TableField(exist = false)
+    private String numType;
+
+}

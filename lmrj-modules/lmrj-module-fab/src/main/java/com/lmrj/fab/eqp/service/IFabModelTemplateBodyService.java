@@ -20,4 +20,6 @@ public interface IFabModelTemplateBodyService  extends ICommonService<FabModelTe
     List<FabModelTemplateBody> getNoBindInfo(String eqpId);
 
     List<String> getSubAndName(String Id);
+
+    void chageName(String id,String name);
 }
