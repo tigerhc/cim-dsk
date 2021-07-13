@@ -13,4 +13,8 @@ public interface IFabModelTemplateService  extends ICommonService<FabModelTempla
 
     String getName(String id);
 
+    FabModelTemplate insertOrUpdate(FabModelTemplate fabModelTemplate,String a);
+
+    void deleteAll(String classCode);
+
 }

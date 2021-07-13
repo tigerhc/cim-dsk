@@ -63,8 +63,16 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setToX(1);
                     data.setToY(1);
                 }else{
-                    data.setToX(MapUtils.getIntValue(item, "toRow"));
-                    data.setToY(MapUtils.getIntValue(item, "toCol"));
+                    try {
+                        data.setToX(MapUtils.getIntValue(item, "toRow"));
+                        data.setToY(MapUtils.getIntValue(item, "toCol"));
+                        if(data.getToX()==0){
+                            data.setToX(null);
+                            data.setToY(null);
+                        }
+                    }catch (Exception e){
+                        log.error("追溯数据入库时,坐标没有转对");
+                    }
                 }
                 if(MapUtils.getString(item, "eqpId").contains("-DM")){//DM 坐标
                     data.setDmId(MapUtils.getString(item, "dmId"));
@@ -83,6 +91,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 return baseMapper.insertMoveLog(mapperList);
             }
         } catch (Exception e){
+            e.printStackTrace();
             log.error("保存追溯的前段数据有误", e);
         }
         return 0;

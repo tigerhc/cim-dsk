@@ -75,7 +75,7 @@ public class FabEquipmentModelServiceImpl  extends CommonServiceImpl<FabEquipmen
         FabEquipmentModel  a = new FabEquipmentModel();
         a.setClassCode(modelId);
         a = baseMapper.selectOne(a);
-        return a.getManufacturerName();
+        return a==null?"":a.getManufacturerName();
 
     }
 }

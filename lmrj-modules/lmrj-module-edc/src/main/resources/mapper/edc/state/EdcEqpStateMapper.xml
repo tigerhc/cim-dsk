@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.edc.state.mapper.EdcEqpStateMapper" >
+<mapper namespace="com.lmrj.edc.state.mapper.EdcEqpStateMapper">
 
-	<sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
        t.id,
        t.eqp_id,
        t.state,
@@ -14,7 +14,7 @@
        t.create_date,
        t.update_date
 	</sql>
-       <select id="getAllByTime" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+    <select id="getAllByTime" resultType="com.lmrj.edc.state.entity.EdcEqpState">
             SELECT
                   t.id,
                   t.eqp_id,
@@ -48,6 +48,14 @@
         order by start_time desc
         limit 1
     </select>
+
+    <select id="findLastData2" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select * from edc_eqp_state
+        where start_time &lt; #{startTime} and eqp_id=#{eqpId}
+        order by start_time desc
+        limit 1
+    </select>
+
     <select id="findWrongEqpList" resultType="com.lmrj.edc.state.entity.EdcEqpState">
         select * from edc_eqp_state
         where end_time is null  and eqp_id=#{eqpId} and start_time between #{startTime} and #{endTime}
@@ -60,13 +68,18 @@
         order by start_time desc
         limit 1
     </select>
-
+    <select id="findNewData2" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select * from edc_eqp_state
+        where start_time &lt;= #{startTime} and eqp_id=#{eqpId}
+        order by start_time desc
+        limit 1
+    </select>
     <select id="eqpStateTime" resultType="java.util.HashMap">
         select eqp_id,state,start_time,end_time from edc_eqp_state
         where eqp_id in
         <foreach collection="arr" item="name" index="index" open="(" close=")" separator=",">
-        #{name}
-       </foreach>
+            #{name}
+        </foreach>
         and del_flag = '0'
         and start_time between #{startTime} and #{endTime}
     </select>

@@ -24,12 +24,25 @@ import java.util.List;
 @Mapper
 public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
-    List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime,@Param("eqpId") String eqpId);
+    List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
+
     List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    EdcEqpState findLastData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
+
+    EdcEqpState findLastData(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
+
+    EdcEqpState findLastData2(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
+
     @Select("select DISTINCT eqp_id from edc_eqp_state where start_time BETWEEN #{startTime} and #{endTime}")
     List<String> findEqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    List<EdcEqpState> findWrongEqpList(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    EdcEqpState findNewData(@Param("startTime") Date startTime,@Param("eqpId") String eqpId);
-    List<HashMap<String, Object>> eqpStateTime(@Param("startTime") String startTime,@Param("endTime") String endTime,@Param("arr")String[] arr);
+
+    List<EdcEqpState> findWrongEqpList(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    EdcEqpState findNewData(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
+
+    EdcEqpState findNewData2(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
+
+    List<HashMap<String, Object>> eqpStateTime(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("arr") String[] arr);
+
+    @Select("select * from edc_eqp_state where start_time = #{startTime} and eqp_id = #{eqpId} limit 1")
+    EdcEqpState findFirstData(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
 }

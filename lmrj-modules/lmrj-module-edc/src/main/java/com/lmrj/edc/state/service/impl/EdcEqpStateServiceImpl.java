@@ -97,7 +97,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 try {
                     EdcEqpState firstData = new EdcEqpState();
                     //当天0点前最后一条数据
-                    EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+                    EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
                     lastData.setEndTime(startTime);
                     Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
                     lastData.setStateTimes(state);
@@ -109,7 +109,9 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                     //把第一条数据的状态值设为当天八点前最后一条数据的状态
                     firstData.setState(lastData.getState());
                     firstData.setEqpId(eqpId);
-                    this.insert(firstData);
+                    if(null == baseMapper.findFirstData(startTime,eqpId)){
+                        this.insert(firstData);
+                    }
                 } catch (Exception e) {
                     log.error("日OEE数据解析出错",e);
                     e.printStackTrace();
@@ -153,7 +155,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(eqpId);
             edcEqpState.setStartTime(startTime);
-            EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+            EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
             if(lastData == null){
                 edcEqpState.setState("IDLE");
             }else {
@@ -181,7 +183,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             if (eqpStateList.get(0).getStartTime().after(startTime)) {
                 EdcEqpState firstData = new EdcEqpState();
                 //当天0点前最后一条数据
-                EdcEqpState lastData = baseMapper.findLastData(startTime, eqpId);
+                EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
                 if(lastData!=null){
                     lastData.setEndTime(startTime);
                     Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
@@ -277,6 +279,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             Double run = 0.0;
             Double down = 0.0;
             Double pm = 0.0;
+            Double alarm = 0.0;
             for (EdcEqpState edcEqpState : list) {
                 if ("run".equalsIgnoreCase(edcEqpState.getState())) {
                     run = run + edcEqpState.getStateTimes();
@@ -290,11 +293,15 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 if ("pm".equalsIgnoreCase(edcEqpState.getState())) {
                     pm = pm + edcEqpState.getStateTimes();
                 }
+                if ("alarm".equalsIgnoreCase(edcEqpState.getState())) {
+                    alarm = alarm + edcEqpState.getStateTimes();
+                }
             }
             rptEqpStateDay.setRunTime(run / 1000);
             rptEqpStateDay.setDownTime(down / 1000);
             rptEqpStateDay.setPmTime(pm);
-            idle = 24 * 60 * 60 * 1000 - run - down  - pm;
+            rptEqpStateDay.setAlarmTime(alarm / 1000);
+            idle = 24 * 60 * 60 * 1000 - run - down  - pm - alarm;
             rptEqpStateDay.setIdleTime(idle / 1000);
             //rptEqpStateDay.setOtherTime(other / 1000);
             rptEqpStateDayList.add(rptEqpStateDay);
@@ -319,6 +326,11 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     }
 
     @Override
+    public EdcEqpState findLastData2(Date startTime, String eqpId) {
+        return baseMapper.findLastData2(startTime, eqpId);
+    }
+
+    @Override
     public List<EdcEqpState> findWrongEqpList(String eqpId, Date startTime, Date endTime) {
         return baseMapper.findWrongEqpList(eqpId, startTime, endTime);
     }
@@ -326,6 +338,11 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     @Override
     public EdcEqpState findNewData(Date startTime, String eqpId) {
         return baseMapper.findNewData(startTime, eqpId);
+    }
+
+    @Override
+    public EdcEqpState findNewData2(Date startTime, String eqpId) {
+        return baseMapper.findNewData2(startTime, eqpId);
     }
 
     @Override

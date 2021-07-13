@@ -2,9 +2,12 @@ package com.lmrj.fab.eqp.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lmrj.common.http.DateResponse;
+import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions;
@@ -12,22 +15,23 @@ import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.fab.eqp.entity.FabEquipmentModel;
+import com.lmrj.fab.eqp.entity.FabModelTemplate;
 import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
+import com.lmrj.fab.eqp.service.IFabModelTemplateBodyService;
+import com.lmrj.fab.eqp.service.IFabModelTemplateService;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.User;
 import com.lmrj.cim.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +56,10 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
 
     @Autowired
     private IFabEquipmentModelService fabEquipmentModelService;
+    @Autowired
+    private IFabModelTemplateService fabModelTemplateService;
+    @Autowired
+    private IFabModelTemplateBodyService fabModelTemplateBodyService;
     /**
      * 在返回对象之前编辑数据
      *
@@ -73,6 +81,10 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
                 entity.setUpdateByName(updater.getUsername());
             }
         }
+        //查询模板名称以及模板ID
+      FabModelTemplate fabModelTemplate =  fabModelTemplateService.selectOne(new EntityWrapper<FabModelTemplate>().eq("class_code",entity.getClassCode()));
+        entity.setTemplateId(fabModelTemplate.getId());
+        entity.setTemplateName(fabModelTemplate.getName());
     }
 
     /**
@@ -213,6 +225,53 @@ public class FabEquipmentModelController extends BaseCRUDController<FabEquipment
         DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
         ServletUtils.printJson(response, content);
+    }
+
+    @Override
+    public void afterSave(FabEquipmentModel entity, HttpServletRequest request, HttpServletResponse response) {
+    //保存完主表信息后将自动生成对应的模板信息
+        //此时无需生成body表
+        FabModelTemplate fabModelTemplate = new FabModelTemplate();
+        fabModelTemplate.setClassCode(entity.getClassCode());
+        fabModelTemplate.setActiveFlag("Y");
+        fabModelTemplate.setDelFlag("0");
+        fabModelTemplate.setName(entity.getTemplateName());
+        fabModelTemplate.setManufacturerName(entity.getManufacturerName());
+        fabModelTemplate.setId(entity.getTemplateId());
+        FabModelTemplate fabModelTemplateAfter =  fabModelTemplateService.insertOrUpdate(fabModelTemplate,"");
+//如果变更了模板名称则修改  否则无操作
+        fabModelTemplateBodyService.chageName(fabModelTemplateAfter.getId(),fabModelTemplateAfter.getName());
+
+    }
+
+    @Override
+    @RequestMapping(
+            value = {"{id}/delete"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
+    public Response delete(@PathVariable("id") String id) {
+        //删除对应的模板
+      String classCode =  fabEquipmentModelService.selectById(id).getClassCode();
+      fabModelTemplateService.deleteAll(classCode);
+      return super.delete(id);
+
+    }
+
+    @Override
+    @RequestMapping(
+            value = {"batch/delete"},
+            method = {RequestMethod.GET, RequestMethod.POST}
+    )
+    @ResponseBody
+    public Response batchDelete(@RequestParam(value = "ids",required = false) String[] ids) {
+        List idList = Arrays.asList(ids);
+        //删除对应的模板
+        for (Object id:idList) {
+            String classCode =  fabEquipmentModelService.selectById(String.valueOf(id)).getClassCode();
+            fabModelTemplateService.deleteAll(classCode);
+        }
+        return  super.batchDelete(ids);
     }
 
 

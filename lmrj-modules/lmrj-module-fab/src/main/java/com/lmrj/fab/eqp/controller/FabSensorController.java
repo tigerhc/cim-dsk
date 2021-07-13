@@ -1,6 +1,7 @@
 package com.lmrj.fab.eqp.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.google.common.collect.Lists;
 import com.lmrj.cim.utils.OfficeUtils;
 import com.lmrj.cim.utils.UserUtil;
@@ -13,12 +14,12 @@ import com.lmrj.common.query.data.PropertyPreFilterable;
 import com.lmrj.common.query.data.Queryable;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
-import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
-import com.lmrj.fab.eqp.entity.FabSensor;
+import com.lmrj.fab.eqp.entity.FabEquipmentModel;
+import com.lmrj.fab.eqp.entity.FabModelTemplate;
 import com.lmrj.fab.eqp.entity.FabSensor;
 import com.lmrj.fab.eqp.service.IFabSensorService;
-import com.lmrj.fab.eqp.service.IIotEquipmentBindService;
+import com.lmrj.fab.eqp.service.IFabEquipmentBindService;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +55,9 @@ public class FabSensorController extends BaseCRUDController<FabSensor> {
     @Autowired
     private IFabSensorService FabSensorService;
     @Autowired
-    private IIotEquipmentBindService iIotEquipmentBindService;
+    private IFabEquipmentBindService iIotEquipmentBindService;
     String title = "设备信息";
+
 
     /**
      * 设备列表下拉框
@@ -287,4 +290,37 @@ public class FabSensorController extends BaseCRUDController<FabSensor> {
         }
         return res;
     }
+
+
+
+    @Override
+    public void afterSave(FabSensor entity, HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
+    @Override
+    @RequestMapping(
+            value = {"{id}/delete"},
+            method = {RequestMethod.POST}
+    )
+    @ResponseBody
+    public Response delete(@PathVariable("id") String id) {
+
+
+        return super.delete(id);
+
+    }
+
+    @Override
+    @RequestMapping(
+            value = {"batch/delete"},
+            method = {RequestMethod.GET, RequestMethod.POST}
+    )
+    @ResponseBody
+    public Response batchDelete(@RequestParam(value = "ids",required = false) String[] ids) {
+        List idList = Arrays.asList(ids);
+
+        return  super.batchDelete(ids);
+    }
+
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.fab.eqp.mapper.FabSensorModelMapper" >
+
+    <sql id="Base_Column_List" >
+        t.id,
+       t.manufacturer_name,
+       t.class_code,
+       t.sml_path,
+       t.host_java_class,
+       t.active_flag,
+       t.icon_path,
+       t.remarks,
+       t.parent_type,
+       t.type,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+    </sql>
+
+
+    <!-- 通过用户ID查询 -->
+    <!--resultType="com.lmrj.fab.eqp.entity.FabEquipmentModel"-->
+    <select id="findLookup"  resultType="map">
+        select id, concat( manufacturer_name,'-',class_code) model_name from fab_sensor_model
+        where del_flag = '0'
+          and active_flag = 'Y'
+    </select>
+
+    <select id="manufacturerNameList" resultType="string">
+        select manufacturer_name from fab_sensor_model where del_flag = '0'
+    </select>
+
+    <select id="classCodeList" resultType="string">
+        select class_code from fab_sensor_model where del_flag = '0'
+    </select>
+
+    <select id="parentTypeList" resultType="string" >
+        select parent_type from fab_sensor_model where del_flag = '0'
+        <if test="classCode != null and classCode != ''">
+            and class_code = #{classCode}
+        </if>
+
+    </select>
+    <select id="typeList" resultType="string" >
+        select a.type from fab_sensor_model a where a.del_flag = '0'
+        <if test="parentType != null and parentType != ''">
+            and a.parent_type = #{parentType}
+        </if>
+
+    </select>
+
+    <select id="getAlltemplateList" resultType="map">
+        select DISTINCT a.parent_type parentType,a.type type,a.class_code classCode
+        from fab_sensor_model a
+        where a.parent_type is not null
+          and a.type is not null
+          and a.parent_type <![CDATA[ <> ]]> ''
+          and a.type <![CDATA[ <> ]]> ''
+          and a.del_flag = '0'
+    </select>
+
+    <select id="noTemClassCodeList" resultType="String">
+        select a.class_code
+        from fab_sensor_model a
+        where a.parent_type is null
+          and a.del_flag = '0'
+          and  not EXISTS (select b.class_code from fab_model_template b where a.class_code = b.class_code)
+    </select>
+</mapper>

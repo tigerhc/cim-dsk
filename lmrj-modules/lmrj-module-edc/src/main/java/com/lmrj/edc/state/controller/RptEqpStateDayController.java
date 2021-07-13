@@ -65,8 +65,13 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
                 BigDecimal downTimeR =new BigDecimal(downTime);
                 //BigDecimal add =runTimeR.add(idleTimeR);
                 BigDecimal result= runTimeR.add(downTimeR);
+
+                String alarmTime =String.valueOf(map.get("alarmTime"));
+                BigDecimal alarmTimeR =new BigDecimal(alarmTime);
+                BigDecimal result1 = result.add(alarmTimeR);
+
                 BigDecimal temp =new BigDecimal(24);
-                BigDecimal idle =temp.subtract(result);
+                BigDecimal idle =temp.subtract(result1);
                 map.put("idleTime",Double.valueOf(idle.toString()));
                 map.remove("otherTime");
             });
@@ -83,9 +88,14 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
                 BigDecimal downTimeR =new BigDecimal(downTime);
                 //BigDecimal add =runTimeR.add(idleTimeR);
                 BigDecimal result= runTimeR.add(downTimeR);
+
+                String alarmTime =String.valueOf(map.get("alarmTime"));
+                BigDecimal alarmTimeR =new BigDecimal(alarmTime);
+                BigDecimal result1 = result.add(alarmTimeR);
+
                 long countDay =(long)map.get("countDay");
                 BigDecimal temp =new BigDecimal(24 * countDay);
-                BigDecimal idle =temp.subtract(result);
+                BigDecimal idle =temp.subtract(result1);
                 if(Double.valueOf(idle.toString())<0){
                     idle =new BigDecimal(0);
                 }

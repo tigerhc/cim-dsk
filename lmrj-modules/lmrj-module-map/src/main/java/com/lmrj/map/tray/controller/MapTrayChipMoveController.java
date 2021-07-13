@@ -13,6 +13,8 @@ import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+import com.lmrj.util.collection.MapUtil;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -88,8 +90,19 @@ public class MapTrayChipMoveController {
      * @param chipId
      */
     @RequestMapping(value = "moveDetail", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response pageList(@RequestParam String chipId) {
+    public Response pageList(@RequestParam String chipId) { //chipId 是 id 不是表中的chipId
         List<Map<String, Object>> list = mapper.queryChip(chipId);
+        if(list!=null && list.size()>0){
+            Map<String, Object> item = list.get(0);
+            String dataChipId = MapUtil.getString(item, "chipId");
+            if(StringUtil.isEmpty(dataChipId)){//查询伪码
+                String pseudoCode = MapUtil.getString(item, "pseudoCode");
+                if(StringUtil.isNotEmpty(pseudoCode)){
+                    List<Map<String, Object>> pseudoCodeList = mapper.queryByPseudoCode(pseudoCode);
+                    return DateResponse.ok(pseudoCodeList);
+                }
+            }
+        }
         return DateResponse.ok(list);
     }
 

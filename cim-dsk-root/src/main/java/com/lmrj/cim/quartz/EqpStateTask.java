@@ -156,7 +156,7 @@ public class EqpStateTask {
                     rptEqpStateDay.setIdleTime(idle);
                 }
                 rptEqpStateDay.setPmTime(0.0);
-                rptEqpStateDay.setOtherTime(0.0);
+                rptEqpStateDay.setAlarmTime(0.0);
                 rptEqpStateDayList.add(rptEqpStateDay);
             }
         }
@@ -208,7 +208,7 @@ public class EqpStateTask {
                         newData.setRunTime(0.0);
                         newData.setDownTime(down);
                     }
-                    newData.setOtherTime(0.0);
+                    newData.setAlarmTime(0.0);
                     newData.setIdleTime(0.0);
                     newData.setPeriodDate(periodDate);
                     newData.setCreateBy("GXJTEST");

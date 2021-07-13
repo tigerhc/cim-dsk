@@ -27,11 +27,15 @@ public interface IEdcEqpStateService extends ICommonService<EdcEqpState> {
 
     EdcEqpState findLastData(Date startTime,String eqpId);
 
+    EdcEqpState findLastData2(Date startTime,String eqpId);//包含ALARM
+
     List<String> findEqpId(Date startTime,Date endTime);
 
     List<EdcEqpState> findWrongEqpList(String eqpId,Date startTime,Date endTime);
 
     EdcEqpState findNewData(Date startTime,String eqpId);
+
+    EdcEqpState findNewData2(Date startTime,String eqpId);//包含ALARM
 
     List<Map<String, Object>> eqpStateTime(String startTime, String endTime, String eqpId);
 }

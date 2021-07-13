@@ -71,7 +71,7 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
 
 
 //    public static String[] FTP94 = new String[]{"106.12.76.94", "21", "cim", "Pp123!@#"};
-    public static String[] FTP94 = new String[]{"127.0.0.1", "21", "FTP", "FTP"};
+    public static String[] FTP94 = new String[]{"118.195.191.202", "21", "yjftp", "Ivo123!@#"};
     private static String rootPath = "/RECIPE/";
 
     @Override
@@ -312,6 +312,47 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return flag;
     }
 
+    @Override
+    public List<String> findRecipeList(String eqpId) throws Exception {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "FIND_RECIPE_LIST");
+        map.put("EQP_ID", eqpId);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        String bc = fabEquipment.getBcCode();
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        Map<String, Object> content = Maps.newHashMap();
+        List<String> recipeList = new ArrayList<>();
+        //判断返回值flag是否正确
+        if ("Y".equals(mesResult.getFlag())) {
+            content = (Map<String, Object>) mesResult.getContent();
+            recipeList = (List<String>)content.get("recipeList");
+            if (recipeList.size() > 0) {
+                String recipeName = content.get("recipeName").toString();
+                int index = 0;
+                if (recipeName != null && !"".equals(recipeName)) {
+                    for (int i = 0; i < recipeList.size(); i++) {
+                        if (recipeName.equals(recipeList.get(i))) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+                Collections.swap(recipeList, index, 0);
+            }
+        }
+        return recipeList;
+    }
+
     /**
      * 上传recipe
      * @param eqpId
@@ -347,9 +388,10 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         boolean flag = false;
         //判断返回值flag是否正确
         if ("Y".equals(mesResult.getFlag())) {
-            Map<String, Object> contentMap = (Map<String, Object>) mesResult.getContent();
             //获取rmsRecipe参数
-            RmsRecipe rmsRecipe = (RmsRecipe)contentMap.get("rmsRecipe");
+            //RmsRecipe rmsRecipe = (RmsRecipe)mesResult.getContent();
+            String rmsRecipe1 = (String)mesResult.getContent();
+            RmsRecipe rmsRecipe = JsonUtil.from(rmsRecipe1, RmsRecipe.class);
             flag = repeatUpload(rmsRecipe);
         }
         return flag;
@@ -412,12 +454,14 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
             rmsRecipe.setApproveStep("1");
             rmsRecipe.setEqpModelId(fabEquipment.getModelId());
             rmsRecipe.setEqpModelName(fabEquipment.getModelName());
-            baseMapper.insert(rmsRecipe);
-            for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
-                rmsRecipeBodyService.insert(recipeBody);
-            }
+            insert(rmsRecipe);
+            //baseMapper.insert(rmsRecipe);
+            //for (RmsRecipeBody recipeBody:rmsRecipe.getRmsRecipeBodyDtlList()) {
+            //    rmsRecipeBodyService.insert(recipeBody);
+            //}
             flag = true;
         }
+        // todo 2021-07-11 01:14判断模板中是否有数据,没有数据则添加一条数据
         return flag;
     }
 
@@ -479,6 +523,38 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         return download(eqpId, recipeCode);
     }
 
+    @Override
+    public boolean selectRecipe(String eqpId, String recipeCode) throws Exception{
+        FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        if (fabEquipment == null){
+            throw new Exception("该设备不存在");
+        }
+        //去下载配置中找到优先下载的版本类型
+        Map<String, String> map = Maps.newHashMap();
+        map.put("METHOD", "SELECT_RECIPE");
+        map.put("RECIPE_CODE", recipeCode);
+        map.put("EQP_ID", eqpId);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = ShiroExt.getPrincipalProperty(principal, "id");
+        map.put("USER_ID", userId);
+        String msgg = JsonUtil.toJsonString(map);
+        System.out.println(msgg);
+        String bc = fabEquipment.getBcCode();
+        log.info("发送至 S2C.T.RMS.COMMAND({});", bc);
+        String msg = (String)rabbitTemplate.convertSendAndReceive("S2C.T.RMS.COMMAND", bc, msgg);
+        MesResult mesResult = JsonUtil.from(msg, MesResult.class);
+        //判断返回值flag是否正确
+        if (!"Y".equals(mesResult.getFlag())){
+            return false;
+        }
+        RmsRecipe rmsRecipe = new RmsRecipe();
+        rmsRecipe.setRecipeName(recipeCode);
+        rmsRecipeLogService.addLog(rmsRecipe, "SELECT_RECIPE", eqpId);
+        return true;
+    }
+
+
+
     /**
      * 下载recipe
      * @param eqpId
@@ -503,6 +579,10 @@ public class RmsRecipeServiceImpl  extends CommonServiceImpl<RmsRecipeMapper,Rms
         Object principal = SecurityUtils.getSubject().getPrincipal();
         String userId = ShiroExt.getPrincipalProperty(principal, "id");
         map.put("USER_ID", userId);
+        List<RmsRecipe> rmsRecipes = baseMapper.selectList(new EntityWrapper<RmsRecipe>().eq("recipe_code", recipeCode).eq("eqp_id", eqpId).eq("version_type", versionType).orderBy("version_no", false));
+        if (rmsRecipes != null & rmsRecipes.size() > 0) {
+            map.put("RECIPE_FILE_PATH", rmsRecipes.get(0).getRecipeFilePath());
+        }
         String msgg = JsonUtil.toJsonString(map);
         System.out.println(msgg);
         String bc = fabEquipment.getBcCode();

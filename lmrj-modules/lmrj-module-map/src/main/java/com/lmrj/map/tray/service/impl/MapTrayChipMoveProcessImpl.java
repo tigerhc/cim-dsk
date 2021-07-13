@@ -589,6 +589,10 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                     param.put("chipId", data.getChipId());
                 }
                 rs.put("paramValue", baseMapper.findLOProParam(param));
+            } else if("APJ-IGBT-SMT1".equals(data.getEqpId())|| "APJ-FRD-SMT1".equals(data.getEqpId())){
+                param.put("startTime", data.getStartTime());
+                rs.put("paramValue", baseMapper.findProParam(param));
+                data.setEqpModelName("PRINT-SMT");
             } else {
                 String startTime = sdf.format(data.getStartTime());
                 startTime = startTime.length() > 23 ? startTime.substring(0, 23) : startTime;//2021-04-28 09:10:46.248
@@ -604,7 +608,7 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 data.setEqpModelName("PARMI-XCEED");
             } else if (data.getEqpId().contains("DM")) {
                 data.setEqpModelName("AFM15");
-            } else if (data.getEqpId().contains("SMT")) {
+            } else if (data.getEqpId().contains("HB2-SMT")) {
                 data.setEqpModelName("YSM-10");
             } else if (data.getEqpId().contains("APJ-HB2-SINTERING1")) {
                 data.setEqpModelName("2ND SINTER");

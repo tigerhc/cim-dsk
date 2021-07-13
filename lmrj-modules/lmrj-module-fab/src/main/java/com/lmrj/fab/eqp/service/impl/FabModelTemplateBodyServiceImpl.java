@@ -82,4 +82,20 @@ public class FabModelTemplateBodyServiceImpl extends CommonServiceImpl<FabModelT
         retlist.add(1,body.getSubClassCode());
         return retlist;
     }
+
+    /**
+     * 变更设备模板名称
+     * @param id
+     * @param name
+     */
+    @Override
+    public void chageName(String id, String name) {
+        List<FabModelTemplateBody> fabModelTemplateBodies = baseMapper.selectList(new EntityWrapper().eq("template_id",id));
+       if(fabModelTemplateBodies!=null&&fabModelTemplateBodies.size()>0){
+           FabModelTemplateBody fabModelTemplateBody = new FabModelTemplateBody();
+           fabModelTemplateBody.setTemplateId(fabModelTemplateBodies.get(0).getId());
+           fabModelTemplateBody.setTemplateName(name);
+           baseMapper.updateById(fabModelTemplateBody);
+       }
+    }
 }

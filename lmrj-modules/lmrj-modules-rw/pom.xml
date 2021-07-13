@@ -22,11 +22,6 @@
             <version>${project.parent.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.lmrj</groupId>
-            <artifactId>lmrj-module-fab</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.cxf</groupId>

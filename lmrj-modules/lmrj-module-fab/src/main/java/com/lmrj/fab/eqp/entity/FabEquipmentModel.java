@@ -63,6 +63,12 @@ public class FabEquipmentModel extends BaseDataEntity {
 	private String iconPath;
     @TableField(exist = false)
     private String fileType;
+    //模板名称
+    @TableField(exist = false)
+    private String templateName;
+    //模板ID
+    @TableField(exist = false)
+    private String templateId;
 
 
 }
