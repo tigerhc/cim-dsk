@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.entity.FabSensor;
 import com.lmrj.fab.eqp.mapper.FabEquipmentMapper;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import org.springframework.stereotype.Service;
@@ -114,5 +115,28 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
         return   baseMapper.selectList(new EntityWrapper<FabEquipment>().eq("office_id", offId));
        // page.setRecords(baseMapper.selectPage(page,new EntityWrapper<FabEquipment>().eq("office_id", offId))) ;
       //  return page;
+    }
+
+    @Override
+    public List<FabSensor> selectFabSensorId(String eqpId) {
+        return baseMapper.selectFabSensorId( eqpId );
+    }
+
+    /**
+     * isBindCreated:Y N 两个值
+     * @param isBindCreated
+     * @return
+     */
+    @Override
+    public List<FabSensor> AoutAddSensor(String isBindCreated, String modelId) {
+        if(isBindCreated == null || "".equals( isBindCreated ) || isBindCreated == "N"){
+            return null;
+        }
+        return baseMapper.AoutAddSensor( isBindCreated , modelId);
+    }
+
+    @Override
+    public List<FabEquipment> selectOfficeName() {
+        return baseMapper.selectOfficeName();
     }
 }

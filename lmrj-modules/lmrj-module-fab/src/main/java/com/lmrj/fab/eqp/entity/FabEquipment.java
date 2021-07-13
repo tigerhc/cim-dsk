@@ -183,6 +183,11 @@ public class FabEquipment extends BaseDataEntity {
      */
     @TableField(exist = false)
     private String isFlag;
-
+    /**
+     * 是否生成传感器
+     */
+    @Excel(name = "是否生成传感器", orderNum = "20")
+    @TableField(value = "is_bind_created")
+    private String isBindCreated;
 
 }

@@ -32,6 +32,34 @@
        t.del_flag
 	</sql>
 
+    <sql id="FabSensor_List" >
+        t.id,
+        t.sor_id,
+        t.sor_name,
+        t.sor_no,
+        t.office_id,
+        t.step_id,
+        t.step_code,
+        t.active_flag,
+        t.bc_code,
+        t.ip,
+        t.port,
+        t.device_id,
+        t.model_id,
+        t.model_name,
+        t.protocol_name,
+        t.fab,
+        t.line_no,
+        t.eqp_param,
+        t.location,
+        t.remarks,
+        t.create_by,
+        t.create_date,
+        t.update_by,
+        t.update_date,
+        t.del_flag
+    </sql>
+
 	<update id="updateActiveFlag">
 		update FAB_EQUIPMENT set ACTIVE_FLAG = #{activeFlag} where id = #{id}
 	</update>
@@ -100,4 +128,32 @@
 	   a.active_flag = '1'
     </select>
 
+    <select id="selectFabSensorId" resultType="com.lmrj.fab.eqp.entity.FabSensor" parameterType="java.lang.String">
+        select
+        <include refid="FabSensor_List"/>
+        from fab_equipment a , fab_sensor t , fab_model_template m , fab_equipment_model s , fab_sensor_model r
+        WHERE a.eqp_id = #{eqpId}
+        and a.model_id = s.class_code
+        and s.class_code = m.class_code
+        and m.class_code = r.class_code
+        and r.class_code = t.model_id
+    </select>
+
+    <select id="AoutAddSensor" resultType="com.lmrj.fab.eqp.entity.FabSensor" parameterType="java.lang.String">
+        SELECT
+        <include refid="FabSensor_List"/>
+        from fab_equipment a , fab_sensor t , fab_model_template m , fab_equipment_model s , fab_sensor_model r
+        WHERE a.is_bind_created = #{isBindCreated}
+        and a.model_id = #{modelId}
+        and a.model_id = s.class_code
+        and s.class_code = m.class_code
+        and m.class_code = r.class_code
+        and r.class_code = t.model_id
+    </select>
+
+    <select id="selectOfficeName" parameterType="java.lang.String" resultType="com.lmrj.fab.eqp.entity.FabEquipment">
+        SELECT s.*
+        from fab_equipment t , sys_organization s
+        where f.office_id = s.id
+    </select>
 </mapper>
