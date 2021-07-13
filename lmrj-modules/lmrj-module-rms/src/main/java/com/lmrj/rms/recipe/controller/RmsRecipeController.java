@@ -108,6 +108,29 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
         return response;
     }
 
+    /**
+     *  查询recipe列表
+     * @param request
+     */
+    @RequestMapping(value = "findRecipeList", method = { RequestMethod.GET, RequestMethod.POST })
+    public void selectRecipeList(@RequestParam String eqpId, HttpServletRequest request, HttpServletResponse response) {
+        Response res = null;
+        try {
+            List<String> recipeList = rmsRecipeService.findRecipeList(eqpId);
+            if (recipeList.size() == 0){
+                res = Response.error(999998, "未查询到配方");
+            } else {
+                res = DateResponse.ok(recipeList);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            res = Response.error(999998, e.getMessage());
+        }
+
+        String content = JSON.toJSONString(res);
+        ServletUtils.printJson(response,content);
+    }
+
 
     /**
      *  下载recipe
@@ -121,6 +144,26 @@ public class RmsRecipeController extends BaseCRUDController<RmsRecipe> {
             flag = rmsRecipeService.downloadRecipe(eqpId, recipeName);
             if (!flag){
                 response = Response.error(999998, "下载失败");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            response = Response.error(999998,e.getMessage());
+        }
+        return response;
+    }
+
+    /**
+     *  切换recipe
+     * @param request
+     */
+    @RequestMapping(value = "selectrecipe")
+    public Response selectRecipe(@RequestParam String eqpId, @RequestParam String recipeName, HttpServletRequest request) {
+        Response response = Response.ok("切换成功");
+        boolean flag = false;
+        try {
+            flag = rmsRecipeService.selectRecipe(eqpId, recipeName);
+            if (!flag){
+                response = Response.error(999998, "切换失败");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

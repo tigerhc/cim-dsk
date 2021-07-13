@@ -144,6 +144,12 @@ public class MeasureSxController {
     }
 
     private List<Map<String, String>> getSxDataList(String productionName, String startDate, String endDate, String type){
+        String cMin = "";
+        if(!"LF".equals(type)){
+            cMin = "0.02";
+        } else {
+            cMin = "0.07";
+        }
         String number = "1";
         List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
         number = "2";
@@ -176,11 +182,11 @@ public class MeasureSxController {
         LimitData.put("6","");//时间
         LimitData.put("7","13.9");
         LimitData.put("8","0.4");
-        LimitData.put("9","0.07");
+        LimitData.put("9","0.02");
         LimitData.put("10","0");
         LimitData.put("11","13.9");
         LimitData.put("12","0.4");
-        LimitData.put("13","0.07");
+        LimitData.put("13",cMin);
         LimitData.put("14","0");
         dataList.add(LimitData);
         for (int i = 0; i <size ; i++) {

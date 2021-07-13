@@ -58,7 +58,8 @@ public class EdcStateHandler {
         if(edcEqpState.getEqpId().contains("SIM-DM")){
             fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
         }
-        if(!"ALARM".equals(edcEqpState.getState())){
+        eqpStateDataHandle(edcEqpState);
+        /*if(!"ALARM".equals(edcEqpState.getState())){
             EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
             if(lastedcEqpState==null){
                 log.info("edcEqpState数据开始插入" + edcEqpState);
@@ -88,6 +89,41 @@ public class EdcStateHandler {
                         log.error("状态插入出错，edcEqpState数据新建失败"+e);
                         e.printStackTrace();
                     }
+                }
+            }
+        }*/
+    }
+
+
+    public void eqpStateDataHandle(EdcEqpState edcEqpState){
+        EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
+        if(lastedcEqpState==null){
+            log.info("edcEqpState数据开始插入" + edcEqpState);
+            try {
+                edcEqpStateService.insert(edcEqpState);
+            } catch (Exception e) {
+                log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                e.printStackTrace();
+            }
+        }else{
+            if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
+                log.info("edcEqpState数据重复："+edcEqpState);
+            }else{
+                lastedcEqpState.setEndTime(edcEqpState.getStartTime());
+                Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                lastedcEqpState.setStateTimes(state);
+                try {
+                    edcEqpStateService.updateById(lastedcEqpState);
+
+                } catch (Exception e) {
+                    log.error("状态更新出错，edcEqpState数据更新失败"+e);
+                    e.printStackTrace();
+                }
+                try {
+                    iEdcEqpStateService.insert(edcEqpState);
+                } catch (Exception e) {
+                    log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                    e.printStackTrace();
                 }
             }
         }
