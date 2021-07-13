@@ -665,6 +665,39 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
+    //查找APJ-TRM设备参数，从产量日志和配方日志中获取
+    @RequestMapping(value = "/findAtParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findAtParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                               HttpServletRequest request, HttpServletResponse response) {
+        log.info("findAtParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param16", "MesLotTrackController.findAtParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.contains("AT")) {
+                eqpId = "APJ-AT1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!: " + eqpId;
+            }
+            String methodName = "FIND_AT_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId, methodName, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result16", "MesLotTrackController.findAtParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error16", "MesLotTrackController.findAtParamfindAtParamfindAtParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
     //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
     @RequestMapping(value = "/dsktrackin2/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
