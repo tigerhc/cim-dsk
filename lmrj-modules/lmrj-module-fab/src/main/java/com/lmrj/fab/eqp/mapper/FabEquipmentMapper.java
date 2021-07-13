@@ -2,6 +2,8 @@ package com.lmrj.fab.eqp.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.entity.FabSensor;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -54,4 +56,11 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
 
     @Select("select * from fab_equipment where temp_flag='1'")
     List<FabEquipment> findTempEqpList();
+
+    List<FabSensor> selectFabSensorId(@Param("eqpId") String eqpId);
+
+    List<FabSensor> AoutAddSensor(@Param("isBindCreated") String isBindCreated, @Param( "modelId" ) String modelId);
+
+    /*部门名称*/
+    List<FabEquipment> selectOfficeName();
 }

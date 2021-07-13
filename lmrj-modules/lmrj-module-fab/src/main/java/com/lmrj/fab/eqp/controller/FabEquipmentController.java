@@ -16,8 +16,9 @@ import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.entity.FabSensor;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
-import com.lmrj.fab.eqp.service.IIotEquipmentBindService;
+import com.lmrj.fab.eqp.service.IFabEquipmentBindService;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -68,7 +69,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     @Autowired
     private IFabEquipmentService fabEquipmentService;
     @Autowired
-    private IIotEquipmentBindService iIotEquipmentBindService;
+    private IFabEquipmentBindService iIotEquipmentBindService;
     String title = "设备信息";
 
     /**
@@ -315,4 +316,55 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         }
         return res;
     }
+
+    /**
+     * 展示设备绑定的传感器
+     * @param eqpId
+     * @param request
+     * @param response
+     */
+    @RequestMapping("/SensorList/{eqpId}")
+    public Response selectFabSensorId(@PathVariable("eqpId") String eqpId, HttpServletRequest request,
+                                      HttpServletResponse response){
+        List<FabSensor> list = fabEquipmentService.selectFabSensorId( eqpId );
+        if(list == null){
+            return Response.error("无绑定传感器");
+        }
+        return Response.ok("查到传感器");
+    }
+
+    /**
+     * 都是设备表的字段
+     * 添加设备生成对应传感器
+     */
+    @RequestMapping("/AoutAddSensor/{isBindCreated}/{modelId}")
+    public void AoutAddSensor( @PathVariable("isBindCreated") String isBindCreated, @PathVariable("modelId") String modelId,
+                               HttpServletRequest request, HttpServletResponse response){
+        List<FabSensor> list = fabEquipmentService.AoutAddSensor( isBindCreated , modelId );
+        if(list == null){
+            Response.error("该设备无对应传感器");
+            return;
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);
+    }
+
+    /*部门名称
+     * */
+    @RequestMapping("/selectOfficeName")
+    public void selectOfficeName( HttpServletRequest request, HttpServletResponse response){
+        List<FabEquipment> list = fabEquipmentService.selectOfficeName();
+        for(FabEquipment fabEquipment: list){
+            if(fabEquipment.getOfficeId() != null){
+                Organization office = OfficeUtils.getOffice(fabEquipment.getOfficeId());
+                if(office != null){
+                    fabEquipment.setOfficeId( fabEquipment.getOfficeId().split( "," )[fabEquipment.getOfficeId().split( "," ).length-1] );
+                    fabEquipment.setOfficeName(office.getName());
+                }
+            }
+        }
+        DateResponse listjson = new DateResponse(list);
+        String content = JSON.toJSONString(listjson);
+        ServletUtils.printJson(response, content);    }
 }

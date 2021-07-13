@@ -3,6 +3,8 @@ package com.lmrj.fab.eqp.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
+import com.lmrj.fab.eqp.entity.FabSensor;
+import com.lmrj.fab.eqp.mapper.FabSensorMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -51,4 +53,10 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     List<FabEquipment> getTempEqpList();
 
     List<FabEquipment> selectPageByOffId(String offId);
+
+    List<FabSensor> selectFabSensorId(String eqpId);
+
+    List<FabSensor> AoutAddSensor(String isBindCreated, String modelId);
+
+    List<FabEquipment> selectOfficeName();
 }
