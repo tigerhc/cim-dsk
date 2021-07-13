@@ -1,6 +1,7 @@
 package com.lmrj.fab.eqp.service;
 
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
+import com.lmrj.fab.eqp.entity.FabModelTemplate;
 import com.lmrj.fab.eqp.entity.FabModelTemplateBody;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,7 +16,7 @@ public interface IFabModelTemplateBodyService  extends ICommonService<FabModelTe
 
     List<Map> getOneTemplateList(String id);
 
-    void deleteAndSave(List<FabModelTemplateBody> list,String id,String name);
+    void deleteAndSave(List<FabModelTemplateBody> list, FabModelTemplate template);
 
     List<FabModelTemplateBody> getNoBindInfo(String eqpId);
 

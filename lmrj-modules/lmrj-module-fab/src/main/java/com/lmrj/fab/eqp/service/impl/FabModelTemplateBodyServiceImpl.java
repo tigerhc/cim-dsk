@@ -2,11 +2,17 @@ package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
+import com.lmrj.core.api.entity.EdcparamApi;
+import com.lmrj.core.api.service.IEdcparamApiService;
+import com.lmrj.fab.eqp.entity.FabEquipmentModel;
+import com.lmrj.fab.eqp.entity.FabModelTemplate;
 import com.lmrj.fab.eqp.entity.FabModelTemplateBody;
+import com.lmrj.fab.eqp.entity.FabSensorModel;
 import com.lmrj.fab.eqp.mapper.FabModelTemplateBodyMapper;
 import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabModelTemplateBodyService;
 import com.lmrj.fab.eqp.service.IFabModelTemplateService;
+import com.lmrj.fab.eqp.service.IFabSensorModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +31,11 @@ public class FabModelTemplateBodyServiceImpl extends CommonServiceImpl<FabModelT
     @Autowired
     private IFabEquipmentModelService fabEquipmentModelService;
     @Autowired
+    private IFabSensorModelService fabSensorModelService;
+    @Autowired
     private IFabModelTemplateService fabModelTemplateService;
+    @Autowired
+    private IEdcparamApiService edcparamApiService;
 
     @Override
     public List<Map> getOneTemplateList(String id) {
@@ -35,29 +45,32 @@ public class FabModelTemplateBodyServiceImpl extends CommonServiceImpl<FabModelT
     /**
      * 创建或更新
      * @param list
-     * @param id
-     * @param name
      */
     @Override
-    public void deleteAndSave(List<FabModelTemplateBody> list, String id, String name) {
+    public void deleteAndSave(List<FabModelTemplateBody> list, FabModelTemplate template) {
+        //删除对应的绑定参数
+        List<FabEquipmentModel>  fabEquipmentModelList =      fabEquipmentModelService.selectList(new EntityWrapper<FabEquipmentModel>().eq("class_code",template.getClassCode()));
+        String modelId = fabEquipmentModelList.get(0).getId();
+        edcparamApiService.delete(new EntityWrapper<EdcparamApi>().eq("model_id",modelId).isNotNull("param_define_id"));
         //删除所有主体记录
-        baseMapper.delete(new EntityWrapper().eq("template_id",id));
+        baseMapper.delete(new EntityWrapper().eq("template_id",template.getId()));
         //按需生成
         for (FabModelTemplateBody body:list) {
-            int i = Integer.valueOf(body.getNum());
             FabModelTemplateBody bodyi = new FabModelTemplateBody();
-            bodyi.setTemplateId(id);
-            bodyi.setTemplateName(name);
+            bodyi.setTemplateId(template.getId());
+            bodyi.setTemplateName(template.getName());
             bodyi.setParentType(body.getParentType());
             bodyi.setType(body.getType());
             bodyi.setSubClassCode(body.getSubClassCode());
             bodyi.setManufacturerName( fabEquipmentModelService.manufacturerName(body.getSubClassCode()));
             bodyi.setDelFlag("0");
-            for (int j = 0; j < i; j++) {
-                    baseMapper.insert(bodyi);
-                }
-
-
+            baseMapper.insert(bodyi);
+            //将绑定的传感器对应的参数放入对应设备类型中
+            FabSensorModel fabSensorModel =  fabSensorModelService.selectList(new EntityWrapper<FabSensorModel>().eq("class_code",body.getSubClassCode())).get(0);
+            EdcparamApi api = edcparamApiService.selectOne(new EntityWrapper<EdcparamApi>().eq("class_code",body.getSubClassCode()).eq("param_define_id",fabSensorModel.getId()).isNull("model_id"));
+            api.setId("");
+            api.setModelId("modelId");
+            edcparamApiService.insertOrUpdateAll(api);
         }
 
     }

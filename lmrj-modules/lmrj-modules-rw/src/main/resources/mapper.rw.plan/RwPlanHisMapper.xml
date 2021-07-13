@@ -27,7 +27,7 @@
     <select id="rwplanhislist" resultType="com.lmrj.rw.plan.entity.RwPlanHis">
         select
         <include refid="Base_Column_List" />
-        from v_rw_plan t, fab_equipment p
+        from v_wod_plan t, fab_equipment p
         where t.eqp_id = p.eqp_id
         <if test="eqpId != null and eqpId != ''">
             and t.eqp_id like CONCAT(CONCAT('%', #{eqpId}),'%')

@@ -14,7 +14,7 @@ import java.util.Date;
  * @author wdj
  * @date 2021-05-14 13:56
  */
-@TableName("rw_plan_his")
+@TableName("wod_plan_his")
 @SuppressWarnings("serial")
 @Data
 public class RwPlanHis  extends BaseDataEntity {

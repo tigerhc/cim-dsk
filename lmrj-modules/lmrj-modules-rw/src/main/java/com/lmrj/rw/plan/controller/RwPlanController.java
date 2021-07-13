@@ -56,7 +56,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
     }
 
     /**
-     * 指派
+     * 指派/发起
      * @param id
      * @param assignedUser
      * @param assignedTime

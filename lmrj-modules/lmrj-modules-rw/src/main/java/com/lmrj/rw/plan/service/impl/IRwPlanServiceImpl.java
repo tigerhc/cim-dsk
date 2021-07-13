@@ -10,6 +10,7 @@ import com.lmrj.rw.plan.entity.RwPlanHis;
 import com.lmrj.rw.plan.mapper.RwPlanMapper;
 import com.lmrj.rw.plan.service.IRwPlanHisService;
 import com.lmrj.rw.plan.service.IRwPlanService;
+import com.lmrj.rw.plan.service.IWodPlanLogService;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
     private IFabRoleEqpService iroleEqpService;
     @Autowired
     private IFabUserRoleService iUserRoleService;
+    @Autowired
+    private IWodPlanLogService wodPlanLogService;
     /**
      * 写入工单
      * @param plan
@@ -135,6 +138,10 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
     @Override
     public boolean updatePlan(RwPlan plan){
         boolean flag = true;
+        if(plan.getId()==null||"".equals(plan.getId())){
+        //指定计划时不存在ID
+        baseMapper.insert(plan);
+        }
         switch(plan.getPlanStatus()){
 
             case "5":

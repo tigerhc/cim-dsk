@@ -11,23 +11,19 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @version V1.0
- * @package com.lmrj.rw.plan.entity
- * @title: rw_plan
- * @description: iot_collect_data实体
  * @author wdj
- * @date 2021-05-14 13:22
+ * @date 2021-05-14 13:56
  */
-@TableName("wod_plan")
+@TableName("wod_plan_log")
 @SuppressWarnings("serial")
 @Data
-public class RwPlan  extends BaseDataEntity {
+public class WodPlanLog   extends BaseDataEntity {
     /**主键*/
-    @TableField(value = "Id")
+    @TableField(value = "id")
     private String id;
     /**计划/报警 编号*/
-    @TableField(value = "plan_id")
-    private String planId;
+    @TableField(value = "wod_id")
+    private String wodId;
     /**设备编号*/
     @TableField(value = "eqp_id")
     private String eqpId;
@@ -36,37 +32,24 @@ public class RwPlan  extends BaseDataEntity {
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
     private Date assignedTime;
-    /**指派人*/
-    @TableField(value = "assigned_user")
-    private String assignedUser;
-    /**被指派人*/
-    @TableField(value = "designee")
-    private String designee;
-
     /**处理方式*/
     @TableField(value = "deal_type")
     private String dealType;
+    /**处理方式*/
+    @TableField(value = "create_by")
+    private String createBy;
     /**处理时间*/
-    @TableField(value = "deal_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    private Date dealTime;
+    private Date createDate;
     /**计划状态*/
     @TableField(value = "plan_status")
     private String planStatus;
     /**计划类型*/
     @TableField(value = "plan_type")
     private String planType;
-
-    /**处理意见*/
-    @TableField(value = "deal_advice")
-    private String dealAdvice;
-    /**处理描述（回复）*/
-    @TableField(value = "deal_des")
-    private String dealDes;
-    /**归档时间*/
-    @TableField(value = "end_date", fill = FieldFill.INSERT)
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    private Date endDate;
+    /**备注信息*/
+    @TableField(value = "remarks")
+    private String remarks;
 }

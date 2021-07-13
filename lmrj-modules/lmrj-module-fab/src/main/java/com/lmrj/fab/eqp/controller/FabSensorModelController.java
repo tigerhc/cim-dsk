@@ -70,13 +70,16 @@ public class FabSensorModelController extends BaseCRUDController<FabSensorModel>
 
         //查询对应的示数类型信息以及对应的参数信息
         EdcparamApi edcparamApi = iEdcparamApiService.selectOne(new EntityWrapper<EdcparamApi>().eq("param_define_id",entity.getId()));
-        entity.setDefineId(edcparamApi.getId());
-        entity.setMaxValue(edcparamApi.getMaxValue());
-        entity.setMinValue(edcparamApi.getMinValue());
-        entity.setParamCode(edcparamApi.getParamCode());
-        entity.setParamName(edcparamApi.getParamName());
-        entity.setSetValue(edcparamApi.getSetValue());
-        entity.setNumType(fabNumTypeservice.getNumType(edcparamApi.getTypeId()));
+        if (edcparamApi!=null) {
+            entity.setDefineId(edcparamApi.getId());
+            entity.setMaxValue(edcparamApi.getMaxValue());
+            entity.setMinValue(edcparamApi.getMinValue());
+            entity.setParamCode(edcparamApi.getParamCode());
+            entity.setParamName(edcparamApi.getParamName());
+            entity.setSetValue(edcparamApi.getSetValue());
+            entity.setNumType(fabNumTypeservice.getNumType(edcparamApi.getTypeId()));
+        }
+
     }
 
     /**

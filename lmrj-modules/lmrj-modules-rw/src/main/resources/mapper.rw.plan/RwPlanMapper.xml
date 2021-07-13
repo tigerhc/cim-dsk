@@ -27,7 +27,7 @@
    <select id="rwplanlist" resultType="com.lmrj.rw.plan.entity.RwPlan">
       select
       <include refid="Base_Column_List" />
-      from rw_plan t
+      from wod_plan t
       where t.eqp_id in
       <foreach collection="eqpList" item="eqpId" index="index" open="(" separator="," close=")">
        #{eqpId}

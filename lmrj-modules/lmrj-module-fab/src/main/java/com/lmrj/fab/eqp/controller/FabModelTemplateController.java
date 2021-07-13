@@ -65,7 +65,8 @@ public class FabModelTemplateController extends BaseCRUDController<FabModelTempl
                     entity = oldEntity;
                 }
                 //存储主体信息
-                fabModelTemplateBodyService.deleteAndSave(list,entity.getId(),entity.getName());
+                fabModelTemplateBodyService.deleteAndSave(list,entity);
+                //生成关联信息
 
                 this.afterSave(entity, request, response);
             } catch (Exception var6) {
@@ -103,7 +104,7 @@ public class FabModelTemplateController extends BaseCRUDController<FabModelTempl
                     entity = oldEntity;
                 }
                 //存储主体信息
-                fabModelTemplateBodyService.deleteAndSave(list,entity.getId(),entity.getName());
+                fabModelTemplateBodyService.deleteAndSave(list,entity);
 
                 this.afterSave(entity, request, response);
             } catch (Exception var6) {

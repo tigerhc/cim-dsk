@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rw.plan.mapper.WodPlanLogMapper" >
+
+    <sql id="Base_Column_List" >
+        t.id,
+       t.wod_id,
+       t.eqp_id,
+       t.deal_type,
+       t.plan_status,
+       t.plan_type,
+       t.remarks,
+       t.create_by,
+       t.create_date
+    </sql>
+
+</mapper>

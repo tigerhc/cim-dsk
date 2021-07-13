@@ -51,7 +51,7 @@ public class FabModelTemplateServiceImpl extends CommonServiceImpl<FabModelTempl
         FabModelTemplate fabModelTemplate = new FabModelTemplate();
         fabModelTemplate.setClassCode(classCode);
         fabModelTemplate = this.baseMapper.selectOne(fabModelTemplate);
-        fabModelTemplateBodyService.deleteAndSave(new ArrayList<>(),fabModelTemplate.getId(),"");
+        fabModelTemplateBodyService.deleteAndSave(new ArrayList<>(),fabModelTemplate);
         this.baseMapper.deleteById(fabModelTemplate.getId());
     }
 }
