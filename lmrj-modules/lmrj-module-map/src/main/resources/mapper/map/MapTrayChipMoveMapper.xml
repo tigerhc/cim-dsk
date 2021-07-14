@@ -369,9 +369,17 @@
 		order by m.start_time
 	</select>
 
-	<select id="dmDetail" parameterType="java.lang.String" resultType="java.util.Map">
+	<!--<select id="dmDetail" parameterType="java.lang.String" resultType="java.util.Map">
 		select dm_id as dmId, eqp_id as eqpId,
 			GROUP_CONCAT(dm_x ||'_'||dm_y) as dmX,GROUP_CONCAT(dm_y) as dmY,
+			GROUP_CONCAT(date_format(START_time,'%y-%m-%d %H:%i:%s.%S')) as startTime
+		from map_tray_chip_move
+		where chip_id=#{chipId} and dm_id is not null
+		GROUP BY dm_id,eqp_id
+	</select>-->
+	<select id="dmDetail" parameterType="java.lang.String" resultType="java.util.Map">
+		select dm_id as dmId, eqp_id as eqpId,
+			GROUP_CONCAT(dm_x) as dmX,GROUP_CONCAT(dm_y) as dmY,
 			GROUP_CONCAT(date_format(START_time,'%y-%m-%d %H:%i:%s.%S')) as startTime
 		from map_tray_chip_move
 		where chip_id=#{chipId} and dm_id is not null

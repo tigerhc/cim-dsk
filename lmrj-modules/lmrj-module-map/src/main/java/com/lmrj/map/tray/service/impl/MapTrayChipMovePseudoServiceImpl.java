@@ -7,6 +7,7 @@ import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
 import com.lmrj.map.tray.service.IMapTrayChipMovePseudoService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.util.lang.StringUtil;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -32,12 +33,13 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
             for (MapTrayChipMove startData : startDatas) {
                 String pseudoCode = eqp.getEqpId()+"_"+sdf.format(startData.getStartTime()); //TODO 伪码生成规则
                 startData.setPseudoCode(pseudoCode);//追溯本段前,先将伪码更新好
-                List<MapTrayChipMove> subLineData = traceSubLine(startData);//  ******追溯本段******
-                if(subLineData==null || subLineData.size()==0){//缺数据
-                    saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有全部找到", false);
+                Map<String, Object> subLineMap = traceSubLine(startData);//  ******追溯本段******
+                if(StringUtil.isNotEmpty(MapUtils.getString(subLineMap, "msg"))){
+                    saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有全部找到,"+MapUtils.getString(subLineMap, "msg"), false);
                 } else {
                     boolean chkErr = true;
                     if(chkErr){
+                        List<MapTrayChipMove> subLineData = (List<MapTrayChipMove>)subLineMap.get("pseudoData");
                         //追溯前一段
                         if(!firstEqpId.contains(subLineData.get(subLineData.size()-1).getEqpId())){
                             String beforeLineCode = traceBeforeLine(subLineData.get(subLineData.size()-1)); //前一段伪码
@@ -260,11 +262,12 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
      * ngFlag:true 是NG,false:是伪码追溯
      * 注意: VI 不会进来
      */
-    private List<MapTrayChipMove> traceSubLine(MapTrayChipMove startData){
+    private Map<String, Object> traceSubLine(MapTrayChipMove startData){
         List<MapTrayChipMove> pseudoData = new ArrayList<>();
         List<MapEquipmentConfig> lineCfgEqp = baseMapper.getCfgEqpForLine(startData.getEqpId());
         List<MapTrayChipMove> lineData = baseMapper.getPseudoLine(startData);
         Date curDate = startData.getStartTime();
+        Map<String, Object> rs = new HashMap<>();
         for(MapEquipmentConfig cfgEqp : lineCfgEqp){
             boolean unfind = true;
             for(MapTrayChipMove item : lineData){
@@ -273,6 +276,9 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 }
                 //符合条件是时间间隔在cfgEqp中设置的间隔内(sql中以满足坐标相等)
                 long timeChk = TraceDateUtil.getDiffSec(item.getStartTime(), curDate);
+                if(timeChk<0){
+                    break;
+                }
                 if(cfgEqp.getEqpId().equals(item.getEqpId()) && timeChk < cfgEqp.getIntervalTimeMax() && timeChk >= 0){
                     if("Y".equals(startData.getJudgeResult()) && item.getMapFlag() == 0){
                         unfind = false;
@@ -290,10 +296,13 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 }
             }
             if(unfind){
-                return null;
+                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax());
+                return rs;
             }
         }
-        return pseudoData;
+        rs.put("msg", "");
+        rs.put("pseudoData", pseudoData);
+        return rs;
     }
 
     /** 错误日志,记录在每个数据上;当累计99次时将mapflag也更新为99,使其不能再次被选为要追溯的数据,即不再追溯它了*/
