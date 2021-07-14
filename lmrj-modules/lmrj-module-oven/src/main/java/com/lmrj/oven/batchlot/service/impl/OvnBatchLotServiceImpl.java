@@ -9,6 +9,7 @@ import com.lmrj.oven.batchlot.mapper.OvnBatchLotMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.file.FtpUtil;
 import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -232,6 +233,63 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             }
             ftpFile.getName();
         }
+    }
+
+    @Override
+    public Map<String, Object> tempExport(String eqpId, String beginTime, String endTime) {
+        Map<String, Object> rs = new HashMap<>();
+        List<Map> dataList = findDetailBytime(beginTime, endTime, eqpId);
+        List<String> maxLimit = new ArrayList<>(); //上限
+        List<String> minLimit = new ArrayList<>(); //下限
+        List<String> setValue = new ArrayList<>(); //设定值
+        List<Map<String, Object>> tempData = new ArrayList<>();//所有温度实测值
+        if(dataList!=null && dataList.size()>0){
+            boolean minOtherLimit = true;
+            boolean maxOtherLimit = true;
+            boolean setOtherLimit = true;
+            for (Map dataItem : dataList) {
+                List<String> tempList = new ArrayList<>();
+                Map<String, Object> tempDataItem = new HashMap<>();//单个温度数据
+                tempDataItem.put("createTime", MapUtil.getString(dataItem, "create_date"));//数据的时间
+                // 第一通道的温度
+                if(minLimit.size() == 0){
+                    minLimit.add(MapUtil.getString(dataItem, "temp_min"));
+                }
+                if(maxLimit.size() == 0){
+                    maxLimit.add(MapUtil.getString(dataItem, "temp_max"));
+                }
+                if(setValue.size() == 0){
+                    setValue.add(MapUtil.getString(dataItem, "temp_sp"));
+                }
+                tempList.add(MapUtil.getString(dataItem, "temp_pv"));
+                // 其他通道的温度
+                String otherTemps = MapUtil.getString(dataItem, "other_temps_value");
+                String[] otherTempArr = otherTemps.split(",");
+                if (otherTempArr!=null && otherTempArr.length>0) {
+                    for(int i=0; i < otherTempArr.length; i++){
+                        if(i % 4 == 0){
+                            tempList.add(otherTempArr[i]);
+                        } else if(i % 4 == 1 && setOtherLimit){
+                            setValue.add(otherTempArr[i]);
+                        } else if(i % 4 == 2 && minOtherLimit){
+                            minLimit.add(otherTempArr[i]);
+                        } else if(i % 4 == 3 && maxOtherLimit){
+                            maxLimit.add(otherTempArr[i]);
+                        }
+                    }
+                    setOtherLimit = false;
+                    minOtherLimit = false;
+                    maxOtherLimit = false;
+                    tempDataItem.put("tempList", tempList);
+                }
+                tempData.add(tempDataItem);
+            }
+        }
+        rs.put("minLimit", minLimit);
+        rs.put("maxLimit", maxLimit);
+        rs.put("tempData", tempData);
+        rs.put("setValue", setValue);
+        return rs;
     }
 
     @Override

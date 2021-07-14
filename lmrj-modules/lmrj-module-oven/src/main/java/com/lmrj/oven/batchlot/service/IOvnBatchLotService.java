@@ -33,6 +33,8 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
 
     void resolveAllTempFile(String eqpId);
 
+    Map<String, Object> tempExport(String eqpId, String beginTime, String endTime);
+
     List<Map> findDetailBytime(String eqpId, String beginTime, String endTime);
 
     List<Map> findDetailBytimeOther(String eqpId,String lotNO);
