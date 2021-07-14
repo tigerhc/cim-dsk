@@ -973,7 +973,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
-
+    //允许重复提交推理拉力数据，重复提交时保留最新数据
     @RequestMapping(value = "/thrustAndPullDataUpload/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String thrustAndPullDataUpload(@PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String thrust, @RequestParam String pull, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
@@ -1003,7 +1003,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             msMeasureThrust.setThrust(thrust);
             msMeasureThrust.setCreateBy("GXJ");
             msMeasureThrust.setOpId(opId);
-            iMsMeasureThrustService.insert(msMeasureThrust);
+            MsMeasureThrust msMeasureThrust1 = null;
+            msMeasureThrust1 = iMsMeasureThrustService.findDataByLotNo(lotNo,productionName);
+            if(msMeasureThrust1 != null){
+                msMeasureThrust1.setPull(pull);
+                msMeasureThrust1.setThrust(thrust);
+                msMeasureThrust1.setUpdateBy(opId);
+                msMeasureThrust1.setUpdateDate(new Date());
+                iMsMeasureThrustService.updateById(msMeasureThrust1);
+            }else {
+                iMsMeasureThrustService.insert(msMeasureThrust);
+            }
             fabLogService.info(eqpId, "Result6", "MesLotTrackController.thrustAndPullDataUpload", "数据上传成功", trackinfo, "wangdong");//日志记录
             return "Y";
         } catch (Exception e) {

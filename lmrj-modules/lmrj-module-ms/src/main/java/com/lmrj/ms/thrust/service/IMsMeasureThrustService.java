@@ -19,5 +19,7 @@ import java.util.List;
 public interface IMsMeasureThrustService extends ICommonService<MsMeasureThrust> {
     List<String> findProductionNameList(String lineNo);
 
+    MsMeasureThrust findDataByLotNo(String lotNo,String produictionName);
+
     List<MsMeasureThrust> findDataByTime(String produictionName , String startTime , String endTime);
 }
