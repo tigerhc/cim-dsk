@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.enums.FieldFill;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class RwPlan  extends BaseDataEntity {
     /**采集时间*/
     @TableField(value = "assigned_time", fill = FieldFill.INSERT)
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date assignedTime;
     /**指派人*/
     @TableField(value = "assigned_user")

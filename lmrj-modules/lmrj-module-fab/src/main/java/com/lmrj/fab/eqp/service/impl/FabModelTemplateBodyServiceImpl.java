@@ -55,23 +55,30 @@ public class FabModelTemplateBodyServiceImpl extends CommonServiceImpl<FabModelT
         //删除所有主体记录
         baseMapper.delete(new EntityWrapper().eq("template_id",template.getId()));
         //按需生成
-        for (FabModelTemplateBody body:list) {
-            FabModelTemplateBody bodyi = new FabModelTemplateBody();
-            bodyi.setTemplateId(template.getId());
-            bodyi.setTemplateName(template.getName());
-            bodyi.setParentType(body.getParentType());
-            bodyi.setType(body.getType());
-            bodyi.setSubClassCode(body.getSubClassCode());
-            bodyi.setManufacturerName( fabEquipmentModelService.manufacturerName(body.getSubClassCode()));
-            bodyi.setDelFlag("0");
-            baseMapper.insert(bodyi);
-            //将绑定的传感器对应的参数放入对应设备类型中
-            FabSensorModel fabSensorModel =  fabSensorModelService.selectList(new EntityWrapper<FabSensorModel>().eq("class_code",body.getSubClassCode())).get(0);
-            EdcparamApi api = edcparamApiService.selectOne(new EntityWrapper<EdcparamApi>().eq("class_code",body.getSubClassCode()).eq("param_define_id",fabSensorModel.getId()).isNull("model_id"));
-            api.setId("");
-            api.setModelId("modelId");
-            edcparamApiService.insertOrUpdateAll(api);
+        if(list!=null&&list.size()>0){
+            for (FabModelTemplateBody body:list) {
+                FabModelTemplateBody bodyi = new FabModelTemplateBody();
+                bodyi.setTemplateId(template.getId());
+                bodyi.setTemplateName(template.getName());
+                bodyi.setParentType(body.getParentType());
+                bodyi.setType(body.getType());
+                bodyi.setSubClassCode(body.getSubClassCode());
+                bodyi.setManufacturerName( fabEquipmentModelService.manufacturerName(body.getSubClassCode()));
+                bodyi.setDelFlag("0");
+                baseMapper.insert(bodyi);
+                //将绑定的传感器对应的参数放入对应设备类型中
+                List<FabSensorModel> fabSensorModels = fabSensorModelService.selectList(new EntityWrapper<FabSensorModel>().eq("class_code",body.getSubClassCode()));
+                if(fabSensorModels!=null&&fabSensorModels.size()>0){
+                    FabSensorModel fabSensorModel =  fabSensorModels.get(0);
+                    EdcparamApi api = edcparamApiService.selectOne(new EntityWrapper<EdcparamApi>().eq("param_define_id",fabSensorModel.getId()).isNull("model_id"));
+                    api.setId("");
+                    api.setModelId(modelId);
+                    edcparamApiService.insertOrUpdateAll(api);
+                }
+
+            }
         }
+
 
     }
 

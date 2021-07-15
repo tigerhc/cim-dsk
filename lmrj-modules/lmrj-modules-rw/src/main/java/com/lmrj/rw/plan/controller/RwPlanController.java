@@ -1,10 +1,19 @@
 package com.lmrj.rw.plan.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.lmrj.common.http.DateResponse;
+import com.lmrj.common.http.PageResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
+import com.lmrj.common.mybatis.mvc.parse.QueryToWrapper;
+import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
+import com.lmrj.common.query.data.Pageable;
+import com.lmrj.common.query.data.PropertyPreFilterable;
+import com.lmrj.common.query.data.Queryable;
+import com.lmrj.common.query.utils.QueryableConvertUtils;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
@@ -19,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -73,7 +83,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
         Response response = Response.ok("指派成功");
         boolean flag = false;
         RwPlan rwPlan = new RwPlan();
-        rwPlan.setPlanId(id);
+        rwPlan.setId(id);
         rwPlan.setAssignedUser(assignedUser);
         try {
             rwPlan.setAssignedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(assignedTime));
@@ -109,7 +119,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
         Response response = Response.ok("接单成功");
         boolean flag = false;
         RwPlan rwPlan = new RwPlan();
-        rwPlan.setPlanId(id);
+        rwPlan.setId(id);
         rwPlan.setDesignee(designee);
         rwPlan.setPlanStatus(planStatus);
         try {
@@ -140,7 +150,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
         Response response = Response.ok("接单成功");
         boolean flag = false;
         RwPlan rwPlan = new RwPlan();
-        rwPlan.setPlanId(id);
+        rwPlan.setId(id);
         rwPlan.setDealType(dealType);
         rwPlan.setDealDes(dealDes);
         rwPlan.setPlanStatus(planStatus);
@@ -168,7 +178,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
         Response response = Response.ok("结单成功");
         boolean flag = false;
         RwPlan rwPlan = new RwPlan();
-        rwPlan.setPlanId(id);
+        rwPlan.setId(id);
         try {
             flag = iRwPlanService.updatePlan(rwPlan);
             if (!flag){
@@ -179,6 +189,30 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
             response = Response.error(999998,e.getMessage());
         }
         return response;
+    }
+
+
+
+    @RequestMapping(
+            value = {"page"},
+            method = {RequestMethod.GET, RequestMethod.POST}
+    )
+    public void pageList(Queryable queryable, PropertyPreFilterable propertyPreFilterable, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        EntityWrapper<RwPlan> entityWrapper = new EntityWrapper(this.entityClass);
+        this.prePage(queryable, entityWrapper, request, response);
+        propertyPreFilterable.addQueryProperty(new String[]{"id"});
+        QueryableConvertUtils.convertQueryValueToEntityValue(queryable, this.entityClass);
+        SerializeFilter filter = propertyPreFilterable.constructFilter(this.entityClass);
+        QueryToWrapper<RwPlan> queryToWrapper = new QueryToWrapper();
+        queryToWrapper.parseCondition(entityWrapper, queryable);
+        queryToWrapper.parseSort(entityWrapper, queryable);
+        Pageable pageable = queryable.getPageable();
+        com.baomidou.mybatisplus.plugins.Page<RwPlan> page = new com.baomidou.mybatisplus.plugins.Page(pageable.getPageNumber(), pageable.getPageSize());
+        //com.baomidou.mybatisplus.plugins.Page<RwPlan> content = this.selectPage(page, wrapper);
+        PageResponse<RwPlan> pagejson = new PageResponse(this.commonService.list(queryable, entityWrapper));
+        this.afterPage(pagejson, request, response);
+        String content = JSON.toJSONString(pagejson, filter, new SerializerFeature[0]);
+        ServletUtils.printJson(response, content);
     }
 
 

@@ -35,7 +35,7 @@ public class EdcparamApiController extends BaseCRUDController<EdcparamApi> {
     @RequestMapping(value = {"list/{eqpModelId}"}, method = {RequestMethod.GET, RequestMethod.POST})
     public Response findByModelId(@PathVariable String eqpModelId){
         List<EdcparamApi> list = commonService.selectList(new EntityWrapper<EdcparamApi>().eq("model_id",eqpModelId).isNull("param_define_id"));
-        if(list == null||list.size()>0){
+        if(list == null||list.size()==0){
             return DateResponse.error(eqpModelId+"不存在");
         }
         Response res = DateResponse.ok(list);

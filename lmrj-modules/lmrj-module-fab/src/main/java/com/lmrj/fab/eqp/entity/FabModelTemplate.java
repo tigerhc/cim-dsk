@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lmrj.common.mvc.entity.AbstractEntity;
+import com.lmrj.core.api.entity.EdcparamApi;
 import lombok.Data;
 
 import java.util.Date;
@@ -59,5 +60,16 @@ public class FabModelTemplate extends AbstractEntity {
     private Date updateDate;
     @TableField(exist = false)
     private List<FabModelTemplateBody> fabModelTemplateBodyList;
+    @TableField(exist = false)
+    private String modelId;
+
+
+    @TableField(exist = false)
+    private List<EdcparamApi> edcparamApiSelfList;
+
+    @TableField(exist = false)
+    private List<EdcparamApi> edcparamApiAllList;
+    @TableField(exist = false)
+    private String paramflag;
 
 }

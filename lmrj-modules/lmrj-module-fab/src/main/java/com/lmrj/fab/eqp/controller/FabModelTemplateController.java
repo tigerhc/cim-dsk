@@ -2,17 +2,17 @@ package com.lmrj.fab.eqp.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
-import com.lmrj.common.mvc.entity.AbstractEntity;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
-import com.lmrj.common.utils.ServletUtils;
+import com.lmrj.core.api.entity.EdcparamApi;
+import com.lmrj.core.api.service.IEdcparamApiService;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.eqp.entity.FabEquipmentModel;
 import com.lmrj.fab.eqp.entity.FabModelTemplate;
 import com.lmrj.fab.eqp.entity.FabModelTemplateBody;
+import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabModelTemplateBodyService;
 import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +39,10 @@ import java.util.List;
 public class FabModelTemplateController extends BaseCRUDController<FabModelTemplate> {
     @Autowired
     private IFabModelTemplateBodyService fabModelTemplateBodyService;
+    @Autowired
+    private IFabEquipmentModelService fabEquipmentModelService;
+    @Autowired
+    private IEdcparamApiService edcparamApiService;
     @Override
     @RequestMapping(
             value = {"create"},
@@ -93,6 +96,21 @@ public class FabModelTemplateController extends BaseCRUDController<FabModelTempl
             try {
                 //this.preSave(entity, request, response);
                 //存储头信息
+                List<FabEquipmentModel>  fabEquipmentModelList =      fabEquipmentModelService.selectList(new EntityWrapper<FabEquipmentModel>().eq("class_code",entity.getClassCode()));
+                String modelId = fabEquipmentModelList.get(0).getId();
+                    List<EdcparamApi> edcparamApis = entity.getEdcparamApiSelfList();
+                    edcparamApiService.delete(new EntityWrapper<EdcparamApi>().eq("model_id",modelId).isNull("param_define_id"));
+                    for (EdcparamApi edcparamApi:edcparamApis) {
+                        edcparamApi.setModelId(modelId);
+                        if(ObjectUtil.isNullOrEmpty(edcparamApi.getId())){
+                            edcparamApiService.insert(edcparamApi);
+                        }else{
+                            edcparamApi.setId("");
+                            edcparamApiService.insert(edcparamApi);
+                        }
+                    }
+
+
                 List<FabModelTemplateBody> list =entity.getFabModelTemplateBodyList();
                 if (ObjectUtil.isNullOrEmpty(entity.getId())) {
                     this.commonService.insert(entity);
@@ -115,5 +133,17 @@ public class FabModelTemplateController extends BaseCRUDController<FabModelTempl
             return Response.ok("保存成功");
         }
     }
+
+    @Override
+    public void afterFind(FabModelTemplate entity) {
+      List<FabEquipmentModel>  fabEquipmentModels = fabEquipmentModelService.selectList(new EntityWrapper<FabEquipmentModel>().eq("class_code",entity.getClassCode()));
+        entity.setModelId(fabEquipmentModels.get(0).getId());
+        //查询信息自带参数以及总览
+        List<EdcparamApi> edcparamApis = edcparamApiService.selectList(new EntityWrapper<EdcparamApi>().eq("model_id",entity.getModelId()).isNull("param_define_id"));
+        entity.setEdcparamApiSelfList(edcparamApis);
+        edcparamApis = edcparamApiService.selectList(new EntityWrapper<EdcparamApi>().eq("model_id",entity.getModelId()));
+        entity.setEdcparamApiAllList(edcparamApis);
+    }
+
 
 }

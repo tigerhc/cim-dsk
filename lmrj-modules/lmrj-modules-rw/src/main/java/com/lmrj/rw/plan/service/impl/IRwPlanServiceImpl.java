@@ -138,10 +138,14 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
     @Override
     public boolean updatePlan(RwPlan plan){
         boolean flag = true;
-        if(plan.getId()==null||"".equals(plan.getId())){
+       if(plan.getId()==null||"".equals(plan.getId())){
         //指定计划时不存在ID
+          //  plan.setAssignedTime(null);
+           plan.setId("");
+            plan.setAssignedTime(new Date());
         baseMapper.insert(plan);
         }
+        plan.setPlanStatus(String.valueOf(Integer.parseInt(plan.getPlanStatus())+1));
         switch(plan.getPlanStatus()){
 
             case "5":

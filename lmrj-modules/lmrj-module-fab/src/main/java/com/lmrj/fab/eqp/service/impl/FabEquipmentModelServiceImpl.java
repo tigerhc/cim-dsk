@@ -74,7 +74,7 @@ public class FabEquipmentModelServiceImpl  extends CommonServiceImpl<FabEquipmen
     public String manufacturerName(String modelId) {
         FabEquipmentModel  a = new FabEquipmentModel();
         a.setClassCode(modelId);
-        a = baseMapper.selectOne(a);
+        a = baseMapper.selectList(new EntityWrapper<FabEquipmentModel>().eq("id",modelId))==null||baseMapper.selectList(new EntityWrapper<FabEquipmentModel>().eq("id",modelId)).size()==0?null:baseMapper.selectList(new EntityWrapper<FabEquipmentModel>().eq("id",modelId)).get(0);
         return a==null?"":a.getManufacturerName();
 
     }

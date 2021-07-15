@@ -30,7 +30,7 @@ public class RwPlanHis  extends BaseDataEntity {
     /**采集时间*/
     @TableField(value = "assigned_time", fill = FieldFill.INSERT)
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date assignedTime;
     /**指派人*/
     @TableField(value = "assigned_user")
