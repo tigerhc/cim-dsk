@@ -1,5 +1,7 @@
 package com.lmrj.oven.batchlot.controller;
 
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.toolkit.CollectionUtils;
@@ -17,9 +19,12 @@ import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
-import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
+import org.apache.commons.collections.MapUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.util.*;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -222,6 +226,86 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
             content = JSON.toJSONStringWithDateFormat(res, JSON.DEFFAULT_DATE_FORMAT);
         }
         ServletUtils.printJson(response, content);
+    }
+
+    @RequestMapping(value = "/tempExport",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response tempExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
+        Response res = Response.ok("导出成功");
+        String title = "温度导出";
+        Map<String, Object> maps = ovnBatchLotService.tempExport(eqpId, startTime, endTime);
+        OvnBatchLot ovnBatchLot = ovnBatchLotService.selectOne(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId));
+        List<ExcelExportEntity> keyList = getTempKeyList(ovnBatchLot.getOtherTempsTitle().split(","));
+        try {
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("温度导出"+eqpId,"温度详细信息"),keyList,getTempDataList(maps), 5);//dataList
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception e){
+            logger.error("温度导出遇到异常,参数是:"+eqpId+",startTime:"+startTime+",endTime:"+endTime, e);
+        }
+        return res;
+    }
+    private List<ExcelExportEntity> getTempKeyList(String[] titles){
+        List<ExcelExportEntity> keyList = new LinkedList<>();
+        if(titles!=null && titles.length > 0){
+            ExcelExportEntity keyFirstCol = new ExcelExportEntity(" ","1");
+            keyList.add(keyFirstCol);
+            ExcelExportEntity keyTimeCol = new ExcelExportEntity("时间","2");
+            keyList.add(keyTimeCol);
+            for(int i=0; i<titles.length; i++){
+                ExcelExportEntity key = new ExcelExportEntity(titles[i],String.valueOf(i+3));
+                keyList.add(key);
+            }
+        }
+        return keyList;
+    }
+    private List<Map<String, String>> getTempDataList(Map<String, Object> tempMap){
+        try {
+            List<String> maxList = (List) tempMap.get("maxLimit");
+            List<String> minList = (List) tempMap.get("minLimit");
+            List<String> setValue = (List) tempMap.get("setValue");
+            List<Map<String, Object>> tempData = (List) tempMap.get("tempData");
+            List<Map<String, String>> dataList = new LinkedList<>();
+            if (maxList != null && maxList.size() > 0) {
+                Map<String, String> maxLimit = new HashMap<>();// 上限
+                Map<String, String> minLimit = new HashMap<>();// 下限
+                Map<String, String> setLimit = new HashMap<>();// 设定值
+                maxLimit.put("1", "上限");
+                minLimit.put("1", "下限");
+                setLimit.put("1", "设定值");
+                for (int i = 0; i < maxList.size(); i++) {
+                    maxLimit.put(String.valueOf(i + 3), maxList.get(i));
+                    minLimit.put(String.valueOf(i + 3), minList.get(i));
+                    setLimit.put(String.valueOf(i + 3), setValue.get(i));
+                }
+                dataList.add(maxLimit);
+                dataList.add(minLimit);
+                dataList.add(setLimit);
+            }
+            for (Map<String, Object> tempItem : tempData) {
+                Map<String, String> data = new HashMap<>();
+                data.put("2", MapUtils.getString(tempItem, "createTime"));
+                List<String> allTempData = (List) tempItem.get("tempList");
+                if (allTempData != null && allTempData.size() > 0) {
+                    for (int i = 0; i < allTempData.size(); i++) {
+                        data.put(String.valueOf(i + 3), allTempData.get(i));
+                    }
+                }
+                dataList.add(data);
+            }
+            return dataList;
+        } catch (Exception e){
+            logger.error("温度导出时,获得数据列表时出错", e);
+            return new ArrayList<>();
+        }
     }
 
     @RequestMapping(value = "/tempbytimeOther", method = {RequestMethod.GET, RequestMethod.POST})

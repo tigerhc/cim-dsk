@@ -37,7 +37,7 @@ public class DataRestore {
             EdcEqpState firstState = new EdcEqpState();
             firstState.setEqpId(eqpId);
             firstState.setStartTime(startTime);
-            EdcEqpState lastEqpState = edcEqpStateService.findLastData(startTime, eqpId);
+            EdcEqpState lastEqpState = edcEqpStateService.findLastData2(startTime, eqpId);
             firstState.setState(lastEqpState.getState());
             List<EdcEqpState> stateList = new ArrayList<>();
             for (int i = 0; i < operationList.size(); i++) {

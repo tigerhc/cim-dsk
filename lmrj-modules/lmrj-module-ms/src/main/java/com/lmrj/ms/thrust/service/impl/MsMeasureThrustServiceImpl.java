@@ -5,7 +5,6 @@ import com.lmrj.ms.thrust.entity.MsMeasureThrust;
 import com.lmrj.ms.thrust.mapper.MsMeasureThrustMapper;
 import com.lmrj.ms.thrust.service.IMsMeasureThrustService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +15,17 @@ import java.util.List;
 @Slf4j
 public class MsMeasureThrustServiceImpl extends CommonServiceImpl<MsMeasureThrustMapper, MsMeasureThrust> implements IMsMeasureThrustService {
 
-    @Test
+    @Override
     public List<MsMeasureThrust> findDataByTime(String produictionName , String startTime , String endTime){
         return baseMapper.findDataByTime(produictionName,startTime,endTime);
     }
 
-    @Test
+    @Override
+    public MsMeasureThrust findDataByLotNo(String lotNo,String produictionName){
+        return baseMapper.findDataByLotNo(lotNo,produictionName);
+    }
+
+    @Override
     public List<String> findProductionNameList(String lineNo){
         return baseMapper.findProductionNameList(lineNo);
     }

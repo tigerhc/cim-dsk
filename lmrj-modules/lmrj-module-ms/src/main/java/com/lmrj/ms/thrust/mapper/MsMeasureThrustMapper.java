@@ -24,6 +24,9 @@ public interface MsMeasureThrustMapper extends BaseMapper<MsMeasureThrust> {
     @Select("select * from ms_measure_thrust where production_name = #{produictionName}  and create_date between #{startTime} and #{endTime} order by create_date limit 31")
     List<MsMeasureThrust> findDataByTime(@Param("produictionName") String produictionName ,@Param("startTime") String startTime ,@Param("endTime") String endTime);
 
+    @Select("select * from ms_measure_thrust where lot_no = #{lotNo}  and  production_name = #{produictionName} limit 1")
+    MsMeasureThrust findDataByLotNo(@Param("lotNo") String lotNo,@Param("produictionName") String produictionName);
+
     @Select("select distinct production_name from ms_measure_thrust where line_no =  #{lineNo} order by production_name")
     List<String> findProductionNameList(@Param("lineNo") String lineNo);
 }

@@ -237,7 +237,7 @@ public class EdcSecsLogHandler {
             edcEqpState.setState("ALARM");
         }
         if(edcEqpState.getState()!=null){
-            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData2(edcAmsRecord.getStartDate(),edcAmsRecord.getEqpId());
             oldEdcEqpState.setEndTime(edcAmsRecord.getStartDate());
             Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
             oldEdcEqpState.setStateTimes(state);
@@ -540,7 +540,7 @@ public class EdcSecsLogHandler {
         equipmentStatus.setEqpStatus(edcEqpState.getState());
         fabEquipmentStatusService.updateById(equipmentStatus);
         if(edcEqpState.getState()!=null){
-            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData(evtRecord.getStartDate(),evtRecord.getEqpId());
+            EdcEqpState oldEdcEqpState = iEdcEqpStateService.findLastData2(evtRecord.getStartDate(),evtRecord.getEqpId());
             oldEdcEqpState.setEndTime(evtRecord.getStartDate());
             Double state = (double) (edcEqpState.getStartTime().getTime() - oldEdcEqpState.getStartTime().getTime());
             oldEdcEqpState.setStateTimes(state);

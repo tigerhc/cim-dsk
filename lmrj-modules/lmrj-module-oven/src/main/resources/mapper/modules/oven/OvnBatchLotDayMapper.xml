@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.oven.batchlot.mapper.OvnBatchLotDayMapper" >
+
+    <sql id="ovn_day">
+        v.id,
+        v.eqp_id,
+        v.eqp_temp,
+        v.temp_start,
+        v.temp_end,
+        v.temp_max,
+        v.temp_min,
+        v.period_date,
+        v.create_date
+    </sql>
+
+    <select id="findDetail" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
+        SELECT
+        <include refid="ovn_day"/>
+        FROM ovn_batch_lot_day v
+        WHERE v.eqp_id = #{eqpId}
+    </select>
+
+    <select id="selectTime" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
+        SELECT
+        <include refid="ovn_day"/>
+        FROM ovn_batch_lot_day v
+        WHERE v.period_date = #{periodDate}
+    </select>
+
+</mapper>
