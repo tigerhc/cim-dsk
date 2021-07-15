@@ -50,7 +50,7 @@ public class EdcAmsRecordYieldTask {
                     }
                 }
             }
-            iEdcAmsRecordService.insertBatch(edcAmsRecordList1,100);
+            iEdcAmsRecordService.updateBatchById(edcAmsRecordList1,100);
         }
         log.info("EdcAmsRecordYieldTask定时任务开始执行结束");
     }

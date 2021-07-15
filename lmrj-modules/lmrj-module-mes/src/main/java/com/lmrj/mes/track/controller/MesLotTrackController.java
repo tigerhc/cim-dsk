@@ -672,7 +672,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         log.info("findAtParam :  {}, {}", opId, eqpId);
         String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
-            fabLogService.info(eqpId, "Param16", "MesLotTrackController.findAtParam", eventDesc, "", "wangdong");//日志记录参数
+            fabLogService.info(eqpId, "Param17", "MesLotTrackController.findAtParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
@@ -686,14 +686,14 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String methodName = "FIND_AT_PARAM";
             MesResult result = mesLotTrackService.findApjParam(eqpId, methodName, opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId, "Result16", "MesLotTrackController.findAtParam", jo.toString(), eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Result17", "MesLotTrackController.findAtParam", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error16", "MesLotTrackController.findAtParamfindAtParamfindAtParam", "有异常", eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error17", "MesLotTrackController.findAtParamfindAtParamfindAtParam", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();
         }
     }
