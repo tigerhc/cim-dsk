@@ -598,7 +598,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     public String findLFANDHTRTParam(Model model, @PathVariable String eqpId, @RequestParam String opId, @RequestParam String param, @RequestParam String lotNo,
                                      HttpServletRequest request, HttpServletResponse response) {
         log.info("findLFANDHTRTParam :  {}, {}", opId, eqpId);
-        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"lotNo\":\"" + lotNo + "\"}";//日志记录参数
         try {
             fabLogService.info(eqpId, "Param15", "MesLotTrackController.findLFANDHTRTParam", eventDesc, "", "wangdong");//日志记录参数
             //String eqpId ="SIM-DM1";
@@ -620,14 +620,14 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String methodName = "findLFANDHTRTParam";
             MesResult result = mesLotTrackService.findParam(eqpId, param, opId, lotNo, "");
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
-            fabLogService.info(eqpId, "Result15", "MesLotTrackController.findLFANDHTRTParam", jo.toString(), eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Result15", "MesLotTrackController.findLFANDHTRTParam", jo.toString(), lotNo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
                 return result.getContent().toString();
             } else {
                 return result.getMsg();
             }
         } catch (Exception e) {
-            fabLogService.info(eqpId, "Error15", "MesLotTrackController.findLFANDHTRTParam", "有异常", eqpId, "wangdong");//日志记录
+            fabLogService.info(eqpId, "Error15", "MesLotTrackController.findLFANDHTRTParam", "有异常", lotNo, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -665,7 +665,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         }
     }
 
-    //查找APJ-TRM设备参数，从产量日志和配方日志中获取
+    //查找DM-AT设备参数，从产量日志和配方日志中获取
     @RequestMapping(value = "/findAtParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findAtParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
                                HttpServletRequest request, HttpServletResponse response) {

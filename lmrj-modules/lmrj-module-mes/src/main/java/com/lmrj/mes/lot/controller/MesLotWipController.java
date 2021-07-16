@@ -138,21 +138,13 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         map.put("number",fabEquipmentStatus.getLotNo());
         //map.put("number",111);
         //实时目标数=实际目标数/78300*当前秒数
-        Calendar calStart= Calendar.getInstance();
-        calStart.set(Calendar.HOUR_OF_DAY, 8);
-        calStart.set(Calendar.MINUTE, 0);
-        calStart.set(Calendar.SECOND, 0);
-        calStart.set(Calendar.MILLISECOND,0);
-        if(new Date().before(calStart.getTime())){
-            calStart.add(Calendar.DAY_OF_MONTH,-1);
-        }
-        int nowSecond = (int)(new Date().getTime()-calStart.getTimeInMillis())/1000;
-        int yieldQtyNow = (yieldQty/78300)*nowSecond;
+        int nowSecond = (int)(new Date().getTime()-startTime.getTime())/1000;
         Map map1=new HashMap();
         map1.put("name","当天目标数");
         if(yieldQty==0){
             map1.put("number",0);
         }else{
+            int yieldQtyNow = (yieldQty/78300)*nowSecond;
             map1.put("number",yieldQtyNow);
         }
         Map map2=new HashMap();
@@ -161,14 +153,16 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         if(lotYieldAll==0){
             map2.put("number",0);
         }else{
-            map2.put("number",lotYieldAll*100/100);
+            map2.put("number",lotYieldAll);
         }
         Map map3=new HashMap();
         map3.put("name","达成率");
         if(yieldQty==0){
             map3.put("number",100);
         }else{
-            map3.put("number",(lotYieldAll*100/yieldQtyNow) *100/100);
+            int yieldQtyNow = (yieldQty/78300)*nowSecond;
+            double number = (lotYieldAll*100/yieldQtyNow) * 100 / 100;
+            map3.put("number",number);
         }
 
         //方案模版
