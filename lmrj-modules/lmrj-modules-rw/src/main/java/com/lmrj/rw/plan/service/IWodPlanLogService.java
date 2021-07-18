@@ -4,7 +4,8 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.rw.plan.entity.RwPlan;
 import com.lmrj.rw.plan.entity.WodPlanLog;
 
-import java.sql.Date;
+import java.util.Date;
+
 
 /**
  * @author wdj
