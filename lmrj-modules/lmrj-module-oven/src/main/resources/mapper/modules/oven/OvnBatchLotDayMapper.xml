@@ -17,8 +17,13 @@
     <select id="findDetail" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
         SELECT
         <include refid="ovn_day"/>
-        FROM ovn_batch_lot_day v
+        from ovn_batch_lot_day v
+        join (select min(create_date) tearlyDate, max(create_date) lateDate
+              from ovn_batch_lot_day
+              group by DATE_FORMAT(create_date, '%Y-%m-%d')) aggyt
+        on aggyt.tearlyDate = v.create_date
         WHERE v.eqp_id = #{eqpId}
+        and v.period_date between #{start} and #{end}
     </select>
 
     <select id="selectTime" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
@@ -27,5 +32,48 @@
         FROM ovn_batch_lot_day v
         WHERE v.period_date = #{periodDate}
     </select>
+
+    <select id="selectMaxMin" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
+        select max(temp_max) temp_max,min(temp_min) temp_min
+        from ovn_batch_lot_day
+        WHERE eqp_id = #{eqpId} and period_date = #{periodDate}
+    </select>
+
+    <select id="selectLateData" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
+        select
+        <include refid="ovn_day"/>
+        from ovn_batch_lot_day v
+        join (select min(create_date) tearlyDate, max(create_date) lateDate
+              from ovn_batch_lot_day
+              group by DATE_FORMAT(create_date, '%Y-%m-%d')) aggyt
+        on aggyt.lateDate = v.create_date
+        WHERE eqp_id = #{eqpId} and period_date = #{periodDate}
+    </select>
+
+    <select id="selecTearlyData" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
+        select
+        <include refid="ovn_day"/>
+        from ovn_batch_lot_day v
+        join (select min(create_date) tearlyDate, max(create_date) lateDate
+              from ovn_batch_lot_day
+              group by DATE_FORMAT(create_date, '%Y-%m-%d')) aggyt
+        on aggyt.tearlyDate = v.create_date
+        WHERE eqp_id = #{eqpId} and period_date = #{periodDate}
+    </select>
+
+    <insert id="oldData" parameterType="java.lang.String">
+        insert into ovn_batch_lot_day ( eqp_id, temp_start,temp_end,temp_max,temp_min,create_date )
+        select t.eqp_id,p.temp_pv,p.temp_sp,p.temp_max,p.temp_min,p.create_date
+        from ovn_batch_lot_param p JOIN  ovn_batch_lot t
+        ON p.batch_id = t.id
+        where DATE_FORMAT(p.create_date, '%Y-%m-%d') = #{createDate}
+        <!--INSERT INTO ovn_batch_lot_day (eqp_id, temp_start,temp_end,temp_max,temp_min)
+        select * from (
+        <foreach collection="map" item="lists" separator="," close=")" open="(" >
+            #{lists}
+        </foreach>
+        )
+        where exists (select * from ovn_batch_lot_param  where DATE_FORMAT(create_date, '%Y-%m-%d') = #{lists})-->
+    </insert>
 
 </mapper>

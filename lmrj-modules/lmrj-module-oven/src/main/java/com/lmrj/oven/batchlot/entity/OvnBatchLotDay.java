@@ -43,7 +43,7 @@ public class OvnBatchLotDay {
     @TableField(value = "period_date")
     private String periodDate;
 
-    /*作业日期*/
+    /*创建时间*/
     @TableField(value = "create_date")
     private String createDate;
 
