@@ -1,5 +1,6 @@
 package com.lmrj.rw.plan.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.cim.utils.UserUtil;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.core.sys.entity.User;
@@ -150,10 +151,13 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
 
             case "5":
                 RwPlanHis planHis = new RwPlanHis();
+                plan.setPlanStatus("4");
                 plan = baseMapper.selectOne(plan);
                 plan.setEndDate(new Date());
+                plan.setPlanStatus("5");
                 BeanUtils.copyProperties(plan,planHis);
              rwPlanHisService.enddata(planHis);
+             this.baseMapper.deleteById(plan.getId());
             case "2":
             case "3":
             case "4":
@@ -163,10 +167,26 @@ public class IRwPlanServiceImpl extends CommonServiceImpl<RwPlanMapper, RwPlan> 
              }
                 break;
         }
+        plan = baseMapper.selectOne(plan);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        String userId = getPrincipalProperty(principal, "id");
+        User user = UserUtil.getUser(userId);
+        wodPlanLogService.addLog(plan,"",user.getUsername(),new Date());
+
 
         return flag;
 
 
+    }
+
+    @Override
+    public String checkOnlineWod(RwPlan plan) {
+        String ret = "";
+       List<RwPlan> rwPlans = this.baseMapper.selectList(new EntityWrapper<RwPlan>().eq("plan_id",plan.getPlanId()).isNull("end_date"));
+       if(rwPlans!=null&&rwPlans.size()>0){
+           ret =rwPlans.get(0).getId() +"";
+       }
+       return ret;
     }
 
     /**

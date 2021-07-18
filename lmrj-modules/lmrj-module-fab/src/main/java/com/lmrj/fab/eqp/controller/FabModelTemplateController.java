@@ -100,15 +100,18 @@ public class FabModelTemplateController extends BaseCRUDController<FabModelTempl
                 String modelId = fabEquipmentModelList.get(0).getId();
                     List<EdcparamApi> edcparamApis = entity.getEdcparamApiSelfList();
                     edcparamApiService.delete(new EntityWrapper<EdcparamApi>().eq("model_id",modelId).isNull("param_define_id"));
-                    for (EdcparamApi edcparamApi:edcparamApis) {
-                        edcparamApi.setModelId(modelId);
-                        if(ObjectUtil.isNullOrEmpty(edcparamApi.getId())){
-                            edcparamApiService.insert(edcparamApi);
-                        }else{
-                            edcparamApi.setId("");
-                            edcparamApiService.insert(edcparamApi);
+                    if(edcparamApis!=null&&edcparamApis.size()>0){
+                        for (EdcparamApi edcparamApi:edcparamApis) {
+                            edcparamApi.setModelId(modelId);
+                            if(ObjectUtil.isNullOrEmpty(edcparamApi.getId())){
+                                edcparamApiService.insert(edcparamApi);
+                            }else{
+                                edcparamApi.setId("");
+                                edcparamApiService.insert(edcparamApi);
+                            }
                         }
                     }
+
 
 
                 List<FabModelTemplateBody> list =entity.getFabModelTemplateBodyList();

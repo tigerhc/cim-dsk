@@ -179,6 +179,7 @@ public class RwPlanController  extends BaseCRUDController<RwPlan> {
         boolean flag = false;
         RwPlan rwPlan = new RwPlan();
         rwPlan.setId(id);
+        rwPlan.setPlanStatus("4");
         try {
             flag = iRwPlanService.updatePlan(rwPlan);
             if (!flag){

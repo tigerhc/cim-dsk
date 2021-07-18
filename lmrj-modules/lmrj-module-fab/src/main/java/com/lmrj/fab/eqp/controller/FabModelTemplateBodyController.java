@@ -15,6 +15,7 @@ import com.lmrj.fab.eqp.entity.FabModelTemplateBody;
 import com.lmrj.fab.eqp.entity.TreeModel;
 import com.lmrj.fab.eqp.service.IFabEquipmentModelService;
 import com.lmrj.fab.eqp.service.IFabModelTemplateBodyService;
+import com.lmrj.fab.eqp.service.IFabSensorModelService;
 import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +40,7 @@ import java.util.*;
 @LogAspectj(title = "fab_model_template_body")
 public class FabModelTemplateBodyController extends BaseCRUDController<FabModelTemplateBody> {
     @Autowired
-    private IFabEquipmentModelService fabEquipmentModelService;
+    private IFabSensorModelService fabEquipmentModelService;
     @Autowired
     private IFabModelTemplateBodyService fabModelTemplateBodyService;
     /**
@@ -99,13 +100,13 @@ public class FabModelTemplateBodyController extends BaseCRUDController<FabModelT
             retList2 = new ArrayList<>();
             for( Iterator<String> it2 = set2.iterator();  it2.hasNext(); ){
                 str2 = it2.next();
-                if(str2.startsWith(str1)){
+                if(str2.startsWith(str1+",")){
                     String[] stra2 = str2.split(",");
                     treeModel2 = new TreeModel();
                     retList3 = new ArrayList<>();
                 for( Iterator<String> it3 = set3.iterator();  it3.hasNext(); ){
                     str3 = it3.next();
-                    if(str3.startsWith(str2)){
+                    if(str3.startsWith(str2+",")){
                         treeModel3 = new TreeModel();
                        String[] stra3 = str3.split(",");
                         treeModel3.setTreeNode("subClassCode");
