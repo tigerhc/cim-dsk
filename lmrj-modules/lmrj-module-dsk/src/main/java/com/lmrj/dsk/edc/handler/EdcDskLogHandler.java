@@ -161,66 +161,70 @@ public class EdcDskLogHandler {
     public void parseProductionlog(String msg) {
         //String msg = new String(message, "UTF-8");
         log.info("C2S.Q.PRODUCTIONLOG.DATA接收到的消息" + msg);
-        List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
+        try {
+            List<EdcDskLogProduction> edcDskLogProductionList = JsonUtil.from(msg, new TypeReference<List<EdcDskLogProduction>>() {});
 //        if(edcDskLogProductionList.get(0).getEqpId().equals("SIM-HGAZO1")){
 //            this.temperatureList(edcDskLogProductionList);}
-        List<EdcDskLogProduction> proList = new ArrayList<>();
-        List<EdcDskLogProduction> nextproList = new ArrayList<>();
+            List<EdcDskLogProduction> proList = new ArrayList<>();
+            List<EdcDskLogProduction> nextproList = new ArrayList<>();
 
-        if (edcDskLogProductionList.size() > 0) {
-            EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
-            String eqpId = edcDskLogProduction0.getEqpId();
-            //判断数据是否为同一批次
-            MesLotTrack lotTrack = mesLotTrackService.findLotByStartTime(eqpId, edcDskLogProduction0.getStartTime());
-            MesLotTrack nextLotTrack = mesLotTrackService.findLastTrack(eqpId, lotTrack.getLotNo(), lotTrack.getStartTime());
-            //同一批次
-            if (nextLotTrack == null) {
-                fixProData(edcDskLogProductionList, lotTrack);
-                if(eqpId.equals("SIM-YGAZO1")){
-                    this.temperatureList2(edcDskLogProductionList,lotTrack.getLotNo());
-                }
-                //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
-            } else {
-                for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
-                    if (edcDskLogProduction.getStartTime().before(nextLotTrack.getStartTime())) {
-                        proList.add(edcDskLogProduction);
-                    } else {
-                        nextproList.add(edcDskLogProduction);
+            if (edcDskLogProductionList.size() > 0) {
+                EdcDskLogProduction edcDskLogProduction0 = edcDskLogProductionList.get(0);
+                String eqpId = edcDskLogProduction0.getEqpId();
+                //判断数据是否为同一批次
+                MesLotTrack lotTrack = mesLotTrackService.findLotByStartTime(eqpId, edcDskLogProduction0.getStartTime());
+                MesLotTrack nextLotTrack = mesLotTrackService.findLastTrack(eqpId, lotTrack.getLotNo(), lotTrack.getStartTime());
+                //同一批次
+                if (nextLotTrack == null) {
+                    fixProData(edcDskLogProductionList, lotTrack);
+                    if(eqpId.equals("SIM-YGAZO1")){
+                        this.temperatureList2(edcDskLogProductionList,lotTrack.getLotNo());
+                    }
+                    //不同批次 将开始时间在最新批次之后的数据归为最新批次数据 其他归为旧批次数据
+                } else {
+                    for (EdcDskLogProduction edcDskLogProduction : edcDskLogProductionList) {
+                        if (edcDskLogProduction.getStartTime().before(nextLotTrack.getStartTime())) {
+                            proList.add(edcDskLogProduction);
+                        } else {
+                            nextproList.add(edcDskLogProduction);
+                        }
+                    }
+                    if (proList.size() > 0) {
+                        fixProData(proList, lotTrack);
+                    }
+                    if (nextproList.size() > 0) {
+                        fixProData(nextproList, nextLotTrack);
                     }
                 }
-                if (proList.size() > 0) {
-                    fixProData(proList, lotTrack);
+                if(eqpId.equals("SIM-YGAZO1")){
+                    if(proList.size() > 0){
+                        this.temperatureList2(proList,lotTrack.getLotNo());
+                    }
+                    if (nextproList.size() > 0) {
+                        this.temperatureList2(nextproList, nextLotTrack.getLotNo());
+                    }
                 }
-                if (nextproList.size() > 0) {
-                    fixProData(nextproList, nextLotTrack);
+                FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                if(!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")){
+                    EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
+                    if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
+                        fabStatus.setEqpStatus("RUN");
+                        fabEquipmentStatusService.updateById(fabStatus);
+                        EdcEqpState edcEqpState = new EdcEqpState();
+                        edcEqpState.setEqpId(eqpId);
+                        edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime());
+                        edcEqpState.setState("RUN");
+                        String stateJson = JsonUtil.toJsonString(edcEqpState);
+                        rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                    }
                 }
-            }
-            if(eqpId.equals("SIM-YGAZO1")){
-                if(proList.size() > 0){
-                    this.temperatureList2(proList,lotTrack.getLotNo());
-                }
-                if (nextproList.size() > 0) {
-                    this.temperatureList2(nextproList, nextLotTrack.getLotNo());
-                }
-            }
-            FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-            if(!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")){
-                EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
-                if(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime().after(operation.getStartTime())){
-                    fabStatus.setEqpStatus("RUN");
-                    fabEquipmentStatusService.updateById(fabStatus);
-                    EdcEqpState edcEqpState = new EdcEqpState();
-                    edcEqpState.setEqpId(eqpId);
-                    edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size()-1).getEndTime());
-                    edcEqpState.setState("RUN");
-                    String stateJson = JsonUtil.toJsonString(edcEqpState);
-                    rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
-                }
-            }
-        } else {
+            } else {
 
+            }
+        } catch (Exception e) {
+            log.error("产量数据入库报错！",e);
+            e.printStackTrace();
         }
-
 
 
     }
@@ -305,48 +309,50 @@ public class EdcDskLogHandler {
         if(defectiveProList.size()>0){
             iEdcDskLogProductionDefectiveService.insertBatch(defectiveProList,100);
         }
-        String eventId = null;
-        eventId = StringUtil.randomTimeUUID("RPT");
-        EdcDskLogProduction lastPro = null;
-        boolean updateFlag = false;
-        try {
-            if (edcDskLogProductionService.insertBatch(goodPro,100)) {
-                fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共" + proList.size() + "条", mesLotTrack.getLotNo(), "gxj");
-            }
-            //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
-            List<EdcDskLogProduction> allProList = new ArrayList<>();
-            //MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
-            allProList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+        if(goodPro.size()>0){
+            String eventId = null;
+            eventId = StringUtil.randomTimeUUID("RPT");
+            EdcDskLogProduction lastPro = null;
+            boolean updateFlag = false;
             lastPro = goodPro.get(goodPro.size() - 1);
-            mesLotTrack.setLotYieldEqp(allProList.size());
-            mesLotTrack.setLotInput(proList.get(proList.size()-1).getLotInput());
-            if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
-                mesLotTrack.setLotYieldEqp(allProList.size() * 12);
+            try {
+                if (edcDskLogProductionService.insertBatch(goodPro,100)) {
+                    fabLogService.info(eqpId, eventId, "fixProData", "production数据插入结束,共" + proList.size() + "条", mesLotTrack.getLotNo(), "gxj");
+                }
+                //判断该批次是否为最后一个批次 若不是 查询范围为当前批次开始到下一批次开始
+                List<EdcDskLogProduction> allProList = new ArrayList<>();
+                //MesLotTrack lastTrack = iMesLotTrackService.findLastTrack(mesLotTrack.getEqpId(), mesLotTrack.getLotNo(), mesLotTrack.getStartTime());
+                allProList = edcDskLogProductionService.findDataBylotNo(mesLotTrack.getLotNo(),mesLotTrack.getEqpId(),mesLotTrack.getProductionNo());
+                mesLotTrack.setLotYieldEqp(allProList.size());
+                mesLotTrack.setLotInput(proList.get(proList.size()-1).getLotInput());
+                if (eqpId.contains("SIM-REFLOW") || eqpId.contains("SIM-PRINTER")) {
+                    mesLotTrack.setLotYieldEqp(allProList.size() * 12);
+                }
+                mesLotTrack.setUpdateBy("gxj");
+                updateFlag = mesLotTrackService.updateById(mesLotTrack);
+                log.info("更新设备状态批次产量");
+                FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                if(fabStatus!=null){
+                    fabStatus.setLotYield(allProList.size());
+                    fabStatus.setRecipeCode(lastPro.getRecipeCode());
+                    fabStatus.setDayYield(lastPro.getDayYield());
+                    fabEquipmentStatusService.updateById(fabStatus);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                fabLogService.info(eqpId, eventId, "fixProData", "track更新出错" + e + "       ", mesLotTrack.getLotNo(), "gxj");
             }
-            mesLotTrack.setUpdateBy("gxj");
-            updateFlag = mesLotTrackService.updateById(mesLotTrack);
-            log.info("更新设备状态批次产量");
-            FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-            if(fabStatus!=null){
-                fabStatus.setLotYield(allProList.size());
-                fabStatus.setRecipeCode(lastPro.getRecipeCode());
-                fabStatus.setDayYield(lastPro.getDayYield());
-                fabEquipmentStatusService.updateById(fabStatus);
+            if (!updateFlag) {
+                System.out.println("修改失败");
+                mesLotTrack.setStartTime(new Date());
+                if (lastPro.getOrderNo() != null) {
+                    mesLotTrack.setOrderNo(lastPro.getOrderNo());
+                }
+                mesLotTrack.setCreateBy("EQP");
+                mesLotTrackService.insert(mesLotTrack);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            fabLogService.info(eqpId, eventId, "fixProData", "track更新出错" + e + "       ", mesLotTrack.getLotNo(), "gxj");
+            fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为：" + mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
         }
-        if (!updateFlag) {
-            System.out.println("修改失败");
-            mesLotTrack.setStartTime(new Date());
-            if (lastPro.getOrderNo() != null) {
-                mesLotTrack.setOrderNo(lastPro.getOrderNo());
-            }
-            mesLotTrack.setCreateBy("EQP");
-            mesLotTrackService.insert(mesLotTrack);
-        }
-        fabLogService.info(eqpId, eventId, "fixProData", "track批次产量更新为：" + mesLotTrack.getLotYieldEqp(), mesLotTrack.getLotNo(), "gxj");
     }
 
 

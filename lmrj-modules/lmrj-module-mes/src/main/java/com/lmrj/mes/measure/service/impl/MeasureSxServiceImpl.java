@@ -254,11 +254,13 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         lineMinObj.put("name","下限");
         lineMinObj.put("type","line");
         lineMinObj.put("data", minLimit);
+        lineMinObj.put("markLine", getMarkLine());
         lines.add(lineMinObj);
         Map<String, Object> lineMaxObj = new HashMap<>();
         lineMaxObj.put("name","上限");
         lineMaxObj.put("type","line");
         lineMaxObj.put("data", maxLimit);
+        lineMinObj.put("markLine", getMarkLine());
         lines.add(lineMaxObj);
 
         Map<String, Object> lineObj2_1 = new HashMap<>();
@@ -380,11 +382,13 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         minLimitLine.put("name","下限");
         minLimitLine.put("type","line");
         minLimitLine.put("data", minLimit);
+        minLimitLine.put("markLine", getMarkLine());
         lines.add(minLimitLine);
         Map<String, Object> maxLimitLine = new HashMap<>();
         maxLimitLine.put("name","上限");
         maxLimitLine.put("type","line");
         maxLimitLine.put("data", maxLimit);
+        maxLimitLine.put("markLine", getMarkLine());
         lines.add(maxLimitLine);
 
         Map<String, Object> lineObj3 = new HashMap<>();
@@ -418,6 +422,17 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         optionDatas.add(min);
 
         return optionDatas;
+    }
+    //获得箭头
+    private Map<String, Object> getMarkLine(){
+        Map markLine = new HashMap();
+        List dataB = new ArrayList();
+        Map basic = new HashMap();
+        basic.put("type", "max");
+        basic.put("name", "最大数据");
+        dataB.add(basic);
+        markLine.put("data", dataB);
+        return markLine;
     }
 
     /**56GI总的*/

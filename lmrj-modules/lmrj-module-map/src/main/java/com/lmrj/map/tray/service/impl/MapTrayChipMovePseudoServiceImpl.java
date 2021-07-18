@@ -270,15 +270,17 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
         Map<String, Object> rs = new HashMap<>();
         for(MapEquipmentConfig cfgEqp : lineCfgEqp){
             boolean unfind = true;
+            long logTime = 0;
             for(MapTrayChipMove item : lineData){
                 if("Y".equals(cfgEqp.getSameLotFlag()) && !startData.getLotNo().equals(item.getLotNo())){//是否同批次好
-                    break;
+                    continue;
                 }
                 //符合条件是时间间隔在cfgEqp中设置的间隔内(sql中以满足坐标相等)
                 long timeChk = TraceDateUtil.getDiffSec(item.getStartTime(), curDate);
                 if(timeChk<0){
                     break;
                 }
+                logTime = timeChk;
                 if(cfgEqp.getEqpId().equals(item.getEqpId()) && timeChk < cfgEqp.getIntervalTimeMax() && timeChk >= 0){
                     if("Y".equals(startData.getJudgeResult()) && item.getMapFlag() == 0){
                         unfind = false;
@@ -296,7 +298,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                 }
             }
             if(unfind){
-                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax());
+                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax()+",最近的相差:"+logTime);
                 return rs;
             }
         }
