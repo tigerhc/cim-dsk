@@ -219,7 +219,6 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
                                   HttpServletRequest request, HttpServletResponse response) {
 
-        ovnBatchLotDayService.fParamToDay("APJ-TRM1","2021-07-04");
         List<Map> maps = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
         String content = "";
         if (maps == null) {
