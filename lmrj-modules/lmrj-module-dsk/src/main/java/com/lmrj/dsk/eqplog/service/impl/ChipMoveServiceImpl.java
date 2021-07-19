@@ -25,6 +25,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
 
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
+        String eqpId = "";
         List<ChipMove> mapperList = new ArrayList<>();
         try{
             for(Map<String, Object> item : dataList){
@@ -33,6 +34,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 if(StringUtil.isEmpty(chipId)||"null".equals(chipId)||"NULL".equals(chipId)){
                     chipId = null;
                 }
+                eqpId = MapUtils.getString(item, "eqpId");
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 //过滤掉起始移栽机的不良品数据
@@ -92,7 +94,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
             }
         } catch (Exception e){
             e.printStackTrace();
-            log.error("保存追溯的前段数据有误", e);
+            log.error("保存追溯的前段数据有误"+eqpId, e);
         }
         return 0;
     }
