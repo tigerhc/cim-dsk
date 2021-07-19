@@ -230,11 +230,54 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                     RData.add(null);
                 }
             }
+            double sum = 0;//实测值的和
+            for (Double xDatum : XData) {
+                sum = sum + xDatum;
+            }
+            double sum1 = 0;//差值和
+            for (Double rDatum : RData) {
+                sum1 = sum1 + rDatum;
+            }
+            double Xbar = sum/dataList.size();//实测值平均值
+            double Rbar = sum/dataList.size();//差值平均值
+            double A2 = 0.266;
+            double D3 = 0.283;
+            double D4 = 1.717;
+            double Lcl = 60.0;
+            if(!"pull".equals(type)){
+                A2 = 0.157;
+                D3 = 0.451;
+                D4 = 1.548;
+                Lcl = 8.0;
+            }
+            double Xcl = Xbar;
+            double Xucl = Xbar + (Rbar* A2);
+            double Xlcl = Xbar - (Rbar* A2);
+            double Rcl = Rbar;
+            double Rucl = Rbar * D4;
+            double Rlcl = Rbar * D3;
+            for (int i = 0; i < dataList.size(); i++) {
+                LCL.add(Lcl);
+                XCL.add(Xcl);
+                XUCL.add(Xucl);
+                XLCL.add(Xlcl);
+                RCL.add(Rcl);
+                RUCL.add(Rucl);
+                RLCL.add(Rlcl);
+            }
+            
         }
         Response res = new Response();
         res.put("xAxis", xAxis);
         res.put("XData", XData);
         res.put("RData", RData);
+        res.put("LCL", LCL);
+        res.put("XCL", XCL);
+        res.put("XUCL", XUCL);
+        res.put("XLCL", XLCL);
+        res.put("RCL", RCL);
+        res.put("RUCL", RUCL);
+        //res.put("RLCL", RLCL);
         return res;
     }
 }
