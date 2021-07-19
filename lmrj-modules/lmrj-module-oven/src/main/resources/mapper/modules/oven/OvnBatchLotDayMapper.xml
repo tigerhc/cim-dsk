@@ -18,10 +18,6 @@
         SELECT
         <include refid="ovn_day"/>
         from ovn_batch_lot_day v
-        join (select min(create_date) tearlyDate, max(create_date) lateDate
-              from ovn_batch_lot_day
-              group by DATE_FORMAT(create_date, '%Y-%m-%d')) aggyt
-        on aggyt.tearlyDate = v.create_date
         WHERE v.eqp_id = #{eqpId}
         and v.period_date between #{start} and #{end}
     </select>
@@ -75,5 +71,15 @@
         )
         where exists (select * from ovn_batch_lot_param  where DATE_FORMAT(create_date, '%Y-%m-%d') = #{lists})-->
     </insert>
+
+<select id="fParamToDay" resultType="java.util.Map">
+select eqpid,eqptemp,tempMax,tempMin,tempStart,tempEnd,periodDate from
+    <foreach collection="list" index="index" open="(" close=")" separator="union all" item="item">
+        (select #{periodDate} as periodDate,#{item.eqpId} as eqpId,#{item.eqpTemp} as eqpTemp,max(SUBSTRING_INDEX(SUBSTRING_INDEX(a.other_temps_value,',',${item.indexPv}),',',-1)) as tempMax,min(SUBSTRING_INDEX(SUBSTRING_INDEX(a.other_temps_value,',',${item.indexPv}),',',-1)) as tempMin,
+        (select SUBSTRING_INDEX(SUBSTRING_INDEX(other_temps_value,',',${item.indexPv}),',',-1) from ovn_batch_lot_param where batch_id = #{item.id} and create_date between #{startTime} and #{endTime} and create_date = (select min(create_date) from ovn_batch_lot_param where batch_id = #{item.id} and create_date between #{startTime} and #{endTime})) as tempStart,
+        (select SUBSTRING_INDEX(SUBSTRING_INDEX(other_temps_value,',',${item.indexPv}),',',-1) from ovn_batch_lot_param where batch_id = #{item.id} and create_date between #{startTime} and #{endTime} and create_date = (select max(create_date) from ovn_batch_lot_param where batch_id = #{item.id} and create_date between #{startTime} and #{endTime})) as tempEnd   from ovn_batch_lot_param a
+        where a.batch_id = #{item.id} and a.create_date between #{startTime} and #{endTime} )
+    </foreach> as total
+</select>
 
 </mapper>

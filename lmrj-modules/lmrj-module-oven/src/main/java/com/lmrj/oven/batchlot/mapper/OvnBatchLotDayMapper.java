@@ -5,11 +5,12 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLotDay;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface OvnBatchLotDayMapper {
+public interface OvnBatchLotDayMapper extends BaseMapper<OvnBatchLotDay>{
     /*一天一条数据*/
     List<OvnBatchLotDay> findDetail(@Param("eqpId") String eqpId,@Param( "start" ) String start,@Param( "end" ) String end);
     /*当天所有数据*/
@@ -22,4 +23,6 @@ public interface OvnBatchLotDayMapper {
     List<OvnBatchLotDay> selectLateData(@Param("eqpId") String eqpId,@Param( "periodDate" ) String periodDate);
     /*前一天的数据汇总*/
     Integer oldData(@Param( "createDate" ) String createDate);
+
+    List<Map> fParamToDay(@Param( "list" )List<Map> list,@Param( "startTime" ) Date startTime,@Param( "endTime" )Date endTime,@Param( "periodDate" )String periodDate);
 }

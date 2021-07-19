@@ -19,4 +19,6 @@ public interface IOvnBatchLotDayService {
     List<OvnBatchLotDay> selectLateData(String eqpId, String periodDate);
 
     Integer oldData(String periodDate);
+
+    void fParamToDay(String eqpId, String periodDate);
 }

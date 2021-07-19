@@ -19,6 +19,7 @@ import com.lmrj.core.sys.entity.Organization;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
@@ -65,6 +66,8 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
 
     @Autowired
     private IFabEquipmentService eqpService;
+    @Autowired
+    private IOvnBatchLotDayService ovnBatchLotDayService;
 
     @Autowired
     private AmqpTemplate rabbitTemplate;
@@ -215,6 +218,8 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @RequestMapping(value = "/tempbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
                                   HttpServletRequest request, HttpServletResponse response) {
+
+        ovnBatchLotDayService.fParamToDay("APJ-TRM1","2021-07-04");
         List<Map> maps = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
         String content = "";
         if (maps == null) {

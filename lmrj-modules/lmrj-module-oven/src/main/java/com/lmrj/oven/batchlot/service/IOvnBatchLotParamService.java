@@ -4,7 +4,9 @@ package com.lmrj.oven.batchlot.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
 * All rights Reserved, Designed By www.gzst.gov.cn
@@ -22,4 +24,7 @@ public interface IOvnBatchLotParamService extends ICommonService<OvnBatchLotPara
     List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime);
 
     List<OvnBatchLotParam> selectDataBybatchId(String batchId);
+
+    List<Map> fParamToDayone(String id, Date startTime, Date endTime, String periodDate,
+                                    String eqpId, String eqpTemp);
 }
