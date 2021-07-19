@@ -860,6 +860,12 @@ public class EdcDskLogHandler {
             }else if (department.get(0).get("department").equals("APJ")) {
                 users = fabEquipmentService.findEmailALL("A-0001");
             }
+        }else if(alarmCode.equals("CSVLOGERROR")){
+            if(department.get(0).get("department").equals("YK")){
+                users = fabEquipmentService.findEmailALL("E-CSV-F");
+            }else if(department.get(0).get("department").equals("EK")){
+                users = fabEquipmentService.findEmailALL("E-CSV-S");
+            }
         }else {
             users = fabEquipmentService.findEmailALL(alarmCode);
         }
