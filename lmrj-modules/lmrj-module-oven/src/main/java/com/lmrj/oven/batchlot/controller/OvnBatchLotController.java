@@ -16,9 +16,11 @@ import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
+import com.lmrj.edc.param.entity.EdcParamRecordDtl;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotDay;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.calendar.DateUtil;
@@ -218,8 +220,8 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @RequestMapping(value = "/tempbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
                                   HttpServletRequest request, HttpServletResponse response) {
-
         List<Map> maps = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
+        List<OvnBatchLotDay> ovnBatchLotDays = ovnBatchLotDayService.findDetail(eqpId,beginTime, endTime);
         String content = "";
         if (maps == null) {
             content = JSON.toJSONString(DateResponse.error("请缩短时间范围"));
@@ -227,6 +229,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
             OvnBatchLot ovnBatchLot = ovnBatchLotService.selectOne(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId));
             Response res = DateResponse.ok(maps);
             res.put("title", ovnBatchLot.getOtherTempsTitle());
+            res.put("dayNum", ovnBatchLotDays);
             content = JSON.toJSONStringWithDateFormat(res, JSON.DEFFAULT_DATE_FORMAT);
         }
         ServletUtils.printJson(response, content);

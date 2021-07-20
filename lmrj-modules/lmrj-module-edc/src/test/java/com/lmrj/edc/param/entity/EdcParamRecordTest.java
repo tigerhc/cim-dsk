@@ -3,7 +3,11 @@ package com.lmrj.edc.param.entity;
 import com.google.common.collect.Lists;
 import com.lmrj.util.mapper.JsonUtil;
 import org.junit.Test;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +15,8 @@ import java.util.List;
  * Created by zwj on 2019/6/15.
  */
 public class EdcParamRecordTest {
-
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
     @Test
     public void tojson() throws Exception {
         EdcParamRecord edcParamRecord = new EdcParamRecord();
@@ -48,6 +53,21 @@ public class EdcParamRecordTest {
         System.out.println(edcParamRecord);
 
 
+    }
+
+    @Test
+    public void redlowProductionLogParseTest(){
+        EdcParamRecordDtl edcParamRecordDtl = new EdcParamRecordDtl();
+        edcParamRecordDtl.setEqpId("wdj");
+        edcParamRecordDtl.setParamRowId("00014577997b11ea8f1e08f1eab2c7e1");
+        edcParamRecordDtl.setParamCode("TOWA10027021");
+        edcParamRecordDtl.setCreateDate(new Date());
+        edcParamRecordDtl.setParamValue("111");
+        List<EdcParamRecordDtl> abc =  new ArrayList<>();
+        abc.add(edcParamRecordDtl);
+        Object logList = abc;
+        String logJson = JsonUtil.toJsonString(logList);
+        rabbitTemplate.convertAndSend("C2S.Q.EDC.PARAMDTL", logJson);
     }
 
 }
