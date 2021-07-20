@@ -11,6 +11,8 @@ import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipMove> implements IChipMoveService {
     private SimpleDateFormat sdfSSS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); //客户端处理了统一的时间格式
 
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @Override
     public int insertData(List<Map<String, Object>> dataList) {
         String eqpId = "";
@@ -99,6 +102,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
         return 0;
     }
 
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @Override
     public int insertChipIdData(List<Map<String, Object>> dataList) {
         List<ChipMove> moveList = new ArrayList<>();
