@@ -171,6 +171,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
     @RequestMapping(value = "/getEchartsData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response getEchartsData(String productionName, String startTime, String endTime, HttpServletRequest request, HttpServletResponse response, String type) {
         List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
+        DecimalFormat df = new java.text.DecimalFormat("#.00");
         List<String> xAxis = new ArrayList<>();
         List<Double> XData = new ArrayList<>();//实测值:单例(单批次)数据的平均值所连成的线
         List<Double> RData = new ArrayList<>();//差值
@@ -224,7 +225,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                         }
                     }
                     if (cnt > 0) {//XData
-                        XData.add(sum / cnt);
+                        XData.add(Double.valueOf(df.format(sum / cnt)));
                         RData.add(max - min);
                     } else {
                         XData.add(null);//没有有效数据, 此处不同于零
@@ -261,7 +262,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
             double Rcl = Rbar;
             double Rucl = Rbar * D4;
             double Rlcl = Rbar * D3;
-            DecimalFormat df = new java.text.DecimalFormat("#.00");
+
             for (int i = 0; i < dataList.size(); i++) {
                 LCL.add(Double.valueOf(df.format(Lcl)));
                 XCL.add(Double.valueOf(df.format(Xcl)));
@@ -284,7 +285,9 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         res.put("XLCL", XLCL);
         res.put("RCL", RCL);
         res.put("RUCL", RUCL);
-        //res.put("RLCL", RLCL);
+        if(RLCL.size()>0){
+            res.put("RLCL", RLCL);
+        }
         return res;
     }
 }
