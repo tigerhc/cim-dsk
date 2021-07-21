@@ -46,6 +46,8 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 }
                 if(data.getEqpId().contains("SMT")){//贴片机的数据
                     data.setSmtCount(MapUtils.getInteger(item, "smtCount"));
+                }else{
+                    data.setSmtCount(0);
                 }
                 data.setEqpModelName(MapUtils.getString(item, "eqpName"));
                 data.setProductionNo(MapUtils.getString(item, "lotYield"));
@@ -125,6 +127,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         data.setFileName(MapUtils.getString(item, "fileName"));
                         data.setChipId(chipId);
                         data.setMapFlag(2);
+                        data.setSmtCount(0);
                         moveList.add(data);
                     }
                     if (EqpNameConstant.EQP_JET.equals(eqpId)) {
