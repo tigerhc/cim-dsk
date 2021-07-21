@@ -22,4 +22,6 @@ public interface IRwPlanService extends ICommonService<RwPlan> {
      * @return
      */
     public boolean updatePlan(RwPlan plan);
+
+    public String checkOnlineWod(RwPlan plan);
 }

@@ -27,11 +27,6 @@ public class WodPlanLog   extends BaseDataEntity {
     /**设备编号*/
     @TableField(value = "eqp_id")
     private String eqpId;
-    /**采集时间*/
-    @TableField(value = "assigned_time", fill = FieldFill.INSERT)
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")
-    private Date assignedTime;
     /**处理方式*/
     @TableField(value = "deal_type")
     private String dealType;

@@ -27,6 +27,10 @@
             <version>2.0.0.RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
     </dependencies>
 

@@ -1,9 +1,12 @@
 package com.lmrj.edc.param.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @Title: edc_param_record_dtl
@@ -65,5 +68,10 @@ public class EdcParamRecordDtl extends BaseDataEntity {
 	private String maxValue;
     @TableField(value = "create_by")
     protected String createBy; // 创建者
+
+    /**业务日期*/
+    @TableField(value = "create_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    private Date createDate;
 
 }

@@ -144,7 +144,8 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         if(yieldQty==0){
             map1.put("number",0);
         }else{
-            int yieldQtyNow = (yieldQty/78300)*nowSecond;
+            double k= yieldQty*1.0/78300;
+            int yieldQtyNow = (int)(k*nowSecond);
             map1.put("number",yieldQtyNow);
         }
         Map map2=new HashMap();
@@ -160,7 +161,8 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         if(yieldQty==0){
             map3.put("number",100);
         }else{
-            int yieldQtyNow = (yieldQty/78300)*nowSecond;
+            double k= yieldQty*1.0/78300;
+            int yieldQtyNow = (int)(k*nowSecond);
             double number = (lotYieldAll*100/yieldQtyNow) * 100 / 100;
             map3.put("number",number);
         }

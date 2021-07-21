@@ -422,6 +422,7 @@
 		<if test="checkType!='' and checkType!=null">
 			and check_type=#{checkType}
 		</if>
+		ORDER BY start_time desc
 		limit 1
 	</select>
 	<select id="getPseudoStart" parameterType="java.lang.String" resultMap="TrayMap">

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lmrj.rw.plan.mapper.VwodPlanMapper" >
+
+    <sql id="Base_Column_List" >
+        t.id,
+       t.plan_id,
+       t.eqp_id,
+       t.assigned_user,
+       t.assigned_time,
+       t.designee,
+       t.deal_type,
+       t.deal_time,
+       t.plan_status,
+       t.plan_type,
+       t.deal_advice,
+       t.deal_des,
+       t.end_date,
+        t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+    </sql>
+
+    <select id="rwplanlist" resultType="com.lmrj.rw.plan.entity.RwPlan">
+        select
+        <include refid="Base_Column_List" />
+        from wod_plan t
+        where t.eqp_id in
+        <foreach collection="eqpList" item="eqpId" index="index" open="(" separator="," close=")">
+            #{eqpId}
+        </foreach>
+        <if test="id != null and id != ''">
+            and t.id = #{id}
+        </if>
+        <if test="startAssign != null and endAssign != null">
+            and t.assigned_time between #{startAssign} and #{endAssign}
+        </if>
+        <if test="startDeal != null and endDeal != null">
+            and t.end_date between #{startDeal} and #{endDeal}
+        </if>
+        <if test="planStatus != null and planStatus != ''">
+            and t.plan_status = #{planStatus}
+        </if>
+        <if test="planType != null and planType != ''">
+            and t.plan_type = #{planType}
+        </if>
+        <if test="userId != null and userId != ''">
+            and (t.plan_status = 1 or (t.plan_status = 2 and (designee is null or designee = #{userId})) or (t.plan_status = 3 and  designee = #{userId}) or (t.plan_status = 4 and  assigned_user = #{userId}))
+        </if>
+    </select>
+</mapper>

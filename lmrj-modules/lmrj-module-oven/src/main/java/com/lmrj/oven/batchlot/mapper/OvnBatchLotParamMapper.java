@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * All rights Reserved, Designed By www.gzst.gov.cn
@@ -27,4 +29,7 @@ public interface OvnBatchLotParamMapper extends BaseMapper<OvnBatchLotParam> {
 
  @Select("select * from ovn_batch_lot_param where batch_id = #{batchId}  order by create_date")
  List<OvnBatchLotParam> selectDataBybatchId(@Param("batchId")String batchId);
+
+ List<Map> fParamToDayone(@Param("id")String id, @Param( "startTime" ) Date startTime, @Param( "endTime" )Date endTime, @Param( "periodDate" )String periodDate,
+                          @Param("eqpId")String eqpId,@Param("eqpTemp")String eqpTemp);
 }

@@ -41,3 +41,7 @@ ALTER TABLE `edc_param_record_dtl`  ADD INDEX `record_id_idx1` (`record_id`) ;
 ALTER TABLE `ms_measure_config_detail`  ADD INDEX `ms_config_id_idx1` (`ms_config_id`) ;
 ALTER TABLE `ms_measure_record_detail`  ADD INDEX `ms_record_id_idx1` (`ms_record_id`) ;
 ALTER TABLE `edc_ams_define`  ADD INDEX `eqp_model_id_idx1` (`eqp_model_id`) ;
+
+-- 2021-07-20 在参数表中增加传感器ID用于后续数据的二次绑定
+ALTER TABLE `edc_param_define_model`
+ADD COLUMN `sensor_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '传感器编号' AFTER `param_define_id`;

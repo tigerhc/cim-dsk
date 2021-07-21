@@ -9,6 +9,8 @@ import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.util.lang.StringUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,6 +19,12 @@ import java.util.*;
 public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTrayChipMoveMapper, MapTrayChipMove> implements IMapTrayChipMovePseudoService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     String firstEqpId = "APJ-IGBT-SMT1,APJ-FRD-SMT1,APJ-DBCT-SORT1,APJ-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
+
+    @Override
+    public List<MapTrayChipMove> selectDatas(){
+        return baseMapper.selectDatas();
+    }
+
     /**伪码追溯
      * 1.追溯本线段的数据
      * 2.追溯紧连着的上一段的数据
@@ -25,6 +33,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
      * (1)将本段的数据的map_flag由原来的0变为6,并填充数据的伪码
      * (2)将上一段数据的伪码更新为最新的伪码,即由上一段伪码改为本段的伪码
      */
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @Override
     public void tracePseudoData(MapEquipmentConfig eqp) {
         List<MapTrayChipMove> startDatas = baseMapper.getPseudoStart(eqp.getEqpId());//获得起始数据的列表(包括:APJ-IGBT-SORT1\APJ-FRD-SORT1\APJ-DBCT-SORT2\APJ-DBCB-SORT2\APJ-IGBT-SORT3\APJ-FRD-SORT3\APJ-HB1-SORT2\
@@ -88,6 +97,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
      * 3,追溯VI
      * 4,通过VI 追HB1段(1次热压段)
      */
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @Override
     public void traceHB2(){
         List<MapTrayChipMove> startData = baseMapper.getHB2Start();//获得起始数据的列表
@@ -130,28 +140,28 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     }
                     if(unfindFlag){
                         unErrFlag = false;
-                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,HB2数据数量不对", false);
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,HB2段数据不全缺"+cfg.getEqpId(), false);
                         break;
                     }
                 }
                 //追溯上基板和VI
                 if(unErrFlag){
                     List<String> hbsortPseudo = new ArrayList<>();//保存所有要更新的伪码,包括,上基板,下基板,1次热压SORT
-                    //追溯DBC段
-                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
-                    if(StringUtil.isEmpty(dbcbPseudoCode)){
-                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到", false);
-                        continue;
-                    } else{
-                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
-                    }
-                    String dbctPseudoCode = traceBeforeLine(assemblyData);
-                    if(StringUtil.isEmpty(dbctPseudoCode)){
-                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到", false);
-                        continue;
-                    } else{
-                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
-                    }
+//                    //追溯DBC段
+//                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
+//                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+//                    }
+//                    String dbctPseudoCode = traceBeforeLine(assemblyData);
+//                    if(StringUtil.isEmpty(dbctPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
+//                    }
                     //追溯VI
                     List<MapTrayChipMove> VIdatas = new ArrayList<>();
                     for(MapTrayChipMove SMTData : SMTDatas){
@@ -186,7 +196,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     for(MapTrayChipMove VIdata : VIdatas){
                         String hb1PseudoCode = traceBeforeLine(VIdata);
                         if(StringUtil.isEmpty(hb1PseudoCode)){
-                            saveErrData(traceLogs, assemblyData, "伪码追溯异常,HB1-SORT2没有找到,数据VI-Id:"+VIdata.getId(), false);
+                            saveErrData(traceLogs, assemblyData, "伪码追溯异常,没有找到HB1-SORT2,HB2-SORT1:"+HB2SortData.getId()+",数据VI-Id:"+VIdata.getId(), false);
                             unErrFlag = false;
                             break;
                         } else {
@@ -195,6 +205,21 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     }
                     if(!unErrFlag) {
                         continue;// 下一个 assembly
+                    }
+                    //追溯DBC段
+//                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
+//                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+//                    }
+                    String dbctPseudoCode = traceBeforeLine(assemblyData);
+                    if(StringUtil.isEmpty(dbctPseudoCode)){
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);
+                        continue;
+                    } else{
+                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
                     }
                     //1.更新HB2的数据和VI的数据;2.更新追溯到的带有伪码的段尾数据(先1后2,原因是1耗时长)
                     assemblyData.setMapFlag(2);

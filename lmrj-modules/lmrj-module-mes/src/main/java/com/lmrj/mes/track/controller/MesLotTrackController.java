@@ -1128,6 +1128,52 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     }
 
+    //查找DM分离检查参数
+    @RequestMapping(value = "/findAPJ/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findApjParam(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId,
+                               HttpServletRequest request, HttpServletResponse response) {
+        log.info("findAPJParam :  {}, {}", opId, eqpId);
+        if (trackinfo.length() < 30) {
+            return "trackinfo too short";
+        }
+        String[] trackinfos = trackinfo.split("\\.");
+        String lotorder = trackinfos[0];
+        String productionName = trackinfos[1].trim();
+        productionName = productionName.replace("_", " ");
+        String[] lotNos = lotorder.split("_");
+
+        String productionNo = lotNos[0].substring(0, 7); //5002915
+        String lotNo = lotNos[0].substring(7, 12); //0702D
+        String orderNo = lotNos[1]; //37368342
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo+ "\",\"productionNo\":\"" + productionNo + "\",\"productionName\":\"" + productionName+ "\",\"opId\":\"" + opId+ "\"}";//日志记录参数
+
+        try {
+            fabLogService.info(eqpId, "findAPJ", "MesLotTrackController.findAPJ", eventDesc, lotNo, "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("APJLFTest")) {
+                eqpId = "APJ-LF1";
+            }else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:" + eqpId;
+            }
+            String methodName = "FIND_APJ_LF_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId, methodName, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "findAPJ", "MesLotTrackController.findAPJ", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "findAPJ", "MesLotTrackController.findAPJ", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 }
 
 

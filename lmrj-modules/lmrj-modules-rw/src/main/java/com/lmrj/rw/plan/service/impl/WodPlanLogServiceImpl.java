@@ -8,7 +8,8 @@ import com.lmrj.rw.plan.service.IWodPlanLogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
+
 
 /**
  * @author wdj

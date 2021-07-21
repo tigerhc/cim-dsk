@@ -823,17 +823,22 @@ public class EdcDskLogHandler {
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
-        if("E-0071".equals(alarmCode) || "E-0072".equals(alarmCode) || "E-0073".equals(alarmCode)){
+        if("E-0071".equals(alarmCode) || "E-0072".equals(alarmCode) || "E-0073".equals(alarmCode)|| "E-CSV-S".equals(alarmCode)|| "E-CSV-F".equals(alarmCode)|| "CSV-LOG-ERROR".equals(alarmCode)){
             //不对以上报警进行拦截
         }else {
-            EmailSendLog emailSendLog = iEmailSendLogService.selectEmailLog(alarmCode);
-            if(emailSendLog!=null && emailSendLog.getCreateDate()!=null){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.HOUR_OF_DAY,-1);
-                if(cal.getTime().after(emailSendLog.getCreateDate())){
-                    log.info("报警邮件在1小时内重复出现，停止发送！  "+JsonUtil.toJsonString(msgMap));
-                    return;
+            try {
+                EmailSendLog emailSendLog = iEmailSendLogService.selectEmailLog(alarmCode);
+                if(emailSendLog!=null && emailSendLog.getCreateDate()!=null){
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.HOUR_OF_DAY,-1);
+                    if(cal.getTime().before(emailSendLog.getCreateDate())){
+                        log.info("报警邮件在1小时内重复出现，停止发送！  "+JsonUtil.toJsonString(msgMap));
+                        return;
+                    }
                 }
+            } catch (Exception e) {
+                log.error("邮件发送重复判断出错",e);
+                e.printStackTrace();
             }
         }
         if(eqpId.contains("TRM") && alarmCode.equals("E-0005")){
@@ -844,12 +849,18 @@ public class EdcDskLogHandler {
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if(alarmCode.equals(":网络断开连接!")){
             code = "RTP_ALARM";
-            if (department.get(0).get("department").equals("YK")) {
-                users = fabEquipmentService.findEmailALL("E-0007");
-            } else if (department.get(0).get("department").equals("EK")) {
-                users = fabEquipmentService.findEmailALL("E-0008");
-            }else if (department.get(0).get("department").equals("APJ")) {
-                users = fabEquipmentService.findEmailALL("E-0001");
+            if(eqpId.contains("SIM")){
+                if (department.get(0).get("department").equals("YK")) {
+                    users = fabEquipmentService.findEmailALL("E-0007");
+                } else if (department.get(0).get("department").equals("EK")) {
+                    users = fabEquipmentService.findEmailALL("E-0008");
+                }
+            }else if(eqpId.contains("APJ")){
+                if(department.get(0).get("department").equals("YK")){
+                    users = fabEquipmentService.findEmailALL("E-CSV-F");
+                }else if(department.get(0).get("department").equals("EK")){
+                    users = fabEquipmentService.findEmailALL("E-CSV-S");
+                }
             }
         }else if(alarmCode.equals(":网络连接恢复!")){
             code = "RTP_RECOVER";
@@ -859,6 +870,12 @@ public class EdcDskLogHandler {
                 users = fabEquipmentService.findEmailALL("A-0008");
             }else if (department.get(0).get("department").equals("APJ")) {
                 users = fabEquipmentService.findEmailALL("A-0001");
+            }
+        }else if(alarmCode.equals("CSV-LOG-ERROR")){
+            if(department.get(0).get("department").equals("YK")){
+                users = fabEquipmentService.findEmailALL("E-CSV-F");
+            }else if(department.get(0).get("department").equals("EK")){
+                users = fabEquipmentService.findEmailALL("E-CSV-S");
             }
         }else {
             users = fabEquipmentService.findEmailALL(alarmCode);
