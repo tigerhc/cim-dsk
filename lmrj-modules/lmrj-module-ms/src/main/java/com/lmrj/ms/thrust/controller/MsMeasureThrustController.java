@@ -285,9 +285,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         res.put("XLCL", XLCL);
         res.put("RCL", RCL);
         res.put("RUCL", RUCL);
-        if(RLCL.size()>0){
-            res.put("RLCL", RLCL);
-        }
+        res.put("RLCL", RLCL);
         return res;
     }
 }
