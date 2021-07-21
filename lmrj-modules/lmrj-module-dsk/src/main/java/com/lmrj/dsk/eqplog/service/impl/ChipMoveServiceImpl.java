@@ -50,7 +50,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                     data.setSmtCount(0);
                 }
                 data.setEqpModelName(MapUtils.getString(item, "eqpName"));
-                data.setProductionNo(MapUtils.getString(item, "lotYield"));
+                data.setProductionNo(MapUtils.getString(item, "productionNo"));//lotYield
                 data.setLotNo(MapUtils.getString(item, "lotNo"));
                 data.setFromTrayId(MapUtils.getString(item, "fromTrayId"));
                 String fromRow = MapUtils.getString(item, "fromRow");
