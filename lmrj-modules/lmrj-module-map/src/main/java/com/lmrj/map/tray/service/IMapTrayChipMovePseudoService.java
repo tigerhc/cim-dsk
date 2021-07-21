@@ -18,5 +18,4 @@ public interface IMapTrayChipMovePseudoService extends ICommonService<MapTrayChi
 
     void traceNGData();
 
-    List<MapTrayChipMove> selectDatas();
 }

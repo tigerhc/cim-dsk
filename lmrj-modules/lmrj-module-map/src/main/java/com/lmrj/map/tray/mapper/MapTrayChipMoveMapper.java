@@ -6,7 +6,6 @@ import com.lmrj.map.tray.entity.MapTrayChipMove;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -24,9 +23,6 @@ import java.util.Map;
  */
 @Mapper
 public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
-    @Select("SELECT * from map_tray_chip_move m where eqp_id='APJ-FRD-SORT1'  ")
-    List<MapTrayChipMove> selectDatas();
-
     public List<Map<String, Object>> queryChipMove(MapTrayChipMoveQueryVo query);
 
     public int countChipMove(MapTrayChipMoveQueryVo query);
