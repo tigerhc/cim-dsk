@@ -839,6 +839,14 @@ public class EdcDskLogHandler {
         }
         List<Map<String, Object>> users = new ArrayList<>();
         FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+        try {
+            if(alarmCode.equals(":网络断开连接!") || alarmCode.equals(":网络连接恢复!") ||alarmCode.equals("CSV-LOG-ERROR")){
+                eqpId = eqpId.split(":")[0].replace("设备","");
+            }
+        } catch (Exception e) {
+            log.error("邮件eqpId处理报错",e);
+            e.printStackTrace();
+        }
         List<Map<String, Object>> department = fabEquipmentService.findDepartment(eqpId);
         if (alarmCode.equals(":网络断开连接!")) {
             code = "RTP_ALARM";

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,11 +48,12 @@ import java.util.Map;
 public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrust> {
     @Autowired
     IMsMeasureThrustService msMeasureThrustService;
-    @RequestMapping(value = "/exportLogThrust", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response exportData(String productionName ,String startTime,String endTime, HttpServletRequest request, HttpServletResponse response){
+
+    @RequestMapping(value = "/exportLogThrust", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response exportData(String productionName, String startTime, String endTime, HttpServletRequest request, HttpServletResponse response) {
         Response res = Response.ok("导出成功");
         try {
-            List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName,startTime,endTime);
+            List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
             String url = "E:\\CIM\\cim-dsk-root\\logs\\推力拉力excel模板.xlsx";
             File file = new File(url);
             String fileName = file.getName();
@@ -67,12 +69,12 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
             } else if (fileType.equals("xlsx")) {
                 xssfWorkbook = new XSSFWorkbook(stream);
             } else {
-                return Response.error("模板文件格式不正确! 文件名称："+fileName);
+                return Response.error("模板文件格式不正确! 文件名称：" + fileName);
             }
             Sheet thrustSheet = xssfWorkbook.getSheetAt(1);//推力页
-            thrustDataParse(thrustSheet,dataList);
+            thrustDataParse(thrustSheet, dataList);
             Sheet pullSheet = xssfWorkbook.getSheetAt(0);//拉力页
-            pullDataParse(pullSheet,dataList);
+            pullDataParse(pullSheet, dataList);
             //分别得到最后一行的行号，和一条记录的最后一个单元格
            /* FileOutputStream out=new FileOutputStream(url); //向d://test.xls中写数据
             out.flush();
@@ -92,80 +94,83 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
             return Response.error(999998, "导出失败");
         }
     }
+
     //拉力sheet页
-    public Sheet pullDataParse(Sheet pullSheet,List<MsMeasureThrust> msMeasureThrustList){
-        Row lotrow=pullSheet.getRow(52);//机种和批量行
-        Row eqpIdrow=pullSheet.getRow(70);//设备名称行
-        Row opIdrow=pullSheet.getRow(71);//操作员编号行
+    public Sheet pullDataParse(Sheet pullSheet, List<MsMeasureThrust> msMeasureThrustList) {
+        Row lotrow = pullSheet.getRow(52);//机种和批量行
+        Row eqpIdrow = pullSheet.getRow(70);//设备名称行
+        Row opIdrow = pullSheet.getRow(71);//操作员编号行
         for (int i = 0; i < msMeasureThrustList.size(); i++) {
-            MsMeasureThrust msMeasureThrust= msMeasureThrustList.get(i);
-            String nameAndLot = msMeasureThrust.getProductionName().substring(0,8)+"\n"+msMeasureThrust.getLotNo();
-            lotrow.getCell((i+1)).setCellValue(nameAndLot);
-            eqpIdrow.getCell((i+1)).setCellValue(msMeasureThrust.getEqpId());
-            opIdrow.getCell((i+1)).setCellValue(Integer.parseInt(msMeasureThrust.getOpId()));
+            MsMeasureThrust msMeasureThrust = msMeasureThrustList.get(i);
+            String nameAndLot = msMeasureThrust.getProductionName().substring(0, 8) + "\n" + msMeasureThrust.getLotNo();
+            lotrow.getCell((i + 1)).setCellValue(nameAndLot);
+            eqpIdrow.getCell((i + 1)).setCellValue(msMeasureThrust.getEqpId());
+            opIdrow.getCell((i + 1)).setCellValue(Integer.parseInt(msMeasureThrust.getOpId()));
         }
         //将拉力数据放入指定位置
-        for (int i = 53; i <65 ; i++) {
-            Row row=pullSheet.getRow(i);//数据填入起始行数
-            datapPatse(row,msMeasureThrustList,i,1);
+        for (int i = 53; i < 65; i++) {
+            Row row = pullSheet.getRow(i);//数据填入起始行数
+            datapPatse(row, msMeasureThrustList, i, 1);
         }
         //重新对公式单元格进行格式设置
         pullSheet.setForceFormulaRecalculation(true);
         return pullSheet;
     }
+
     //推力力sheet页
-    public Sheet thrustDataParse(Sheet thrustSheet,List<MsMeasureThrust> msMeasureThrustList){
-        Row lotrow=thrustSheet.getRow(52);//机种和批量行
-        Row eqpIdrow=thrustSheet.getRow(82);//设备名称行
-        Row opIdrow=thrustSheet.getRow(83);//操作员编号行
+    public Sheet thrustDataParse(Sheet thrustSheet, List<MsMeasureThrust> msMeasureThrustList) {
+        Row lotrow = thrustSheet.getRow(52);//机种和批量行
+        Row eqpIdrow = thrustSheet.getRow(82);//设备名称行
+        Row opIdrow = thrustSheet.getRow(83);//操作员编号行
         for (int i = 0; i < msMeasureThrustList.size(); i++) {
-            MsMeasureThrust msMeasureThrust= msMeasureThrustList.get(i);
-            String nameAndLot = msMeasureThrust.getProductionName().substring(0,8)+"\n"+msMeasureThrust.getLotNo();
-            lotrow.getCell((i+1)).setCellValue(nameAndLot);
-            eqpIdrow.getCell((i+1)).setCellValue(msMeasureThrust.getEqpId());
-            opIdrow.getCell((i+1)).setCellValue(Integer.parseInt(msMeasureThrust.getOpId()));
+            MsMeasureThrust msMeasureThrust = msMeasureThrustList.get(i);
+            String nameAndLot = msMeasureThrust.getProductionName().substring(0, 8) + "\n" + msMeasureThrust.getLotNo();
+            lotrow.getCell((i + 1)).setCellValue(nameAndLot);
+            eqpIdrow.getCell((i + 1)).setCellValue(msMeasureThrust.getEqpId());
+            opIdrow.getCell((i + 1)).setCellValue(Integer.parseInt(msMeasureThrust.getOpId()));
         }
         //将推力数据放入指定位置
-        for (int i = 53; i <77 ; i++) {
-            Row row=thrustSheet.getRow(i);//数据填入起始行数
-            datapPatse(row,msMeasureThrustList,i,0);
+        for (int i = 53; i < 77; i++) {
+            Row row = thrustSheet.getRow(i);//数据填入起始行数
+            datapPatse(row, msMeasureThrustList, i, 0);
         }
         thrustSheet.setForceFormulaRecalculation(true);
         return thrustSheet;
     }
+
     //将推力或拉力指定位置数据拼接为一行
-    public void datapPatse(Row row,List<MsMeasureThrust> msMeasureThrustList,int rowSize,int flag){
-        int dateGetIndex = rowSize-53;//获取推力数据的thrusts元素下表
+    public void datapPatse(Row row, List<MsMeasureThrust> msMeasureThrustList, int rowSize, int flag) {
+        int dateGetIndex = rowSize - 53;//获取推力数据的thrusts元素下表
         for (int i = 0; i < msMeasureThrustList.size(); i++) {
-            MsMeasureThrust msMeasureThrust= msMeasureThrustList.get(i);
+            MsMeasureThrust msMeasureThrust = msMeasureThrustList.get(i);
             String data = "";
-            if(flag==1){//推力
-                data = msMeasureThrust.getThrust().replace("~",",").replace(",-","");
-            }else if(flag == 0){//拉力
-                data = msMeasureThrust.getPull().replace("~",",").replace(",-","");
+            if (flag == 1) {//推力
+                data = msMeasureThrust.getThrust().replace("~", ",").replace(",-", "");
+            } else if (flag == 0) {//拉力
+                data = msMeasureThrust.getPull().replace("~", ",").replace(",-", "");
             }
             String datass[] = data.split(",");
-            if(datass.length>dateGetIndex){
-                if("-".equals(datass[dateGetIndex])){
-                    row.getCell((i+1)).setCellValue(datass[dateGetIndex]);
-                }else {
-                    row.getCell((i+1)).setCellValue((double) Math.round(Double.valueOf(datass[dateGetIndex]) * 10) / 10);
+            if (datass.length > dateGetIndex) {
+                if ("-".equals(datass[dateGetIndex])) {
+                    row.getCell((i + 1)).setCellValue(datass[dateGetIndex]);
+                } else {
+                    row.getCell((i + 1)).setCellValue((double) Math.round(Double.valueOf(datass[dateGetIndex]) * 10) / 10);
                 }
             }
         }
     }
 
-    @RequestMapping(value = "/thrustProductionName", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response exportData(String lineNo , HttpServletRequest request, HttpServletResponse response){
-        List<String>  productionNameList = msMeasureThrustService.findProductionNameList(lineNo);
+    @RequestMapping(value = "/thrustProductionName", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response exportData(String lineNo, HttpServletRequest request, HttpServletResponse response) {
+        List<String> productionNameList = msMeasureThrustService.findProductionNameList(lineNo);
         Response res = new Response();
-        res.put("productionNameList",productionNameList);
+        res.put("productionNameList", productionNameList);
         return res;
     }
 
-    @RequestMapping(value = "/getEchartsData", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response getEchartsData(String productionName ,String startTime,String endTime, HttpServletRequest request, HttpServletResponse response, String type){
-        List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName,startTime,endTime);
+    @RequestMapping(value = "/getEchartsData", method = {RequestMethod.GET, RequestMethod.POST})
+    public Response getEchartsData(String productionName, String startTime, String endTime, HttpServletRequest request, HttpServletResponse response, String type) {
+        List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
         List<String> xAxis = new ArrayList<>();
         List<Double> XData = new ArrayList<>();//实测值:单例(单批次)数据的平均值所连成的线
         List<Double> RData = new ArrayList<>();//差值
@@ -179,53 +184,53 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         Map<String, Object> cast = new HashMap<String, Object>();
         String xAxisStr = "";
         //对原始数据进行处理
-        if(dataList!=null && dataList.size()>0){
-            for(MsMeasureThrust item : dataList){
+        if (dataList != null && dataList.size() > 0) {
+            for (MsMeasureThrust item : dataList) {
                 String handleData = "";
-                if("pull".equals(type)){
-                    handleData = item.getThrust().replace("~",",").replace(",-","");
-                } else{
-                    handleData = item.getPull().replace("~",",").replace(",-","");
+                if ("pull".equals(type)) {
+                    handleData = item.getThrust().replace("~", ",").replace(",-", "");
+                } else {
+                    handleData = item.getPull().replace("~", ",").replace(",-", "");
                 }
                 String[] dataArr = handleData.split(",");
                 //处理X轴
-                if(!xAxisStr.equals(item.getLotNo())){  //一个批次有两个 ?? TODO 待确认 高
+                if (!xAxisStr.equals(item.getLotNo())) {  //一个批次有两个 ?? TODO 待确认 高
                     xAxisStr = item.getLotNo();
                     xAxis.add(xAxisStr);
                 }
                 //将数据库中的数据转换为double,为了接下来便于计算
-                if(dataArr!=null && dataArr.length>0){
+                if (dataArr != null && dataArr.length > 0) {
                     Double min = null;//excel 单列数据中的最小值
                     Double max = null;//excel 单列数据中的最大值
                     Double sum = 0d;//excel 单列数据总和
                     int cnt = 0;//有效数据个数
-                    for(String lineData: dataArr){
-                        if(StringUtil.isNotEmpty(lineData)){
+                    for (String lineData : dataArr) {
+                        if (StringUtil.isNotEmpty(lineData)) {
                             cnt = cnt + 1;
                             Double curD = Double.parseDouble(lineData);
                             //处理最小值
-                            if(min==null){
+                            if (min == null) {
                                 min = Double.parseDouble(lineData);
-                            } else if(min > curD){
+                            } else if (min > curD) {
                                 min = curD;
                             }
                             //处理最大值
-                            if(max==null){
+                            if (max == null) {
                                 max = Double.parseDouble(lineData);
-                            } else if(max < curD){
+                            } else if (max < curD) {
                                 max = curD;
                             }
                             sum = sum + curD;
                         }
                     }
-                    if(cnt>0){//XData
+                    if (cnt > 0) {//XData
                         XData.add(sum / cnt);
                         RData.add(max - min);
                     } else {
                         XData.add(null);//没有有效数据, 此处不同于零
                         RData.add(null);
                     }
-                }else{//各项为null处理 TODO
+                } else {//各项为null处理 TODO
                     XData.add(null);
                     RData.add(null);
                 }
@@ -238,34 +243,36 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
             for (Double rDatum : RData) {
                 sum1 = sum1 + rDatum;
             }
-            double Xbar = (sum/XData.size())*100/100;//实测值平均值
-            double Rbar = sum1/RData.size();//差值平均值
+            double Xbar = sum / XData.size();//实测值平均值
+            double Rbar = sum1 / RData.size();//差值平均值
             double A2 = 0.266;
             double D3 = 0.283;
             double D4 = 1.717;
             double Lcl = 60.0;
-            if(!"pull".equals(type)){
+            if ("pull".equals(type)) {
                 A2 = 0.157;
                 D3 = 0.451;
                 D4 = 1.548;
                 Lcl = 8.0;
             }
             double Xcl = Xbar;
-            double Xucl = Xbar + (Rbar* A2);
-            double Xlcl = Xbar - (Rbar* A2);
+            double Xucl = Xbar + (Rbar * A2);
+            double Xlcl = Xbar - (Rbar * A2);
             double Rcl = Rbar;
             double Rucl = Rbar * D4;
             double Rlcl = Rbar * D3;
+            DecimalFormat df = new java.text.DecimalFormat("#.00");
             for (int i = 0; i < dataList.size(); i++) {
-                LCL.add(Lcl);
-                XCL.add(Xcl);
-                XUCL.add(Xucl);
-                XLCL.add(Xlcl);
-                RCL.add(Rcl);
-                RUCL.add(Rucl);
-                RLCL.add(Rlcl);
+                LCL.add(Double.valueOf(df.format(Lcl)));
+                XCL.add(Double.valueOf(df.format(Xcl)));
+                XUCL.add(Double.valueOf(df.format(Xucl)));
+                XLCL.add(Double.valueOf(df.format(Xlcl)));
+                RCL.add(Double.valueOf(df.format(Rcl)));
+                RUCL.add(Double.valueOf(df.format(Rucl)));
+                if("pull".equals(type)){
+                    RLCL.add(Double.valueOf(df.format(Rlcl)));
+                }
             }
-            
         }
         Response res = new Response();
         res.put("xAxis", xAxis);
