@@ -19,12 +19,6 @@ import java.util.*;
 public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTrayChipMoveMapper, MapTrayChipMove> implements IMapTrayChipMovePseudoService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     String firstEqpId = "APJ-IGBT-SMT1,APJ-FRD-SMT1,APJ-DBCT-SORT1,APJ-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
-
-    @Override
-    public List<MapTrayChipMove> selectDatas(){
-        return baseMapper.selectDatas();
-    }
-
     /**伪码追溯
      * 1.追溯本线段的数据
      * 2.追溯紧连着的上一段的数据
@@ -207,13 +201,13 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         continue;// 下一个 assembly
                     }
                     //追溯DBC段
-//                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
-//                    if(StringUtil.isEmpty(dbcbPseudoCode)){
-//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
-//                        continue;
-//                    } else{
-//                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
-//                    }
+                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
+                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+                        continue;
+                    } else{
+                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+                    }
                     String dbctPseudoCode = traceBeforeLine(assemblyData);
                     if(StringUtil.isEmpty(dbctPseudoCode)){
                         saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);

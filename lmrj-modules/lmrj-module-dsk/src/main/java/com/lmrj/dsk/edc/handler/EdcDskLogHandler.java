@@ -823,6 +823,7 @@ public class EdcDskLogHandler {
         Map<String, Object> msgMap = JsonUtil.from(msg, Map.class);
         eqpId = (String) msgMap.get("EQP_ID");
         alarmCode = (String) msgMap.get("ALARM_CODE");
+<<<<<<< .merge_file_a18188
         if("E-0071".equals(alarmCode) || "E-0072".equals(alarmCode) || "E-0073".equals(alarmCode)|| "E-CSV-S".equals(alarmCode)|| "E-CSV-F".equals(alarmCode)|| "CSV-LOG-ERROR".equals(alarmCode)){
             //不对以上报警进行拦截
         }else {
@@ -835,6 +836,18 @@ public class EdcDskLogHandler {
                         log.info("报警邮件在1小时内重复出现，停止发送！  "+JsonUtil.toJsonString(msgMap));
                         return;
                     }
+=======
+        if("E-0071".equals(alarmCode) || "E-0072".equals(alarmCode) || "E-0073".equals(alarmCode)|| "E-CSV-S".equals(alarmCode)|| "E-CSV-F".equals(alarmCode)){
+            //不对以上报警进行拦截
+        }else {
+            EmailSendLog emailSendLog = iEmailSendLogService.selectEmailLog(alarmCode);
+            if(emailSendLog!=null && emailSendLog.getCreateDate()!=null){
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.HOUR_OF_DAY,-1);
+                if(cal.getTime().before(emailSendLog.getCreateDate())){
+                    log.info("报警邮件在1小时内重复出现，停止发送！  "+JsonUtil.toJsonString(msgMap));
+                    return;
+>>>>>>> .merge_file_a05548
                 }
             } catch (Exception e) {
                 log.error("邮件发送重复判断出错",e);
