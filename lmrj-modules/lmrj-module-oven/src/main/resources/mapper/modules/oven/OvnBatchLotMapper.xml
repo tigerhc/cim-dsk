@@ -138,4 +138,8 @@
             (#{item.id},#{item.batchId},#{item.tempPv},#{item.sendTime},0)
         </foreach>
     </insert>
+
+    <select id="lastDayEqpList" resultType="java.lang.String">
+        select DISTINCT(a.eqp_id) from ovn_batch_lot a where a.create_date BETWEEN #{startTime} and #{endTime}
+    </select>
 </mapper>
