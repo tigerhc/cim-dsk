@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -163,7 +164,8 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         }else{
             double k= yieldQty*1.0/78300;
             int yieldQtyNow = (int)(k*nowSecond);
-            double number = (lotYieldAll*100/yieldQtyNow) * 100 / 100;
+            DecimalFormat df = new java.text.DecimalFormat("#.00");
+            double number = Double.valueOf(df.format(lotYieldAll*100.0/yieldQtyNow* 100 / 100));
             map3.put("number",number);
         }
 
