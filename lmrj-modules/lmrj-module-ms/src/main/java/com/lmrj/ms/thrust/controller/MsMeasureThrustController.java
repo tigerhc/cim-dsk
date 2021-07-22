@@ -54,8 +54,12 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         Response res = Response.ok("导出成功");
         try {
             List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
-            String url = "E:\\CIM\\cim-dsk-root\\logs\\推力拉力excel模板.xlsx";
-            File file = new File(url);
+            String url = "E:\\CIM\\cim-dsk-root\\logs\\";
+            String name  ="推力拉力excel模板_5GI.xlsx";
+            if(dataList.get(0).getLineNo().contains("6GI")){
+                name  ="推力拉力excel模板_6GI.xlsx";
+            }
+            File file = new File(url+name);
             String fileName = file.getName();
             //获取文件类型
             String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -270,9 +274,9 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                 XLCL.add(Double.valueOf(df.format(Xlcl)));
                 RCL.add(Double.valueOf(df.format(Rcl)));
                 RUCL.add(Double.valueOf(df.format(Rucl)));
-                if("pull".equals(type)){
+                /*if("pull".equals(type)){
                     RLCL.add(Double.valueOf(df.format(Rlcl)));
-                }
+                }*/
             }
         }
         Response res = new Response();
