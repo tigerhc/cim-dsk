@@ -194,7 +194,7 @@
 	    IFNULL(mv.`to_tray_id`,mv.`chip_id`) AS toTrayId, IFNULL(mv.`to_x`,1) AS toX, IFNULL(mv.`to_y`,1) AS toY, mv.`to_z` AS toZ,
 	    mv.`judge_result` AS judgeResult, mv.`start_time` AS startTime,
 	    ec.down_eqp_id as 'nextEqpId',
-	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr, mv.pseudo_code as 'pseudoCode'
+	    DATE_FORMAT(mv.start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr, mv.pseudo_code as 'pseudoCode', mv.smt_count as smtCount
 		FROM `map_tray_chip_move` mv
 		LEFT JOIN `map_tray_config` cf ON mv.`to_tray_id` = cf.`tray_id`
 		LEFT JOIN `map_equipment_config` ec ON mv.`eqp_id` = ec.`eqp_id` and ec.del_flag='0'
@@ -495,7 +495,7 @@
 	<select id="getHB2EqpConfig" resultMap="EqpCfg">
 		select DISTINCT eqp_id,sub_line_no,sub_line_type,interval_time_min,interval_time_max,same_lot_flag,eqp_type
 		from map_equipment_config
-		where sub_line_no='HB2'
+		where sub_line_no='HB2' and del_flag=0
 		order by sub_line_sort_no desc
 	</select>
 	<update id="HB2Finish" parameterType="java.util.Map">

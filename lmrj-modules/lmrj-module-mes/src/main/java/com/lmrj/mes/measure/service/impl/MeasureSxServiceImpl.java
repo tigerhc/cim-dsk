@@ -194,7 +194,10 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
                     }else{
                         maxLimit.add(0d);
                     }
-                    limitMin = Double.parseDouble(MapUtil.getString(limitList.get(0), local));
+                    String limitStr = MapUtil.getString(limitList.get(0), local);
+                    if(StringUtil.isNotEmpty(limitStr)){
+                        limitMin = Double.parseDouble(limitStr);
+                    }
                 }
             }
 
@@ -260,7 +263,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         lineMaxObj.put("name","上限");
         lineMaxObj.put("type","line");
         lineMaxObj.put("data", maxLimit);
-        lineMinObj.put("markLine", getMarkLine());
+        lineMaxObj.put("markLine", getMarkLine());
         lines.add(lineMaxObj);
 
         Map<String, Object> lineObj2_1 = new HashMap<>();
