@@ -117,6 +117,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                         ChipMove data = new ChipMove();
                         data.setEqpId(eqpId);
                         data.setProductionNo(MapUtils.getString(item, "productionNo"));
+                        data.setEqpModelName(MapUtils.getString(item, "eqpModelName"));
                         data.setLotNo(MapUtils.getString(item, "lotNo"));
                         data.setToTrayId(MapUtils.getString(item, "toTrayId"));
                         data.setToX(1);
