@@ -6,6 +6,7 @@
        t.id,
        t.eqp_model_id,
        t.eqp_model_name,
+       t.process_no,
        t.production_no,
        t.timing,
        t.sample_count,
