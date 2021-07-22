@@ -54,8 +54,12 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         Response res = Response.ok("导出成功");
         try {
             List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
-            String url = "E:\\CIM\\cim-dsk-root\\logs\\推力拉力excel模板.xlsx";
-            File file = new File(url);
+            String url = "E:\\CIM\\cim-dsk-root\\logs\\";
+            String name  ="推力拉力excel模板_5GI.xlsx";
+            if(dataList.get(0).getLineNo().contains("6GI")){
+                name  ="推力拉力excel模板_6GI.xlsx";
+            }
+            File file = new File(url+name);
             String fileName = file.getName();
             //获取文件类型
             String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -171,6 +175,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
     @RequestMapping(value = "/getEchartsData", method = {RequestMethod.GET, RequestMethod.POST})
     public Response getEchartsData(String productionName, String startTime, String endTime, HttpServletRequest request, HttpServletResponse response, String type) {
         List<MsMeasureThrust> dataList = msMeasureThrustService.findDataByTime(productionName, startTime, endTime);
+        DecimalFormat df = new java.text.DecimalFormat("#.00");
         List<String> xAxis = new ArrayList<>();
         List<Double> XData = new ArrayList<>();//实测值:单例(单批次)数据的平均值所连成的线
         List<Double> RData = new ArrayList<>();//差值
@@ -224,7 +229,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                         }
                     }
                     if (cnt > 0) {//XData
-                        XData.add(sum / cnt);
+                        XData.add(Double.valueOf(df.format(sum / cnt)));
                         RData.add(max - min);
                     } else {
                         XData.add(null);//没有有效数据, 此处不同于零
@@ -261,7 +266,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
             double Rcl = Rbar;
             double Rucl = Rbar * D4;
             double Rlcl = Rbar * D3;
-            DecimalFormat df = new java.text.DecimalFormat("#.00");
+
             for (int i = 0; i < dataList.size(); i++) {
                 LCL.add(Double.valueOf(df.format(Lcl)));
                 XCL.add(Double.valueOf(df.format(Xcl)));
@@ -269,9 +274,9 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                 XLCL.add(Double.valueOf(df.format(Xlcl)));
                 RCL.add(Double.valueOf(df.format(Rcl)));
                 RUCL.add(Double.valueOf(df.format(Rucl)));
-                if("pull".equals(type)){
+                /*if("pull".equals(type)){
                     RLCL.add(Double.valueOf(df.format(Rlcl)));
-                }
+                }*/
             }
         }
         Response res = new Response();
@@ -284,7 +289,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
         res.put("XLCL", XLCL);
         res.put("RCL", RCL);
         res.put("RUCL", RUCL);
-        //res.put("RLCL", RLCL);
+        res.put("RLCL", RLCL);
         return res;
     }
 }
