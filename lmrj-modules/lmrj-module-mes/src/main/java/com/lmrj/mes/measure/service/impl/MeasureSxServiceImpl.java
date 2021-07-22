@@ -260,7 +260,7 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         lineMaxObj.put("name","上限");
         lineMaxObj.put("type","line");
         lineMaxObj.put("data", maxLimit);
-        lineMinObj.put("markLine", getMarkLine());
+        lineMaxObj.put("markLine", getMarkLine());
         lines.add(lineMaxObj);
 
         Map<String, Object> lineObj2_1 = new HashMap<>();
