@@ -206,7 +206,7 @@ public class RptEqpStateDayController extends BaseCRUDController<RptEqpStateDay>
                     "{\"id\":\"APJ-LF1\",\"name\":\"APJ-分离检查机\"},\n" +
                     "{\"id\":\"APJ-HTRT1\",\"name\":\"APJ-高温室温检查机\"}]";
             List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
-            rs.put("eqpId", list);
+            rs.put("id", list);
         }
         return rs;
     }
