@@ -112,6 +112,9 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     for(MapTrayChipMove beforeDateItem : hb2LineDatas){
                         if(cfg.getEqpId().equals(beforeDateItem.getEqpId())){
                             long chkSec = TraceDateUtil.getDiffSec(beforeDateItem.getStartTime(), endDate);
+                            if(chkSec < 0){
+                                break;
+                            }
                             if(chkSec <= cfg.getIntervalTimeMax() && chkSec>=0){
                                 if("4".equals(cfg.getEqpType())){//贴片
                                     cnt++;
@@ -120,6 +123,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                                     SMTDatas.add(beforeDateItem);
                                     if(cnt == beforeDateItem.getSmtCount()){
                                         unfindFlag = false;
+                                        endDate = beforeDateItem.getStartTime();
                                         break;
                                     }
                                 } else {//移栽机
@@ -134,7 +138,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     }
                     if(unfindFlag){
                         unErrFlag = false;
-                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,HB2段数据不全缺"+cfg.getEqpId(), false);
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,HB2段数据不全缺"+cfg.getEqpId()+",cnt:"+cnt, false);
                         break;
                     }
                 }
@@ -201,7 +205,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         continue;// 下一个 assembly
                     }
                     //追溯DBC段
-                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
+                    String dbcbPseudoCode = traceBeforeLine(HB2SortData); //TODO
                     if(StringUtil.isEmpty(dbcbPseudoCode)){
                         saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
                         continue;
@@ -229,8 +233,8 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     }
                 }
             }
+            saveErrData(traceLogs, null, null, true);
         }
-        saveErrData(traceLogs, null, null, true);
     }
 
     private String traceBeforeLine(MapTrayChipMove nextStart){
