@@ -66,7 +66,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     }
 
     @GetMapping("indexFour")
-    public void indexFour(HttpServletRequest request) throws ParseException {
+    public void indexFour(@RequestParam String curProject, HttpServletRequest request) throws ParseException {//TODO 高协助首页分前后工程  curProject
         //aps_plan_pdt_yield_detail=WHERE production_name like '%SIM%' AND plan_date = '20200509'
         String periodDate = DateUtil.getDate("yyyyMMdd");
         if(DateUtil.getDate("HH").compareTo("08")<0 ){
