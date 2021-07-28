@@ -471,7 +471,7 @@
 	<select id="getHB2Start" resultMap="TrayMap">
 		select <include refid="Base_Column_List"></include>
 		from map_tray_chip_move m
-		where m.map_flag=0 and m.eqp_id='APJ-HB2-ASSEMBLY1'
+		where m.map_flag=0 and m.eqp_id='DM-HB2-ASSEMBLY1'
 		order by m.start_time
 	</select>
 	<select id="getHB2Line" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
@@ -516,7 +516,7 @@
 		union
 		select <include refid="Base_Column_List"></include>
 		from map_tray_chip_move m
-		where m.judge_result='N' and m.map_flag='0' and m.eqp_id='APJ-VI1'
+		where m.judge_result='N' and m.map_flag='0' and m.eqp_id='DM-VI1'
 		order by start_time
 	</select>
 </mapper>
