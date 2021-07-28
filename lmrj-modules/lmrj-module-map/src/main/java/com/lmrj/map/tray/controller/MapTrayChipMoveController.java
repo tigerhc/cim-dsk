@@ -1,5 +1,7 @@
 package com.lmrj.map.tray.controller;
 
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.google.common.collect.Maps;
 import com.lmrj.common.http.DateResponse;
 import com.lmrj.common.http.Response;
@@ -13,10 +15,11 @@ import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.util.*;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -171,5 +174,92 @@ public class MapTrayChipMoveController {
         startTime = startTime.length()>19?startTime.substring(19):startTime;
         System.out.println(startTime+","+eqpId);
         return rs;
+    }
+
+    @RequestMapping(value = "/traceDataExport",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response traceDataExport(MapTrayChipMoveQueryVo query){
+        try {
+            String title = "追溯导出";
+            Response res = Response.ok("导出成功");
+
+            List<ExcelExportEntity> keyList = getExportKeyList();
+            List<Map<String, String>> dataList = getExportDataList(query);
+
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("追溯导出","追溯数据信息"),keyList,dataList, 2);
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+    }
+
+    private List<ExcelExportEntity> getExportKeyList(){
+        List<ExcelExportEntity> keyList = new LinkedList<>();
+        ExcelExportEntity key1 = new ExcelExportEntity("批次号","1");
+        keyList.add(key1);
+        ExcelExportEntity key2 = new ExcelExportEntity("制品号","2");
+        keyList.add(key2);
+        ExcelExportEntity key3 = new ExcelExportEntity("设备号","3");
+        keyList.add(key3);
+        ExcelExportEntity key4 = new ExcelExportEntity("品番号","4");
+        keyList.add(key4);
+        ExcelExportEntity key5 = new ExcelExportEntity("托盘ID","5");
+        keyList.add(key5);
+        ExcelExportEntity key6 = new ExcelExportEntity("X坐标","6");
+        keyList.add(key6);
+        ExcelExportEntity key7 = new ExcelExportEntity("Y坐标","7");
+        keyList.add(key7);
+        ExcelExportEntity key8 = new ExcelExportEntity("质量","8");
+        keyList.add(key8);
+        ExcelExportEntity key9 = new ExcelExportEntity("时间","9");
+        keyList.add(key9);
+        ExcelExportEntity key10 = new ExcelExportEntity("晶圆ID","10");
+        keyList.add(key10);
+        ExcelExportEntity key11 = new ExcelExportEntity("晶圆X","11");
+        keyList.add(key11);
+        ExcelExportEntity key12 = new ExcelExportEntity("晶圆Y","12");
+        keyList.add(key12);
+        return keyList;
+    }
+
+    private List<Map<String, String>> getExportDataList(MapTrayChipMoveQueryVo query){
+        if (query == null) {
+            query = new MapTrayChipMoveQueryVo();
+        }
+        if(query.getChipIds()!=null && query.getChipIds().size()>0){
+            query.setChipId(query.getLotNo()+";%"+query.getChipIds().get(0));
+        }
+
+        List<Map<String, Object>> list = mapper.queryChipMove(query);
+        List<Map<String, String>> dataList = new LinkedList<>();
+        if (list.size() > 0) {
+            for(Map<String, Object> item : list){
+                Map<String, String> data = new HashMap<>();
+                data.put("1", MapUtil.getString(item, "lotNo"));
+                data.put("2", MapUtil.getString(item, "chipId"));
+                data.put("3", MapUtil.getString(item, "eqpId"));
+                data.put("4", MapUtil.getString(item, "productionNo"));
+                data.put("5", MapUtil.getString(item, "toTrayId"));
+                data.put("6", MapUtil.getString(item, "toX"));
+                data.put("7", MapUtil.getString(item, "toY"));
+                data.put("8", MapUtil.getString(item, "judgeResult"));
+                data.put("9", MapUtil.getString(item, "startTime"));
+                data.put("10", MapUtil.getString(item, "dmId"));
+                data.put("11", MapUtil.getString(item, "dmX"));
+                data.put("12", MapUtil.getString(item, "dmY"));
+                dataList.add(data);
+            }
+        }
+        return dataList;
     }
 }
