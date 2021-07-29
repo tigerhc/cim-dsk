@@ -44,7 +44,7 @@ public class TrayChipScheduler {
 //        }
 //    }
 
-    @Scheduled(cron = "0 0/45 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+    @Scheduled(cron = "0 0/45 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
     public void tracePseudo(){
         if(jobenabled){
@@ -55,14 +55,16 @@ public class TrayChipScheduler {
                 for(MapEquipmentConfig item : eqpConfigs){
                     try{
                         log.info("伪码追溯开始:"+item.getEqpId());
-                        mapTrayChipMovePseudoService.tracePseudoData(item);
+                        mapTrayChipMovePseudoService.tracePseudoData(item.getEqpId());
                     } catch (Exception e){
                         log.error("伪码追溯遇到了一个异常"+item.getEqpId(),e);
                     }
                 }
+
                 try{//制品码追溯
                     log.info("伪码HB2追溯开始:");
-                    mapTrayChipMovePseudoService.traceHB2();
+//                    mapTrayChipMovePseudoService.traceHB2();
+                    mapTrayChipMovePseudoService.traceHB2Desc();
                 } catch (Exception e){
                     log.error("伪码HB2追溯遇到了一个异常",e);
                 }

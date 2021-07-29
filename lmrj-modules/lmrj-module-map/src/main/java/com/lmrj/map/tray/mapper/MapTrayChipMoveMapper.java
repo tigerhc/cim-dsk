@@ -84,13 +84,18 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
 
     //伪码追溯相关
     List<MapTrayChipMove> getPseudoStart(String eqpId);
+    List<MapTrayChipMove> getPseudoStartV2(String eqpId);
 
     List<MapTrayChipMove> getPseudoLine(MapTrayChipMove param);
+
+    List<MapTrayChipMove> getPseudoLineV2(MapTrayChipMove param);
 
     List<MapEquipmentConfig> getMapEqpConfig();
 
     List<MapTrayChipMove> findBeforeLineEnd(MapTrayChipMove param);
+    List<MapTrayChipMove> findBeforeLineEndV2(MapTrayChipMove param);
     List<MapTrayChipMove> findVI(MapTrayChipMove param);
+    List<MapTrayChipMove> findVIDesc(MapTrayChipMove param);
 
     /**更新上一段的伪码数据的状态为8*/
     List<Map<String, Object>> queryByPseudoCode(String pseudoCode);
@@ -99,11 +104,13 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     void updateBeforePseudoCode(String PseudoCode);//最新的PseudoCode
 
     List<MapTrayChipMove> getHB2Start();
+    List<MapTrayChipMove> getHB2StartV2();
     List<MapTrayChipMove> getBeforeData(MapTrayChipMove param);
 
     List<MapEquipmentConfig> getHB2EqpConfig();
 
     List<MapTrayChipMove> getHB2Line(MapTrayChipMove param);
+    List<MapTrayChipMove> getHB2LineV2(MapTrayChipMove param);
 
     void HB2Finish(Map<String, Object> param);
 
