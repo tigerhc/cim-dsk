@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTrayChipMoveMapper, MapTrayChipMove> implements IMapTrayChipMovePseudoService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-    String firstEqpId = "APJ-IGBT-SMT1,APJ-FRD-SMT1,APJ-DBCT-SORT1,APJ-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
+    String firstEqpId = "DM-IGBT-SMT1,DM-FRD-SMT1,DM-DBCT-SORT1,DM-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
     /**伪码追溯
      * 1.追溯本线段的数据
      * 2.追溯紧连着的上一段的数据
@@ -29,23 +29,25 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
      */
     @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @Override
-    public void tracePseudoData(MapEquipmentConfig eqp) {
-        List<MapTrayChipMove> startDatas = baseMapper.getPseudoStart(eqp.getEqpId());//获得起始数据的列表(包括:APJ-IGBT-SORT1\APJ-FRD-SORT1\APJ-DBCT-SORT2\APJ-DBCB-SORT2\APJ-IGBT-SORT3\APJ-FRD-SORT3\APJ-HB1-SORT2\
+    public void tracePseudoData(String eqpId) {
+//        List<MapTrayChipMove> startDatas = baseMapper.getPseudoStart(eqpId);//获得起始数据的列表(包括:APJ-IGBT-SORT1\APJ-FRD-SORT1\APJ-DBCT-SORT2\APJ-DBCB-SORT2\APJ-IGBT-SORT3\APJ-FRD-SORT3\APJ-HB1-SORT2\
+        List<MapTrayChipMove> startDatas = baseMapper.getPseudoStartV2(eqpId);
         List<MapTrayChipMove> traceLogs = new ArrayList<>();
         if(startDatas!=null && startDatas.size()>0){
             for (MapTrayChipMove startData : startDatas) {
-                String pseudoCode = eqp.getEqpId()+"_"+sdf.format(startData.getStartTime()); //TODO 伪码生成规则
+                String pseudoCode = eqpId+"_"+sdf.format(startData.getStartTime()); //TODO 伪码生成规则
                 startData.setPseudoCode(pseudoCode);//追溯本段前,先将伪码更新好
-                Map<String, Object> subLineMap = traceSubLine(startData);//  ******追溯本段******
-                if(StringUtil.isNotEmpty(MapUtils.getString(subLineMap, "msg"))){
-                    saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有全部找到,"+MapUtils.getString(subLineMap, "msg"), false);
-                } else {
-                    boolean chkErr = true;
-                    if(chkErr){
+//                Map<String, Object> subLineMap = traceSubLine(startData);//  ******追溯本段******
+                if(!eqpId.equals("DM-VI1")){
+                    Map<String, Object> subLineMap = traceSubLineV2(startData);//  ******追溯本段******
+                    if(StringUtil.isNotEmpty(MapUtils.getString(subLineMap, "msg"))){
+                        saveErrData(traceLogs, startData, "伪码追溯异常,本段数据没有全部找到,"+MapUtils.getString(subLineMap, "msg"), false);
+                    } else {
                         List<MapTrayChipMove> subLineData = (List<MapTrayChipMove>)subLineMap.get("pseudoData");
                         //追溯前一段
                         if(!firstEqpId.contains(subLineData.get(subLineData.size()-1).getEqpId())){
-                            String beforeLineCode = traceBeforeLine(subLineData.get(subLineData.size()-1)); //前一段伪码
+//                            String beforeLineCode = traceBeforeLine(subLineData.get(subLineData.size()-1)); //前一段伪码
+                            String beforeLineCode = traceBeforeLineV2(subLineData.get(subLineData.size()-1)); //前一段伪码
                             if(StringUtil.isEmpty(beforeLineCode)){
                                 saveErrData(traceLogs, startData, "伪码追溯异常,前一段数据没有找到sort2:"+subLineData.get(subLineData.size()-1).getId(), false);
                                 continue;
@@ -73,6 +75,32 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         subLineData.add(startData);
                         updateBatchById(subLineData, 100);
                     }
+                } else {
+                    String beforeLineCode = traceBeforeLineV2(startData); //前一段伪码
+                    if(StringUtil.isEmpty(beforeLineCode)){
+                        saveErrData(traceLogs, startData, "伪码追溯异常,前一段数据没有找到!", false);
+                        continue;
+                    } else{
+                        if("Y".equals(startData.getJudgeResult())){
+                            Map<String, Object> param = new HashMap<>();
+                            param.put("pseudoCode", beforeLineCode);
+                            param.put("experimentRemark", pseudoCode);
+                            baseMapper.updateTempPseudoCode(param);//将最新的伪码更新到experimentRemark字段中暂存(同时map_flag由6变为8,使本段数据不会被再次找到,如果mapFlag不变会再次成为另一段的数据的上一段)
+                            baseMapper.updateBeforePseudoCode(pseudoCode);// 将暂存的最新的伪码更新到伪码字段中
+                        }else{
+                            Map<String, Object> finishParam = new HashMap<>();
+                            finishParam.put("chipId", startData.getChipId());
+                            finishParam.put("pseudoCode", beforeLineCode);
+                            baseMapper.HB2Finish(finishParam);//此处有更新状态mapflag=2,更新chip_id
+                        }
+                    }
+                    //更新本段数据
+                    if("Y".equals(startData.getJudgeResult())){
+                        startData.setMapFlag(6);//更新本段的伪码
+                    } else{
+                        startData.setMapFlag(2);//获得上段伪码
+                    }
+                    updateById(startData);
                 }
             }
         }
@@ -205,13 +233,13 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         continue;// 下一个 assembly
                     }
                     //追溯DBC段
-                    String dbcbPseudoCode = traceBeforeLine(HB2SortData); //TODO
-                    if(StringUtil.isEmpty(dbcbPseudoCode)){
-                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
-                        continue;
-                    } else{
-                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
-                    }
+//                    String dbcbPseudoCode = traceBeforeLine(HB2SortData); //TODO
+//                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+//                    }
                     String dbctPseudoCode = traceBeforeLine(assemblyData);
                     if(StringUtil.isEmpty(dbctPseudoCode)){
                         saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);
@@ -237,12 +265,160 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
         }
     }
 
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
+    @Override
+    public void traceHB2Desc(){
+        List<MapTrayChipMove> startData = baseMapper.getHB2StartV2();//获得起始数据的列表
+        List<MapTrayChipMove> traceLogs = new ArrayList<>();
+        List<MapEquipmentConfig> eqpCfg = baseMapper.getHB2EqpConfig();
+        if(startData!=null && startData.size()>0){
+            for (MapTrayChipMove assemblyData : startData) {//APJ-HB2-ASSEMBLY1
+                Date endDate = assemblyData.getStartTime();
+                boolean unErrFlag = true;
+                //获得主线数据,即下基版线
+                List<MapTrayChipMove> hb2LineDatas = baseMapper.getHB2LineV2(assemblyData);
+                List<MapTrayChipMove> SMTDatas = new ArrayList<>();//smt + HB2-SORT1
+                //检查数量和时间间隔
+                MapTrayChipMove HB2SortData = new MapTrayChipMove();
+                for(MapEquipmentConfig cfg : eqpCfg){
+                    int cnt = 0;
+                    boolean unfindFlag = true;
+                    long logCompareTime = 0;
+                    long logCompareId = 0;
+                    for(MapTrayChipMove beforeDateItem : hb2LineDatas){
+                        if(cfg.getEqpId().equals(beforeDateItem.getEqpId())){
+                            long chkSec = TraceDateUtil.getDiffSec(beforeDateItem.getStartTime(), endDate);
+                            logCompareTime = chkSec;
+                            logCompareId = beforeDateItem.getId();
+                            if(chkSec <= cfg.getIntervalTimeMax()){
+                                if("4".equals(cfg.getEqpType())){//贴片
+                                    cnt++;
+                                    beforeDateItem.setMapFlag(2);
+                                    beforeDateItem.setChipId(assemblyData.getChipId()); //TODO 此处需要关注
+                                    SMTDatas.add(beforeDateItem);
+                                    if(cnt == beforeDateItem.getSmtCount()){
+                                        unfindFlag = false;
+                                        endDate = beforeDateItem.getStartTime();
+                                        break;
+                                    }
+                                } else {//移栽机
+                                    beforeDateItem.setMapFlag(2);
+                                    beforeDateItem.setChipId(assemblyData.getChipId()); //TODO 此处需要关注
+                                    HB2SortData = beforeDateItem;
+                                    unfindFlag = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(unfindFlag){
+                        unErrFlag = false;
+                        saveErrData(traceLogs, assemblyData,
+                                "伪码追溯异常,HB2段数据不全缺"+cfg.getEqpId()+",cnt:"+cnt+",compareTime:"+logCompareTime+",compareId:"+logCompareId, false);
+                        break;
+                    }
+                }
+                //追溯上基板和VI
+                if(unErrFlag){
+                    List<String> hbsortPseudo = new ArrayList<>();//保存所有要更新的伪码,包括,上基板,下基板,1次热压SORT
+//                    //追溯DBC段
+//                    String dbcbPseudoCode = traceBeforeLine(HB2SortData);
+//                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+//                    }
+//                    String dbctPseudoCode = traceBeforeLine(assemblyData);
+//                    if(StringUtil.isEmpty(dbctPseudoCode)){
+//                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);
+//                        continue;
+//                    } else{
+//                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
+//                    }
+                    //追溯VI
+                    for(MapTrayChipMove SMTData : SMTDatas){
+                        List<MapTrayChipMove> VIMoveDatas = baseMapper.findVIDesc(SMTData);
+                        if(VIMoveDatas != null && VIMoveDatas.size()>0){
+                            boolean viFindFlag = true;
+                            long curCompareTime = 0;
+                            long curCompareId = 0;
+                            for(MapTrayChipMove viMoveData : VIMoveDatas){
+                                long chkTime = TraceDateUtil.getDiffSec(viMoveData.getStartTime(), SMTData.getStartTime());
+                                curCompareTime = chkTime;
+                                curCompareId = viMoveData.getId();
+                                if(chkTime < viMoveData.getIntervalTimeMax()) {
+                                    hbsortPseudo.add(viMoveData.getPseudoCode());
+                                    viFindFlag = false;
+                                    break;
+                                }
+                            }
+                            if(viFindFlag){
+                                saveErrData(traceLogs, assemblyData,
+                                        "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+"timeDiff:"+curCompareTime+",compareId:"+curCompareId, false);
+                                unErrFlag = false;
+                                break;//跳出 SMT
+                            }
+                        } else{
+                            saveErrData(traceLogs, assemblyData, "伪码追溯异常,VI没有坐标对应,数据SMT-Id:"+SMTData.getId(), false);
+                            unErrFlag = false;
+                            break;//跳出 SMT
+                        }
+                    }
+                    if(!unErrFlag) {
+                        continue;// 下一个 assembly
+                    }
+                    //追溯DBC段
+                    String dbcbPseudoCode = traceBeforeLineV2(HB2SortData); //TODO
+                    if(StringUtil.isEmpty(dbcbPseudoCode)){
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCB没有找到,上料机ID:"+HB2SortData.getId(), false);
+                        continue;
+                    } else{
+                        hbsortPseudo.add(dbcbPseudoCode);//******下基板******
+                    }
+                    String dbctPseudoCode = traceBeforeLineV2(assemblyData);
+                    if(StringUtil.isEmpty(dbctPseudoCode)){
+                        saveErrData(traceLogs, assemblyData, "伪码追溯异常,DBCT没有找到,组立机Id"+assemblyData.getId(), false);
+                        continue;
+                    } else{
+                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
+                    }
+                    //1.更新HB2的数据和VI的数据;2.更新追溯到的带有伪码的段尾数据(先1后2,原因是1耗时长)
+                    assemblyData.setMapFlag(2);
+                    SMTDatas.add(assemblyData);
+                    SMTDatas.add(HB2SortData);
+                    updateBatchById(SMTDatas, 100); //SMT1\SMT2\APJ-HB2-SORT1\assembly
+                    Map<String, Object> finishParam = new HashMap<>();
+                    finishParam.put("chipId", assemblyData.getChipId());
+                    for(String pseudo: hbsortPseudo){//上基板,下基板,1次热压SORT  含有伪码的
+                        finishParam.put("pseudoCode", pseudo);
+                        baseMapper.HB2Finish(finishParam);
+                    }
+                }
+            }
+            saveErrData(traceLogs, null, null, true);
+        }
+    }
+
     private String traceBeforeLine(MapTrayChipMove nextStart){
         List<MapTrayChipMove> beforeLines = baseMapper.findBeforeLineEnd(nextStart);
         if(beforeLines != null && beforeLines.size()>0){
             for(MapTrayChipMove beforeLine : beforeLines){
                 long chkTime = TraceDateUtil.getDiffSec(beforeLine.getStartTime(), nextStart.getStartTime());
                 if(chkTime < beforeLine.getIntervalTimeMax() && chkTime>=0) {
+                    return beforeLine.getPseudoCode();
+                }
+            }
+        }
+        return null;
+    }
+
+    private String traceBeforeLineV2(MapTrayChipMove nextStart){
+        List<MapTrayChipMove> beforeLines = baseMapper.findBeforeLineEndV2(nextStart);
+        if(beforeLines != null && beforeLines.size()>0){
+            for(MapTrayChipMove beforeLine : beforeLines){
+                long chkTime = TraceDateUtil.getDiffSec(beforeLine.getStartTime(), nextStart.getStartTime());
+                if(chkTime < beforeLine.getIntervalTimeMax()) {
                     return beforeLine.getPseudoCode();
                 }
             }
@@ -322,6 +498,48 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
             }
             if(unfind){
                 rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax()+",最近的相差:"+logTime);
+                return rs;
+            }
+        }
+        rs.put("msg", "");
+        rs.put("pseudoData", pseudoData);
+        return rs;
+    }
+
+    //不含有贴片机的本段追溯:sql提供坐标相等,批次号相等,时间上不超过
+    private Map<String, Object> traceSubLineV2(MapTrayChipMove startData){
+        List<MapTrayChipMove> pseudoData = new ArrayList<>();
+        List<MapEquipmentConfig> lineCfgEqp = baseMapper.getCfgEqpForLine(startData.getEqpId());
+        List<MapTrayChipMove> lineData = baseMapper.getPseudoLineV2(startData);
+        Date curDate = startData.getStartTime();
+        Map<String, Object> rs = new HashMap<>();
+        for(MapEquipmentConfig cfgEqp : lineCfgEqp){
+            boolean unfind = true;
+            long logTime = 0;
+            long compareId = 0;
+            for(MapTrayChipMove item : lineData){
+                //符合条件是时间间隔在cfgEqp中设置的间隔内(sql中以满足坐标相等)
+                if(cfgEqp.getEqpId().equals(item.getEqpId())){
+                    long timeChk = TraceDateUtil.getDiffSec(item.getStartTime(), curDate);
+                    logTime = timeChk;
+                    compareId = item.getId();
+                    if(timeChk < cfgEqp.getIntervalTimeMax()){
+                        if("Y".equals(startData.getJudgeResult()) && item.getMapFlag() == 0){
+                            item.setPseudoCode(startData.getPseudoCode());
+                            item.setMapFlag(6);
+                        } else if(item.getMapFlag() == 0){//不能追良品追过的数据
+                            item.setChipId(startData.getChipId());
+                            item.setMapFlag(2);
+                        }
+                        curDate = item.getStartTime();
+                        unfind = false;
+                        pseudoData.add(item);
+                        break;
+                    }
+                }
+            }
+            if(unfind){
+                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax()+",最近的相差:"+logTime+",compareId:"+compareId);
                 return rs;
             }
         }

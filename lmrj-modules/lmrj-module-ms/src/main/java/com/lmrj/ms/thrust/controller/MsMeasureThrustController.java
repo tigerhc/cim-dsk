@@ -230,7 +230,7 @@ public class MsMeasureThrustController extends BaseCRUDController<MsMeasureThrus
                     }
                     if (cnt > 0) {//XData
                         XData.add(Double.valueOf(df.format(sum / cnt)));
-                        RData.add(max - min);
+                        RData.add(Double.valueOf(df.format(max - min)));
                     } else {
                         XData.add(null);//没有有效数据, 此处不同于零
                         RData.add(null);

@@ -16,6 +16,7 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +46,8 @@ import java.util.*;
 @RequiresPathPermission("mes:meslotwip")
 @LogAspectj(title = "mes_lot_wip")
 public class MesLotWipController extends BaseCRUDController<MesLotWip> {
+    @Value("${dsk.lineNo}")
+    private String lineNo;
     @Autowired
     private IMesLotWipService iMesLotWipService;
     @Autowired
@@ -63,7 +66,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     }
 
     @GetMapping("indexFour")
-    public void indexFour(HttpServletRequest request) throws ParseException {
+    public void indexFour(@RequestParam String curProject, HttpServletRequest request) throws ParseException {//TODO 高协助首页分前后工程  curProject
         //aps_plan_pdt_yield_detail=WHERE production_name like '%SIM%' AND plan_date = '20200509'
         String periodDate = DateUtil.getDate("yyyyMMdd");
         if(DateUtil.getDate("HH").compareTo("08")<0 ){
@@ -138,20 +141,24 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         map.put("name","批次");
         map.put("number",fabEquipmentStatus.getLotNo());
         //map.put("number",111);
-        //实时目标数=实际目标数/78300*当前秒数
+        //实时目标数=实际目标数/86400*当前秒数
         int nowSecond = (int)(new Date().getTime()-startTime.getTime())/1000;
         Map map1=new HashMap();
-        map1.put("name","当天目标数");
+        map1.put("name","现时点生产目标");
         if(yieldQty==0){
             map1.put("number",0);
         }else{
-            double k= yieldQty*1.0/78300;
+            double k= yieldQty*1.0/86400;
             int yieldQtyNow = (int)(k*nowSecond);
             map1.put("number",yieldQtyNow);
         }
         Map map2=new HashMap();
 //        map2.put("name","当天投入数");
-        map2.put("name","投入实际");
+        if("SIM".equals(lineNo)){
+            map2.put("name","DM工程投入实际");
+        }else {
+            map2.put("name","投入实际");
+        }
         if(lotYieldAll==0){
             map2.put("number",0);
         }else{
@@ -162,7 +169,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         if(yieldQty==0){
             map3.put("number",100);
         }else{
-            double k= yieldQty*1.0/78300;
+            double k= yieldQty*1.0/86400;
             int yieldQtyNow = (int)(k*nowSecond);
             DecimalFormat df = new java.text.DecimalFormat("#.00");
             double number = Double.valueOf(df.format(lotYieldAll*100.0/yieldQtyNow* 100 / 100));

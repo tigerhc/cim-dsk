@@ -194,7 +194,10 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
                     }else{
                         maxLimit.add(0d);
                     }
-                    limitMin = Double.parseDouble(MapUtil.getString(limitList.get(0), local));
+                    String limitStr = MapUtil.getString(limitList.get(0), local);
+                    if(StringUtil.isNotEmpty(limitStr)){
+                        limitMin = Double.parseDouble(limitStr);
+                    }
                 }
             }
 

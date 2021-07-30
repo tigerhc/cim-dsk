@@ -53,6 +53,11 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
     }
 
     @Override
+    public List<String> lastDayEqpList(Date startTime, Date endTime) {
+        return baseMapper.lastDayEqpList(startTime,endTime);
+    }
+
+    @Override
     public OvnBatchLot findBatchData(String eqpId , Date startTime){
         return baseMapper.findBatchData(eqpId,startTime);
     }

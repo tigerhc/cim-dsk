@@ -1130,11 +1130,15 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     //查找DM分离检查参数
     @RequestMapping(value = "/findAPJ/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findApjParam(Model model, @PathVariable String eqpId, @RequestParam String trackinfo, @RequestParam String opId,
+    public String findApjParam(Model model, @PathVariable String eqpId, @RequestParam String trackinfo,@RequestParam String chipIds, @RequestParam String opId,
                                HttpServletRequest request, HttpServletResponse response) {
         log.info("findAPJParam :  {}, {}", opId, eqpId);
         if (trackinfo.length() < 30) {
             return "trackinfo too short";
+        }
+        String chipId[] = chipIds.split(",");
+        if(chipId.length!=5){
+            return "chipIds number error(制品码数量错误，必须传输5个制品码！)";
         }
         String[] trackinfos = trackinfo.split("\\.");
         String lotorder = trackinfos[0];
@@ -1145,7 +1149,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         String productionNo = lotNos[0].substring(0, 7); //5002915
         String lotNo = lotNos[0].substring(7, 12); //0702D
         String orderNo = lotNos[1]; //37368342
-        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo+ "\",\"productionNo\":\"" + productionNo + "\",\"productionName\":\"" + productionName+ "\",\"opId\":\"" + opId+ "\"}";//日志记录参数
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"lotNo\":\"" + lotNo+ "\",\"productionNo\":\"" + productionNo + "\",\"productionName\":\"" + productionName+ "\",\"chipIds\":\"" + chipIds+ "\",\"opId\":\"" + opId+ "\"}";//日志记录参数
 
         try {
             fabLogService.info(eqpId, "findAPJ", "MesLotTrackController.findAPJ", eventDesc, lotNo, "wangdong");//日志记录参数

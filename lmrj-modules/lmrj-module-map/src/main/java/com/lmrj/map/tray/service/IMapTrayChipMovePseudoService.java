@@ -7,7 +7,7 @@ import com.lmrj.map.tray.entity.MapTrayChipMove;
 import java.util.List;
 
 public interface IMapTrayChipMovePseudoService extends ICommonService<MapTrayChipMove> {
-    void tracePseudoData(MapEquipmentConfig eqp);
+    void tracePseudoData(String eqpId);
 
     /** 获得每段线中的结束点的设备
      * @return
@@ -15,6 +15,7 @@ public interface IMapTrayChipMovePseudoService extends ICommonService<MapTrayChi
     List<MapEquipmentConfig> getLineEndEqp();
 
     void traceHB2();
+    void traceHB2Desc();
 
     void traceNGData();
 
