@@ -225,8 +225,8 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
         }
     }
 
-    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
-    public Response exportDetail(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "/exportDetail1", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response exportDetail1(@RequestParam String recordId,HttpServletRequest request, HttpServletResponse response){
         String title = "量测信息详情";
         Response res = Response.ok("导出成功");
 
@@ -258,6 +258,71 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
                     }
                     dataList.add(data);
                 }
+            }
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams(title, title, ExcelType.XSSF), keyList, dataList);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
+    }
+
+    @RequestMapping(value = "/exportDetail", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response exportDetail(@RequestParam String ids,HttpServletRequest request, HttpServletResponse response){
+        String title = "量测信息详情";
+        System.out.println(ids);
+        Response res = Response.ok("导出成功");
+        try {
+            String[] recordIds = ids.split(",");
+            List<Map<String, String>> dataList = new ArrayList<>();
+            List<ExcelExportEntity> keyList= new LinkedList<>();
+            ExcelExportEntity index = new ExcelExportEntity("#", "index");
+            ExcelExportEntity lotNo = new ExcelExportEntity("批次号", "lotNo");
+            lotNo.setWidth(20.0D);
+            ExcelExportEntity waferId = new ExcelExportEntity("晶圆ID", "waferId");
+            waferId.setWidth(20.0D);
+            ExcelExportEntity rowName = new ExcelExportEntity("rowName", "rowName");
+            keyList.add(index);
+            keyList.add(lotNo);
+            keyList.add(waferId);
+            keyList.add(rowName);
+            for (String id : recordIds) {
+                MsMeasureRecord msMeasureRecord = msMeasureRecordService.selectById(id);
+                Map<String, String> data = null;
+                if(msMeasureRecord != null){
+                    List<MsMeasureRecordDetail> msMeasureRecordDetailList = msMeasureRecord.getDetail();
+                    for (int i = 0; i  < msMeasureRecordDetailList.size(); i++) {
+                        data = new HashMap<>();
+                        data.put("index", i + 1 + "");
+                        data.put("lotNo", msMeasureRecord.getLotNo());
+                        data.put("waferId", msMeasureRecord.getWaferId());
+                        String itemName = msMeasureRecordDetailList.get(i).getItemName();
+                        String itemValue = msMeasureRecordDetailList.get(i).getItemValue();
+                        String rowNameValue = msMeasureRecordDetailList.get(i).getRowName();
+                        String[] items = itemName.split(",");
+                        String[] values = itemValue.split(",");
+                        data.put("rowName", rowNameValue);
+                        for (int j = 0; j < values.length; j++) {
+                            ExcelExportEntity key = new ExcelExportEntity(items[j], items[j]);
+                            key.setWidth(20.0D);
+                            if (!keyList.contains(key)){
+                                keyList.add(key);
+                            }
+                            data.put(items[j],values[j]);
+                        }
+                        dataList.add(data);
+                    }
+                }
+            }
+            if (keyList.size() == 0 || dataList.size() == 0) {
+                return Response.error(999998, "导出失败");
             }
             Workbook book = ExcelExportUtil.exportExcel(new ExportParams(title, title, ExcelType.XSSF), keyList, dataList);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();

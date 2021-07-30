@@ -26,51 +26,51 @@ public class FabEquipmentAccount extends AbstractEntity {
      * 设备号
      */
     @TableField(value = "eqp_id")
-    @Excel(name = "设备id", orderNum = "1")
+    @Excel(name = "设备id", orderNum = "1", width = 15)
     private String eqpId;
 
     @TableField(value = "eqp_name")
-    @Excel(name = "设备名称", orderNum = "2")
+    @Excel(name = "设备名称", orderNum = "2", width = 15)
     private String eqpName;
 
     @TableField(value = "eqp_no")
     private String eqpNo;
 
-    @Excel(name = "项目名称", orderNum = "6")
+    @Excel(name = "内容", orderNum = "3", width = 20)
     @TableField(value = "project_name")
     private String projectName;
 
-    @Excel(name = "测试参数", orderNum = "7")
+//    @Excel(name = "测试参数", orderNum = "7")
     @TableField(value = "parameter")
     private String parameter;
 
-    @Excel(name = "片数", orderNum = "8")
+    @Excel(name = "片数", orderNum = "5")
     @TableField(value = "number")
     private Integer number;
 
-    @Excel(name = "批次号", orderNum = "9")
+    @Excel(name = "批次号", orderNum = "4", width = 15)
     @TableField(value = "lot_no")
     private String lotNo;
 
-    @Excel(name = "日期", orderNum = "3")
+    @Excel(name = "日期", orderNum = "8", format = "yyyy-MM-dd", width = 20)
     @TableField(value = "date", fill = FieldFill.UPDATE)
     @JSONField(format="yyyy-MM-dd")
     @JsonFormat(pattern="yyyy-MM-dd")
     protected Date date;
 
-    @Excel(name = "开始时间", orderNum = "4")
+    @Excel(name = "开始时间", orderNum = "6", format = "HH:mm:ss", width = 15)
     @TableField(value = "start_time", fill = FieldFill.UPDATE)
     @JSONField(format="HH:mm:ss")
     @JsonFormat(pattern="HH:mm:ss")
     protected Date startTime;
 
-    @Excel(name = "结束时间", orderNum = "5")
+    @Excel(name = "结束时间", orderNum = "7", format = "HH:mm:ss", width = 15)
     @TableField(value = "end_time", fill = FieldFill.UPDATE)
     @JSONField(format="HH:mm:ss")
     @JsonFormat(pattern="HH:mm:ss")
     protected Date endTime;
 
-    @Excel(name = "操作人", orderNum = "10")
+    @Excel(name = "操作人", orderNum = "9")
     @TableField(value = "operator", fill = FieldFill.UPDATE)
     protected String person;
 }
