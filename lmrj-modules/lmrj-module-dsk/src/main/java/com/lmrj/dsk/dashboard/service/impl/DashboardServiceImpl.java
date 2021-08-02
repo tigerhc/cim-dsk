@@ -89,7 +89,7 @@ public class DashboardServiceImpl  implements IDashboardService {
 
     @Override
     public FbpbistolO findEqpStatusByFabId(String fab) {
-        List<FabEquipmentStatus> fabEquipmentStatusList = fabEquipmentStatusService.selectEqpStatus("", "", fab);
+        List<FabEquipmentStatus> fabEquipmentStatusList = fabEquipmentStatusService.selectEqpStatus("", "", fab,"");
         FbpbistolO fbpbistolO = new FbpbistolO();
         fbpbistolO.setDown_rate(0);
         fbpbistolO.setRtn_code("0000000");
