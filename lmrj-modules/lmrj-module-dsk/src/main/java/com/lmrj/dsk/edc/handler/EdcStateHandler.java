@@ -96,7 +96,7 @@ public class EdcStateHandler {
 
 
     public void eqpStateDataHandle(EdcEqpState edcEqpState){
-        EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData(edcEqpState.getStartTime(),edcEqpState.getEqpId());
+        EdcEqpState lastedcEqpState = iEdcEqpStateService.findNewData2(edcEqpState.getStartTime(),edcEqpState.getEqpId());
         if(lastedcEqpState==null){
             log.info("edcEqpState数据开始插入" + edcEqpState);
             try {
@@ -114,7 +114,6 @@ public class EdcStateHandler {
                 lastedcEqpState.setStateTimes(state);
                 try {
                     edcEqpStateService.updateById(lastedcEqpState);
-
                 } catch (Exception e) {
                     log.error("状态更新出错，edcEqpState数据更新失败"+e);
                     e.printStackTrace();

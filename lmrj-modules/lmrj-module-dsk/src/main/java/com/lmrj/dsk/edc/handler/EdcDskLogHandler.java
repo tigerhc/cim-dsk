@@ -824,7 +824,10 @@ public class EdcDskLogHandler {
                 if (emailSendLog != null && emailSendLog.getCreateDate() != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.HOUR_OF_DAY, -1);
-                    if (cal.getTime().before(emailSendLog.getCreateDate())) {
+                    if(alarmCode.equals(":网络断开连接!") && cal.getTime().before(emailSendLog.getCreateDate()) && emailSendLog.getSendData().contains(eqpId)){
+                        log.info("报警邮件在1小时内重复出现，停止发送！  " + JsonUtil.toJsonString(msgMap));
+                        return;
+                    }else if(!alarmCode.equals(":网络断开连接!") && cal.getTime().before(emailSendLog.getCreateDate())){
                         log.info("报警邮件在1小时内重复出现，停止发送！  " + JsonUtil.toJsonString(msgMap));
                         return;
                     }

@@ -161,7 +161,11 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             }else {
                 edcEqpState.setState(lastData.getState());
             }
-            baseMapper.insert(edcEqpState);
+            try {
+                baseMapper.insert(edcEqpState);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return 0;
         } else {
             if (neweqpStateList.size() > 0) {

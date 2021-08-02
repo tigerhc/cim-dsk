@@ -1140,6 +1140,11 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
         if(chipId.length!=5){
             return "chipIds number error(制品码数量错误，必须传输5个制品码！)";
         }
+        for (String chIpID : chipId) {
+            if("".equals(chIpID)){
+                return "chIpId must be not null(制品码不得为空！)";
+            }
+        }
         String[] trackinfos = trackinfo.split("\\.");
         String lotorder = trackinfos[0];
         String productionName = trackinfos[1].trim();
