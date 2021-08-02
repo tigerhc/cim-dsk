@@ -94,8 +94,8 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
         return baseMapper.selectEqpStatusChart();
     }
     @Override
-    public List<Map> selectYield(String lineNo){
-        List<Map> yields =  baseMapper.selectYield(lineNo);
+    public List<Map> selectYield(String lineNo,String department){
+        List<Map> yields =  baseMapper.selectYield(lineNo,department);
         List<Map> wips =  baseMapper.selectLotwip(lineNo);
         Map wipMap = Maps.newHashMap();
         for (Map wip : wips) {

@@ -51,7 +51,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     private IFabEquipmentService fabEquipmentService;
 
     @Value("${dsk.lineNo}")
-    String lineNo2;
+    String lineNo;
 
     @GetMapping("chart")
     public void chart(HttpServletRequest request, @RequestParam String curProject) {//TODO 高协助首页分前后工程  curProject
@@ -79,8 +79,8 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     }
 
     @GetMapping("listPdtStatus")
-    public void listPdtStatus(@RequestParam String lineNo, @RequestParam String curProject, HttpServletRequest request, HttpServletResponse response){//TODO 高协助首页分前后工程  curProject
-        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo2);
+    public void listPdtStatus(@RequestParam String department, @RequestParam String curProject, HttpServletRequest request, HttpServletResponse response){//TODO 高协助首页分前后工程  curProject
+        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo,department);
         //List<FabEquipment> fabEquipmentList =  fabEquipmentService.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo).eq("step_yield_flag","1"));
         //List<String> eqpIds = Lists.newArrayList();
         //fabEquipmentList.forEach(fabEquipment -> {
