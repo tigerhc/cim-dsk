@@ -29,11 +29,11 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
 
     boolean initStatus(List idList);
 
-    List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab);
+    List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab,String department);
 
     List<Map> selectEqpStatusChart();
 
-    List<Map> selectYield(String lineNo);
+    List<Map> selectYield(String lineNo,String department);
 
     FabEquipmentStatus findByEqpId(String eqpId);
 }

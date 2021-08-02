@@ -51,7 +51,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     private IFabEquipmentService fabEquipmentService;
 
     @Value("${dsk.lineNo}")
-    String lineNo;
+    String lineNo1;
 
     @GetMapping("chart")
     public void chart(HttpServletRequest request, @RequestParam String curProject) {//TODO 高协助首页分前后工程  curProject
@@ -71,7 +71,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @GetMapping("listEqpStatus")
     public void list(HttpServletRequest request, HttpServletResponse response,@RequestParam String curProject){//TODO 高协助首页分前后工程  curProject
-        List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "");
+        List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "",curProject);
         if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
             FastJsonUtils.print(fabEquipmentStatusList);
         }
@@ -79,8 +79,8 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     }
 
     @GetMapping("listPdtStatus")
-    public void listPdtStatus(@RequestParam String department, @RequestParam String curProject, HttpServletRequest request, HttpServletResponse response){//TODO 高协助首页分前后工程  curProject
-        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo,department);
+    public void listPdtStatus(@RequestParam String lineNo, @RequestParam String curProject, HttpServletRequest request, HttpServletResponse response){//TODO 高协助首页分前后工程  curProject
+        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo1,curProject);
         //List<FabEquipment> fabEquipmentList =  fabEquipmentService.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo).eq("step_yield_flag","1"));
         //List<String> eqpIds = Lists.newArrayList();
         //fabEquipmentList.forEach(fabEquipment -> {

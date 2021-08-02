@@ -860,7 +860,7 @@ public class EdcDskLogHandler {
                     users = fabEquipmentService.findEmailALL("E-0008");
                 }
             } else if (eqpId.contains("APJ")) {
-                if (department.get(0).get("department").equals("YK")) {
+                if (department.get(0).get("department").equals("YK") || department.get(0).get("department").equals("BP")) {
                     users = fabEquipmentService.findEmailALL("E-CSV-F");
                 } else if (department.get(0).get("department").equals("EK")) {
                     users = fabEquipmentService.findEmailALL("E-CSV-S");
@@ -876,7 +876,7 @@ public class EdcDskLogHandler {
                 users = fabEquipmentService.findEmailALL("A-0001");
             }
         } else if (alarmCode.equals("CSV-LOG-ERROR")) {
-            if (department.get(0).get("department").equals("YK")) {
+            if (department.get(0).get("department").equals("YK") || department.get(0).get("department").equals("BP")) {
                 users = fabEquipmentService.findEmailALL("E-CSV-F");
             } else if (department.get(0).get("department").equals("EK")) {
                 users = fabEquipmentService.findEmailALL("E-CSV-S");

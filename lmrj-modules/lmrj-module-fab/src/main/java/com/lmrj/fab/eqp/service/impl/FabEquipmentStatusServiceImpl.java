@@ -83,8 +83,8 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
     }
 
     @Override
-    public List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab){
-        return baseMapper.selectEqpStatus(officeId, null, null);
+    public List<FabEquipmentStatus> selectEqpStatus(String officeId, String lineNo, String fab,String department){
+        return baseMapper.selectEqpStatus(officeId, null, null,department);
     }
 
     @Override

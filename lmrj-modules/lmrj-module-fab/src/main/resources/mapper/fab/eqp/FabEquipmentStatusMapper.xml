@@ -90,6 +90,9 @@
         <if test="fab != null and fab != ''">
             and f.fab = #{fab}
         </if>
+        <if test="department != null and department != ''">
+            and f.department = #{department}
+        </if>
         order by f.SORT_NO
     </select>
 
