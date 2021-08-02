@@ -10,13 +10,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
-//5Gi分离数据
-@TableName("measure_gi_record")
+
+@TableName("measure_sx_record")
 @SuppressWarnings("serial")
 @Data
-public class MeasureGi {
+public class MeasureDm {
     @TableId(value = "id", type = IdType.UUID)
     protected String id;
+    /**制品码*/
+    @TableField(value = "chip_id")
+    private String chipId;
     /**批号*/
     @TableField(value = "lot_no")
     private String lotNo;
@@ -26,9 +29,6 @@ public class MeasureGi {
     /**线别*/
     @TableField(value = "line_no")
     private String lineNo;
-    /**串行计数器*/
-    @TableField(value = "serial_counter")
-    private String serialCounter;
     /**综合判定*/
     @TableField(value = "measure_judgment")
     private String measureJudgment;
@@ -38,47 +38,38 @@ public class MeasureGi {
     /**测量次数*/
     @TableField(value = "measure_counter")
     private String measureCounter;
+    /**测量类型*/
     @TableField(value = "measure_type")
     private String measureType;
 
-    @TableField(value = "burr_f")
-    private Double burrf;
-    @TableField(value = "pin_f1")
-    private Double pinf1;
-    @TableField(value = "pin_f2")
-    private Double pinf2;
-    @TableField(value = "pin_f3")
-    private Double pinf3;
-    @TableField(value = "pin_f4")
-    private Double pinf4;
-    @TableField(value = "pin_f5")
-    private Double pinf5;
-    @TableField(value = "pin_f6")
-    private Double pinf6;
-    @TableField(value = "pin_f1_f2")
-    private Double pinf1f2;
-    @TableField(value = "pin_f2_f3")
-    private Double pinf2f3;
-    @TableField(value = "pin_f3_f4")
-    private Double pinf3f4;
-    @TableField(value = "pin_f4_f5")
-    private Double pinf4f5;
-    @TableField(value = "pin_f5_f6")
-    private Double pinf5f6;
-    @TableField(value = "pin_s1")
-    private Double pins1;
-    @TableField(value = "pin_s2")
-    private Double pins2;
-    @TableField(value = "pin_s3")
-    private Double pins3;
-    @TableField(value = "pin_s4")
-    private Double pins4;
-    @TableField(value = "pin_s5")
-    private Double pins5;
-    @TableField(value = "pin_s6")
-    private Double pins6;
-
-
+    @TableField(value = "f0_1")
+    private Double f0_1;
+    @TableField(value = "f0_2")
+    private Double f0_2;
+    @TableField(value = "f0_3")
+    private Double f0_3;
+    @TableField(value = "f1_1")
+    private Double f1_1;
+    @TableField(value = "f1_2")
+    private Double f1_2;
+    @TableField(value = "f1_3")
+    private Double f1_3;
+    @TableField(value = "f3_1")
+    private Double f3_1;
+    @TableField(value = "f3_2")
+    private Double f3_2;
+    @TableField(value = "f3_3")
+    private Double f3_3;
+    @TableField(value = "f3_4")
+    private Double f3_4;
+    @TableField(value = "f3_5")
+    private Double f3_5;
+    @TableField(value = "f3_6")
+    private Double f3_6;
+    @TableField(value = "f3_7")
+    private Double f3_7;
+    @TableField(value = "f3_8")
+    private Double f3_8;
     /**发生时刻*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")

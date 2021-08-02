@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-@Service("MeasureFGiService")
+@Service("MeasureGiService")
 @Slf4j
 public class MeasureGiServiceImpl extends CommonServiceImpl<MeasureGiMapper, MeasureGi> implements MeasureGiService {
 

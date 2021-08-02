@@ -32,7 +32,7 @@ public class MeasureSx {
     /**综合判定*/
     @TableField(value = "measure_judgment")
     private String measureJudgment;
-    /**名称*/
+    /**操作员名称*/
     @TableField(value = "measure_name")
     private String measureName;
     /**测量次数*/

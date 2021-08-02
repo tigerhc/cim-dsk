@@ -13,6 +13,8 @@ import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.core.entity.MesResult;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.log.service.IFabLogService;
+import com.lmrj.mes.measure.entity.MeasureDm;
+import com.lmrj.mes.measure.service.MeasureDmService;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.ms.thrust.entity.MsMeasureThrust;
@@ -30,10 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -61,6 +60,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     IMesLotTrackService mesLotTrackService;
     @Autowired
     IFabLogService fabLogService;
+    @Autowired
+    MeasureDmService measureDmService;
 
     //@RequestMapping(value = "/trackin/{eqpId}/{lotNo}", method = { RequestMethod.GET, RequestMethod.POST })
     //public MesResult trackin(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
@@ -204,43 +205,43 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
             String eqpId1 = subLineNo;
             if (subLineNo.equals("IGBT")) {
-                eqpId1 = "APJ-IGBT-SORT1";
+                eqpId1 = "DM-IGBT-SORT1";
             } else if (eqpId1.equals("FRD")) {
-                eqpId1 = "APJ-FRD-SORT1";
+                eqpId1 = "DM-FRD-SORT1";
             } else if (eqpId1.equals("IGBTYJH")) {
-                eqpId1 = "APJ-IGBT-SORT3";
+                eqpId1 = "DM-IGBT-SORT3";
             } else if (eqpId1.equals("FRDYJH")) {
-                eqpId1 = "APJ-FRD-SORT3";
+                eqpId1 = "DM-FRD-SORT3";
             } else if (eqpId1.equals("RY1")) {
-                eqpId1 = "APJ-HB1-SORT2";
+                eqpId1 = "DM-HB1-SORT2";
             } else if (eqpId1.equals("RY2")) {
-                eqpId1 = "APJ-HB2-SORT2";
+                eqpId1 = "DM-HB2-SORT2";
             } else if (eqpId1.equals("ZJ")) {
-                eqpId1 = "APJ-VI1";
+                eqpId1 = "DM-VI1";
             } else if (eqpId1.equals("TOP")) {
-                eqpId1 = "APJ-DBCT-SORT2";
+                eqpId1 = "DM-DBCT-SORT2";
             } else if (eqpId1.equals("BOTTOM")) {
-                eqpId1 = "APJ-DBCB-SORT2";
+                eqpId1 = "DM-DBCB-SORT2";
             } else if (eqpId1.equals("TRM")) {
-                eqpId1 = "APJ-TRM1";
+                eqpId1 = "DM-TRM1";
             } else if (eqpId1.equals("SAT")) {
-                eqpId1 = "APJ-SAT1";
+                eqpId1 = "DM-SAT1";
             } else if (eqpId1.contains("AT") && !eqpId1.contains("S")) {
-                eqpId1 = "APJ-AT1";
+                eqpId1 = "DM-AT1";
             } else if (eqpId1.equals("LF")) {
-                eqpId1 = "APJ-LF1";
+                eqpId1 = "DM-LF1";
             } else if (eqpId1.equals("HTRT")) {
-                eqpId1 = "APJ-HTRT1";
+                eqpId1 = "DM-HTRT1";
             } else if (eqpId1.equals("XRAY")) {
-                eqpId1 = "APJ-XRAY1";
+                eqpId1 = "DM-XRAY1";
             } else if (eqpId1.equals("JET")) {
-                eqpId1 = "APJ-CLEAN-JET1";
+                eqpId1 = "DM-CLEAN-JET1";
             } else if (eqpId1.equals("US")) {
-                eqpId1 = "APJ-CLEAN-US1";
+                eqpId1 = "DM-CLEAN-US1";
             } else if (eqpId1.equals("OVEN1")) {
-                eqpId1 = "APJ-OVEN1";
+                eqpId1 = "DM-OVEN1";
             } else if (eqpId1.equals("OVEN2")) {
-                eqpId1 = "APJ-OVEN2";
+                eqpId1 = "DM-OVEN2";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack lastLotTrack = mesLotTrackService.findLotNo1(eqpId1, new Date());
@@ -345,13 +346,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("TOP")) {
-                eqpId = "APJ-DBCT-PRINTER1";
+                eqpId = "DM-DBCT-PRINTER1";
             } else if (eqpId.equals("BOTTOM")) {
-                eqpId = "APJ-DBCB-PRINTER1";
+                eqpId = "DM-DBCB-PRINTER1";
             } else if (eqpId.equals("FRD")) {
-                eqpId = "APJ-FRD-PRINTER1";
+                eqpId = "DM-FRD-PRINTER1";
             } else if (eqpId.equals("IGBT")) {
-                eqpId = "APJ-IGBT-PRINTER1";
+                eqpId = "DM-IGBT-PRINTER1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -408,13 +409,13 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("TOP")) {
-                eqpId = "APJ-DBCT-REFLOW1";
+                eqpId = "DM-DBCT-REFLOW1";
             } else if (eqpId.equals("BOTTOM")) {
-                eqpId = "APJ-DBCB-REFLOW1";
+                eqpId = "DM-DBCB-REFLOW1";
             } else if (eqpId.equals("FRD")) {
-                eqpId = "APJ-FRD-REFLOW1";
+                eqpId = "DM-FRD-REFLOW1";
             } else if (eqpId.equals("IGBT")) {
-                eqpId = "APJ-IGBT-REFLOW1";
+                eqpId = "DM-IGBT-REFLOW1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -446,15 +447,15 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("RY1")) {
-                eqpId = "APJ-HB1-SINTERING1";
+                eqpId = "DM-HB1-SINTERING1";
             } else if (eqpId.contains("RY2S1")) {//金型温度设定值
-                eqpId = "APJ-HB2-SINTERING1-1";
+                eqpId = "DM-HB2-SINTERING1-1";
             } else if (eqpId.contains("RY2S2")) {//压力、温度设定值
-                eqpId = "APJ-HB2-SINTERING1-2";
+                eqpId = "DM-HB2-SINTERING1-2";
             }/* else if(eqpId.equals("RY2C")){//温度测定值
             eqpId = "APJ-HB2-SINTERING1-3";
         } */ else if (eqpId.contains("RY2DJ")) {//点胶机数据
-                eqpId = "APJ-HB2-DISPENSING1";
+                eqpId = "DM-HB2-DISPENSING1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -487,7 +488,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("ZJ")) {
-                eqpId = "APJ-VI1";
+                eqpId = "DM-VI1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -520,9 +521,9 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("JET")) {
-                eqpId = "APJ-CLEAN-JET1";
+                eqpId = "DM-CLEAN-JET1";
             } else if (eqpId.equals("US")) {
-                eqpId = "APJ-CLEAN-US1";
+                eqpId = "DM-CLEAN-US1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -554,10 +555,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if ("".equals(opId) || opId == null) {
                 return "opId Cannot be empty";
             }
-            if (eqpId.equals("APJ-OVEN1")) {
-                eqpId = "APJ-OVEN1";
-            } else if (eqpId.equals("APJ-OVEN2")) {
-                eqpId = "APJ-OVEN2";
+            if (eqpId.equals("DM-OVEN1")) {
+                eqpId = "DM-OVEN1";
+            } else if (eqpId.equals("DM-OVEN2")) {
+                eqpId = "DM-OVEN2";
             } else if (eqpId.equals("SIM-OVEN1")) {
                 eqpId = "SIM-OVEN1";
             } else if (eqpId.equals("SIM-OVEN2")) {
@@ -678,7 +679,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.contains("AT")) {
-                eqpId = "APJ-AT1";
+                eqpId = "DM-AT1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!: " + eqpId;
@@ -874,43 +875,43 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             //对当前批次进行判断，若批次结束时间过快，阻止操做
             String eqpId1 = subLineNo;
             if (subLineNo.equals("IGBT")) {
-                eqpId1 = "APJ-IGBT-SORT1";
+                eqpId1 = "DM-IGBT-SORT1";
             } else if (eqpId1.equals("FRD")) {
-                eqpId1 = "APJ-FRD-SORT1";
+                eqpId1 = "DM-FRD-SORT1";
             } else if (eqpId1.equals("IGBTYJH")) {
-                eqpId1 = "APJ-IGBT-SORT3";
+                eqpId1 = "DM-IGBT-SORT3";
             } else if (eqpId1.equals("FRDYJH")) {
-                eqpId1 = "APJ-FRD-SORT3";
+                eqpId1 = "DM-FRD-SORT3";
             } else if (eqpId1.equals("RY1")) {
-                eqpId1 = "APJ-HB1-SORT2";
+                eqpId1 = "DM-HB1-SORT2";
             } else if (eqpId1.equals("RY2")) {
-                eqpId1 = "APJ-HB2-SORT2";
+                eqpId1 = "DM-HB2-SORT2";
             } else if (eqpId1.equals("ZJ")) {
-                eqpId1 = "APJ-VI1";
+                eqpId1 = "DM-VI1";
             } else if (eqpId1.equals("TOP")) {
-                eqpId1 = "APJ-DBCT-SORT2";
+                eqpId1 = "DM-DBCT-SORT2";
             } else if (eqpId1.equals("BOTTOM")) {
-                eqpId1 = "APJ-DBCB-SORT2";
+                eqpId1 = "DM-DBCB-SORT2";
             } else if (eqpId1.equals("TRM")) {
-                eqpId1 = "APJ-TRM1";
+                eqpId1 = "DM-TRM1";
             } else if (eqpId1.equals("SAT")) {
-                eqpId1 = "APJ-SAT1";
+                eqpId1 = "DM-SAT1";
             } else if (eqpId1.equals("AT") && !eqpId1.contains("S")) {
-                eqpId1 = "APJ-AT1";
+                eqpId1 = "DM-AT1";
             } else if (eqpId1.equals("LF")) {
-                eqpId1 = "APJ-LF1";
+                eqpId1 = "DM-LF1";
             } else if (eqpId1.equals("HTRT")) {
-                eqpId1 = "APJ-HTRT1";
+                eqpId1 = "DM-HTRT1";
             } else if (eqpId1.equals("XRAY")) {
-                eqpId1 = "APJ-XRAY1";
+                eqpId1 = "DM-XRAY1";
             } else if (eqpId1.equals("JET")) {
-                eqpId1 = "APJ-CLEAN-JET1";
+                eqpId1 = "DM-CLEAN-JET1";
             } else if (eqpId1.equals("US")) {
-                eqpId1 = "APJ-CLEAN-US1";
+                eqpId1 = "DM-CLEAN-US1";
             } else if (eqpId1.equals("OVEN1")) {
-                eqpId1 = "APJ-OVEN1";
+                eqpId1 = "DM-OVEN1";
             } else if (eqpId1.equals("OVEN2")) {
-                eqpId1 = "APJ-OVEN2";
+                eqpId1 = "DM-OVEN2";
             }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
@@ -1130,17 +1131,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
     //查找DM分离检查参数
     @RequestMapping(value = "/findAPJ/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String findApjParam(Model model, @PathVariable String eqpId, @RequestParam String trackinfo,@RequestParam String chipIds, @RequestParam String opId,
+    public String findApjParam(Model model, @PathVariable String eqpId, @RequestParam String trackinfo,@RequestParam String chipIds,@RequestParam String type, @RequestParam String opId,
                                HttpServletRequest request, HttpServletResponse response) {
         log.info("findAPJParam :  {}, {}", opId, eqpId);
         if (trackinfo.length() < 30) {
             return "trackinfo too short";
         }
-        String chipId[] = chipIds.split(",");
-        if(chipId.length!=5){
+        String chipIdColumn[] = chipIds.split(",");
+        if(chipIdColumn.length!=5){
             return "chipIds number error(制品码数量错误，必须传输5个制品码！)";
         }
-        for (String chIpID : chipId) {
+        for (String chIpID : chipIdColumn) {
             if("".equals(chIpID)){
                 return "chIpId must be not null(制品码不得为空！)";
             }
@@ -1163,7 +1164,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.equals("APJLFTest")) {
-                eqpId = "APJ-LF1";
+                eqpId = "DM-LF1";
             }else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
@@ -1173,6 +1174,60 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(eqpId, "findAPJ", "MesLotTrackController.findAPJ", jo.toString(), eqpId, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
+                //将APJ分离检测数据入库
+                String datas = result.getContent().toString();
+                List<MeasureDm> measureDmList = null;
+                try {
+                    String columns[] = datas.split(",");
+                    measureDmList = new ArrayList<>();
+                    for (int i = 0; i < 70; i=i+14) {
+                        String[] paramsValues = Arrays.copyOfRange(columns, i, i+13);
+                        String chipId = chipIdColumn[(i%13)];
+                        MeasureDm measureDm = new MeasureDm();
+                        measureDm.setChipId(chipId);
+                        measureDm.setCreateDate(new Date());
+                        measureDm.setLineNo("DM");
+                        measureDm.setProductionNo(productionName);
+                        measureDm.setLotNo(lotNo);
+                        measureDm.setMeasureCounter((i%13+1)+"");
+                        measureDm.setMeaDate(DateUtil.parseDate(columns[71],"yyyy/M/d H:mm"));
+                        measureDm.setMeasureName(opId);
+                        measureDm.setMeasureJudgment("Y");
+                        measureDm.setMeasureType(type);
+                        measureDm.setF0_1(Double.parseDouble(paramsValues[0]));
+                        measureDm.setF0_2(Double.parseDouble(paramsValues[1]));
+                        measureDm.setF0_3(Double.parseDouble(paramsValues[2]));
+                        measureDm.setF1_1(Double.parseDouble(paramsValues[3]));
+                        measureDm.setF1_2(Double.parseDouble(paramsValues[4]));
+                        measureDm.setF1_3(Double.parseDouble(paramsValues[5]));
+                        measureDm.setF3_1(Double.parseDouble(paramsValues[6]));
+                        measureDm.setF3_2(Double.parseDouble(paramsValues[7]));
+                        measureDm.setF3_3(Double.parseDouble(paramsValues[8]));
+                        measureDm.setF3_4(Double.parseDouble(paramsValues[9]));
+                        measureDm.setF3_5(Double.parseDouble(paramsValues[10]));
+                        measureDm.setF3_6(Double.parseDouble(paramsValues[11]));
+                        measureDm.setF3_7(Double.parseDouble(paramsValues[12]));
+                        measureDm.setF3_8(Double.parseDouble(paramsValues[13]));
+                        measureDmList.add(measureDm);
+                    }
+                } catch (Exception e) {
+                    log.error("DM 分离检查数据解析出错",e);
+                    e.printStackTrace();
+                }
+                if(measureDmList.size()>0){
+                    try {
+                        measureDmService.insertBatch(measureDmList,5);
+                        log.info("DM 分离检查数据导入数据库成功");
+                    } catch (Exception e) {
+                        log.error("DM 分离检查数据导入数据库失败",e);
+                        e.printStackTrace();
+                    }
+                }
+                // 0   13
+                //14   27
+                //28   41
+                //42   55
+                //56   69
                 return result.getContent().toString();
             } else {
                 return result.getMsg();

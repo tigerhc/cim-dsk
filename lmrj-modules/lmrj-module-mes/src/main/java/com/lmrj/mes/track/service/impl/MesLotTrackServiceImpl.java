@@ -150,7 +150,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         }
         log.info("findApjParam 参数" + map);
         if (eqpId.equals("VI")) {
-            eqpId = "APJ-HB1-VI1";
+            eqpId = "DM-HB1-VI1";
             map.put("EQP_ID", eqpId);
         }
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
@@ -160,7 +160,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
                 value = (String) result.getContent();
             }
             if ("ERROR: NOT FOUND".equals(value)) {
-                log.error("EQP_ID:" + eqpId + "APJ数据获取失败");
+                log.error("EQP_ID:" + eqpId + "DM数据获取失败");
             }
         } else {
             return MesResult.error(eqpId + " not reply");
@@ -193,7 +193,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             bc = "APJ-BC7";
         }
-        log.info("findApjRecipeCode 参数" + map);
+        log.info("findDMRecipeCode 参数" + map);
         String replyMsg = (String) rabbitTemplate.convertSendAndReceive("S2C.T.CIM.COMMAND", bc, JsonUtil.toJsonString(map));
         if (replyMsg != null) {
             result = JsonUtil.from(replyMsg, MesResult.class);
@@ -261,7 +261,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         } else {
             temps = "TEMPTEST";
         }
-        if ("The Productionlog was not updated!".equals(temps)) {
+        if (temps.contains("The Productionlog was not updated!")) {
             sendAlarmEmail("SIM-REFLOW1", "E-0010");
         }
         result.setContent(temps);
@@ -1403,7 +1403,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
             rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", jsonString);
         } catch (Exception e) {
             flag = false;
-            log.error("Exception:", e);
+            log.error("sendAlarmEmail Exception:", e);
         }
         return flag;
     }
