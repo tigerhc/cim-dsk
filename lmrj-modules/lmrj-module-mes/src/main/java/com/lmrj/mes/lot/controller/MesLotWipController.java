@@ -77,7 +77,15 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         String eqpId = "SIM-REFLOW1";
         FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
         if(fabEquipmentStatus==null){
-            eqpId = "DM-HB2-SINTERING1";
+            if("DM".equals(lineNo)){
+                if("BP".equals(curProject)){
+                    eqpId = "DM-IGBT-SMT1";
+                }else if("YK".equals(curProject)){
+                    eqpId = "DM-HB2-SORT1";
+                }else if("EK".equals(curProject)){
+                    eqpId = "DM-TRM1";
+                }
+            }
             fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
             if(fabEquipmentStatus == null){
                 return;
@@ -120,11 +128,26 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             endTime=cal.getTime();
         }
         int lotYieldAll=0;
-        if(eqpId.contains("DM-")){
+        if("SIM".equals(lineNo)){
+            if("YK".equals(curProject)){
+                lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
+            }else if("EK".equals(curProject)){
+                lotYieldAll = iMesLotWipService.findDayLotYield("SIM-HTRT1",startTime,endTime);
+            }
+        }else if("DM".equals(lineNo)){
+            if("BP".equals(curProject)){
+                lotYieldAll = iMesLotWipService.findDayLotYield("DM-IGBT-SMT1",startTime,endTime);
+            }else if("YK".equals(curProject)){
+                lotYieldAll = iMesLotWipService.findDayLotYield("DM-HB2-SORT1",startTime,endTime);
+            }else if("EK".equals(curProject)){
+                lotYieldAll = iMesLotWipService.findDayLotYield("DM-TRM1",startTime,endTime);
+            }
+        }
+        /*if(eqpId.contains("DM-")){
             lotYieldAll = iMesLotWipService.findDayLotYield(eqpId,startTime,endTime);
         }else {
             lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
-        }
+        }*/
 
         /*for (MesLotTrack rptLotYield : lotYieldDaylList) {
             int lotYield = rptLotYield.getLotYield();
@@ -155,7 +178,19 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         Map map2=new HashMap();
 //        map2.put("name","当天投入数");
         if("SIM".equals(lineNo)){
-            map2.put("name","DM工程投入实际");
+            if("YK".equals(curProject)){
+                map2.put("name","DM工程投入实际");
+            }else if("EK".equals(curProject)){
+                map2.put("name","HTRT工程投入实际");
+            }
+        }else if("DM".equals(lineNo)){
+            if("YK".equals(curProject)){
+                map2.put("name","二次热压工程投入实际");
+            }else if("EK".equals(curProject)){
+                map2.put("name","TRM工程投入实际");
+            }else if("BP".equals(curProject)){
+                map2.put("name","IGBT工程投入实际");
+            }
         }else {
             map2.put("name","投入实际");
         }
