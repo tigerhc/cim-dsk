@@ -219,7 +219,7 @@ public class MapTrayChipMoveController {
         keyList.add(key6);
         ExcelExportEntity key7 = new ExcelExportEntity("Y坐标","7");
         keyList.add(key7);
-        ExcelExportEntity key8 = new ExcelExportEntity("质量","8");
+        ExcelExportEntity key8 = new ExcelExportEntity("综合判定","8");
         keyList.add(key8);
         ExcelExportEntity key9 = new ExcelExportEntity("时间","9");
         keyList.add(key9);
