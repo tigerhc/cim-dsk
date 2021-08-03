@@ -513,6 +513,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
         List<MapTrayChipMove> lineData = baseMapper.getPseudoLineV2(startData);
         Date curDate = startData.getStartTime();
         Map<String, Object> rs = new HashMap<>();
+        String logMsg = "";
         for(MapEquipmentConfig cfgEqp : lineCfgEqp){
             boolean unfind = true;
             long logTime = 0;
@@ -524,6 +525,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                     logTime = timeChk;
                     compareId = item.getId();
                     if(timeChk < cfgEqp.getIntervalTimeMax()){
+                        logMsg = logMsg+"sucId:"+item.getId()+",sucEqp:"+item.getEqpId()+",sucTime:"+sdf.format(item.getStartTime())+",";
                         if("Y".equals(startData.getJudgeResult()) && item.getMapFlag() == 0){
                             item.setPseudoCode(startData.getPseudoCode());
                             item.setMapFlag(6);
@@ -535,11 +537,13 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                         unfind = false;
                         pseudoData.add(item);
                         break;
+                    }else{
+                        break;
                     }
                 }
             }
             if(unfind){
-                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax()+",最近的相差:"+logTime+",compareId:"+compareId);
+                rs.put("msg", "缺"+cfgEqp.getEqpId()+",时间限制:"+cfgEqp.getIntervalTimeMax()+",最近的相差:"+logTime+",compareId:"+compareId+",suclog/"+logMsg);
                 return rs;
             }
         }
