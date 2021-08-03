@@ -62,7 +62,7 @@ public class EdcParticleHandler {
             EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
             edcAmsRecord.setCreateDate(data.getStartTime());
             edcAmsRecord.setAlarmName("尘埃粒子计数器数值异常:"+msg);
-            edcAmsRecord.setEqpId("APJ-PARTICLE1");
+            edcAmsRecord.setEqpId("DM-PARTICLE1");
             edcAmsRecord.setAlarmCode("E-0070");
             edcAmsRecord.setAlarmSwitch("1");
             String json = JsonUtil.toJsonString(edcAmsRecord);

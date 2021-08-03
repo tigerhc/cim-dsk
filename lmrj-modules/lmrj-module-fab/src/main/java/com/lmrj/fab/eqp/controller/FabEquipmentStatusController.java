@@ -80,7 +80,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @GetMapping("listPdtStatus")
     public void listPdtStatus(@RequestParam String lineNo, @RequestParam String curProject, HttpServletRequest request, HttpServletResponse response){//TODO 高协助首页分前后工程  curProject
-        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo1,curProject);
+        List<Map> maps = fabEquipmentStatusService.selectYield(lineNo,curProject);
         //List<FabEquipment> fabEquipmentList =  fabEquipmentService.selectList(new EntityWrapper<FabEquipment>().eq("line_no", lineNo).eq("step_yield_flag","1"));
         //List<String> eqpIds = Lists.newArrayList();
         //fabEquipmentList.forEach(fabEquipment -> {

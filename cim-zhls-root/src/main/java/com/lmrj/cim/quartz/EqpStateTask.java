@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -62,13 +61,8 @@ public class EqpStateTask {
     //@Scheduled(cron = "0 0 8 * * ?")
     public void  fixeqpState(Date startTime , Date endTime){
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
-        //List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
-        List<String> eqpIdList= new ArrayList<>();
-        eqpIdList.add("SIM-WB-3A");
-        eqpIdList.add("SIM-WB-4B");
-        eqpIdList.add("SIM-WB-5A");
-        eqpIdList.add("SIM-WB-5B");
-        eqpIdList.add("SIM-WB-6A");
+        List<String> eqpIdList=edcEqpStateService.findEqpId(startTime, endTime);
+        //List<String> eqpIdList= new ArrayList<>();
         for (String eqpId : eqpIdList) {
             edcEqpStateServiceImpl.syncOldEqpSate(startTime, endTime,eqpId);
         }

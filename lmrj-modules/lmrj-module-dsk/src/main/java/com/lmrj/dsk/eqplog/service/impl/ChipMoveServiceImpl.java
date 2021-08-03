@@ -5,9 +5,7 @@ import com.lmrj.dsk.constant.EqpNameConstant;
 import com.lmrj.dsk.eqplog.entity.ChipMove;
 import com.lmrj.dsk.eqplog.mapper.ChipMoveMapper;
 import com.lmrj.dsk.eqplog.service.IChipMoveService;
-import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +38,7 @@ public class ChipMoveServiceImpl extends CommonServiceImpl<ChipMoveMapper, ChipM
                 data.setEqpId(MapUtils.getString(item, "eqpId"));
                 data.setJudgeResult(MapUtils.getString(item, "judgeResult"));
                 //过滤掉起始移栽机的不良品数据
-                if(("APJ-DBCB-SORT1".equals(data.getEqpId())|| "APJ-DBCT-SORT1".equals(data.getEqpId()) ) && "N".equals(data.getJudgeResult())){
+                if(("DM-DBCB-SORT1".equals(data.getEqpId())|| "DM-DBCT-SORT1".equals(data.getEqpId()) ) && "N".equals(data.getJudgeResult())){
                     continue;
                 }
                 if(data.getEqpId().contains("SMT")){//贴片机的数据

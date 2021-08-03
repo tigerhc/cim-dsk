@@ -77,7 +77,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
         String eqpId = "SIM-REFLOW1";
         FabEquipmentStatus fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
         if(fabEquipmentStatus==null){
-            eqpId = "APJ-HB2-SINTERING1";
+            eqpId = "DM-HB2-SINTERING1";
             fabEquipmentStatus=fabEquipmentStatusService.findByEqpId(eqpId);
             if(fabEquipmentStatus == null){
                 return;
@@ -120,7 +120,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             endTime=cal.getTime();
         }
         int lotYieldAll=0;
-        if(eqpId.contains("APJ")){
+        if(eqpId.contains("DM-")){
             lotYieldAll = iMesLotWipService.findDayLotYield(eqpId,startTime,endTime);
         }else {
             lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;

@@ -41,7 +41,7 @@ public class ClientCheckTask {
         if ("SIM".equals(lineNo)) {
             bcCodeList.add("SIM-BC1");
             bcCodeList.add("SIM-BC2");
-        } else if ("APJ".equals(lineNo)) {
+        } else if ("DM".equals(lineNo)) {
             bcCodeList.add("APJ-BC1");
             bcCodeList.add("APJ-BC2");
             bcCodeList.add("APJ-BC3");

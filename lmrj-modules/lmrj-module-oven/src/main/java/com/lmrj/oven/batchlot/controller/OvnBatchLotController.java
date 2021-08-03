@@ -16,7 +16,6 @@ import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.common.utils.ServletUtils;
 import com.lmrj.core.log.LogAspectj;
 import com.lmrj.core.sys.entity.Organization;
-import com.lmrj.edc.param.entity.EdcParamRecordDtl;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
@@ -31,12 +30,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -161,23 +155,23 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @RequestMapping("tempEqpList")
     public Response tempEqpList(){
         Response rs = Response.ok();
-        if(lineNo.equals("APJ")){//应苏科长要求,REFLOW1 显示REFLOW1,个别设备冰箱等显示描述
-            String str = "[{\"eqpId\":\"APJ-IGBT-REFLOW1\",\"eqpName\":\"APJ-IGBT-REFLOW1\"},\n" +
-                    "{\"eqpId\":\"APJ-FRD-REFLOW1\",\"eqpName\":\"APJ-FRD-REFLOW1\"},\n" +
-                    "{\"eqpId\":\"APJ-DBCT-REFLOW1\",\"eqpName\":\"APJ-DBCT-REFLOW1\"},\n" +
-                    "{\"eqpId\":\"APJ-DBCB-REFLOW1\",\"eqpName\":\"APJ-DBCB-REFLOW1\"},\n" +
-                    "{\"eqpId\":\"APJ-AT1\",\"eqpName\":\"APJ-AT1\"},\n" +
-                    "{\"eqpId\":\"APJ-CLEAN-US1\",\"eqpName\":\"APJ-CLEAN-US1温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-TRM1\",\"eqpName\":\"APJ-TRM1\"},\n" +
-                    "{\"eqpId\":\"APJ-HT\",\"eqpName\":\"高温一(温度仪)\"},\n" +
-                    "{\"eqpId\":\"APJ-RT\",\"eqpName\":\"高温二(温度仪)\"},\n" +
-                    "{\"eqpId\":\"APJ-HTRT1\",\"eqpName\":\"APJ-HTRT1\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN1\",\"eqpName\":\"APJ-OVEN1温度仪(JET洗净后恒温槽)\"},\n" +
-                    "{\"eqpId\":\"APJ-AT2\",\"eqpName\":\"APJ-AT2温度仪\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER3\",\"eqpName\":\"APJ-FREEZER3温度仪(树脂)\"},\n" +
-                    "{\"eqpId\":\"APJ-OVEN2\",\"eqpName\":\"APJ-OVEN2温度仪(TRM恒温槽)\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER2\",\"eqpName\":\"APJ-FREEZER2温度仪(半田)\"},\n" +
-                    "{\"eqpId\":\"APJ-FREEZER1\",\"eqpName\":\"APJ-FREEZER1温度仪(AgNps)\"}]";
+        if(lineNo.equals("DM")){//应苏科长要求,REFLOW1 显示REFLOW1,个别设备冰箱等显示描述
+            String str = "[{\"eqpId\":\"DM-IGBT-REFLOW1\",\"eqpName\":\"DM-IGBT-REFLOW1\"},\n" +
+                    "{\"eqpId\":\"DM-FRD-REFLOW1\",\"eqpName\":\"DM-FRD-REFLOW1\"},\n" +
+                    "{\"eqpId\":\"DM-DBCT-REFLOW1\",\"eqpName\":\"DM-DBCT-REFLOW1\"},\n" +
+                    "{\"eqpId\":\"DM-DBCB-REFLOW1\",\"eqpName\":\"DM-DBCB-REFLOW1\"},\n" +
+                    "{\"eqpId\":\"DM-AT1\",\"eqpName\":\"DM-AT1\"},\n" +
+                    "{\"eqpId\":\"DM-CLEAN-US1\",\"eqpName\":\"DM-CLEAN-US1温度仪\"},\n" +
+                    "{\"eqpId\":\"DM-TRM1\",\"eqpName\":\"DM-TRM1\"},\n" +
+                    "{\"eqpId\":\"DM-HT\",\"eqpName\":\"高温一(温度仪)\"},\n" +
+                    "{\"eqpId\":\"DM-RT\",\"eqpName\":\"高温二(温度仪)\"},\n" +
+                    "{\"eqpId\":\"DM-HTRT1\",\"eqpName\":\"DM-HTRT1\"},\n" +
+                    "{\"eqpId\":\"DM-OVEN1\",\"eqpName\":\"DM-OVEN1温度仪(JET洗净后恒温槽)\"},\n" +
+                    "{\"eqpId\":\"DM-AT2\",\"eqpName\":\"DM-AT2温度仪\"},\n" +
+                    "{\"eqpId\":\"DM-FREEZER3\",\"eqpName\":\"DM-FREEZER3温度仪(树脂)\"},\n" +
+                    "{\"eqpId\":\"DM-OVEN2\",\"eqpName\":\"DM-OVEN2温度仪(TRM恒温槽)\"},\n" +
+                    "{\"eqpId\":\"DM-FREEZER2\",\"eqpName\":\"DM-FREEZER2温度仪(半田)\"},\n" +
+                    "{\"eqpId\":\"DM-FREEZER1\",\"eqpName\":\"DM-FREEZER1温度仪(AgNps)\"}]";
             List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
             rs.put("eqpId", list);
         } else {

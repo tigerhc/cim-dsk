@@ -2,7 +2,6 @@ package com.lmrj.map.tray.service.impl;
 
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.map.tray.entity.MapTrayChipLog;
-import com.lmrj.map.tray.entity.MapTrayChipLogDetail;
 import com.lmrj.map.tray.entity.MapTrayChipMove;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
 import com.lmrj.map.tray.service.IMapTrayChipLogDetailService;
@@ -10,7 +9,6 @@ import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
-import com.lmrj.util.mapper.JsonUtil;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -576,12 +574,12 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             }
             Map<String, Object> param = new HashMap<>();
             param.put("eqpId", data.getEqpId());
-            if ("APJ-HTRT1".equals(data.getEqpId())) {
+            if ("DM-HTRT1".equals(data.getEqpId())) {
                 param.put("chipId", data.getChipId());
                 param.put("checkType", btn);
                 rs.put("paramValue", baseMapper.findLOProParam(param));
-            } else if ("APJ-VI1".equals(data.getEqpId()) || "APJ-AT1".equals(data.getEqpId())) {//高温室温检查
-                if ("APJ-VI1".equals(data.getEqpId())) {
+            } else if ("DM-VI1".equals(data.getEqpId()) || "DM-AT1".equals(data.getEqpId())) {//高温室温检查
+                if ("DM-VI1".equals(data.getEqpId())) {
                     param.put("trayId", data.getToTrayId());
                     param.put("trayX", String.valueOf(data.getToX()));
                     param.put("trayY", String.valueOf(data.getToY()));
@@ -589,7 +587,7 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                     param.put("chipId", data.getChipId());
                 }
                 rs.put("paramValue", baseMapper.findLOProParam(param));
-            } else if("APJ-IGBT-SMT1".equals(data.getEqpId())|| "APJ-FRD-SMT1".equals(data.getEqpId())){
+            } else if("DM-IGBT-SMT1".equals(data.getEqpId())|| "DM-FRD-SMT1".equals(data.getEqpId())){
                 param.put("startTime", data.getStartTime());
                 rs.put("paramValue", baseMapper.findProParam(param));
                 data.setEqpModelName("PRINT-SMT");
@@ -610,17 +608,17 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
                 data.setEqpModelName("AFM15");
             } else if (data.getEqpId().contains("HB2-SMT")) {
                 data.setEqpModelName("YSM-10");
-            } else if (data.getEqpId().contains("APJ-HB2-SINTERING1")) {
+            } else if (data.getEqpId().contains("DM-HB2-SINTERING1")) {
                 data.setEqpModelName("2ND SINTER");
-            } else if (data.getEqpId().contains("APJ-HB1-SINTERING1")) {
+            } else if (data.getEqpId().contains("DM-HB1-SINTERING1")) {
                 data.setEqpModelName("1ST SINTER");
-            } else if (data.getEqpId().contains("APJ-VI")) {
+            } else if (data.getEqpId().contains("DM-VI")) {
                 data.setEqpModelName("VI");
-            } else if (data.getEqpId().contains("APJ-AT")) {
+            } else if (data.getEqpId().contains("DM-AT")) {
                 data.setEqpModelName("AT");
             }
             //从数据库中获得标题
-            if("APJ-HTRT1".equals(data.getEqpId())){
+            if("DM-HTRT1".equals(data.getEqpId())){
                 rs.put("title", baseMapper.findParamTitle(btn));
             } else {
                 rs.put("title", baseMapper.findParamTitle(data.getEqpModelName()));

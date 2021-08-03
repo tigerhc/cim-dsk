@@ -131,55 +131,55 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                     "{\"id\":\"SIM-LF2\",\"name\":\"SIM-分离2\"},\n" +
                     "{\"id\":\"SIM-HTRT2\",\"name\":\"SIM-检查2\"}]";
         } else {
-            str = "[{\"id\":\"APJ-IGBT-SMT1\",\"name\":\"APJ-IGBT印刷贴片机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-2DAOI1\",\"name\":\"APJ-IGBT印刷 2D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-REFLOW1\",\"name\":\"APJ-IGBT印刷立式固化炉\"},\n" +
-                    "{\"id\":\"APJ-IGBT-3DAOI1\",\"name\":\"APJ-IGBT印刷-3D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-SORT1\",\"name\":\"APJ-IGBT印刷下料机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-SORT2\",\"name\":\"APJ-IGBT预结合上料机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-DM1\",\"name\":\"APJ-IGBT预结合晶圆贴片机\"},\n" +
-                    "{\"id\":\"APJ-IGBT-SORT3\",\"name\":\"APJ-IGBT预结合下料机\"},\n" +
-                    "{\"id\":\"APJ-FRD-SMT1\",\"name\":\"APJ-IGBT印刷贴片机\"},\n" +
-                    "{\"id\":\"APJ-FRD-2DAOI1\",\"name\":\"APJ-FRD印刷 2D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-FRD-REFLOW1\",\"name\":\"APJ-FRD印刷立式固化炉\"},\n" +
-                    "{\"id\":\"APJ-FRD-3DAOI1\",\"name\":\"APJ-FRD印刷-3D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-FRD-SORT1\",\"name\":\"APJ-FRD印刷下料机\"},\n" +
-                    "{\"id\":\"APJ-FRD-SORT2\",\"name\":\"APJ-FRD预结合上料机\"},\n" +
-                    "{\"id\":\"APJ-FRD-DM1\",\"name\":\"APJ-FRD预结合晶圆贴片机\"},\n" +
-                    "{\"id\":\"APJ-FRD-SORT3\",\"name\":\"APJ-FRD预结合下料机\"},\n" +
-                    "{\"id\":\"APJ-HB1-SORT1\",\"name\":\"APJ-一次热压上料机\"},\n" +
-                    "{\"id\":\"APJ-HB1-SINTERING1\",\"name\":\"APJ-一次热压机\"},\n" +
-                    "{\"id\":\"APJ-HB1-3DAOI1\",\"name\":\"APJ-一次热压3D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-HB1-SORT2\",\"name\":\"APJ-一次热压下料机\"},\n" +
-                    "{\"id\":\"APJ-VI1\",\"name\":\"APJ-中间耐压检查一体机\"},\n" +
-                    "{\"id\":\"APJ-DBCT-SORT1\",\"name\":\"APJ-上基板印刷上料机   \"},\n" +
-                    "{\"id\":\"APJ-DBCT-2DAOI1\",\"name\":\"APJ-上基板印刷2D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-DBCT-REFLOW1\",\"name\":\"APJ-上基板印刷立式固化炉\"},\n" +
-                    "{\"id\":\"APJ-DBCT-3DAOI1\",\"name\":\"APJ-上基板3D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-DBCT-SORT2\",\"name\":\"APJ-上基板印刷下料机\"},\n" +
-                    "{\"id\":\"APJ-DBCB-SORT1\",\"name\":\"APJ-下基板印刷上料机   \"},\n" +
-                    "{\"id\":\"APJ-DBCB-2DAOI1\",\"name\":\"APJ-下基板印刷2D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-DBCB-REFLOW1\",\"name\":\"APJ-下基板印刷立式固化炉\"},\n" +
-                    "{\"id\":\"APJ-DBCB-3DAOI1\",\"name\":\"APJ-下基板3D画像检查机\"},\n" +
-                    "{\"id\":\"APJ-DBCB-SORT2\",\"name\":\"APJ-下基板印刷下料机\"},\n" +
-                    "{\"id\":\"APJ-HB2-SORT1\",\"name\":\"APJ-二次热压上料机\"},\n" +
-                    "{\"id\":\"APJ-HB2-DISPENSING1\",\"name\":\"APJ-二次热压点胶机1\"},\n" +
-                    "{\"id\":\"APJ-HB2-DISPENSING2\",\"name\":\"APJ-二次热压点胶机2\"},\n" +
-                    "{\"id\":\"APJ-HB2-DISPENSING3\",\"name\":\"APJ-二次热压点胶机3\"},\n" +
-                    "{\"id\":\"APJ-HB2-2DAOI1\",\"name\":\"APJ-二次热压2D画像检查机1\"},\n" +
-                    "{\"id\":\"APJ-HB2-SMT1\",\"name\":\"APJ-二次热压贴片机1\"},\n" +
-                    "{\"id\":\"APJ-HB2-SMT2\",\"name\":\"APJ-二次热压贴片机2\"},\n" +
-                    "{\"id\":\"APJ-HB2-2DAOI2\",\"name\":\"APJ-二次热压2D画像检查机2\"},\n" +
-                    "{\"id\":\"APJ-HB2-ASSEMBLY1\",\"name\":\"APJ-二次热压组立机\"},\n" +
-                    "{\"id\":\"APJ-HB2-SINTERING1\",\"name\":\"APJ-二次热压机\"},\n" +
-                    "{\"id\":\"APJ-HB2-SORT2\",\"name\":\"APJ-二次热压下料机\"},\n" +
-                    "{\"id\":\"APJ-XRAY1\",\"name\":\"APJ-X射线检查机\"},\n" +
-                    "{\"id\":\"APJ-CLEAN-US1\",\"name\":\"APJ-US1洗净机\"},\n" +
-                    "{\"id\":\"APJ-CLEAN-JET1\",\"name\":\"APJ-JET洗净机\"},\n" +
-                    "{\"id\":\"APJ-TRM1\",\"name\":\"APJ-TRM1\"},\n" +
-                    "{\"id\":\"APJ-AT1\",\"name\":\"APJ-耐老化试验搬送机\"},\n" +
-                    "{\"id\":\"APJ-LF1\",\"name\":\"APJ-分离检查机\"},\n" +
-                    "{\"id\":\"APJ-HTRT1\",\"name\":\"APJ-高温室温检查机\"}]";
+            str = "[{\"id\":\"DM-IGBT-SMT1\",\"name\":\"DM-IGBT印刷贴片机\"},\n" +
+                    "{\"id\":\"DM-IGBT-2DAOI1\",\"name\":\"DM-IGBT印刷 2D画像检查机\"},\n" +
+                    "{\"id\":\"DM-IGBT-REFLOW1\",\"name\":\"DM-IGBT印刷立式固化炉\"},\n" +
+                    "{\"id\":\"DM-IGBT-3DAOI1\",\"name\":\"DM-IGBT印刷-3D画像检查机\"},\n" +
+                    "{\"id\":\"DM-IGBT-SORT1\",\"name\":\"DM-IGBT印刷下料机\"},\n" +
+                    "{\"id\":\"DM-IGBT-SORT2\",\"name\":\"DM-IGBT预结合上料机\"},\n" +
+                    "{\"id\":\"DM-IGBT-DM1\",\"name\":\"DM-IGBT预结合晶圆贴片机\"},\n" +
+                    "{\"id\":\"DM-IGBT-SORT3\",\"name\":\"DM-IGBT预结合下料机\"},\n" +
+                    "{\"id\":\"DM-FRD-SMT1\",\"name\":\"DM-IGBT印刷贴片机\"},\n" +
+                    "{\"id\":\"DM-FRD-2DAOI1\",\"name\":\"DM-FRD印刷 2D画像检查机\"},\n" +
+                    "{\"id\":\"DM-FRD-REFLOW1\",\"name\":\"DM-FRD印刷立式固化炉\"},\n" +
+                    "{\"id\":\"DM-FRD-3DAOI1\",\"name\":\"DM-FRD印刷-3D画像检查机\"},\n" +
+                    "{\"id\":\"DM-FRD-SORT1\",\"name\":\"DM-FRD印刷下料机\"},\n" +
+                    "{\"id\":\"DM-FRD-SORT2\",\"name\":\"DM-FRD预结合上料机\"},\n" +
+                    "{\"id\":\"DM-FRD-DM1\",\"name\":\"DM-FRD预结合晶圆贴片机\"},\n" +
+                    "{\"id\":\"DM-FRD-SORT3\",\"name\":\"DM-FRD预结合下料机\"},\n" +
+                    "{\"id\":\"DM-HB1-SORT1\",\"name\":\"DM-一次热压上料机\"},\n" +
+                    "{\"id\":\"DM-HB1-SINTERING1\",\"name\":\"DM-一次热压机\"},\n" +
+                    "{\"id\":\"DM-HB1-3DAOI1\",\"name\":\"DM-一次热压3D画像检查机\"},\n" +
+                    "{\"id\":\"DM-HB1-SORT2\",\"name\":\"DM-一次热压下料机\"},\n" +
+                    "{\"id\":\"DM-VI1\",\"name\":\"DM-中间耐压检查一体机\"},\n" +
+                    "{\"id\":\"DM-DBCT-SORT1\",\"name\":\"DM-上基板印刷上料机   \"},\n" +
+                    "{\"id\":\"DM-DBCT-2DAOI1\",\"name\":\"DM-上基板印刷2D画像检查机\"},\n" +
+                    "{\"id\":\"DM-DBCT-REFLOW1\",\"name\":\"DM-上基板印刷立式固化炉\"},\n" +
+                    "{\"id\":\"DM-DBCT-3DAOI1\",\"name\":\"DM-上基板3D画像检查机\"},\n" +
+                    "{\"id\":\"DM-DBCT-SORT2\",\"name\":\"DM-上基板印刷下料机\"},\n" +
+                    "{\"id\":\"DM-DBCB-SORT1\",\"name\":\"DM-下基板印刷上料机   \"},\n" +
+                    "{\"id\":\"DM-DBCB-2DAOI1\",\"name\":\"DM-下基板印刷2D画像检查机\"},\n" +
+                    "{\"id\":\"DM-DBCB-REFLOW1\",\"name\":\"DM-下基板印刷立式固化炉\"},\n" +
+                    "{\"id\":\"DM-DBCB-3DAOI1\",\"name\":\"DM-下基板3D画像检查机\"},\n" +
+                    "{\"id\":\"DM-DBCB-SORT2\",\"name\":\"DM-下基板印刷下料机\"},\n" +
+                    "{\"id\":\"DM-HB2-SORT1\",\"name\":\"DM-二次热压上料机\"},\n" +
+                    "{\"id\":\"DM-HB2-DISPENSING1\",\"name\":\"DM-二次热压点胶机1\"},\n" +
+                    "{\"id\":\"DM-HB2-DISPENSING2\",\"name\":\"DM-二次热压点胶机2\"},\n" +
+                    "{\"id\":\"DM-HB2-DISPENSING3\",\"name\":\"DM-二次热压点胶机3\"},\n" +
+                    "{\"id\":\"DM-HB2-2DAOI1\",\"name\":\"DM-二次热压2D画像检查机1\"},\n" +
+                    "{\"id\":\"DM-HB2-SMT1\",\"name\":\"DM-二次热压贴片机1\"},\n" +
+                    "{\"id\":\"DM-HB2-SMT2\",\"name\":\"DM-二次热压贴片机2\"},\n" +
+                    "{\"id\":\"DM-HB2-2DAOI2\",\"name\":\"DM-二次热压2D画像检查机2\"},\n" +
+                    "{\"id\":\"DM-HB2-ASSEMBLY1\",\"name\":\"DM-二次热压组立机\"},\n" +
+                    "{\"id\":\"DM-HB2-SINTERING1\",\"name\":\"DM-二次热压机\"},\n" +
+                    "{\"id\":\"DM-HB2-SORT2\",\"name\":\"DM-二次热压下料机\"},\n" +
+                    "{\"id\":\"DM-XRAY1\",\"name\":\"DM-X射线检查机\"},\n" +
+                    "{\"id\":\"DM-CLEAN-US1\",\"name\":\"DM-US1洗净机\"},\n" +
+                    "{\"id\":\"DM-CLEAN-JET1\",\"name\":\"DM-JET洗净机\"},\n" +
+                    "{\"id\":\"DM-TRM1\",\"name\":\"DM-TRM1\"},\n" +
+                    "{\"id\":\"DM-AT1\",\"name\":\"DM-耐老化试验搬送机\"},\n" +
+                    "{\"id\":\"DM-LF1\",\"name\":\"DM-分离检查机\"},\n" +
+                    "{\"id\":\"DM-HTRT1\",\"name\":\"DM-高温室温检查机\"}]";
         }
         List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
         DateResponse listjson = new DateResponse(list);

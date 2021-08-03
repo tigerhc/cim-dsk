@@ -1,7 +1,9 @@
 package com.lmrj.oven.batchlot.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class OvnBatchLotDay {
 
-    @TableField(value = "id")
-    private int id;
+    @TableId(value = "id", type = IdType.UUID)
+    private String id;
 
     /*设备号*/
     @TableField(value = "eqp_id")

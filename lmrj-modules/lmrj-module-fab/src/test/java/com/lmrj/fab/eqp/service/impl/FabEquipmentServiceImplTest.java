@@ -1,3 +1,4 @@
+/*
 package com.lmrj.fab.eqp.service.impl;
 
 import com.lmrj.fab.FabBootApplication;
@@ -9,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+*/
 /**
  * Created by zwj on 2019/10/17.
- */
+ *//*
+
 @SpringBootTest(classes = FabBootApplication.class)
 @RunWith(SpringRunner.class)
 @Slf4j
@@ -39,4 +42,4 @@ public class FabEquipmentServiceImplTest {
         log.debug("debug=============");
     }
 
-}
+}*/
