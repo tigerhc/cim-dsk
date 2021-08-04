@@ -19,6 +19,7 @@ import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabSensor;
 import com.lmrj.fab.eqp.service.IFabEquipmentBindService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
+import com.lmrj.fab.eqp.service.IFabSensorService;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -66,6 +67,12 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     private IFabEquipmentService fabEquipmentService;
     @Autowired
     private IFabEquipmentBindService iIotEquipmentBindService;
+    @Autowired
+    private IFabSensorService sensorService;
+    @Autowired
+    private IFabEquipmentBindService fabEquipmentBindService;
+
+
     String title = "设备信息";
     @Value("${dsk.lineNo}")
     private String lineNo;
@@ -94,7 +101,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
     @RequestMapping(value = "/SelectStarteqpIdlist", method = { RequestMethod.GET, RequestMethod.POST })
     public void SelectStarteqpIdlist(Model model, @RequestParam(required = false) String param, HttpServletRequest request,
-                          HttpServletResponse response) {
+                                     HttpServletResponse response) {
         if("MS".equals(param)){
             eqpIdMsList2(model, request, response);
             return;
@@ -131,55 +138,55 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                     "{\"id\":\"SIM-LF2\",\"name\":\"SIM-分离2\"},\n" +
                     "{\"id\":\"SIM-HTRT2\",\"name\":\"SIM-检查2\"}]";
         } else {
-            str = "[{\"id\":\"DM-IGBT-SMT1\",\"name\":\"DM-IGBT印刷贴片机\"},\n" +
-                    "{\"id\":\"DM-IGBT-2DAOI1\",\"name\":\"DM-IGBT印刷 2D画像检查机\"},\n" +
-                    "{\"id\":\"DM-IGBT-REFLOW1\",\"name\":\"DM-IGBT印刷立式固化炉\"},\n" +
-                    "{\"id\":\"DM-IGBT-3DAOI1\",\"name\":\"DM-IGBT印刷-3D画像检查机\"},\n" +
-                    "{\"id\":\"DM-IGBT-SORT1\",\"name\":\"DM-IGBT印刷下料机\"},\n" +
-                    "{\"id\":\"DM-IGBT-SORT2\",\"name\":\"DM-IGBT预结合上料机\"},\n" +
-                    "{\"id\":\"DM-IGBT-DM1\",\"name\":\"DM-IGBT预结合晶圆贴片机\"},\n" +
-                    "{\"id\":\"DM-IGBT-SORT3\",\"name\":\"DM-IGBT预结合下料机\"},\n" +
-                    "{\"id\":\"DM-FRD-SMT1\",\"name\":\"DM-IGBT印刷贴片机\"},\n" +
-                    "{\"id\":\"DM-FRD-2DAOI1\",\"name\":\"DM-FRD印刷 2D画像检查机\"},\n" +
-                    "{\"id\":\"DM-FRD-REFLOW1\",\"name\":\"DM-FRD印刷立式固化炉\"},\n" +
-                    "{\"id\":\"DM-FRD-3DAOI1\",\"name\":\"DM-FRD印刷-3D画像检查机\"},\n" +
-                    "{\"id\":\"DM-FRD-SORT1\",\"name\":\"DM-FRD印刷下料机\"},\n" +
-                    "{\"id\":\"DM-FRD-SORT2\",\"name\":\"DM-FRD预结合上料机\"},\n" +
-                    "{\"id\":\"DM-FRD-DM1\",\"name\":\"DM-FRD预结合晶圆贴片机\"},\n" +
-                    "{\"id\":\"DM-FRD-SORT3\",\"name\":\"DM-FRD预结合下料机\"},\n" +
-                    "{\"id\":\"DM-HB1-SORT1\",\"name\":\"DM-一次热压上料机\"},\n" +
-                    "{\"id\":\"DM-HB1-SINTERING1\",\"name\":\"DM-一次热压机\"},\n" +
-                    "{\"id\":\"DM-HB1-3DAOI1\",\"name\":\"DM-一次热压3D画像检查机\"},\n" +
-                    "{\"id\":\"DM-HB1-SORT2\",\"name\":\"DM-一次热压下料机\"},\n" +
-                    "{\"id\":\"DM-VI1\",\"name\":\"DM-中间耐压检查一体机\"},\n" +
-                    "{\"id\":\"DM-DBCT-SORT1\",\"name\":\"DM-上基板印刷上料机   \"},\n" +
-                    "{\"id\":\"DM-DBCT-2DAOI1\",\"name\":\"DM-上基板印刷2D画像检查机\"},\n" +
-                    "{\"id\":\"DM-DBCT-REFLOW1\",\"name\":\"DM-上基板印刷立式固化炉\"},\n" +
-                    "{\"id\":\"DM-DBCT-3DAOI1\",\"name\":\"DM-上基板3D画像检查机\"},\n" +
-                    "{\"id\":\"DM-DBCT-SORT2\",\"name\":\"DM-上基板印刷下料机\"},\n" +
-                    "{\"id\":\"DM-DBCB-SORT1\",\"name\":\"DM-下基板印刷上料机   \"},\n" +
-                    "{\"id\":\"DM-DBCB-2DAOI1\",\"name\":\"DM-下基板印刷2D画像检查机\"},\n" +
-                    "{\"id\":\"DM-DBCB-REFLOW1\",\"name\":\"DM-下基板印刷立式固化炉\"},\n" +
-                    "{\"id\":\"DM-DBCB-3DAOI1\",\"name\":\"DM-下基板3D画像检查机\"},\n" +
-                    "{\"id\":\"DM-DBCB-SORT2\",\"name\":\"DM-下基板印刷下料机\"},\n" +
-                    "{\"id\":\"DM-HB2-SORT1\",\"name\":\"DM-二次热压上料机\"},\n" +
-                    "{\"id\":\"DM-HB2-DISPENSING1\",\"name\":\"DM-二次热压点胶机1\"},\n" +
-                    "{\"id\":\"DM-HB2-DISPENSING2\",\"name\":\"DM-二次热压点胶机2\"},\n" +
-                    "{\"id\":\"DM-HB2-DISPENSING3\",\"name\":\"DM-二次热压点胶机3\"},\n" +
-                    "{\"id\":\"DM-HB2-2DAOI1\",\"name\":\"DM-二次热压2D画像检查机1\"},\n" +
-                    "{\"id\":\"DM-HB2-SMT1\",\"name\":\"DM-二次热压贴片机1\"},\n" +
-                    "{\"id\":\"DM-HB2-SMT2\",\"name\":\"DM-二次热压贴片机2\"},\n" +
-                    "{\"id\":\"DM-HB2-2DAOI2\",\"name\":\"DM-二次热压2D画像检查机2\"},\n" +
-                    "{\"id\":\"DM-HB2-ASSEMBLY1\",\"name\":\"DM-二次热压组立机\"},\n" +
-                    "{\"id\":\"DM-HB2-SINTERING1\",\"name\":\"DM-二次热压机\"},\n" +
-                    "{\"id\":\"DM-HB2-SORT2\",\"name\":\"DM-二次热压下料机\"},\n" +
-                    "{\"id\":\"DM-XRAY1\",\"name\":\"DM-X射线检查机\"},\n" +
-                    "{\"id\":\"DM-CLEAN-US1\",\"name\":\"DM-US1洗净机\"},\n" +
-                    "{\"id\":\"DM-CLEAN-JET1\",\"name\":\"DM-JET洗净机\"},\n" +
-                    "{\"id\":\"DM-TRM1\",\"name\":\"DM-TRM1\"},\n" +
-                    "{\"id\":\"DM-AT1\",\"name\":\"DM-耐老化试验搬送机\"},\n" +
-                    "{\"id\":\"DM-LF1\",\"name\":\"DM-分离检查机\"},\n" +
-                    "{\"id\":\"DM-HTRT1\",\"name\":\"DM-高温室温检查机\"}]";
+            str = "[{\"id\":\"APJ-IGBT-SMT1\",\"name\":\"APJ-IGBT印刷贴片机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-2DAOI1\",\"name\":\"APJ-IGBT印刷 2D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-REFLOW1\",\"name\":\"APJ-IGBT印刷立式固化炉\"},\n" +
+                    "{\"id\":\"APJ-IGBT-3DAOI1\",\"name\":\"APJ-IGBT印刷-3D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-SORT1\",\"name\":\"APJ-IGBT印刷下料机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-SORT2\",\"name\":\"APJ-IGBT预结合上料机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-DM1\",\"name\":\"APJ-IGBT预结合晶圆贴片机\"},\n" +
+                    "{\"id\":\"APJ-IGBT-SORT3\",\"name\":\"APJ-IGBT预结合下料机\"},\n" +
+                    "{\"id\":\"APJ-FRD-SMT1\",\"name\":\"APJ-IGBT印刷贴片机\"},\n" +
+                    "{\"id\":\"APJ-FRD-2DAOI1\",\"name\":\"APJ-FRD印刷 2D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-FRD-REFLOW1\",\"name\":\"APJ-FRD印刷立式固化炉\"},\n" +
+                    "{\"id\":\"APJ-FRD-3DAOI1\",\"name\":\"APJ-FRD印刷-3D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-FRD-SORT1\",\"name\":\"APJ-FRD印刷下料机\"},\n" +
+                    "{\"id\":\"APJ-FRD-SORT2\",\"name\":\"APJ-FRD预结合上料机\"},\n" +
+                    "{\"id\":\"APJ-FRD-DM1\",\"name\":\"APJ-FRD预结合晶圆贴片机\"},\n" +
+                    "{\"id\":\"APJ-FRD-SORT3\",\"name\":\"APJ-FRD预结合下料机\"},\n" +
+                    "{\"id\":\"APJ-HB1-SORT1\",\"name\":\"APJ-一次热压上料机\"},\n" +
+                    "{\"id\":\"APJ-HB1-SINTERING1\",\"name\":\"APJ-一次热压机\"},\n" +
+                    "{\"id\":\"APJ-HB1-3DAOI1\",\"name\":\"APJ-一次热压3D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-HB1-SORT2\",\"name\":\"APJ-一次热压下料机\"},\n" +
+                    "{\"id\":\"APJ-VI1\",\"name\":\"APJ-中间耐压检查一体机\"},\n" +
+                    "{\"id\":\"APJ-DBCT-SORT1\",\"name\":\"APJ-上基板印刷上料机   \"},\n" +
+                    "{\"id\":\"APJ-DBCT-2DAOI1\",\"name\":\"APJ-上基板印刷2D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-DBCT-REFLOW1\",\"name\":\"APJ-上基板印刷立式固化炉\"},\n" +
+                    "{\"id\":\"APJ-DBCT-3DAOI1\",\"name\":\"APJ-上基板3D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-DBCT-SORT2\",\"name\":\"APJ-上基板印刷下料机\"},\n" +
+                    "{\"id\":\"APJ-DBCB-SORT1\",\"name\":\"APJ-下基板印刷上料机   \"},\n" +
+                    "{\"id\":\"APJ-DBCB-2DAOI1\",\"name\":\"APJ-下基板印刷2D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-DBCB-REFLOW1\",\"name\":\"APJ-下基板印刷立式固化炉\"},\n" +
+                    "{\"id\":\"APJ-DBCB-3DAOI1\",\"name\":\"APJ-下基板3D画像检查机\"},\n" +
+                    "{\"id\":\"APJ-DBCB-SORT2\",\"name\":\"APJ-下基板印刷下料机\"},\n" +
+                    "{\"id\":\"APJ-HB2-SORT1\",\"name\":\"APJ-二次热压上料机\"},\n" +
+                    "{\"id\":\"APJ-HB2-DISPENSING1\",\"name\":\"APJ-二次热压点胶机1\"},\n" +
+                    "{\"id\":\"APJ-HB2-DISPENSING2\",\"name\":\"APJ-二次热压点胶机2\"},\n" +
+                    "{\"id\":\"APJ-HB2-DISPENSING3\",\"name\":\"APJ-二次热压点胶机3\"},\n" +
+                    "{\"id\":\"APJ-HB2-2DAOI1\",\"name\":\"APJ-二次热压2D画像检查机1\"},\n" +
+                    "{\"id\":\"APJ-HB2-SMT1\",\"name\":\"APJ-二次热压贴片机1\"},\n" +
+                    "{\"id\":\"APJ-HB2-SMT2\",\"name\":\"APJ-二次热压贴片机2\"},\n" +
+                    "{\"id\":\"APJ-HB2-2DAOI2\",\"name\":\"APJ-二次热压2D画像检查机2\"},\n" +
+                    "{\"id\":\"APJ-HB2-ASSEMBLY1\",\"name\":\"APJ-二次热压组立机\"},\n" +
+                    "{\"id\":\"APJ-HB2-SINTERING1\",\"name\":\"APJ-二次热压机\"},\n" +
+                    "{\"id\":\"APJ-HB2-SORT2\",\"name\":\"APJ-二次热压下料机\"},\n" +
+                    "{\"id\":\"APJ-XRAY1\",\"name\":\"APJ-X射线检查机\"},\n" +
+                    "{\"id\":\"APJ-CLEAN-US1\",\"name\":\"APJ-US1洗净机\"},\n" +
+                    "{\"id\":\"APJ-CLEAN-JET1\",\"name\":\"APJ-JET洗净机\"},\n" +
+                    "{\"id\":\"APJ-TRM1\",\"name\":\"APJ-TRM1\"},\n" +
+                    "{\"id\":\"APJ-AT1\",\"name\":\"APJ-耐老化试验搬送机\"},\n" +
+                    "{\"id\":\"APJ-LF1\",\"name\":\"APJ-分离检查机\"},\n" +
+                    "{\"id\":\"APJ-HTRT1\",\"name\":\"APJ-高温室温检查机\"}]";
         }
         List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
         DateResponse listjson = new DateResponse(list);
@@ -199,7 +206,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      */
     @RequestMapping(value = "/eqpIdlistByCode/{classcode}", method = { RequestMethod.GET, RequestMethod.POST })
     public void eqpIdlistByCode(Model model,@PathVariable String classcode, HttpServletRequest request,
-                          HttpServletResponse response) {
+                                HttpServletResponse response) {
 
         List<Map> list = fabEquipmentService.findEqpMapByCode(classcode);
         DateResponse listjson = new DateResponse(list);
@@ -209,7 +216,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
 
     @RequestMapping(value = "/eqpIdMsList", method = { RequestMethod.GET, RequestMethod.POST })
     public void eqpIdMsList2(Model model, HttpServletRequest request,
-                            HttpServletResponse response) {
+                             HttpServletResponse response) {
         List<Map> eqpids = fabEquipmentService.findEqpMsMap();
         DateResponse listjson = new DateResponse(eqpids);
         String content = JSON.toJSONString(listjson);
@@ -232,7 +239,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         }
         UserUtil.updateUserName(entity);
         //查询绑定信息并展示对应的传感器信息
-     //   entity.setIotEquipmentBindList(iIotEquipmentBindService.getIotEquipmenetBindList(entity.getId())) ;
+        entity.setIotEquipmentBindList(iIotEquipmentBindService.getIotEquipmenetBindList(entity.getEqpId())) ;
     }
 
     /**
@@ -244,9 +251,9 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      */
     @Override
     public void afterSave(FabEquipment entity, HttpServletRequest request, HttpServletResponse response) {
-    //1.保存绑定表
-    //    iIotEquipmentBindService.saveBindList(entity.getIotEquipmentBindList());
-    //2.保存传感器表
+        //1.保存绑定表
+        //    iIotEquipmentBindService.saveBindList(entity.getIotEquipmentBindList());
+        //2.保存传感器表
 
     }
     /**
@@ -338,10 +345,10 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
                 inp = new PushbackInputStream(inp, 8);
             }
             if(POIFSFileSystem.hasPOIFSHeader(inp)) {
-                 workbook = new HSSFWorkbook(new POIFSFileSystem(file.getInputStream()));
+                workbook = new HSSFWorkbook(new POIFSFileSystem(file.getInputStream()));
             }
             if(POIXMLDocument.hasOOXMLHeader(inp)) {
-                 workbook = new XSSFWorkbook(file.getInputStream());
+                workbook = new XSSFWorkbook(file.getInputStream());
             }
             // 有多少个sheet
             int sheets = workbook.getNumberOfSheets();
@@ -397,7 +404,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      */
     @RequestMapping(value = "/{id}/find2", method = { RequestMethod.GET, RequestMethod.POST })
     public Response find2(Model model, @PathVariable("id") String id, HttpServletRequest request,
-                     HttpServletResponse response) {
+                          HttpServletResponse response) {
         FabEquipment entity = get(id);
         afterGet(entity);
         Response res;
@@ -429,13 +436,12 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
      * 都是设备表的字段
      * 添加设备生成对应传感器
      */
-    @RequestMapping("/AoutAddSensor/{isBindCreated}/{modelId}")
-    public void AoutAddSensor( @PathVariable("isBindCreated") String isBindCreated, @PathVariable("modelId") String modelId,
-                               HttpServletRequest request, HttpServletResponse response){
-        List<FabSensor> list = fabEquipmentService.AoutAddSensor( isBindCreated , modelId );
-        if(list == null){
+    @RequestMapping("/{isBindCreated}/{eqpId}/AoutAddSensor")
+    public void AoutAddSensor(  @PathVariable String isBindCreated,  @PathVariable String eqpId,
+                                HttpServletRequest request, HttpServletResponse response){
+        List<Map> list = sensorService.AoutAddSensor( isBindCreated , eqpId);
+        if(list==null&&list.size()==0){
             Response.error("该设备无对应传感器");
-            return;
         }
         DateResponse listjson = new DateResponse(list);
         String content = JSON.toJSONString(listjson);
@@ -450,8 +456,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         for(FabEquipment fabEquipment: list){
             if(fabEquipment.getOfficeId() != null){
                 Organization office = OfficeUtils.getOffice(fabEquipment.getOfficeId());
-                if(office != null){
-                    fabEquipment.setOfficeId( fabEquipment.getOfficeId().split( "," )[fabEquipment.getOfficeId().split( "," ).length-1] );
+                if(office != null && fabEquipment.getOfficeId().split( "," )[fabEquipment.getOfficeId().split( "," ).length-1] == office.getId()){
                     fabEquipment.setOfficeName(office.getName());
                 }
             }
