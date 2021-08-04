@@ -10,6 +10,8 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,18 +124,6 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
         return baseMapper.selectFabSensorId( eqpId );
     }
 
-    /**
-     * isBindCreated:Y N 两个值
-     * @param isBindCreated
-     * @return
-     */
-    @Override
-    public List<FabSensor> AoutAddSensor(String isBindCreated, String modelId) {
-        if(isBindCreated == null || "".equals( isBindCreated ) || isBindCreated == "N"){
-            return null;
-        }
-        return baseMapper.AoutAddSensor( isBindCreated , modelId);
-    }
 
     @Override
     public List<FabEquipment> selectOfficeName() {

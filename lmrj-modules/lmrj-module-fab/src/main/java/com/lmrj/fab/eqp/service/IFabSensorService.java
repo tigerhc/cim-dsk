@@ -42,4 +42,6 @@ public interface IFabSensorService extends ICommonService<FabSensor> {
     List<FabSensor> getTempEqpList();
 
     List<Map> findNoSorMap(String classCode);
+
+    List<Map> AoutAddSensor(String isBindCreated, String eqpId);
 }

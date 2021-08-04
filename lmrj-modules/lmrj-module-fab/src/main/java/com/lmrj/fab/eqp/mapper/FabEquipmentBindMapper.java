@@ -3,6 +3,11 @@ package com.lmrj.fab.eqp.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.fab.eqp.entity.FabEquipmentBind;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.hibernate.validator.constraints.EAN;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author wdj
@@ -10,4 +15,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface FabEquipmentBindMapper extends BaseMapper<FabEquipmentBind> {
+
+    Integer addBind(FabEquipmentBind fabEquipmentBind);
 }

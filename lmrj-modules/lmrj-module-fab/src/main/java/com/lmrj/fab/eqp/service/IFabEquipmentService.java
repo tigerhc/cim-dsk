@@ -56,7 +56,5 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
 
     List<FabSensor> selectFabSensorId(String eqpId);
 
-    List<FabSensor> AoutAddSensor(String isBindCreated, String modelId);
-
     List<FabEquipment> selectOfficeName();
 }

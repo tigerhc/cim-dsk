@@ -16,6 +16,21 @@
   t.update_date
 	</sql>
 
+    <insert id="addBind" parameterType="com.lmrj.fab.eqp.entity.FabEquipmentBind">
+        INSERT into fab_equipment_bind
+        VALUES (#{id},
+                  #{eqpId},
+                  #{parentEqpId},
+                  #{templateId},
+                  #{templateBodyId},
+                  #{officeId},
+                  #{remarks},
+                  #{createBy},
+                  #{createDate},
+                  #{updateBy},
+                  #{updateDate},
+                  #{delFlag})
+    </insert>
 
 
 </mapper>
