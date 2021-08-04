@@ -43,5 +43,5 @@ public interface IFabSensorService extends ICommonService<FabSensor> {
 
     List<Map> findNoSorMap(String classCode);
 
-    List<Map> AoutAddSensor(String isBindCreated, String eqpId);
+    List<Map> aoutAddSensor(String isBindCreated, String eqpId);
 }

@@ -15,6 +15,6 @@ import java.util.Map;
  */
 @Mapper
 public interface FabEquipmentBindMapper extends BaseMapper<FabEquipmentBind> {
-
+    /*生成传感器时，传感器信息写入bind*/
     Integer addBind(FabEquipmentBind fabEquipmentBind);
 }

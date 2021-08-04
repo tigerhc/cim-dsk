@@ -58,8 +58,8 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
     List<FabEquipment> findTempEqpList();
 
     List<FabSensor> selectFabSensorId(@Param("eqpId") String eqpId);
-
-    List<Map> AoutAddSensor(@Param("isBindCreated") String isBindCreated, @Param( "eqpId" ) String eqpId);
+    /*添加设备生成传感器*/
+    List<Map> aoutAddSensor(@Param("isBindCreated") String isBindCreated, @Param( "eqpId" ) String eqpId);
 
     /*显示部门名称*/
     List<FabEquipment> selectOfficeName();

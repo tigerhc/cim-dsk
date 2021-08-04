@@ -439,7 +439,7 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
     @RequestMapping("/{isBindCreated}/{eqpId}/AoutAddSensor")
     public void AoutAddSensor(  @PathVariable String isBindCreated,  @PathVariable String eqpId,
                                 HttpServletRequest request, HttpServletResponse response){
-        List<Map> list = sensorService.AoutAddSensor( isBindCreated , eqpId);
+        List<Map> list = sensorService.aoutAddSensor( isBindCreated , eqpId);
         if(list==null&&list.size()==0){
             Response.error("该设备无对应传感器");
         }

@@ -140,7 +140,7 @@
         and r.class_code = p.model_name
     </select>
 
-    <select id="AoutAddSensor" resultType="java.util.Map" parameterType="java.lang.String">
+    <select id="aoutAddSensor" resultType="java.util.Map" parameterType="java.lang.String">
         SELECT
         <include refid="Base_Column_List"/>, r.*, m.id tLateId
         from fab_equipment t , fab_model_template m , fab_equipment_model s , fab_sensor_model r

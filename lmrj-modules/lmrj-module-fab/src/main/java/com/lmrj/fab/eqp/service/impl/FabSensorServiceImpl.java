@@ -117,13 +117,13 @@ public class FabSensorServiceImpl extends CommonServiceImpl<FabSensorMapper, Fab
      * @return
      */
     @Override
-    public List<Map> AoutAddSensor(String isBindCreated, String eqpId) {
+    public List<Map> aoutAddSensor(String isBindCreated, String eqpId) {
         if(isBindCreated == null || "".equals( isBindCreated ) || isBindCreated == "N"){
             List<Map> list = new ArrayList<>(  );
             list.add( (Map) new HashMap(  ).put( "NO","不生成传感器" ) );
             return list;
         }
-        List<Map> maps = fabEquipmentMapper.AoutAddSensor( isBindCreated, eqpId );
+        List<Map> maps = fabEquipmentMapper.aoutAddSensor( isBindCreated, eqpId );
         if(maps != null && maps.size() != 0){ //这个地方只能用size来判断，如果判断是否为null的话会报错的，因为list集合本身是不会为null的
             FabSensor fabSensor = new FabSensor();
             fabSensor.setSorId( String.valueOf( maps.get( 0 ).get( "id" ) ) );
