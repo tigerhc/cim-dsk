@@ -51,6 +51,8 @@ public class EmailSendLog extends AbstractEntity {
     @TableField(value = "response_date")
 	@JSONField(format="yyyy-MM-dd HH:mm:ss")
 	private Date responseDate;
+	@TableField(exist = false)
+	private String responseDateStr;
     /**重发次数*/
     @TableField(value = "try_num")
 	private Integer tryNum;
@@ -176,6 +178,13 @@ public class EmailSendLog extends AbstractEntity {
 	 */
 	public void setResponseDate(Date responseDate){
 		this.responseDate = responseDate;
+	}
+
+	public String getResponseDateStr(){
+		return this.responseDateStr;
+	}
+	public void setResponseDateStr(String responseDateStr){
+		this.responseDateStr = responseDateStr;
 	}
 	/**
 	 * 获取  tryNum

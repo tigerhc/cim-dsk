@@ -416,6 +416,23 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
             limitData.put("5", MapUtil.getString(weight.get(0), "limitMin"));
             limitData.put("6", MapUtil.getString(weight.get(0), "limitMin"));
             dataList.add(limitData);
+            //管理上下限
+            Map<String, Object> limitData2 = new HashMap<>();
+            limitData2.put("1","管理上限");
+            limitData2.put("2","");
+            limitData2.put("3","");
+            limitData2.put("4", MapUtil.getString(weight.get(0), "limit90"));
+            limitData2.put("5", MapUtil.getString(weight.get(0), "limit90"));
+            limitData2.put("6", MapUtil.getString(weight.get(0), "limit90"));
+            dataList.add(limitData2);
+            limitData2 = new HashMap<>();
+            limitData2.put("1","管理下限");
+            limitData2.put("2","");
+            limitData2.put("3","");
+            limitData2.put("4", MapUtil.getString(weight.get(0), "limit11"));
+            limitData2.put("5", MapUtil.getString(weight.get(0), "limit11"));
+            limitData2.put("6", MapUtil.getString(weight.get(0), "limit11"));
+            dataList.add(limitData2);
 
             weight.forEach(map -> {
                 Map<String, Object> data = new HashMap<>() ;

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -52,6 +53,11 @@ public class EmailSendLogServiceImpl  extends CommonServiceImpl<EmailSendLogMapp
     @Override
     public EmailSendLog selectEmailLog(String data){
         return baseMapper.selectEmailLog(data);
+    }
+
+    @Override
+    public List<EmailSendLog> emailExport(Map<String, Object> param) {
+        return baseMapper.emailExport(param);
     }
 
 }

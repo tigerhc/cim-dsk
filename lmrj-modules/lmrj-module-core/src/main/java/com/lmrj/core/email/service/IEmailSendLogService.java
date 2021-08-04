@@ -5,6 +5,7 @@ import com.lmrj.common.mybatis.mvc.service.ICommonService;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
 * All rights Reserved, Designed By www.lmrj.com
@@ -30,4 +31,6 @@ public interface IEmailSendLogService extends ICommonService<EmailSendLog> {
     boolean retrySend(List<? extends Serializable> idList);
 
     EmailSendLog selectEmailLog(String data);
+
+    List<EmailSendLog> emailExport(Map<String, Object> param);
 }

@@ -1,5 +1,8 @@
 package com.lmrj.core.email.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import com.lmrj.common.utils.FastJsonUtils;
 import com.lmrj.core.email.service.IEmailSendLogService;
 import com.lmrj.core.log.LogAspectj;
@@ -11,15 +14,23 @@ import com.lmrj.common.mvc.controller.BaseBeanController;
 import com.lmrj.common.mybatis.mvc.wrapper.EntityWrapper;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresMethodPermissions;
 import com.lmrj.common.security.shiro.authz.annotation.RequiresPathPermission;
+import com.lmrj.util.calendar.DateUtil;
+import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.cim.utils.PageRequest;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -96,5 +107,62 @@ public class EmailSendLogController extends BaseBeanController<EmailSendLog> {
             return Response.error("重发队列添加失败");
         }
         return Response.ok("重发队列添加成功");
+    }
+
+    @RequestMapping(value = "/emailExport", method = { RequestMethod.GET, RequestMethod.POST })
+    public Response emailExport(@RequestParam String email, @RequestParam String subject, @RequestParam String status){
+        try {
+            String title = "邮件日志导出";
+            Map<String, Object> param = new HashMap<>();
+            param.put("email",email);
+            param.put("subject", subject);
+            param.put("status", status);
+            Response res = Response.ok();
+            List<ExcelExportEntity> keyList= new LinkedList<>();
+            List<Map<String,Object>> dataList = new LinkedList<>();
+            List<EmailSendLog> emailData = emailSendLogService.emailExport(param);
+            ExcelExportEntity key = new ExcelExportEntity("Email","1");
+            keyList.add(key);
+            ExcelExportEntity key1 = new ExcelExportEntity("发送主题","2");
+            keyList.add(key1);
+            ExcelExportEntity key2 = new ExcelExportEntity("发送状态","3");
+            keyList.add(key2);
+            ExcelExportEntity key3 = new ExcelExportEntity("重试次数","4");
+            keyList.add(key3);
+            ExcelExportEntity key4 = new ExcelExportEntity("返回消息","5");
+            keyList.add(key4);
+            ExcelExportEntity key5 = new ExcelExportEntity("响应时间","6");
+            keyList.add(key5);
+            ExcelExportEntity key6 = new ExcelExportEntity("邮件内容","7");
+            keyList.add(key6);
+
+            emailData.forEach(emailSendLog -> {
+                Map<String, Object> data = new HashMap<>() ;
+                data.put("1",emailSendLog.getEmail());
+                data.put("2",emailSendLog.getSubject());
+                data.put("3",emailSendLog.getStatus());
+                data.put("4",emailSendLog.getTryNum());
+                data.put("5",emailSendLog.getMsg());
+                data.put("6",emailSendLog.getResponseDateStr());
+                data.put("7",emailSendLog.getContent());
+                dataList.add(data);
+            });
+
+            Workbook book = ExcelExportUtil.exportExcel(new ExportParams("邮件日志导出","发送信息"),keyList,dataList);
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception var16) {
+            var16.printStackTrace();
+            return Response.error(999998, "导出失败");
+        }
     }
 }
