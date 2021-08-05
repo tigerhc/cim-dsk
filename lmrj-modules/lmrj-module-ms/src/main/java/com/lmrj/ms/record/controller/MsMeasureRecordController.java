@@ -444,7 +444,7 @@ public class MsMeasureRecordController extends BaseCRUDController<MsMeasureRecor
                 dataList.add(data);
             });
 
-            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("量测重量"+productionNo,"量测详细信息"),keyList,dataList, 4);
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("量测重量"+productionNo,"量测详细信息"),keyList,dataList, 6);
             FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
             book.write(fos);
             fos.close();
