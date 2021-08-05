@@ -5,7 +5,6 @@ import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.mapper.OvnBatchLotParamMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +41,10 @@ public class OvnBatchLotParamServiceImpl  extends CommonServiceImpl<OvnBatchLotP
     public List<Map> fParamToDayone(String id,Date startTime,Date endTime,String periodDate,
                                     String eqpId, String eqpTemp){
         return baseMapper.fParamToDayone(id,startTime,endTime,periodDate,eqpId,eqpTemp);
+    }
+
+    @Override
+    public OvnBatchLotParam selectDataBytime(String eqpId,Date endTime){
+        return baseMapper.selectDataBytime(eqpId,endTime);
     }
 }

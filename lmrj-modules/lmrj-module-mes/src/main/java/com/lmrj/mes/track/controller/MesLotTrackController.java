@@ -644,6 +644,44 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
 
+    @RequestMapping(value = "/findOvenTemp/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findOvenTemp(Model model, @PathVariable String eqpId, @RequestParam String lotNo, @RequestParam String param,
+                                @RequestParam String opId,
+                                HttpServletRequest request, HttpServletResponse response) {
+        log.info("findOvenTemp :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"lotNo\":\"" + lotNo + "\",\"param\":\"" + param + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param14", "MesLotTrackController.findOvenTemp", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("DM-OVEN1")) {
+                eqpId = "DM-OVEN1";
+            } else if (eqpId.equals("DM-OVEN2")) {
+                eqpId = "DM-OVEN2";
+            } else if (eqpId.equals("SIM-OVEN1")) {
+                eqpId = "SIM-OVEN1";
+            } else if (eqpId.equals("SIM-OVEN2")) {
+                eqpId = "SIM-OVEN2";
+            } else if (eqpId.equals("SMA-OVEN1")) {
+                eqpId = "SMA-OVEN1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:" + eqpId;
+            }
+
+
+
+            return "";
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error14", "MesLotTrackController.findOvenTemp", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+
+
     @RequestMapping(value = "/findLFANDHTRTParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findLFANDHTRTParam(Model model, @PathVariable String eqpId, @RequestParam String opId, @RequestParam String param, @RequestParam String lotNo,
                                      HttpServletRequest request, HttpServletResponse response) {
@@ -695,7 +733,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 return "opId Cannot be empty";
             }
             if (eqpId.contains("TRM")) {
-
+                eqpId = "DM-TRM1";
             } else {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;

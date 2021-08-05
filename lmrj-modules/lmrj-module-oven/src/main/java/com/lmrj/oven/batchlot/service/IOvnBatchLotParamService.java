@@ -21,6 +21,8 @@ import java.util.Map;
 */
 public interface IOvnBatchLotParamService extends ICommonService<OvnBatchLotParam> {
 
+    OvnBatchLotParam selectDataBytime(String eqpId,Date endTime);
+
     List<OvnBatchLotParam> selectTempData(java.util.Date startTime, java.util.Date endTime);
 
     List<OvnBatchLotParam> selectDataBybatchId(String batchId);
