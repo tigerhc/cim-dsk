@@ -45,3 +45,37 @@ ALTER TABLE `edc_ams_define`  ADD INDEX `eqp_model_id_idx1` (`eqp_model_id`) ;
 -- 2021-07-20 在参数表中增加传感器ID用于后续数据的二次绑定
 ALTER TABLE `edc_param_define_model`
 ADD COLUMN `sensor_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '传感器编号' AFTER `param_define_id`;
+
+CREATE TABLE `mes_lot_material` (
+`id`  varchar(50) NOT NULL COMMENT '主键' ,
+`lot_no`  varchar(10) NULL COMMENT '二次热压的批量号' ,
+`create_date`  datetime(6) NULL ,
+`create_by`  varchar(32) NULL ,
+`update_by`  varchar(32) NULL ,
+`update_date`  datetime(6) NULL ,
+`del_flag`  char(1) NULL ,
+PRIMARY KEY (`id`),
+INDEX `idx_lot` (`lot_no`) USING BTREE ,
+INDEX `idx_id` (`id`) USING BTREE
+);
+ALTER TABLE `mes_lot_material`
+ADD COLUMN `eqp_id`  varchar(50) NULL COMMENT '设备' AFTER `id`;
+
+CREATE TABLE `mes_lot_material_info` (
+`id`  varchar(32) NOT NULL ,
+`material_id`  varchar(32) NULL COMMENT '主表主键',
+`lot_no`  varchar(10) NULL COMMENT '使用的批量',
+`create_by`  varchar(32) NULL ,
+`create_date`  datetime(6) NULL ,
+`update_by`  varchar(32) NULL ,
+`update_date`  datetime(6) NULL ,
+`del_flag`  char(1) NULL ,
+PRIMARY KEY (`id`),
+INDEX `idx_srcId` (`material_id`) USING BTREE ,
+INDEX `idx_lot` (`lot_no`) USING BTREE
+)
+COMMENT='物料信息子表';
+ALTER TABLE `mes_lot_material_info`
+ADD COLUMN `params`  varchar(1000) NULL COMMENT '其他参数' AFTER `lot_no`;
+ALTER TABLE `mes_lot_material_info`
+ADD COLUMN `material_name`  varchar(50) NULL AFTER `material_id`;
