@@ -140,7 +140,15 @@ public class EmailSendLogController extends BaseBeanController<EmailSendLog> {
                 Map<String, Object> data = new HashMap<>() ;
                 data.put("1",emailSendLog.getEmail());
                 data.put("2",emailSendLog.getSubject());
-                data.put("3",emailSendLog.getStatus());
+                String dataStatus = emailSendLog.getStatus();
+                if("1".equals(dataStatus)){
+                    dataStatus = "发送成功";
+                } else if ("-1".equals(dataStatus)){
+                    dataStatus = "发送失败";
+                } else if("0".equals(dataStatus)){
+                    dataStatus = "待发送";
+                }
+                data.put("3",dataStatus);
                 data.put("4",emailSendLog.getTryNum());
                 data.put("5",emailSendLog.getMsg());
                 data.put("6",emailSendLog.getResponseDateStr());
