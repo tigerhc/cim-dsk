@@ -75,9 +75,9 @@ public class MapTrayChipMoveController {
         }
 
         int total = query.getTotal();
-        if (total <= 0) {
+//        if (total <= 0) {
             total = mapper.countChipMove(query);
-        }
+//        }
         List<Map<String, Object>> list = null;
         if (total > 0) {
             list = mapper.queryChipMove(query);
