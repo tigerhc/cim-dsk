@@ -3,8 +3,10 @@ package com.lmrj.mes.track.entity;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.Lists;
 import com.lmrj.core.entity.BaseDataEntity;
@@ -29,7 +31,7 @@ import java.util.List;
 @SuppressWarnings("serial")
 @Data
 public class MesLotMaterial extends BaseDataEntity {
-    @TableField(value = "id")
+    @TableId(value = "id", type = IdType.UUID)
     private String id;
     /**设备号*/
     @TableField(value = "eqp_id")

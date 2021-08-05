@@ -3,6 +3,7 @@ package com.lmrj.mes.track.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.mes.track.entity.MesLotMaterial;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -18,4 +19,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MesLotMaterialMapper extends BaseMapper<MesLotMaterial> {
 
+    @Select("select * from mes_lot_material where eqp_id = #{eqpId} and lot_no = #{lotNo}")
+    MesLotMaterial selectMaterialData(String eqpId,String lotNo);
 }

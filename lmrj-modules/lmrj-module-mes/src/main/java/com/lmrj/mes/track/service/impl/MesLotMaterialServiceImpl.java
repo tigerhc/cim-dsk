@@ -23,4 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("mesLotMaterialService")
 public class MesLotMaterialServiceImpl extends CommonServiceImpl<MesLotMaterialMapper, MesLotMaterial> implements IMesLotMaterialService {
 
+    @Override
+    public MesLotMaterial selectMaterialData(String eqpId,String lotNo){
+        return baseMapper.selectMaterialData(eqpId,lotNo);
+    }
 }

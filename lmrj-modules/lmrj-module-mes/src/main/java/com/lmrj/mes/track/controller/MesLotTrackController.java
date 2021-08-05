@@ -15,7 +15,11 @@ import com.lmrj.core.log.LogAspectj;
 import com.lmrj.fab.log.service.IFabLogService;
 import com.lmrj.mes.measure.entity.MeasureDm;
 import com.lmrj.mes.measure.service.MeasureDmService;
+import com.lmrj.mes.track.entity.MesLotMaterial;
+import com.lmrj.mes.track.entity.MesLotMaterialInfo;
 import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotMaterialInfoService;
+import com.lmrj.mes.track.service.IMesLotMaterialService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.ms.thrust.entity.MsMeasureThrust;
 import com.lmrj.ms.thrust.service.IMsMeasureThrustService;
@@ -62,7 +66,10 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     IFabLogService fabLogService;
     @Autowired
     MeasureDmService measureDmService;
-
+    @Autowired
+    IMesLotMaterialService mesLotMaterialService;
+    @Autowired
+    IMesLotMaterialInfoService mesLotMaterialInfoService;
     //@RequestMapping(value = "/trackin/{eqpId}/{lotNo}", method = { RequestMethod.GET, RequestMethod.POST })
     //public MesResult trackin(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
@@ -185,13 +192,18 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     }
 
     @RequestMapping(value = "/dskapjtrackin/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String dskApjTrackin(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    public String dskApjTrackin(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo,@RequestParam String materialInfo, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         log.info("dsktrackin :  {}", trackinfo);
-        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"trackinfo\":\"" + trackinfo + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"trackinfo\":\"" + trackinfo+ "\",\"materialInfo\":\"" + materialInfo + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
         try {
             fabLogService.info(subLineNo, "Param6", "MesLotTrackController.dskApjTrackin", eventDesc, trackinfo, "wangdong");//日志记录参数
             if (trackinfo.length() < 30) {
                 return "trackinfo too short";
+            }
+            if("RY2".equals(subLineNo)){
+                if(materialInfo.length()==0 || "".equals(materialInfo) || materialInfo == null){
+                    return "Material infomation must be provided(必须提交芯片物料信息)";
+                }
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -255,6 +267,43 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(subLineNo, "Result6", "MesLotTrackController.dskApjTrackin", jo.toString(), trackinfo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
+                List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
+                try {
+                    //将物料信息存入数据库
+                    String materialInfos[] = materialInfo.split("_");
+                    MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
+                    if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
+                        mesLotMaterial = new MesLotMaterial();
+                        mesLotMaterial.setEqpId(eqpId1);
+                        mesLotMaterial.setLotNo(lotNo);
+                        mesLotMaterial.setCreateBy(opId);
+                        mesLotMaterial.setCreateDate(new Date());
+                        mesLotMaterialService.insert(mesLotMaterial);
+                    }
+                    materialInfosList = new ArrayList<>();
+                    for (String info : materialInfos) {
+                        String materialName = info.split(",")[0];
+                        String materiallotNo = info.split(",")[1];
+                        MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                        mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                        mesLotMaterialInfo.setCreateBy(opId);
+                        mesLotMaterialInfo.setMaterialName(materialName);
+                        mesLotMaterialInfo.setLotNo(materiallotNo);
+                        mesLotMaterialInfo.setCreateDate(new Date());
+                        materialInfosList.add(mesLotMaterialInfo);
+                    }
+                } catch (Exception e) {
+                    log.error("mesLotMaterial 解析出错  主表设备："+eqpId1 + "  主表批量："+lotNo  +"  materialInfo:"+materialInfo,e);
+                    e.printStackTrace();
+                }
+                try {
+                    if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
+                        log.error("materialInfosList 插入失败");
+                    }
+                } catch (Exception e) {
+                    log.error("materialInfosList 插入出错  主表设备："+eqpId1 + "  主表批量："+lotNo,e);
+                    e.printStackTrace();
+                }
                 return "Y";
             } else {
                 return result.getMsg();
@@ -854,13 +903,16 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
 
 
     @RequestMapping(value = "/dskapjtrackout/{subLineNo}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String apjTrackout(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String yield, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
+    public String apjTrackout(Model model, @PathVariable String subLineNo, @RequestParam String trackinfo, @RequestParam String yield,@RequestParam String materialInfo,  @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
         //36916087020DM____0507A5002915J.SIM6812M(E)D-URA_F2971_
-        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield + "\"}";//日志记录参数
+        String eventDesc = "{\"subLineNo\":\"" + subLineNo + "\",\"opId\":\"" + opId + "\",\"trackinfo\":\"" + trackinfo + "\",\"yield\":\"" + yield+"\",\"materialInfo\":\"" + materialInfo + "\"}";//日志记录参数
         fabLogService.info(subLineNo, "Param6", "MesLotTrackController.apjTrackout", eventDesc, trackinfo, "wangdong");//日志记录参数
         try {
             if (trackinfo.length() < 30) {
                 return "trackinfo too short（过账信息不足！）";
+            }
+            if(materialInfo.length()==0 || "".equals(materialInfo) || materialInfo == null){
+                return "Material infomation must be provided(必须提交原料物料信息)";
             }
             String[] trackinfos = trackinfo.split("\\.");
             String lotorder = trackinfos[0];
@@ -870,7 +922,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             String productionNo = lotNos[0].substring(0, 7); //5002915
             String lotNo = lotNos[0].substring(7, 12); //0702D
             String orderNo = lotNos[1]; //37368342
-
 
             //对当前批次进行判断，若批次结束时间过快，阻止操做
             String eqpId1 = subLineNo;
@@ -932,6 +983,43 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(subLineNo, "Result6", "MesLotTrackController.apjTrackout", jo.toString(), trackinfo, "wangdong");//日志记录
             if ("Y".equals(result.getFlag())) {
+                //将物料信息存入数据库
+                List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
+                try {
+                    String materialInfos[] = materialInfo.split("_");
+                    MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
+                    if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
+                        mesLotMaterial = new MesLotMaterial();
+                        mesLotMaterial.setEqpId(eqpId1);
+                        mesLotMaterial.setLotNo(lotNo);
+                        mesLotMaterial.setCreateBy(opId);
+                        mesLotMaterial.setCreateDate(new Date());
+                        mesLotMaterialService.insert(mesLotMaterial);
+                    }
+                    materialInfosList = new ArrayList<>();
+                    for (String info : materialInfos) {
+                        String materialName = info.split(",")[0];
+                        String materiallotNo = info.split(",")[1];
+                        MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                        mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                        mesLotMaterialInfo.setCreateBy(opId);
+                        mesLotMaterialInfo.setMaterialName(materialName);
+                        mesLotMaterialInfo.setLotNo(materiallotNo);
+                        mesLotMaterialInfo.setCreateDate(new Date());
+                        materialInfosList.add(mesLotMaterialInfo);
+                    }
+                } catch (Exception e) {
+                    log.error("mesLotMaterial 解析出错  主表设备："+eqpId1 + "  主表批量："+lotNo  +"  materialInfo:"+materialInfo,e);
+                    e.printStackTrace();
+                }
+                try {
+                    if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
+                        log.error("materialInfosList 插入失败");
+                    }
+                } catch (Exception e) {
+                    log.error("materialInfosList 插入出错  主表设备："+eqpId1 + "  主表批量："+lotNo,e);
+                    e.printStackTrace();
+                }
                 return "Y";
             } else {
                 return result.getMsg();

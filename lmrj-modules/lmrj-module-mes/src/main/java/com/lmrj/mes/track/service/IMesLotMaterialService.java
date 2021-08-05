@@ -16,4 +16,5 @@ import com.lmrj.mes.track.entity.MesLotMaterial;
  */
 public interface IMesLotMaterialService extends ICommonService<MesLotMaterial> {
 
+    MesLotMaterial selectMaterialData(String eqpId,String lotNo);
 }

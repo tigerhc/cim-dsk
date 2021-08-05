@@ -139,8 +139,8 @@ public class EdcDskLogRecipeController extends BaseCRUDController<EdcDskLogRecip
                     "{\"id\":\"DM-CLEAN-US1\",\"name\":\"DM-US1洗净机\"},\n" +
                     "{\"id\":\"DM-CLEAN-JET1\",\"name\":\"DM-JET洗净机\"},\n" +
                     "{\"id\":\"DM-TRM1\",\"name\":\"DM-TRM1\"},\n" +
-                    "{\"id\":\"DM-AT1\",\"name\":\"DM-耐老化试验搬送机\"},\n" +
                     "{\"id\":\"DM-LF1\",\"name\":\"DM-分离检查机\"},\n" +
+                    "{\"id\":\"DM-AT1\",\"name\":\"DM-耐老化试验搬送机\"},\n" +
                     "{\"id\":\"DM-HTRT1\",\"name\":\"DM-高温室温检查机\"}]";
             List<Map<String, Object>> list = JsonUtil.from(str, ArrayList.class);
             rs.put("id", list);
