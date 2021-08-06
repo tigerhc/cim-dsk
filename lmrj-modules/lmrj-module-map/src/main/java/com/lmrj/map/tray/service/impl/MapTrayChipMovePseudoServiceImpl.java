@@ -337,25 +337,37 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
 //                        hbsortPseudo.add(dbctPseudoCode);//******上基板******
 //                    }
                     //追溯VI
+                    //结合物料
+                    String useLot = baseMapper.findMaterialByHB2(assemblyData.getLotNo());
+                    if(StringUtil.isEmpty(useLot)){
+                        saveErrData(traceLogs, assemblyData, "没有找到使用的IGBT和FRD的批量,请去物料表核对!"+assemblyData.getLotNo(), false);
+                        continue;// 下一个 assembly
+                    }
                     for(MapTrayChipMove SMTData : SMTDatas){
                         List<MapTrayChipMove> VIMoveDatas = baseMapper.findVIDesc(SMTData);
                         if(VIMoveDatas != null && VIMoveDatas.size()>0){
                             boolean viFindFlag = true;
-                            long curCompareTime = 0;
+//                            long curCompareTime = 0;
                             long curCompareId = 0;
-                            for(MapTrayChipMove viMoveData : VIMoveDatas){
-                                long chkTime = TraceDateUtil.getDiffSec(viMoveData.getStartTime(), SMTData.getStartTime());
-                                curCompareTime = chkTime;
+                            for(MapTrayChipMove viMoveData : VIMoveDatas){//新要求: 从物料中取批次号,时间合理但不限时长
+//                                long chkTime = TraceDateUtil.getDiffSec(viMoveData.getStartTime(), SMTData.getStartTime());
+//                                curCompareTime = chkTime;
+//                                curCompareId = viMoveData.getId();
+//                                if(chkTime < viMoveData.getIntervalTimeMax()) {
+//                                    hbsortPseudo.add(viMoveData.getPseudoCode());
+//                                    viFindFlag = false;
+//                                    break;
+//                                }
                                 curCompareId = viMoveData.getId();
-                                if(chkTime < viMoveData.getIntervalTimeMax()) {
+                                if(useLot.contains(viMoveData.getLotNo())){//使用的批量号中含有该批量
                                     hbsortPseudo.add(viMoveData.getPseudoCode());
                                     viFindFlag = false;
                                     break;
                                 }
                             }
                             if(viFindFlag){
-                                saveErrData(traceLogs, assemblyData,
-                                        "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+"timeDiff:"+curCompareTime+",compareId:"+curCompareId, false);
+//                                saveErrData(traceLogs, assemblyData, "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+"timeDiff:"+curCompareTime+",compareId:"+curCompareId, false);
+                                saveErrData(traceLogs, assemblyData, "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+",compareId:"+curCompareId, false);
                                 unErrFlag = false;
                                 break;//跳出 SMT
                             }
@@ -416,11 +428,11 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
     private String traceBeforeLineV2(MapTrayChipMove nextStart){
         List<MapTrayChipMove> beforeLines = baseMapper.findBeforeLineEndV2(nextStart);
         if(beforeLines != null && beforeLines.size()>0){
-            for(MapTrayChipMove beforeLine : beforeLines){
-                long chkTime = TraceDateUtil.getDiffSec(beforeLine.getStartTime(), nextStart.getStartTime());
-                if(chkTime < beforeLine.getIntervalTimeMax()) {
+            for(MapTrayChipMove beforeLine : beforeLines){//新要求:同批次号,时间合理但不限时长
+//                long chkTime = TraceDateUtil.getDiffSec(beforeLine.getStartTime(), nextStart.getStartTime());
+//                if(chkTime < beforeLine.getIntervalTimeMax()) {
                     return beforeLine.getPseudoCode();
-                }
+//                }
             }
         }
         return null;

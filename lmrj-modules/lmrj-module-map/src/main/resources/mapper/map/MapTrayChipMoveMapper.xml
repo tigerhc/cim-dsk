@@ -473,6 +473,7 @@
 		from map_tray_chip_move m
 		left join map_equipment_config c on c.eqp_id=m.eqp_id and c.del_flag='0'
 		where m.map_flag=6 and to_tray_id=#{fromTrayId} and to_x=#{fromX} and to_y=#{fromY} and c.down_eqp_id=#{eqpId} and m.start_time &lt;#{startTime}
+		and m.lot_no=#{lotNo}
 		order by m.start_time desc
 	</select>
 	<select id="findVI" parameterType="com.lmrj.map.tray.entity.MapTrayChipMove" resultMap="TrayMap">
@@ -558,5 +559,11 @@
 		from map_tray_chip_move m
 		where m.judge_result='N' and m.map_flag='0' and m.eqp_id='DM-VI1'
 		order by start_time
+	</select>
+
+	<select id="findMaterialByHB2" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(lot_no) from mes_lot_material_info
+		where material_id in (SELECT id from mes_lot_material where eqp_id='DM-HB2-SORT2' and lot_no=#{lotNo})
+		and (material_name='IGBT' or material_name='FRD')
 	</select>
 </mapper>

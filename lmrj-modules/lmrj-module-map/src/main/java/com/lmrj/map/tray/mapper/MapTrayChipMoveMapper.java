@@ -117,4 +117,6 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     List<MapEquipmentConfig> getCfgEqpForLine(String eqpId);
 
     List<MapTrayChipMove> findNGStart();
+
+    String findMaterialByHB2(String lotNo);
 }
