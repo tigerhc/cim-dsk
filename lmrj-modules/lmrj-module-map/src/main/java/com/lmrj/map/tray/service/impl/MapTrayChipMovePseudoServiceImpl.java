@@ -367,7 +367,7 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
                             }
                             if(viFindFlag){
 //                                saveErrData(traceLogs, assemblyData, "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+"timeDiff:"+curCompareTime+",compareId:"+curCompareId, false);
-                                saveErrData(traceLogs, assemblyData, "伪码追溯异常,VI有坐标对应但时间超限,数据SMT-Id:"+SMTData.getId()+",compareId:"+curCompareId, false);
+                                saveErrData(traceLogs, assemblyData, "VI有"+VIMoveDatas.size()+"个坐标对应但lot不对,数据SMT-Id:"+SMTData.getId()+",compareId:"+curCompareId+",useLot:"+useLot, false);
                                 unErrFlag = false;
                                 break;//跳出 SMT
                             }
