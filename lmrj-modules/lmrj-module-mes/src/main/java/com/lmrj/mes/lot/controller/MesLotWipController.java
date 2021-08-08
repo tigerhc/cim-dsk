@@ -58,7 +58,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
     private IMesLotTrackService mesLotTrackService;
     //批次在制品(仕掛)批次状态图
     @RequestMapping("/findLotYield")
-    public Response findLotYield(@RequestParam String lineNo, HttpServletRequest request, HttpServletResponse response) {
+    public Response findLotYield(@RequestParam String lineNo, @RequestParam String subLineNo, HttpServletRequest request, HttpServletResponse response) {//TODO 仕挂表 宽度不够
         Response res=new Response();
         List<Map> maps =  iMesLotWipService.findLotYield(lineNo);
         res.put("yield",maps);
