@@ -23,7 +23,18 @@ public class RabbitMQDskConfig {
                 //RMS
                 "C2S.Q.RMS.UPLOAD",
                 "C2S.Q.EQPLOG.PARAM",
-                "C2S.Q.EDC.PARAMDTL"
+                "C2S.Q.EDC.PARAMDTL",
+                //2D
+                "C2S.Q.CHIP_ID_DATA",
+                "C2S.Q.CHIP_MOVE",
+                "C2S.Q.MSG.MAIL",
+                "C2S.Q.ERR_LOG",
+                "C2S.Q.PARTICLE.DATA",
+                "C2S.Q.CURE.PARAM",
+                "C2S.Q.CURE.ALARM",
+                "C2S.Q.CURE.EVENT",
+                "C2S.Q.TEMPSENSOR",
+                "C2S.Q.INSPECTIONLOG.DATA"
 
         };
         for(String queueName :queueNames){
