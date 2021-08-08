@@ -79,3 +79,6 @@ ALTER TABLE `mes_lot_material_info`
 ADD COLUMN `params`  varchar(1000) NULL COMMENT '其他参数' AFTER `lot_no`;
 ALTER TABLE `mes_lot_material_info`
 ADD COLUMN `material_name`  varchar(50) NULL AFTER `material_id`;
+
+ALTER TABLE `ovn_batch_lot_day`
+ADD COLUMN `title_order`  int(4) NULL DEFAULT 0 COMMENT '标题排序' AFTER `period_date`;

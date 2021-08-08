@@ -72,7 +72,6 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
     public void fParamToDay(String eqpId, String periodDate) {
         //获取Lot数据
         try {
-
             Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
             Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
             List<OvnBatchLot> ovnBatchLots = ovnBatchLotService.selectList(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId).between("create_date", startTime, endTime));
@@ -80,6 +79,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                 List<Map> list = new ArrayList<>();
                 Map<String, String> map = new HashMap<String, String>();
                 String[] titles = ovnBatchLots.get(0).getOtherTempsTitle().split(",");
+                Map<String, Integer> titleOrderMap = new HashMap<>();
                 for (int i = 1; i < titles.length; i++) {
                     map = new HashMap<String, String>();
                     map.put("indexPv", String.valueOf((i - 1) * 4 + 1));
@@ -87,6 +87,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     map.put("eqpId", ovnBatchLots.get(0).getEqpId());
                     map.put("eqpTemp", titles[i]);
                     map.put("tableName", "a" + i);
+                    titleOrderMap.put(titles[i],i);
                     list.add(map);
                 }
                 try {
@@ -101,6 +102,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTempStart(retmap.get("tempStart").toString());
                             ovnBatchLotDay.setTempEnd(retmap.get("tempEnd").toString());
                             ovnBatchLotDay.setPeriodDate(retmap.get("periodDate").toString());
+                            ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp").toString()));
                             baseMapper.insert(ovnBatchLotDay);
                         }
                     }
@@ -121,6 +123,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     ovnBatchLotDay.setTempStart(list1.get(0).get("tempStart").toString());
                     ovnBatchLotDay.setTempEnd(list1.get(0).get("tempEnd").toString());
                     ovnBatchLotDay.setPeriodDate(list1.get(0).get("periodDate").toString());
+                    ovnBatchLotDay.setTitleOrder(0);
                     baseMapper.insert(ovnBatchLotDay);
                 } catch (Exception e) {
                     log.error("ovnBatchLotDay插入第一条数据,插入出错",e);

@@ -20,6 +20,7 @@
         from ovn_batch_lot_day v
         WHERE v.eqp_id = #{eqpId}
         and v.period_date between #{start} and #{end}
+        order by v.title_order
     </select>
 
     <select id="selectTime" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">

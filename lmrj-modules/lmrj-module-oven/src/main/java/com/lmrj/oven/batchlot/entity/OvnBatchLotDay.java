@@ -45,6 +45,6 @@ public class OvnBatchLotDay {
     @TableField(value = "period_date")
     private String periodDate;
 
-
-
+    @TableField(value = "title_order")
+    private int titleOrder;
 }
