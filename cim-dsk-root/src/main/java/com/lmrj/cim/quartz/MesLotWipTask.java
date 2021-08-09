@@ -32,6 +32,7 @@ public class MesLotWipTask {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         Date startTime = calendar.getTime();
+        //查找未完成批量
         List<MesLotTrack> mesList = iMesLotWipService.findIncompleteLotNo(startTime, endTime);
         if (mesList.size() > 0) {
             for (MesLotTrack mes :

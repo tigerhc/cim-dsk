@@ -23,6 +23,8 @@ import com.lmrj.mes.track.service.IMesLotMaterialService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.ms.thrust.entity.MsMeasureThrust;
 import com.lmrj.ms.thrust.service.IMsMeasureThrustService;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +72,8 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
     IMesLotMaterialService mesLotMaterialService;
     @Autowired
     IMesLotMaterialInfoService mesLotMaterialInfoService;
+    @Autowired
+    IOvnBatchLotParamService ovnBatchLotParamService;
     //@RequestMapping(value = "/trackin/{eqpId}/{lotNo}", method = { RequestMethod.GET, RequestMethod.POST })
     //public MesResult trackin(Model model, @PathVariable String eqpId, @PathVariable String lotNo, @RequestParam String recipeCode, @RequestParam String opId, HttpServletRequest request, HttpServletResponse response) {
     //    return mesLotTrackService.trackIn( eqpId,   lotNo,   recipeCode,   opId);
@@ -725,6 +729,61 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             return e.getMessage();
         }
     }
+
+
+
+    @RequestMapping(value = "/findOvenTemp/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findOvenTemp(Model model, @PathVariable String eqpId, @RequestParam String startTime,
+                               @RequestParam String opId,
+                               HttpServletRequest request, HttpServletResponse response) {
+        log.info("findOvenTemp :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\",\"startTime\":\"" + startTime + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param14", "MesLotTrackController.findOvenTemp", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("DM-OVEN1")) {
+                eqpId = "DM-OVEN1";
+            } else if (eqpId.equals("DM-OVEN2")) {
+                eqpId = "DM-OVEN2";
+            } else if (eqpId.equals("SIM-OVEN1")) {
+                eqpId = "SIM-OVEN1";
+            } else if (eqpId.equals("SIM-OVEN2")) {
+                eqpId = "SIM-OVEN2";
+            } else if (eqpId.equals("SMA-OVEN1")) {
+                eqpId = "SMA-OVEN1";
+            } else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:" + eqpId;
+            }
+            Date endTime = DateUtil.parseDate(startTime,"yyyy-MM-dd HH:mm:ss");
+            OvnBatchLotParam ovnBatchLotParamStart =  ovnBatchLotParamService.selectDataBytemp(eqpId,endTime);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(ovnBatchLotParamStart.getCreateDate());
+            cal.add(Calendar.HOUR_OF_DAY,-1);
+            if(cal.getTimeInMillis()>new Date().getTime()){
+                return "time param error!";
+            }
+            OvnBatchLotParam ovnBatchLotParam =  ovnBatchLotParamService.selectDataBytime(eqpId,cal.getTime());
+            if(ovnBatchLotParam ==null || ovnBatchLotParam.getBatchId()==null){
+                return "data not found";
+            }
+            String time = DateUtil.formatTime(ovnBatchLotParam.getCreateDate());
+            String temp = "";
+            if(eqpId.equals("DM-OVEN1")){
+                temp = ovnBatchLotParam.getTempPv();
+            }else if(eqpId.equals("DM-OVEN2")){
+                temp = ovnBatchLotParam.getTempPv();
+            }
+            return time+","+temp;
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error14", "MesLotTrackController.findOvenTemp", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
 
     @RequestMapping(value = "/findLFANDHTRTParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String findLFANDHTRTParam(Model model, @PathVariable String eqpId, @RequestParam String opId, @RequestParam String param, @RequestParam String lotNo,

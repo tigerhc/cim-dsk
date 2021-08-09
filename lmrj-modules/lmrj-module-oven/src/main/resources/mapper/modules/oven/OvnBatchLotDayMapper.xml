@@ -84,27 +84,33 @@ select eqpid,eqptemp,tempMax,tempMin,tempStart,tempEnd,periodDate from
                     min(SUBSTRING_INDEX(SUBSTRING_INDEX(a.other_temps_value,',',${item.indexPv}),',',-1)) as tempMin,
                     (select SUBSTRING_INDEX(SUBSTRING_INDEX(other_temps_value,',',${item.indexPv}),',',-1)
                        from ovn_batch_lot_param
-                      where batch_id = #{item.id}
+                      where batch_id in (select id from ovn_batch_lot where eqp_id = #{item.eqpId} and ((end_time &gt; #{startTime}
+        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
                         and create_date between #{startTime} and #{endTime}
                         and create_date = (
                                 select min(create_date)
                                   from ovn_batch_lot_param
-                                 where batch_id = #{item.id}
+                                 where batch_id
+                                 in (select id from ovn_batch_lot where eqp_id = #{item.eqpId} and ((end_time &gt; #{startTime}
+                                 AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
                                    and create_date between #{startTime} and #{endTime}
-                            )
+                            )   limit 1
                     ) as tempStart,
                     (select SUBSTRING_INDEX(SUBSTRING_INDEX(other_temps_value,',',${item.indexPv}),',',-1)
                        from ovn_batch_lot_param
-                      where batch_id = #{item.id}
+                      where batch_id in (select id from ovn_batch_lot where eqp_id = #{item.eqpId} and ((end_time &gt; #{startTime}
+        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
                         and create_date between #{startTime} and #{endTime}
                         and create_date = (
                                 select max(create_date)
                                   from ovn_batch_lot_param
-                                 where batch_id = #{item.id}
-                                   and create_date between #{startTime} and #{endTime})
+                                 where batch_id in (select id from ovn_batch_lot where eqp_id = #{item.eqpId} and ((end_time &gt; #{startTime}
+        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
+                                   and create_date between #{startTime} and #{endTime})  limit 1
                     ) as tempEnd
                from ovn_batch_lot_param a
-              where a.batch_id = #{item.id}
+              where a.batch_id in (select id from ovn_batch_lot where eqp_id = #{item.eqpId} and ((end_time &gt; #{startTime}
+        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
                 and a.create_date between #{startTime} and #{endTime}
         )
     </foreach> as total

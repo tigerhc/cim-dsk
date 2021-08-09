@@ -218,7 +218,7 @@ public class OrganizationController extends BaseBeanController<Organization> {
     @LogAspectj(logType = LogType.SELECT)
     @RequiresMethodPermissions("list")
     public void findYieldStep(@RequestParam String subLineNo, HttpServletResponse response) throws IOException {//TODO 仕挂表 宽度不够
-        List<Organization> treeNodeList = organizationService.findYieldStep(lineNo);
+        List<Organization> treeNodeList = organizationService.findYieldStep(lineNo,subLineNo);
         String content = JSON.toJSONString(treeNodeList );
         ServletUtils.printJson(response, content);
     }

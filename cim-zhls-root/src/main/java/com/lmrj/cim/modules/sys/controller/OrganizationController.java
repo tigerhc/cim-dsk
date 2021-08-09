@@ -214,7 +214,7 @@ public class OrganizationController extends BaseBeanController<Organization> {
     @LogAspectj(logType = LogType.SELECT)
     @RequiresMethodPermissions("list")
     public void findYieldStep(HttpServletResponse response) throws IOException {
-        List<Organization> treeNodeList = organizationService.findYieldStep("");
+        List<Organization> treeNodeList = organizationService.findYieldStep("","");
         String content = JSON.toJSONString(treeNodeList );
         ServletUtils.printJson(response, content);
     }

@@ -27,21 +27,24 @@ public class OvnBatchLotDayTask {
                 isRun=Boolean.TRUE;
                 try {
                     //获取当前的时间的前一天并转为YYYY-MM-DD
-                    Calendar ca = Calendar.getInstance();
-                    ca.setTime(new Date());
-                    ca.add(Calendar.DATE, -1);
-                    Date lastDay = ca.getTime();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                    String periodDate = formatter.format(lastDay);
+                    for (int i = 1; i < 8 ; i++) {
+                        Calendar ca = Calendar.getInstance();
+                        ca.setTime(new Date());
+                        ca.add(Calendar.DATE, -i);
+                        Date lastDay = ca.getTime();
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                        String periodDate = formatter.format(lastDay);
 
 
-                    Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
-                    Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
-                    //获取当前设备列表并逐一写入
-                    List<String> eqpList = ovnBatchLotService.lastDayEqpList(startTime,endTime);
-                    for (String eqpId:eqpList) {
-                        ovnBatchLotDayService.fParamToDay(eqpId,periodDate);
+                        Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
+                        Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
+                        //获取当前设备列表并逐一写入
+                        List<String> eqpList = ovnBatchLotService.lastDayEqpList(startTime,endTime);
+                        for (String eqpId:eqpList) {
+                            ovnBatchLotDayService.fParamToDay(eqpId,periodDate);
+                        }
                     }
+
                 }catch (Exception e){
                     e.printStackTrace();
                 }finally {

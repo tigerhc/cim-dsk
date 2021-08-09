@@ -44,6 +44,8 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     private EdcEqpStateMapper edcEqpStateMapper;
     @Autowired
     private IRptEqpStateDayService rptEqpStateDayService;
+    @Autowired
+    private IEdcEqpStateService edcEqpStateService;
 
     @Override
     public List<String> findEqpId(Date startTime, Date endTime) {
@@ -59,9 +61,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
      */
     //给edc_eqp_state表里的数据添加end_time
     @Override
-    public List<EdcEqpState> getAllByTime(Date startTime,Date endTime,String eqpId){
-        return baseMapper.getAllByTime(startTime,endTime,eqpId);
+    public List<EdcEqpState> getAllByTime(Date startTime, Date endTime, String eqpId) {
+        return baseMapper.getAllByTime(startTime, endTime, eqpId);
     }
+
     @Override
     public int syncEqpSate(Date startTime, Date endTime, String eqpId) {
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
@@ -92,7 +95,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 e.printStackTrace();
             }
         } else*/
-        if(eqpStateList.size()>0){
+        if (eqpStateList.size() > 0) {
             if (eqpStateList.get(0).getStartTime().after(startTime)) {
                 try {
                     EdcEqpState firstData = new EdcEqpState();
@@ -109,11 +112,11 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                     //把第一条数据的状态值设为当天八点前最后一条数据的状态
                     firstData.setState(lastData.getState());
                     firstData.setEqpId(eqpId);
-                    if(null == baseMapper.findFirstData(startTime,eqpId)){
+                    if (null == baseMapper.findFirstData(startTime, eqpId)) {
                         this.insert(firstData);
                     }
                 } catch (Exception e) {
-                    log.error("日OEE数据解析出错",e);
+                    log.error("日OEE数据解析出错", e);
                     e.printStackTrace();
                 }
                 log.info("插入记录成功");
@@ -135,7 +138,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         for (int i = 0; i < eqpStateList.size() - 1; i++) {
             //给每条没有endTime的数据加endTime和stateTime
             EdcEqpState edcEqpState = eqpStateList.get(i);
-            if (edcEqpState.getEndTime() == null ) {
+            if (edcEqpState.getEndTime() == null) {
                 EdcEqpState nextedcEqpState = eqpStateList.get(i + 1);
                 edcEqpState.setEndTime(nextedcEqpState.getStartTime());
                 Double stateTime = (double) (nextedcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
@@ -149,16 +152,22 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                         edcEqpState.setState("IDLE");
                     }
                 }*/
+            } else {
+                EdcEqpState nextEdcEqpState = eqpStateList.get(i + 1);
+                edcEqpState.setEndTime(nextEdcEqpState.getStartTime());
+                Double state = (double) (nextEdcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+                edcEqpState.setStateTimes(state);
+                neweqpStateList.add(edcEqpState);
             }
         }
-        if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size()==0) {
+        if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size() == 0) {
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(eqpId);
             edcEqpState.setStartTime(startTime);
             EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
-            if(lastData == null){
+            if (lastData == null) {
                 edcEqpState.setState("IDLE");
-            }else {
+            } else {
                 edcEqpState.setState(lastData.getState());
             }
             try {
@@ -169,7 +178,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             return 0;
         } else {
             if (neweqpStateList.size() > 0) {
-                if (this.updateBatchById(neweqpStateList,1000)) {
+                if (edcEqpStateService.updateBatchById(neweqpStateList, 5000)) {
                     log.info("edc_eqp_state更新成功");
                     String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功," + neweqpStateList.size() + "条数据已更新", "", "");
@@ -183,12 +192,12 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         //在0点到第一条数据之间新建一条数据
-        if(eqpStateList.size()>0){
+        if (eqpStateList.size() > 0) {
             if (eqpStateList.get(0).getStartTime().after(startTime)) {
                 EdcEqpState firstData = new EdcEqpState();
                 //当天0点前最后一条数据
                 EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
-                if(lastData!=null){
+                if (lastData != null) {
                     lastData.setEndTime(startTime);
                     Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
                     lastData.setStateTimes(state);
@@ -235,7 +244,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                 return 0;
             } else {
                 if (neweqpStateList.size() > 0) {
-                    if (this.updateBatchById(neweqpStateList,100)) {
+                    if (this.updateBatchById(neweqpStateList, 100)) {
                         log.info("edc_eqp_state更正成功");
                     /*String eventId = StringUtil.randomTimeUUID("RPT");
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功,"+neweqpStateList.size()+"条数据已更新", "", "");*/
@@ -305,7 +314,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             rptEqpStateDay.setDownTime(down / 1000);
             rptEqpStateDay.setPmTime(pm);
             rptEqpStateDay.setAlarmTime(alarm / 1000);
-            idle = 24 * 60 * 60 * 1000 - run - down  - pm - alarm;
+            idle = 24 * 60 * 60 * 1000 - run - down - pm - alarm;
             rptEqpStateDay.setIdleTime(idle / 1000);
             //rptEqpStateDay.setOtherTime(other / 1000);
             rptEqpStateDayList.add(rptEqpStateDay);
@@ -313,10 +322,10 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         String eventId = StringUtil.randomTimeUUID("RPT");
         //先删除day表 按照时间删除 在插入
         if (rptEqpStateDayService.findData(periodDate) == null) {
-            rptEqpStateDayService.insertBatch(rptEqpStateDayList,100);
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList, 100);
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
         } else if (rptEqpStateDayService.findData(periodDate) != null && rptEqpStateDayService.deleteByPeriodData(periodDate)) {
-            rptEqpStateDayService.insertBatch(rptEqpStateDayList,100);
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList, 100);
             fabLogService.info("", eventId, "OEE计算更新", "数据更新成功", "", "");
         } else {
             fabLogService.info("", eventId, "OEE计算更新", "数据更新失败", "", "");
@@ -350,37 +359,37 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     }
 
     @Override
-    public List<Map<String, Object>>  eqpStateTime(String startTime,String endTime,String eqpId) {
+    public List<Map<String, Object>> eqpStateTime(String startTime, String endTime, String eqpId) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        startTime = startTime+" 00:00:00";
-        endTime = endTime+" 23:59:59";
+        startTime = startTime + " 00:00:00";
+        endTime = endTime + " 23:59:59";
         String[] arr = eqpId.split(",");
-        List<HashMap<String, Object>> list =edcEqpStateMapper.eqpStateTime(startTime,endTime,arr);
+        List<HashMap<String, Object>> list = edcEqpStateMapper.eqpStateTime(startTime, endTime, arr);
         List result = new ArrayList();
-        for (Map map:list){
+        for (Map map : list) {
             Map element = new HashMap();
-            element.put("name",map.get("state"));
-            element.put("id",map.get("eqp_id"));
+            element.put("name", map.get("state"));
+            element.put("id", map.get("eqp_id"));
             List element2 = new ArrayList();
-            for (int i = 0; i <arr.length ; i++) {
-                if (map.get("eqp_id").equals(arr[i])){
+            for (int i = 0; i < arr.length; i++) {
+                if (map.get("eqp_id").equals(arr[i])) {
                     element2.add(i);
                     break;
                 }
             }
-            element2.add(DateUtil.formatDate((Date) map.get("start_time"),"yyyy-MM-dd HH:mm:ss.SSS"));
-            element2.add(DateUtil.formatDate((Date) map.get("end_time"),"yyyy-MM-dd HH:mm:ss.SSS"));
-            element.put("value",element2);
+            element2.add(DateUtil.formatDate((Date) map.get("start_time"), "yyyy-MM-dd HH:mm:ss.SSS"));
+            element2.add(DateUtil.formatDate((Date) map.get("end_time"), "yyyy-MM-dd HH:mm:ss.SSS"));
+            element.put("value", element2);
             Map normal = new HashMap();
             Map color = new HashMap();
-            if (map.get("state").equals("RUN")){
-                color.put("color","#32CD32");
-            }else if(map.get("state").equals("DOWN")){
-                color.put("color","#B22222");
-            }else
-                color.put("color","#FFA500");
-            normal.put("normal",color);
-            element.put("itemStyle",normal);
+            if (map.get("state").equals("RUN")) {
+                color.put("color", "#32CD32");
+            } else if (map.get("state").equals("DOWN")) {
+                color.put("color", "#B22222");
+            } else
+                color.put("color", "#FFA500");
+            normal.put("normal", color);
+            element.put("itemStyle", normal);
             result.add(element);
         }
         return result;

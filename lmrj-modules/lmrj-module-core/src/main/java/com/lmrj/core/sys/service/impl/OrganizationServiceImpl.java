@@ -8,6 +8,7 @@ import com.lmrj.core.sys.service.IOrganizationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Transactional
@@ -29,8 +30,27 @@ public class OrganizationServiceImpl extends TreeCommonServiceImpl<OrganizationM
 		return baseMapper.findStep(userId);
 	}
 	@Override
-	public List<Organization> findYieldStep(String userId){
-		return baseMapper.findYieldStep(userId);
+	public List<Organization> findYieldStep(String userId,String wipSubLineNo){
+		List<Organization> organizations = new ArrayList<>();
+		String publicSubLineNo = null;
+		if("IGBT".equals(wipSubLineNo) || "FRD".equals(wipSubLineNo)){
+			publicSubLineNo = "HB1";
+		}else if("DBCT".equals(wipSubLineNo) || "DBCB".equals(wipSubLineNo)){
+			publicSubLineNo = "HB2";
+		}
+		if(publicSubLineNo != null){
+			organizations = baseMapper.findYieldStep(userId,publicSubLineNo);
+		}
+		if("SIM".equals(userId)){
+			wipSubLineNo = "SIM";
+		}
+		List<Organization> organizationList = baseMapper.findYieldStep(userId,wipSubLineNo);
+		if(organizations.size()>0){
+			for (Organization organization : organizations) {
+				organizationList.add(organization);
+			}
+		}
+		return organizationList;
 	}
 
 }
