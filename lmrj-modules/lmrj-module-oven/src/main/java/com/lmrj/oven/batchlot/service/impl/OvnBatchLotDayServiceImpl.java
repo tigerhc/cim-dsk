@@ -102,7 +102,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTempStart(retmap.get("tempStart").toString());
                             ovnBatchLotDay.setTempEnd(retmap.get("tempEnd").toString());
                             ovnBatchLotDay.setPeriodDate(retmap.get("periodDate").toString());
-                            ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp").toString()));
+                            ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
                             baseMapper.insert(ovnBatchLotDay);
                         }
                     }
