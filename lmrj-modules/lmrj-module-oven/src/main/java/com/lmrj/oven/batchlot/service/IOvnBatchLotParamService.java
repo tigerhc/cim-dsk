@@ -29,4 +29,6 @@ public interface IOvnBatchLotParamService extends ICommonService<OvnBatchLotPara
 
     List<Map> fParamToDayone(String id, Date startTime, Date endTime, String periodDate,
                                     String eqpId, String eqpTemp);
+
+    OvnBatchLotParam selectDataBytemp(String eqpId,Date endTime);
 }

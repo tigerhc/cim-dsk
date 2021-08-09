@@ -69,10 +69,10 @@ public class OvnBatchLotParamController extends BaseCRUDController<OvnBatchLotPa
                 return "eqpId error!:" + eqpId;
             }
             Date endTime = DateUtil.parseDate(startTime,"yyyy-MM-dd HH:mm:ss");
+            OvnBatchLotParam ovnBatchLotParamStart =  ovnBatchLotParamService.selectDataBytemp(eqpId,endTime);
             Calendar cal = Calendar.getInstance();
-            cal.setTime(endTime);
+            cal.setTime(ovnBatchLotParamStart.getCreateDate());
             cal.add(Calendar.HOUR_OF_DAY,-1);
-
             if(cal.getTimeInMillis()>new Date().getTime()){
                 return "time param error!";
             }
@@ -80,7 +80,7 @@ public class OvnBatchLotParamController extends BaseCRUDController<OvnBatchLotPa
             if(ovnBatchLotParam ==null || ovnBatchLotParam.getBatchId()==null){
                 return "data not found";
             }
-            String time = DateUtil.formatTime(cal.getTime());
+            String time = DateUtil.formatTime(ovnBatchLotParam.getCreateDate());
             String temp = "";
             if(eqpId.equals("DM-OVEN1")){
                 temp = ovnBatchLotParam.getTempPv();

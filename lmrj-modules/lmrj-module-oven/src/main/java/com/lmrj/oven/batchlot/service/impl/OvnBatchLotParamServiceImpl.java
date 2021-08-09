@@ -47,4 +47,9 @@ public class OvnBatchLotParamServiceImpl  extends CommonServiceImpl<OvnBatchLotP
     public OvnBatchLotParam selectDataBytime(String eqpId,Date endTime){
         return baseMapper.selectDataBytime(eqpId,endTime);
     }
+
+    @Override
+    public OvnBatchLotParam selectDataBytemp(String eqpId,Date endTime){
+        return baseMapper.selectDataBytemp(eqpId,endTime);
+    }
 }
