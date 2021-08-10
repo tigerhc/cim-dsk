@@ -276,34 +276,38 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 try {
                     //将物料信息存入数据库
                     String materialInfos[] = materialInfo.split("_");
-                    MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
-                    if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
-                        mesLotMaterial = new MesLotMaterial();
-                        mesLotMaterial.setEqpId(eqpId1);
-                        mesLotMaterial.setLotNo(lotNo);
-                        mesLotMaterial.setCreateBy(opId);
-                        mesLotMaterial.setCreateDate(new Date());
-                        mesLotMaterialService.insert(mesLotMaterial);
-                    }
-                    materialInfosList = new ArrayList<>();
-                    for (String info : materialInfos) {
-                        String materialName = info.split(",")[0];
-                        String materiallotNo = info.split(",")[1];
-                        MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
-                        mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
-                        mesLotMaterialInfo.setCreateBy(opId);
-                        mesLotMaterialInfo.setMaterialName(materialName);
-                        mesLotMaterialInfo.setLotNo(materiallotNo);
-                        mesLotMaterialInfo.setCreateDate(new Date());
-                        materialInfosList.add(mesLotMaterialInfo);
+                    if(materialInfos.length>0){
+                        MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
+                        if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
+                            mesLotMaterial = new MesLotMaterial();
+                            mesLotMaterial.setEqpId(eqpId1);
+                            mesLotMaterial.setLotNo(lotNo);
+                            mesLotMaterial.setCreateBy(opId);
+                            mesLotMaterial.setCreateDate(new Date());
+                            mesLotMaterialService.insert(mesLotMaterial);
+                        }
+                        materialInfosList = new ArrayList<>();
+                        for (String info : materialInfos) {
+                            String materialName = info.split(",")[0];
+                            String materiallotNo = info.split(",")[1];
+                            MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                            mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                            mesLotMaterialInfo.setCreateBy(opId);
+                            mesLotMaterialInfo.setMaterialName(materialName);
+                            mesLotMaterialInfo.setLotNo(materiallotNo);
+                            mesLotMaterialInfo.setCreateDate(new Date());
+                            materialInfosList.add(mesLotMaterialInfo);
+                        }
                     }
                 } catch (Exception e) {
                     log.error("mesLotMaterial 解析出错  主表设备："+eqpId1 + "  主表批量："+lotNo  +"  materialInfo:"+materialInfo,e);
                     e.printStackTrace();
                 }
                 try {
-                    if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
-                        log.error("materialInfosList 插入失败");
+                    if(materialInfosList.size()>0){
+                        if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
+                            log.error("materialInfosList 插入失败");
+                        }
                     }
                 } catch (Exception e) {
                     log.error("materialInfosList 插入出错  主表设备："+eqpId1 + "  主表批量："+lotNo,e);
@@ -1138,34 +1142,38 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
                 try {
                     String materialInfos[] = materialInfo.split("_");
-                    MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
-                    if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
-                        mesLotMaterial = new MesLotMaterial();
-                        mesLotMaterial.setEqpId(eqpId1);
-                        mesLotMaterial.setLotNo(lotNo);
-                        mesLotMaterial.setCreateBy(opId);
-                        mesLotMaterial.setCreateDate(new Date());
-                        mesLotMaterialService.insert(mesLotMaterial);
-                    }
-                    materialInfosList = new ArrayList<>();
-                    for (String info : materialInfos) {
-                        String materialName = info.split(",")[0];
-                        String materiallotNo = info.split(",")[1];
-                        MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
-                        mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
-                        mesLotMaterialInfo.setCreateBy(opId);
-                        mesLotMaterialInfo.setMaterialName(materialName);
-                        mesLotMaterialInfo.setLotNo(materiallotNo);
-                        mesLotMaterialInfo.setCreateDate(new Date());
-                        materialInfosList.add(mesLotMaterialInfo);
+                    if(materialInfos.length>0){
+                        MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
+                        if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
+                            mesLotMaterial = new MesLotMaterial();
+                            mesLotMaterial.setEqpId(eqpId1);
+                            mesLotMaterial.setLotNo(lotNo);
+                            mesLotMaterial.setCreateBy(opId);
+                            mesLotMaterial.setCreateDate(new Date());
+                            mesLotMaterialService.insert(mesLotMaterial);
+                        }
+                        materialInfosList = new ArrayList<>();
+                        for (String info : materialInfos) {
+                            String materialName = info.split(",")[0];
+                            String materiallotNo = info.split(",")[1];
+                            MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                            mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                            mesLotMaterialInfo.setCreateBy(opId);
+                            mesLotMaterialInfo.setMaterialName(materialName);
+                            mesLotMaterialInfo.setLotNo(materiallotNo);
+                            mesLotMaterialInfo.setCreateDate(new Date());
+                            materialInfosList.add(mesLotMaterialInfo);
+                        }
                     }
                 } catch (Exception e) {
                     log.error("mesLotMaterial 解析出错  主表设备："+eqpId1 + "  主表批量："+lotNo  +"  materialInfo:"+materialInfo,e);
                     e.printStackTrace();
                 }
                 try {
-                    if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
-                        log.error("materialInfosList 插入失败");
+                    if(materialInfosList.size()>0){
+                        if(!mesLotMaterialInfoService.insertBatch(materialInfosList,10)){
+                            log.error("materialInfosList 插入失败");
+                        }
                     }
                 } catch (Exception e) {
                     log.error("materialInfosList 插入出错  主表设备："+eqpId1 + "  主表批量："+lotNo,e);

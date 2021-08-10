@@ -113,6 +113,10 @@ public class EqpStateTask {
     //@Scheduled(cron = "0 0 8 * * ?")
     public void fixeqpState(Date startTime, Date endTime) {
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
+        List<String> eqpIdList = edcEqpStateService.findEqpId(startTime, endTime);
+         for (String eqpId : eqpIdList) {
+            edcEqpStateService.syncEqpSate(startTime, endTime, eqpId);
+        }
         edcEqpStateService.calEqpSateDay(DateUtil.formatDate(startTime, "yyyyMMdd"));
     }
 
