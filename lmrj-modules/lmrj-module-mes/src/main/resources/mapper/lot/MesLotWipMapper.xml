@@ -21,6 +21,7 @@
        t.update_by,
        t.update_date,
        t.del_flag
+       t.wip_sub_line
 	</sql>
     <select id="findIncompleteLotNo" resultType="com.lmrj.mes.track.entity.MesLotTrack" parameterType="java.util.Date">
               select
@@ -45,6 +46,43 @@
                             where eqp_id LIKE '%SIM-TRM%' AND END_TIME IS NOT NULL
                                    and create_date between #{startTime} and #{endTime}
                             )
+                    and create_date  between #{startTime} and #{endTime}
+                    group by PRODUCTION_NO,LOT_NO)
+                    order by start_time
+    </select>
+
+
+    <select id="findDMIncompleteLotNo" resultType="com.lmrj.mes.track.entity.MesLotTrack"
+            parameterType="java.util.Date">
+              select
+                    *
+              from
+                    mes_lot_track
+              where
+                    (PRODUCTION_NO, LOT_NO, start_time ) in
+                    (SELECT
+                            PRODUCTION_NO, LOT_NO ,
+                            max(start_time)
+                    FROM
+                            mes_lot_track
+                    WHERE
+                            ( PRODUCTION_NO, LOT_NO )  NOT IN
+                            (select
+                                    DISTINCT
+                                    PRODUCTION_NO,
+                                    LOT_NO
+                            from
+                                    mes_lot_track
+                            where eqp_id = #{endEqpId} AND END_TIME IS NOT NULL
+                                   and create_date between #{startTime} and #{endTime}
+                            )
+							and ( PRODUCTION_NO, LOT_NO ) in (
+									select
+                                    DISTINCT PRODUCTION_NO, LOT_NO
+									from
+									mes_lot_track
+									where eqp_id = #{startEqpId}
+							)
                     and create_date  between #{startTime} and #{endTime}
                     group by PRODUCTION_NO,LOT_NO)
                     order by start_time

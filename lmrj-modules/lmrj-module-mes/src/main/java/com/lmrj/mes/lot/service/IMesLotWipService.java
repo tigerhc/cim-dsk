@@ -22,11 +22,15 @@ import java.util.Map;
 public interface IMesLotWipService extends ICommonService<MesLotWip> {
     List<MesLotTrack> findIncompleteLotNo(Date startTime, Date endTime);
 
+    List<MesLotTrack> findDMIncompleteLotNo(Date startTime, Date endTime,String startEqpId,String endEqpId);
+
     MesLotWip finddata(String eqpId, String productionNo);
 
     List<MesLotWip> selectWip();
 
     String selectEndData(String lotNo, String productionNo);
+
+    String selectDMEndData(String lotNo, String productionNo, String endEqpId);
 
     Boolean deleteEndData(String lotNo, String productionNo);
 

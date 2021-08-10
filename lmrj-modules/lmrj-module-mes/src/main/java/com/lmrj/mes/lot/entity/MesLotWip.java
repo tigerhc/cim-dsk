@@ -66,5 +66,8 @@ public class MesLotWip extends BaseDataEntity {
     /**工序CODE*/
     @TableField(value = "step_code")
     private String stepCode;
+    /**仕挂子线别*/
+    @TableField(value = "wip_sub_line_no")
+    private String wipSubLineNo;
 
 }

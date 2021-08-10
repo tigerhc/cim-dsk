@@ -784,14 +784,22 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             if(ovnBatchLotParam ==null || ovnBatchLotParam.getBatchId()==null){
                 return "data not found!（数据未找到！）";
             }
-            String time = DateUtil.formatTime(ovnBatchLotParam.getCreateDate());
-            String temp = "";
+
+            String starttime = DateUtil.formatTime(ovnBatchLotParamStart.getCreateDate());
+            String starttemp = "";
             if(eqpId.equals("DM-OVEN1")){
-                temp = ovnBatchLotParam.getTempPv();
+                starttemp = ovnBatchLotParamStart.getTempPv();
             }else if(eqpId.equals("DM-OVEN2")){
-                temp = ovnBatchLotParam.getTempPv();
+                starttemp = ovnBatchLotParamStart.getTempPv();
             }
-            return time+","+temp;
+            String endtime = DateUtil.formatTime(ovnBatchLotParam.getCreateDate());
+            String endtemp = "";
+            if(eqpId.equals("DM-OVEN1")){
+                endtemp = ovnBatchLotParam.getTempPv();
+            }else if(eqpId.equals("DM-OVEN2")){
+                endtemp = ovnBatchLotParam.getTempPv();
+            }
+            return starttime+","+starttemp+","+endtime+","+endtemp;
         } catch (Exception e) {
             fabLogService.info(eqpId, "Error14", "MesLotTrackController.findOvenTemp", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();

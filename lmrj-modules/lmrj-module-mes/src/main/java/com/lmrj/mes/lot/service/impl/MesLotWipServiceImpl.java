@@ -28,26 +28,38 @@ import java.util.Map;
 @Service("mesLotWipService")
 public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, MesLotWip> implements IMesLotWipService {
     @Override
-    public Boolean updateEndTime(String Id){
+    public Boolean updateEndTime(String Id) {
         return baseMapper.updateEndTime(Id);
-    }
-    @Override
-    public int findSortNo(String eqpId){
-        return baseMapper.findSortNo(eqpId);
-    }
-    @Override
-    public int findDayLotYield( String eqpId, Date startTime, Date endTime){
-        return baseMapper.findDayLotYield(eqpId,startTime,endTime);
     }
 
     @Override
-    public MesLotTrack findWByYield(String eqpId, String lotNo, String productionNo){
-        return baseMapper.findWByYield(eqpId,lotNo,productionNo);
+    public int findSortNo(String eqpId) {
+        return baseMapper.findSortNo(eqpId);
+    }
+
+    @Override
+    public int findDayLotYield(String eqpId, Date startTime, Date endTime) {
+        return baseMapper.findDayLotYield(eqpId, startTime, endTime);
+    }
+
+    @Override
+    public MesLotTrack findWByYield(String eqpId, String lotNo, String productionNo) {
+        return baseMapper.findWByYield(eqpId, lotNo, productionNo);
     }
 
     @Override
     public List<MesLotTrack> findIncompleteLotNo(Date startTime, Date endTime) {
         return baseMapper.findIncompleteLotNo(startTime, endTime);
+    }
+
+    @Override
+    public List<MesLotTrack> findDMIncompleteLotNo(Date startTime, Date endTime, String startEqpId, String endEqpId) {
+        return baseMapper.findDMIncompleteLotNo(startTime, endTime, startEqpId, endEqpId);
+    }
+
+    @Override
+    public String selectDMEndData(String lotNo, String productionNo,String endEqpId) {
+        return baseMapper.selectDMEndData(lotNo, productionNo,endEqpId);
     }
 
     @Override
@@ -69,6 +81,7 @@ public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, Mes
     public MesLotWip findStep(String eqpId) {
         return baseMapper.findStep(eqpId);
     }
+
     @Override
     public List<Map> findLotYield(String line) {
         List<Map> yieldList = baseMapper.findLotYield(line);
@@ -80,8 +93,8 @@ public class MesLotWipServiceImpl extends CommonServiceImpl<MesLotWipMapper, Mes
         return baseMapper.finddata(lotNo, productionNo);
     }
 
-    public boolean updateLotYieldEqp(MesLotTrack mesLotTrack){
-        boolean flag=false;
+    public boolean updateLotYieldEqp(MesLotTrack mesLotTrack) {
+        boolean flag = false;
 
 
         return false;

@@ -29,8 +29,11 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
          "group by PRODUCTION_NO,LOT_NO)")*/
     List<MesLotTrack> findIncompleteLotNo(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+
+    List<MesLotTrack> findDMIncompleteLotNo(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("startEqpId") String startEqpId, @Param("endEqpId") String endEqpId);
+
     @Select("select sum(lot_yield)lot_yield ,sum(lot_yield_eqp) lot_yield_eqp from mes_lot_track where eqp_id like concat(#{eqpId},'%') and lot_no = #{lotNo} and production_no =#{productionNo}")
-    MesLotTrack findWByYield(@Param("eqpId") String eqpId,@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
+    MesLotTrack findWByYield(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
     @Select("select * from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo} limit 1")
     MesLotWip finddata(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
@@ -41,10 +44,13 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
     @Select("select DISTINCT PRODUCTION_NO from mes_lot_track where eqp_id LIKE '%SIM-TRM%' AND END_TIME IS NOT NULL and lot_no = #{lotNo} and production_no = #{productionNo}")
     String selectEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
+    @Select("select DISTINCT lot_no from mes_lot_track where eqp_id LIKE like concat('%',#{endEqpId},'%') AND END_TIME IS NOT NULL and lot_no = #{lotNo} and production_no = #{productionNo}")
+    String selectDMEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo,@Param("endEqpId") String endEqpId);
+
     @Delete("delete from mes_lot_wip where lot_no = #{lotNo} and production_no = #{productionNo}")
     Boolean deleteEndData(@Param("lotNo") String lotNo, @Param("productionNo") String productionNo);
 
-    @Select("select station_id, station_code ,step_id,step_code from fab_equipment where eqp_id=#{eqpId}")
+    @Select("select station_id, station_code ,step_id,step_code, wip_sub_line_no from fab_equipment where eqp_id=#{eqpId}")
     MesLotWip findStep(@Param("eqpId") String eqpId);
 
     List<Map> findLotYield(@Param("officeId") String lineNo);
@@ -53,9 +59,9 @@ public interface MesLotWipMapper extends BaseMapper<MesLotWip> {
     Integer selectLotYieldEqp();
 
     @Select("select count(eqp_id) from edc_dsk_log_production where eqp_id = #{eqpId} and start_time between #{startTime} and #{endTime} ")
-    int findDayLotYield(@Param("eqpId") String eqpId,@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    int findDayLotYield(@Param("eqpId") String eqpId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-   //@Select("select sort_no from fab_equipment where eqp_id = #{eqpId}")
+    //@Select("select sort_no from fab_equipment where eqp_id = #{eqpId}")
     int findSortNo(@Param("eqpId") String eqpId);
 
     @Update("update mes_lot_wip set end_time = null where id = #{Id} AND del_flag='0'")
