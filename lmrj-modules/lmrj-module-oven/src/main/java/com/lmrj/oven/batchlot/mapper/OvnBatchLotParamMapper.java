@@ -30,11 +30,11 @@ public interface OvnBatchLotParamMapper extends BaseMapper<OvnBatchLotParam> {
  @Select("select * from ovn_batch_lot_param where batch_id = #{batchId}  order by create_date")
  List<OvnBatchLotParam> selectDataBybatchId(@Param("batchId")String batchId);
 
- @Select("select * from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where start_time < #{endTime}  and end_time > #{endTime}  and eqp_id = #{eqpId}) and  create_date <  #{endTime}  ORDER BY create_date desc limit 1")
+ @Select("select * from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where start_time < #{endTime}  and end_time > #{endTime}  and eqp_id = #{eqpId}) and  create_date >  #{endTime}  ORDER BY create_date  limit 1")
  OvnBatchLotParam selectDataBytime(@Param("eqpId")String eqpId,@Param( "endTime" ) Date endTime);
 
 
- @Select("select * from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where end_time > #{endTime}  and eqp_id = #{eqpId}) and  create_date >  #{endTime} and  temp_pv = 110  ORDER BY create_date  limit 1")
+ @Select("select * from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where end_time > #{endTime}  and eqp_id = #{eqpId}) and  create_date >  #{endTime} and  temp_pv > 109.9  ORDER BY create_date  limit 1")
  OvnBatchLotParam selectDataBytemp(@Param("eqpId")String eqpId,@Param( "endTime" ) Date endTime);
 
  List<Map> fParamToDayone(@Param("id")String id, @Param( "startTime" ) Date startTime, @Param( "endTime" )Date endTime, @Param( "periodDate" )String periodDate,

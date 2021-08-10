@@ -93,6 +93,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                 try {
                     if (list.size() > 0) {
                         List<Map> retlist = baseMapper.fParamToDay(list, startTime, endTime, periodDate);
+                        int index = 0;
                         for (Map retmap : retlist) {
                             OvnBatchLotDay ovnBatchLotDay = new OvnBatchLotDay();
                             ovnBatchLotDay.setEqpId(retmap.get("eqpid").toString());
@@ -103,10 +104,11 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTempEnd(retmap.get("tempEnd").toString());
                             ovnBatchLotDay.setPeriodDate(retmap.get("periodDate").toString());
                             ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
+                            ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
                             try {
                                 baseMapper.insert(ovnBatchLotDay);
                             } catch (Exception e) {
-                                log.error("ovnBatchLotDay 数据插入出错  "+ovnBatchLotDay,e);
+                                log.error("ovnBatchLotDay 数据插入出错  "+ovnBatchLotDay.getId(),e);
                                 e.printStackTrace();
                             }
                         }
@@ -132,7 +134,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     try {
                         baseMapper.insert(ovnBatchLotDay);
                     } catch (Exception e) {
-                        log.error("ovnBatchLotDay插入第一条数据,插入出错 "+ovnBatchLotDay,e);
+                        log.error("ovnBatchLotDay插入第一条数据,插入出错 "+ovnBatchLotDay.getId(),e);
                         e.printStackTrace();
                     }
                 } catch (Exception e) {

@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 
@@ -758,17 +759,26 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 log.error("设备名称错误！   " + eqpId);
                 return "eqpId error!:" + eqpId;
             }
-            Date endTime = DateUtil.parseDate(startTime,"yyyy-MM-dd HH:mm:ss");
+            Date endTime = null;
+            try {
+                endTime = DateUtil.parseDate(startTime,"yyyy-MM-dd HH:mm:ss");
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return "Time parameter format error!(时间参数格式错误！)";
+            }
             OvnBatchLotParam ovnBatchLotParamStart =  ovnBatchLotParamService.selectDataBytemp(eqpId,endTime);
+            if(ovnBatchLotParamStart==null){
+                return "temp = 110℃ data not found!（未找到温度为110的数据！）";
+            }
             Calendar cal = Calendar.getInstance();
             cal.setTime(ovnBatchLotParamStart.getCreateDate());
-            cal.add(Calendar.HOUR_OF_DAY,-1);
+            cal.add(Calendar.HOUR_OF_DAY,1);
             if(cal.getTimeInMillis()>new Date().getTime()){
-                return "time param error!";
+                return "time param error!（时间参数错误，查询范围超过当前时间！）";
             }
             OvnBatchLotParam ovnBatchLotParam =  ovnBatchLotParamService.selectDataBytime(eqpId,cal.getTime());
             if(ovnBatchLotParam ==null || ovnBatchLotParam.getBatchId()==null){
-                return "data not found";
+                return "data not found!（数据未找到！）";
             }
             String time = DateUtil.formatTime(ovnBatchLotParam.getCreateDate());
             String temp = "";

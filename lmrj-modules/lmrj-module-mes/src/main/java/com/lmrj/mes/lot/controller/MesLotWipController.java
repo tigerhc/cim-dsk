@@ -133,6 +133,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
                 lotYieldAll = iMesLotWipService.findDayLotYield("SIM-PRINTER1",startTime,endTime)*12;
             }else if("EK".equals(curProject)){
                 lotYieldAll = iMesLotWipService.findDayLotYield("SIM-HTRT1",startTime,endTime);
+                lotYieldAll = lotYieldAll +iMesLotWipService.findDayLotYield("SIM-HTRT2",startTime,endTime);
             }
         }else if("DM".equals(lineNo)){
             if("BP".equals(curProject)){
@@ -187,7 +188,7 @@ public class MesLotWipController extends BaseCRUDController<MesLotWip> {
             if("YK".equals(curProject)){
                 map2.put("name","二次热压工程投入实际");
             }else if("EK".equals(curProject)){
-                map2.put("name","TRM工程投入实际");
+                map2.put("name","HTRT工程投入实际");
             }else if("BP".equals(curProject)){
                 map2.put("name","IGBT工程投入实际");
             }
