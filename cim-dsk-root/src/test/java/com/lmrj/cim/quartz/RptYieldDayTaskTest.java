@@ -12,9 +12,24 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionDefectiveService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import com.lmrj.edc.state.entity.EdcEqpState;
+import com.lmrj.edc.state.entity.RptEqpStateDay;
+import com.lmrj.edc.state.service.IEdcEqpStateService;
+import com.lmrj.edc.state.service.IRptEqpStateDayService;
+import com.lmrj.edc.state.service.impl.EdcEqpStateServiceImpl;
+import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.mes.kongdong.entity.MsMeasureKongdong;
 import com.lmrj.mes.kongdong.service.IMsMeasureKongdongService;
+import com.lmrj.mes.lot.service.IMesLotWipService;
+import com.lmrj.mes.track.entity.MesLotMaterial;
+import com.lmrj.mes.track.entity.MesLotMaterialInfo;
+import com.lmrj.mes.track.entity.MesLotTrack;
+import com.lmrj.mes.track.service.IMesLotMaterialInfoService;
+import com.lmrj.mes.track.service.IMesLotMaterialService;
+import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.oven.batchlot.task.OvenDayTask;
 import com.lmrj.util.FileUtils;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
@@ -32,10 +47,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SpringBootTest(classes = CimBootApplication.class)
+@SpringBootTest(classes = CimBootApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @RunWith(SpringRunner.class)
+
 public class RptYieldDayTaskTest {
     @Autowired
     RptYieldDayTask rptYieldDayTask;
@@ -67,17 +84,192 @@ public class RptYieldDayTaskTest {
     private IEmailSendService emailSendService;
     @Autowired
     IEmailSendLogService iEmailSendLogService;
+    @Autowired
+    IFabEquipmentService iFabEquipmentService;
+    @Autowired
+    private IEdcEqpStateService edcEqpStateService;
+    @Autowired
+    OvenDayTask ovenDayTask;
+    @Autowired
+    OvnBatchLotDayTask ovnBatchLotDayTask;
+    @Autowired
+    IMesLotMaterialService mesLotMaterialService;
+    @Autowired
+    IMesLotMaterialInfoService mesLotMaterialInfoService;
+    @Autowired
+    private IOvnBatchLotService ovnBatchLotService;
+    @Autowired
+    private IOvnBatchLotDayService ovnBatchLotDayService;
+    private Boolean isRun = Boolean.FALSE;
+    @Autowired
+    private IMesLotWipService iMesLotWipService;
+    @Autowired
+    EdcEqpStateServiceImpl edcEqpStateServiceImpl;
+    @Autowired
+    private IRptEqpStateDayService rptEqpStateDayService;
+    @Autowired
+    IMesLotTrackService iMesLotTrackService;
+
+
+    
+    @Test
+    public void eapStateFix(){
+        for (int i = 1; i <30 ; i++) {
+            Date startTime = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.add(Calendar.DAY_OF_MONTH, -i);
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Date endTime = cal.getTime();
+            dataSupplement(startTime,endTime);
+        }
+
+    }
+
+    public void dataSupplement(Date startTime ,Date endTime) {
+        
+        List<String> eqpIdList = new ArrayList<>();
+        eqpIdList = iFabEquipmentService.findEqpIdList();
+        List<RptEqpStateDay> rptEqpStateDayList = Lists.newArrayList();
+        for (String eqpId : eqpIdList) {
+            List<EdcEqpState> eqpStateList = edcEqpStateService.getAllByTime(startTime, endTime, eqpId);
+            if (eqpStateList.size() == 0) {
+                RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
+                rptEqpStateDay.setEqpId(eqpId);
+                rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));
+                Boolean flag = false;
+                List<MesLotTrack> lotList = iMesLotTrackService.findCorrectData(startTime, endTime);
+                if (lotList.size() > 0)
+                    for (MesLotTrack mesLotTrack : lotList) {
+                        if (mesLotTrack.getEqpId().equals(eqpId)) {
+                            flag = true;
+                        }
+                    }
+                if (flag) {
+                    Double run = 24 * 60 * 60 * 1000 * 0.001;
+                    rptEqpStateDay.setRunTime(run);
+                    rptEqpStateDay.setIdleTime(0.0);
+                } else {
+                    Double idle = 24 * 60 * 60 * 1000 * 0.001;
+                    rptEqpStateDay.setRunTime(0.0);
+                    rptEqpStateDay.setIdleTime(idle);
+                }
+                rptEqpStateDay.setPmTime(0.0);
+                rptEqpStateDay.setAlarmTime(0.0);
+                rptEqpStateDayList.add(rptEqpStateDay);
+            }
+        }
+        if (rptEqpStateDayList.size() > 0) {
+            rptEqpStateDayService.insertBatch(rptEqpStateDayList, 50);
+        }
+
+    }
+
+
+    @Test
+    public void test111222() {
+        try {
+            if (!isRun) {
+                isRun = Boolean.TRUE;
+                try {
+                    //获取当前的时间的前一天并转为YYYY-MM-DD
+
+                    Calendar ca = Calendar.getInstance();
+                    ca.setTime(new Date());
+                    ca.add(Calendar.DATE, -1);
+                    Date lastDay = ca.getTime();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    String periodDate = formatter.format(lastDay);
+                    Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
+                    Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
+                    //获取当前设备列表并逐一写入
+                    List<String> eqpList = ovnBatchLotService.lastDayEqpList(startTime, endTime);
+                    for (String eqpId : eqpList) {
+                        ovnBatchLotDayService.fParamToDay(eqpId, periodDate);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    isRun = Boolean.FALSE;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void wlTest() {
+        String materialInfo = "纳米银奖,2222A_纳米银奖,2222B";
+        String eqpId1 = "TEST";
+        String lotNo = "1111A";
+        String opId = "1234";
+        List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
+        try {
+            //将物料信息存入数据库
+            String materialInfos[] = materialInfo.split("_");
+            MesLotMaterial mesLotMaterial = mesLotMaterialService.selectMaterialData(eqpId1, lotNo);
+            if (mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() == null) {
+                mesLotMaterial = new MesLotMaterial();
+                mesLotMaterial.setEqpId(eqpId1);
+                mesLotMaterial.setLotNo(lotNo);
+                mesLotMaterial.setCreateBy(opId);
+                mesLotMaterial.setCreateDate(new Date());
+                mesLotMaterialService.insert(mesLotMaterial);
+            }
+            materialInfosList = new ArrayList<>();
+            for (String info : materialInfos) {
+                String materialName = info.split(",")[0];
+                String materiallotNo = info.split(",")[1];
+                MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                mesLotMaterialInfo.setCreateBy(opId);
+                mesLotMaterialInfo.setMaterialName(materialName);
+                mesLotMaterialInfo.setLotNo(materiallotNo);
+                mesLotMaterialInfo.setCreateDate(new Date());
+                materialInfosList.add(mesLotMaterialInfo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (!mesLotMaterialInfoService.insertBatch(materialInfosList, 10)) {
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Test
     public void test() throws Exception {
-        /*SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
-        Date startTime = simpleDateFormat.parse("2020-07-31 13:55:36");
-        Date endTime = simpleDateFormat.parse("2020-07-31 14:04:33");*/
-        //rptYieldDayTask.updateDayYield();
-        //rptYieldTask.updateYield();
-        //eqpStateTask.dataFilling();
-        eqpStateTask.eqpStateDay();
-        //        //operationYieldTask.updateOperationYield();
-        //        //edcAmsRecordYieldTask.updateAmsRecordYield();
+        Date startTime = new Date();
+        Date endTime = new Date();
+        String hour = DateUtil.getDate("HH");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 8);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        if (Integer.parseInt(hour) < 8) {
+            endTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            startTime = cal.getTime();
+        } else {
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            endTime = cal.getTime();
+        }
+        System.out.println(DateUtil.formatTime(startTime));
+        System.out.println(DateUtil.formatTime(endTime));
+        int lotYieldAll = 0;
+        lotYieldAll = iMesLotWipService.findDayLotYield("SIM-HTRT1", startTime, endTime);
+        lotYieldAll = lotYieldAll + iMesLotWipService.findDayLotYield("SIM-HTRT2", startTime, endTime);
+        System.out.println(lotYieldAll);
     }
 
 
@@ -92,7 +284,7 @@ public class RptYieldDayTaskTest {
         endTime = cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH, -32);
         startTime = cal.getTime();
-        List<EdcDskLogOperation> list =  edcDskLogOperationService.findDataByTimeAndEqpId("SIM-DM2",startTime,endTime);
+        List<EdcDskLogOperation> list = edcDskLogOperationService.findDataByTimeAndEqpId("SIM-DM2", startTime, endTime);
         for (EdcDskLogOperation edcDskLogOperation : list) {
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(edcDskLogOperation.getEqpId());
@@ -120,7 +312,7 @@ public class RptYieldDayTaskTest {
     @Test
     public void eqpStateFix() {
         Date endTime = new Date();
-        for (int i = 60; i >= 0; i--) {
+        for (int i = 8; i >= 0; i--) {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
@@ -129,8 +321,22 @@ public class RptYieldDayTaskTest {
             endTime = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, -1);
             Date startTime = cal.getTime();
-            //eqpStateTask.dataSupplement(startTime, endTime);
+            eqpStateTask.fixeqpState(startTime, endTime);
         }
+        for (int i = 1; i <10 ; i++) {
+            Date startTime = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.add(Calendar.DAY_OF_MONTH, -i);
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Date endTime1 = cal.getTime();
+            dataSupplement(startTime,endTime1);
+        }
+
     }
 
 
@@ -141,7 +347,7 @@ public class RptYieldDayTaskTest {
         cal.set(Calendar.HOUR_OF_DAY, 8);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-        for (int i = 10; i >= 0; i--) {
+        for (int i = 20; i >= 0; i--) {
             cal.add(Calendar.DAY_OF_MONTH, -i);
             endTime = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, -1);
@@ -357,25 +563,26 @@ public class RptYieldDayTaskTest {
 
 
     @Test
-    public void emailSendTest(){
-        String[] emails = {"1518798637@qq.com","472109366@qq.com"};
+    public void emailSendTest() {
+        String[] emails = {"1518798637@qq.com", "472109366@qq.com"};
         Map<String, Object> msgMap = new HashMap<>();
-        msgMap.put("EQP_ID","TEST");
-        msgMap.put("ALARM_CODE","RTP_ALARM");
+        msgMap.put("EQP_ID", "TEST");
+        msgMap.put("ALARM_CODE", "RTP_ALARM");
         //emailSendService.blockSend(emails,"RTP_ALARM",msgMap);
     }
+
     @Test
-    public void emailSendLog(){
+    public void emailSendLog() {
         EmailSendLog emailSendLog = iEmailSendLogService.selectEmailLog("RTP_ALARM");
         System.out.println(emailSendLog);
     }
 
 
     @Test
-    public void edcAmsRecoedFix(){
+    public void edcAmsRecoedFix() {
         List<File> operationFileList = new ArrayList<>();
         operationFileList = (List<File>) FileUtil.listFiles(new File("C:\\Users\\86187_dar6n7g\\Desktop\\test\\"), new String[]{"csv"}, false);
-        if(operationFileList.size()>0){
+        if (operationFileList.size() > 0) {
             Collections.sort(operationFileList, new Comparator<File>() {
                 @Override
                 public int compare(File o1, File o2) {
@@ -388,7 +595,7 @@ public class RptYieldDayTaskTest {
             });
             for (File eqpFile : operationFileList) {
                 String eqpId = eqpFile.getName().split("_")[1];
-                List<EdcDskLogOperation> operationList = operParse(eqpId,eqpFile,0,true);
+                List<EdcDskLogOperation> operationList = operParse(eqpId, eqpFile, 0, true);
                 String logJson = JsonUtil.toJsonString(operationList);
                 rabbitTemplate.convertAndSend("C2S.Q.OPERATIONLOG.DATA", logJson);
             }
@@ -397,17 +604,16 @@ public class RptYieldDayTaskTest {
     }
 
 
-
     public List<EdcDskLogOperation> operParse(String eqpId, File file, int startLineno, Boolean lastFlag) {
         List<EdcDskLogOperation> operationLogList = Lists.newArrayList();
         String fileContent = "";
         String encoding = "";
         try {
-            if (eqpId.contains("CLEAN") || eqpId.contains("SORT") || eqpId.contains("2DAOI") || eqpId.contains("TRM") || eqpId.contains("SAT") || eqpId.contains("SMT") || eqpId.contains("HTRT")|| eqpId.contains("AT")|| eqpId.contains("LF") || eqpId.contains("VI") || eqpId.contains("PRINTER")) {
+            if (eqpId.contains("CLEAN") || eqpId.contains("SORT") || eqpId.contains("2DAOI") || eqpId.contains("TRM") || eqpId.contains("SAT") || eqpId.contains("SMT") || eqpId.contains("HTRT") || eqpId.contains("AT") || eqpId.contains("LF") || eqpId.contains("VI") || eqpId.contains("PRINTER")) {
                 encoding = "GBK";
-            }else if(eqpId.contains("DM")){
+            } else if (eqpId.contains("DM")) {
                 encoding = "Shift_JIS";
-            }else{
+            } else {
                 encoding = "UTF-8";
             }
             fileContent = FileUtil.readFileToString(file, encoding);
@@ -417,7 +623,7 @@ public class RptYieldDayTaskTest {
         //为3DAOI设备日志添加标题
 
         String[] lines = fileContent.split("\\r\\n");
-        if(eqpId.contains("DISPENSING")){
+        if (eqpId.contains("DISPENSING")) {
             lines = fileContent.split("\\n");
         }
         //||
@@ -426,7 +632,7 @@ public class RptYieldDayTaskTest {
         cal.add(Calendar.DAY_OF_MONTH, -1);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.HOUR_OF_DAY,0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         for (int lineno = startLineno; lineno < lines.length; lineno++) {
             String line = lines[lineno];
             //}
@@ -436,47 +642,47 @@ public class RptYieldDayTaskTest {
             }
             EdcDskLogOperation operationLog = new EdcDskLogOperation();
             operationLog.setEqpId(eqpId);
-            if(eqpId.contains("VI")){
+            if (eqpId.contains("VI")) {
                 operationLog.setEqpId("APJ-VI1");
             }
             //operationLog.setEqpModelId(fabEquipment.getModelId());
             //operationLog.setEqpModelName(fabEquipment.getModelName());
 
-            String[] columns = line.split(",",-1);
+            String[] columns = line.split(",", -1);
             int columnNo = 3;
             operationLog.setRecipeCode(columns[3]);
             operationLog.setOrderNo(columns[4]);
             operationLog.setLotNo(columns[5]);
             operationLog.setProductionNo(columns[6]);
-            if(StringUtil.isNotBlank(columns[7])){
-                operationLog.setDayInput(Integer.parseInt(columns[7].replace(" ","")));
+            if (StringUtil.isNotBlank(columns[7])) {
+                operationLog.setDayInput(Integer.parseInt(columns[7].replace(" ", "")));
             }
-            if(StringUtil.isNotBlank(columns[8])){
-                operationLog.setLotInput(Integer.parseInt(columns[8].replace(" ","")));
+            if (StringUtil.isNotBlank(columns[8])) {
+                operationLog.setLotInput(Integer.parseInt(columns[8].replace(" ", "")));
             }
-            if(StringUtil.isNotBlank(columns[9])){
-                operationLog.setDayYield(Integer.parseInt(columns[9].replace(" ","")));
+            if (StringUtil.isNotBlank(columns[9])) {
+                operationLog.setDayYield(Integer.parseInt(columns[9].replace(" ", "")));
             }
-            if(StringUtil.isNotBlank(columns[10])){
-                operationLog.setLotYield(Integer.parseInt(columns[10].replace(" ","")));
+            if (StringUtil.isNotBlank(columns[10])) {
+                operationLog.setLotYield(Integer.parseInt(columns[10].replace(" ", "")));
             }
 
             try {
                 String startDateStr = columns[11];
-                if(eqpId.contains("2DAOI")){
-                    startDateStr = startDateStr.substring(0,21);
+                if (eqpId.contains("2DAOI")) {
+                    startDateStr = startDateStr.substring(0, 21);
                 }
-                if(eqpId.contains("DM")){
-                    startDateStr=startDateStr.replace("/","-");
+                if (eqpId.contains("DM")) {
+                    startDateStr = startDateStr.replace("/", "-");
                 }
-                if(startDateStr.contains("/")){
-                    startDateStr=startDateStr.replace("/","-");
+                if (startDateStr.contains("/")) {
+                    startDateStr = startDateStr.replace("/", "-");
                 }
-                if(startDateStr.length()==19){
+                if (startDateStr.length() == 19) {
                     startDateStr = startDateStr + ".0";
                 }
                 String parsePatterns = "yyyy-MM-dd HH:mm:ss.S";
-                if(eqpId.contains("DISPENSING")){
+                if (eqpId.contains("DISPENSING")) {
                     parsePatterns = "yyyy-MM-dd HH:mm:ss:SSS";
                 }
                 Date startDate = DateUtil.parseDate(startDateStr, parsePatterns);
@@ -486,14 +692,14 @@ public class RptYieldDayTaskTest {
                 }*/
                 operationLog.setStartTime(startDate);
             } catch (ParseException e) {
-                System.out.println("Operation时间处理错误"+e);
+                System.out.println("Operation时间处理错误" + e);
                 e.printStackTrace();
             }
             operationLog.setEventId(columns[12]);
             operationLog.setAlarmCode(columns[13]);
             operationLog.setEventName(columns[14]);
             operationLog.setEventDetail(columns[15]);
-            if(columns.length>=17){
+            if (columns.length >= 17) {
                 operationLog.setCreateBy(columns[16]);
             }
             operationLogList.add(operationLog);
@@ -507,7 +713,7 @@ public class RptYieldDayTaskTest {
 
 
     @Test
-    public void deleteTest(){
+    public void deleteTest() {
         File a = new File("C:\\Users\\86187_dar6n7g\\Desktop\\新建文件夹 (2)");
         File[] fileList = a.listFiles();
         for (File eqpFile : fileList) {
@@ -520,15 +726,44 @@ public class RptYieldDayTaskTest {
         File[] fileList = a.listFiles();
         for (File eqpFile : fileList) {
             System.out.println(eqpFile.getName());
-            if(eqpFile.isDirectory()){
+            if (eqpFile.isDirectory()) {
                 System.out.println(eqpFile.getName());
-                FileUtil.delDir(eqpFile.getPath(),true);
+                FileUtil.delDir(eqpFile.getPath(), true);
             }
         }
     }
 
     @Test
-    public void testttttt(){
-        System.out.println(111);
+    public void stateDataFix() {
+        List<String> epqIdList = new ArrayList<>();
+        epqIdList = iFabEquipmentService.findEqpIdList();
+        Date startTime = new Date();
+        Date endTime = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_MONTH, -30);
+        startTime = cal.getTime();
+        for (String eqpId : epqIdList) {
+            List<EdcEqpState> eqpStateList = edcEqpStateService.getAllByTime(startTime, endTime, eqpId);
+            List<EdcEqpState> newEqpStateList = new ArrayList<>();
+            for (int i = 0; i < eqpStateList.size() - 1; i++) {
+                EdcEqpState edcEqpState = eqpStateList.get(i);
+                EdcEqpState nextEdcEqpState = eqpStateList.get(i + 1);
+                edcEqpState.setEndTime(nextEdcEqpState.getStartTime());
+                Double state = (double) (nextEdcEqpState.getStartTime().getTime() - edcEqpState.getStartTime().getTime());
+                edcEqpState.setStateTimes(state);
+                newEqpStateList.add(edcEqpState);
+            }
+            if (newEqpStateList.size() > 0) {
+                try {
+                    edcEqpStateService.updateBatchById(newEqpStateList, 5000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
