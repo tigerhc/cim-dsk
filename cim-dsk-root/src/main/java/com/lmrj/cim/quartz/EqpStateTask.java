@@ -137,8 +137,8 @@ public class EqpStateTask {
         eqpIdList = iFabEquipmentService.findEqpIdList();
         List<RptEqpStateDay> rptEqpStateDayList = Lists.newArrayList();
         for (String eqpId : eqpIdList) {
-            List<EdcEqpState> eqpStateList = edcEqpStateService.getAllByTime(startTime, endTime, eqpId);
-            if (eqpStateList.size() == 0) {
+            EdcEqpState eqpState = edcEqpStateService.calEqpSateDayByeqpId(startTime, endTime, eqpId);
+            if(eqpState==null || "".equals(eqpState.getState())){
                 RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
                 rptEqpStateDay.setEqpId(eqpId);
                 rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));

@@ -14,7 +14,7 @@
        t.create_date,
        t.update_date
 	</sql>
-    <select id="getAllByTime" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+    <select id="getAllByTime"  resultType="com.lmrj.edc.state.entity.EdcEqpState">
             SELECT
                   t.id,
                   t.eqp_id,
@@ -29,8 +29,10 @@
               FROM
                   edc_eqp_state t
               WHERE
-                start_time between #{startTime} and #{endTime} and eqp_id=#{eqpId}
-                and ( end_time > #{startTime} or end_time is null)
+                eqp_id=#{eqpId}
+                and  (start_time between #{startTime} and #{endTime}
+                or end_time between #{startTime} and #{endTime}
+                )
                 order by start_time
 
        </select>
@@ -41,6 +43,16 @@
         AND start_time between #{startTime} and #{endTime}
         group by eqp_id, state
     </select>
+
+    <select id="calEqpSateDayByeqpId" resultType="com.lmrj.edc.state.entity.EdcEqpState">
+        select eqp_id, state, sum(state_times) state_times from edc_eqp_state
+        where end_time between #{startTime} and #{endTime}
+        AND start_time between #{startTime} and #{endTime}
+        and eqp_id = #{eqpId}
+        group by eqp_id, state
+        limit 1
+    </select>
+
     <select id="findLastData" resultType="com.lmrj.edc.state.entity.EdcEqpState">
         select * from edc_eqp_state
         where start_time &lt; #{startTime} and eqp_id=#{eqpId}

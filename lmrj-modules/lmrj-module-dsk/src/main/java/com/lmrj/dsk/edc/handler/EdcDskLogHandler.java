@@ -1014,11 +1014,12 @@ public class EdcDskLogHandler {
         long compareTime = before30Minute();//30分钟前
         if (compareTime > lastSendMailTime) {//距上次发送邮件的时间已超过半小时
             lastSendMailTime = new Date().getTime();
-            Map<String, Object> mailMsg = new HashMap<>();
-            mailMsg.put("EQP_ID", msg + ",目前温度异常的设备有" + alarmEmailLog.toString() + "。");
+            //Map<String, Object> mailMsg = new HashMap<>();
+            /*mailMsg.put("EQP_ID", msg + ",目前温度异常的设备有" + alarmEmailLog.toString() + "。");
             mailMsg.put("ALARM_CODE", "E-1000");
 //            System.out.println(JSONObject.fromObject(mailMsg).toString()); TODO 配合下方的main 测试
-            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", JSONObject.fromObject(mailMsg).toString());
+            rabbitTemplate.convertAndSend("C2S.Q.MSG.MAIL", JSONObject.fromObject(mailMsg).toString());*/
+            log.error("温度异常信息记录    EQP_ID", msg + ",目前温度异常的设备有" + alarmEmailLog.toString() + "。");
         }
     }
 

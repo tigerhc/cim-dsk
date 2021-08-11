@@ -66,6 +66,11 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
     }
 
     @Override
+    public EdcEqpState calEqpSateDayByeqpId(Date startTime,Date endTime,String eqpId){
+        return baseMapper.calEqpSateDayByeqpId(startTime,endTime,eqpId);
+    }
+
+    @Override
     public int syncEqpSate(Date startTime, Date endTime, String eqpId) {
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
@@ -101,16 +106,22 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                     EdcEqpState firstData = new EdcEqpState();
                     //当天0点前最后一条数据
                     EdcEqpState lastData = baseMapper.findLastData2(startTime, eqpId);
-                    lastData.setEndTime(startTime);
-                    Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
-                    lastData.setStateTimes(state);
-                    this.updateById(lastData);
+                    if(lastData !=null){
+                        lastData.setEndTime(startTime);
+                        Double state = (double) (startTime.getTime() - lastData.getStartTime().getTime());
+                        lastData.setStateTimes(state);
+                        this.updateById(lastData);
+                    }
                     firstData.setStartTime(startTime);
                     firstData.setEndTime(eqpStateList.get(0).getStartTime());
                     Double state1 = (double) (eqpStateList.get(0).getStartTime().getTime() - startTime.getTime());
                     firstData.setStateTimes(state1);
                     //把第一条数据的状态值设为当天八点前最后一条数据的状态
-                    firstData.setState(lastData.getState());
+                    if(lastData != null){
+                        firstData.setState(lastData.getState());
+                    }else {
+                        firstData.setState("IDLE");
+                    }
                     firstData.setEqpId(eqpId);
                     if (null == baseMapper.findFirstData(startTime, eqpId)) {
                         this.insert(firstData);

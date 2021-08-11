@@ -28,6 +28,8 @@ public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
     List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    EdcEqpState calEqpSateDayByeqpId(@Param("startTime") Date startTime, @Param("endTime") Date endTime,@Param("eqpId") String eqpId);
+
     EdcEqpState findLastData(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
 
     EdcEqpState findLastData2(@Param("startTime") Date startTime, @Param("eqpId") String eqpId);
