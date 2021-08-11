@@ -73,7 +73,7 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
     }
 
     @RequestMapping("/currentAlarmInfo")
-    public Response findCurrentAlarmInfo(HttpServletRequest request, HttpServletResponse response) {
+    public Response findCurrentAlarmInfo(@RequestParam String subLineNo, HttpServletRequest request, HttpServletResponse response) {
         Response res = new Response();
         String alarmInfo = "测试,测试,测试报警";
         res.put("record", alarmInfo);
