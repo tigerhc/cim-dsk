@@ -288,15 +288,29 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                         }
                         materialInfosList = new ArrayList<>();
                         for (String info : materialInfos) {
-                            String materialName = info.split(",")[0];
-                            String materiallotNo = info.split(",")[1];
-                            MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
-                            mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
-                            mesLotMaterialInfo.setCreateBy(opId);
-                            mesLotMaterialInfo.setMaterialName(materialName);
-                            mesLotMaterialInfo.setLotNo(materiallotNo);
-                            mesLotMaterialInfo.setCreateDate(new Date());
-                            materialInfosList.add(mesLotMaterialInfo);
+                            if(info.split(",").length==2){
+                                String materialName = info.split(",")[0];
+                                if(materialName.contains("IGBT")){
+                                    materialName = "IGBT";
+                                }else if(materialName.contains("FRD")){
+                                    materialName = "FRD";
+                                }else if(materialName.contains("BOTTOM") && materialName.contains("DBC")){
+                                    materialName = "DBCB";
+                                }else if(materialName.contains("TOP") && materialName.contains("DBC")){
+                                    materialName = "DBCT";
+                                }
+                                String materiallotNo = info.split(",")[1];
+                                MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                                mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                                mesLotMaterialInfo.setCreateBy(opId);
+                                mesLotMaterialInfo.setMaterialName(materialName);
+                                mesLotMaterialInfo.setLotNo(materiallotNo);
+                                mesLotMaterialInfo.setCreateDate(new Date());
+                                materialInfosList.add(mesLotMaterialInfo);
+                            }else {
+                                log.error("物料信息异常！ info："+info);
+                            }
+
                         }
                     }
                 } catch (Exception e) {
@@ -509,6 +523,40 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             }
         } catch (Exception e) {
             fabLogService.info(eqpId, "Error7", "MesLotTrackController.findPrinterParam", "有异常", eqpId, "wangdong");//日志记录
+            return e.getMessage();
+        }
+    }
+
+
+    //查找DM-HTRT设备参数，从检查机、温度、产量日志中获取
+    @RequestMapping(value = "/findDMHTRTParam/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String findDMHTRTParam(Model model, @PathVariable String eqpId, @RequestParam String opId,
+                                   HttpServletRequest request, HttpServletResponse response) {
+        log.info("findDMHTRTParam :  {}, {}", opId, eqpId);
+        String eventDesc = "{\"eqpId\":\"" + eqpId + "\",\"opId\":\"" + opId + "\"}";//日志记录参数
+        try {
+            fabLogService.info(eqpId, "Param7", "MesLotTrackController.findDMHTRTParam", eventDesc, "", "wangdong");//日志记录参数
+            //String eqpId ="SIM-DM1";
+            if ("".equals(opId) || opId == null) {
+                return "opId Cannot be empty";
+            }
+            if (eqpId.equals("HTRT")) {
+                eqpId = "DM-HTRT1";
+            }else {
+                log.error("设备名称错误！   " + eqpId);
+                return "eqpId error!:" + eqpId;
+            }
+            String methodName = "FIND_DMHTRT_PARAM";
+            MesResult result = mesLotTrackService.findApjParam(eqpId, methodName, opId);
+            JSONObject jo = JSONObject.fromObject(result);//日志记录结果
+            fabLogService.info(eqpId, "Result7", "MesLotTrackController.findDMHTRTParam", jo.toString(), eqpId, "wangdong");//日志记录
+            if ("Y".equals(result.getFlag())) {
+                return result.getContent().toString();
+            } else {
+                return result.getMsg();
+            }
+        } catch (Exception e) {
+            fabLogService.info(eqpId, "Error7", "MesLotTrackController.findDMHTRTParam", "有异常", eqpId, "wangdong");//日志记录
             return e.getMessage();
         }
     }
@@ -1149,7 +1197,7 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 //将物料信息存入数据库
                 List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
                 try {
-                    String materialInfos[] = materialInfo.split("_");
+                    String materialInfos[] = materialInfo.split("~");
                     if(materialInfos.length>0){
                         MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
                         if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
@@ -1162,15 +1210,40 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                         }
                         materialInfosList = new ArrayList<>();
                         for (String info : materialInfos) {
-                            String materialName = info.split(",")[0];
-                            String materiallotNo = info.split(",")[1];
-                            MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
-                            mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
-                            mesLotMaterialInfo.setCreateBy(opId);
-                            mesLotMaterialInfo.setMaterialName(materialName);
-                            mesLotMaterialInfo.setLotNo(materiallotNo);
-                            mesLotMaterialInfo.setCreateDate(new Date());
-                            materialInfosList.add(mesLotMaterialInfo);
+                            if(info.split(",").length==2){
+                                String materialName = info.split(",")[0];
+                                String materiallotNo = info.split(",")[1];
+                                if(materialName.contains("JZJ1")){
+                                    materialName =materialName.replace("JZJ1","")+"(接着剂1)";
+                                }else if(materialName.contains("JZJ2")){
+                                    materialName =materialName.replace("JZJ2","")+"(接着剂2)";
+                                }else if(materialName.contains("HXG1")){
+                                    materialName =materialName.replace("HXG1","")+"(焊锡膏1)";
+                                }else if(materialName.contains("HXG2")){
+                                    materialName =materialName.replace("HXG2","")+"(焊锡膏2)";
+                                }else if(materialName.contains("RMDZ1")){
+                                    materialName =materialName.replace("RMDZ1","")+"(热敏电阻1)";
+                                }else if(materialName.contains("RMDZ2")){
+                                    materialName =materialName.replace("RMDZ2","")+"(热敏电阻2)";
+                                }else if(materialName.contains("YXKD1")){
+                                    materialName =materialName.replace("YXKD1","")+"(引线框——电源1)";
+                                }else if(materialName.contains("YXKD2")){
+                                    materialName =materialName.replace("YXKD2","")+"(引线框——电源2)";
+                                }else if(materialName.contains("YXKX1")){
+                                    materialName =materialName.replace("YXKX1","")+"(引线框——信号1)";
+                                }else if(materialName.contains("YXKX2")){
+                                    materialName =materialName.replace("YXKX2","")+"(引线框——信号2)";
+                                }
+                                MesLotMaterialInfo mesLotMaterialInfo = new MesLotMaterialInfo();
+                                mesLotMaterialInfo.setMaterialId(mesLotMaterial.getId());
+                                mesLotMaterialInfo.setCreateBy(opId);
+                                mesLotMaterialInfo.setMaterialName(materialName);
+                                mesLotMaterialInfo.setLotNo(materiallotNo);
+                                mesLotMaterialInfo.setCreateDate(new Date());
+                                materialInfosList.add(mesLotMaterialInfo);
+                            }else {
+                                log.error("物料信息异常！ info："+info);
+                            }
                         }
                     }
                 } catch (Exception e) {
