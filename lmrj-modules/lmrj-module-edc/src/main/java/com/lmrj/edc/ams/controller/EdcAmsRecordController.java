@@ -77,6 +77,8 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
         Response res = new Response();
         String alarmInfo = "测试,测试,测试报警";
         res.put("record", alarmInfo);
+//        res.put("eqpStatus", "RUN");
+        res.put("eqpStatus", "ALARM");
         return res;
     }
 
