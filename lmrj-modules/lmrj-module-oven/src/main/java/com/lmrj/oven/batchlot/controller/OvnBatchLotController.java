@@ -260,6 +260,9 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
 
     @RequestMapping(value = "/tempExport",method = {RequestMethod.GET, RequestMethod.POST})
     public Response tempExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
+        if(StringUtil.isEmpty(eqpId) || StringUtil.isEmpty(startTime) || StringUtil.isEmpty(endTime)){
+            return Response.error("参数不正确,导出失败");
+        }
         Response res = Response.ok("导出成功");
         String title = "温度导出";
         Map<String, Object> maps = ovnBatchLotService.tempExport(eqpId, startTime, endTime);
