@@ -21,4 +21,6 @@ public interface IOvnBatchLotDayService {
     Integer oldData(String periodDate);
 
     void fParamToDay(String eqpId, String periodDate);
+
+    List<String> getTitleByEqpId(String eqpId);
 }

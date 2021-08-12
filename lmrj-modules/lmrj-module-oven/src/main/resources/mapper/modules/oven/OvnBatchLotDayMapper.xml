@@ -20,7 +20,7 @@
         from ovn_batch_lot_day v
         WHERE v.eqp_id = #{eqpId}
         and v.period_date between #{start} and #{end}
-        order by v.title_order
+        order by v.period_date,v.title_order
     </select>
 
     <select id="selectTime" parameterType="java.lang.String" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotDay">
@@ -115,5 +115,7 @@ select eqpid,eqptemp,tempMax,tempMin,tempStart,tempEnd,periodDate from
         )
     </foreach> as total
 </select>
-
+    <select id="selectTitle" parameterType="java.lang.String" resultType="java.lang.String">
+        select DISTINCT eqp_temp from ovn_batch_lot_day where eqp_id=#{eqpId} order by title_order
+    </select>
 </mapper>

@@ -147,4 +147,9 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
         }
 
     }
+
+    @Override
+    public List<String> getTitleByEqpId(String eqpId) {
+        return baseMapper.selectTitle(eqpId);
+    }
 }

@@ -269,24 +269,26 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                 tempList.add(MapUtil.getString(dataItem, "temp_pv"));
                 // 其他通道的温度
                 String otherTemps = MapUtil.getString(dataItem, "other_temps_value");
-                String[] otherTempArr = otherTemps.split(",");
-                if (otherTempArr!=null && otherTempArr.length>0) {
-                    for(int i=0; i < otherTempArr.length; i++){
-                        if(i % 4 == 0){
-                            tempList.add(otherTempArr[i]);
-                        } else if(i % 4 == 1 && setOtherLimit){
-                            setValue.add(otherTempArr[i]);
-                        } else if(i % 4 == 2 && minOtherLimit){
-                            minLimit.add(otherTempArr[i]);
-                        } else if(i % 4 == 3 && maxOtherLimit){
-                            maxLimit.add(otherTempArr[i]);
+                if(StringUtil.isNotEmpty(otherTemps)){
+                    String[] otherTempArr = otherTemps.split(",");
+                    if (otherTempArr!=null && otherTempArr.length>0) {
+                        for(int i=0; i < otherTempArr.length; i++){
+                            if(i % 4 == 0){
+                                tempList.add(otherTempArr[i]);
+                            } else if(i % 4 == 1 && setOtherLimit){
+                                setValue.add(otherTempArr[i]);
+                            } else if(i % 4 == 2 && minOtherLimit){
+                                minLimit.add(otherTempArr[i]);
+                            } else if(i % 4 == 3 && maxOtherLimit){
+                                maxLimit.add(otherTempArr[i]);
+                            }
                         }
+                        setOtherLimit = false;
+                        minOtherLimit = false;
+                        maxOtherLimit = false;
                     }
-                    setOtherLimit = false;
-                    minOtherLimit = false;
-                    maxOtherLimit = false;
-                    tempDataItem.put("tempList", tempList);
                 }
+                tempDataItem.put("tempList", tempList);
                 tempData.add(tempDataItem);
             }
         }
