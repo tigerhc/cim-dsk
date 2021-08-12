@@ -207,19 +207,33 @@ public class EdcDskLogHandler {
                         this.temperatureList2(nextproList, nextLotTrack.getLotNo());
                     }
                 }
-                FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                if (!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")) {
-                    EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
-                    if (edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime().after(operation.getStartTime())) {
-                        fabStatus.setEqpStatus("RUN");
-                        fabEquipmentStatusService.updateById(fabStatus);
-                        EdcEqpState edcEqpState = new EdcEqpState();
-                        edcEqpState.setEqpId(eqpId);
-                        edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime());
-                        edcEqpState.setState("RUN");
-                        String stateJson = JsonUtil.toJsonString(edcEqpState);
-                        rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                try {
+                    FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                    if (!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")) {
+                        EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
+                        if(operation != null && edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime().after(operation.getStartTime())){
+                            fabStatus.setEqpStatus("RUN");
+                            fabEquipmentStatusService.updateById(fabStatus);
+                            EdcEqpState edcEqpState = new EdcEqpState();
+                            edcEqpState.setEqpId(eqpId);
+                            edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime());
+                            edcEqpState.setState("RUN");
+                            String stateJson = JsonUtil.toJsonString(edcEqpState);
+                            rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                        }else if(operation == null ){
+                            fabStatus.setEqpStatus("RUN");
+                            fabEquipmentStatusService.updateById(fabStatus);
+                            EdcEqpState edcEqpState = new EdcEqpState();
+                            edcEqpState.setEqpId(eqpId);
+                            edcEqpState.setStartTime(edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime());
+                            edcEqpState.setState("RUN");
+                            String stateJson = JsonUtil.toJsonString(edcEqpState);
+                            rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
+                        }
                     }
+                } catch (Exception e) {
+                    log.error("设备状态修复失败",e);
+                    e.printStackTrace();
                 }
             } else {
 

@@ -27,6 +27,9 @@ public interface IOvnBatchLotParamService extends ICommonService<OvnBatchLotPara
 
     List<OvnBatchLotParam> selectDataBybatchId(String batchId);
 
+
+    List<OvnBatchLotParam> selectDataByeqpId(String eqpId, String startTime , String endTime);
+
     List<Map> fParamToDayone(String id, Date startTime, Date endTime, String periodDate,
                                     String eqpId, String eqpTemp);
 

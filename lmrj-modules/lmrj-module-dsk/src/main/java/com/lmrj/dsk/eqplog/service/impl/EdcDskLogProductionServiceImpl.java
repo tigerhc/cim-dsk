@@ -386,7 +386,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
             //拼写当前行字符串
             String line = pro.getEqpId() + "," + pro.getEqpModelName() + "," + eqpNo + "," + pro.getRecipeCode() + "," + startTimeString + "," + endTimeString + "," + pro.getDayYield() + "," + pro.getLotYield() + "," +
                     pro.getDuration() + "," + "," + "," + "," + "," + pro.getOrderNo() + "," + pro.getLotNo() + "," + pro.getProductionNo() + "," + pro.getParamValue();
-            lines.add(line);
+            lines.add(line.replace("null",""));
         }
         //创建文件路径
         FileUtil.mkDir(fileBackUpPath);
@@ -436,7 +436,7 @@ public class EdcDskLogProductionServiceImpl extends CommonServiceImpl<EdcDskLogP
                 String tempStrs[] = pro.getParamValue().split(",");
                 String temp=StringUtil.join(tempStrs,",",0,15);
                 String line = startTimeString+","+temp;
-                lines.add(line);
+                lines.add(line.replace("null",""));
             }
         }
         //创建文件路径

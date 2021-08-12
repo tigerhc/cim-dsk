@@ -5,10 +5,17 @@
 	<sql id="Base_Column_List" >
        t.id,
        t.batch_id,
-       t.temp_pv1,
-       t.temp_sp1,
+       t.temp_pv,
+       t.temp_sp,
        t.temp_min,
        t.temp_max,
+       t.temps_title
+       t.other_temps_value
+       t.temps_sp
+       t.temps_min
+       t.temps_max
+       t.gass_pv
+       t.gass_sp
        t.step,
        t.remarks,
        t.create_by,
@@ -35,4 +42,41 @@
         AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime})))
          and a.create_date between #{startTime} and #{endTime}
        </select>
+
+
+
+    <select id="selectDataByeqpId" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotParam">
+        select
+       t.id,
+       t.batch_id,
+       t.temp_pv,
+       t.temp_sp,
+       t.temp_min,
+       t.temp_max,
+       t.temps_title,
+       t.other_temps_value,
+       t.temps_sp,
+       t.temps_min,
+       t.temps_max,
+       t.gass_pv,
+       t.gass_sp,
+       t.step,
+       t.remarks,
+       t.create_by,
+       t.create_date,
+       t.update_by,
+       t.update_date,
+       t.del_flag
+        from ovn_batch_lot r left join ovn_batch_lot_param t on t.batch_id = r.id
+        where r.eqp_id = #{eqpId}
+          and (
+                (r.end_time &gt; #{beginTime}
+                AND r.end_time &lt; #{endTime})
+                OR
+                (r.start_time &gt; #{beginTime}
+                AND r.start_time &lt; #{endTime})
+              )
+          and t.create_date between #{beginTime} and #{endTime}
+        order by t.create_date, t.batch_id
+    </select>
 </mapper>

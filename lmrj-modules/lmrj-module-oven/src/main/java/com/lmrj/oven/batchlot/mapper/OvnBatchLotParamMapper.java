@@ -37,6 +37,8 @@ public interface OvnBatchLotParamMapper extends BaseMapper<OvnBatchLotParam> {
  @Select("select * from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where end_time > #{endTime}  and eqp_id = #{eqpId}) and  create_date >  #{endTime} and  temp_pv > 109.9  ORDER BY create_date  limit 1")
  OvnBatchLotParam selectDataBytemp(@Param("eqpId")String eqpId,@Param( "endTime" ) Date endTime);
 
+ List<OvnBatchLotParam> selectDataByeqpId(@Param("eqpId")String eqpId,@Param( "beginTime" ) String beginTime ,@Param( "endTime" ) String endTime);
+
  List<Map> fParamToDayone(@Param("id")String id, @Param( "startTime" ) Date startTime, @Param( "endTime" )Date endTime, @Param( "periodDate" )String periodDate,
                           @Param("eqpId")String eqpId,@Param("eqpTemp")String eqpTemp);
 }

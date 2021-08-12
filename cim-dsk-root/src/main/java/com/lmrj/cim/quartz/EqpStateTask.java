@@ -136,10 +136,12 @@ public class EqpStateTask {
         List<String> eqpIdList = new ArrayList<>();
         eqpIdList = iFabEquipmentService.findEqpIdList();
         List<RptEqpStateDay> rptEqpStateDayList = Lists.newArrayList();
+        List<EdcEqpState> edcEqpStateList = Lists.newArrayList();
         for (String eqpId : eqpIdList) {
             EdcEqpState eqpState = edcEqpStateService.calEqpSateDayByeqpId(startTime, endTime, eqpId);
             if(eqpState==null || "".equals(eqpState.getState())){
                 RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
+                EdcEqpState edcEqpState = new EdcEqpState();
                 rptEqpStateDay.setEqpId(eqpId);
                 rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));
                 Boolean flag = false;
@@ -154,18 +156,26 @@ public class EqpStateTask {
                     Double run = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(run);
                     rptEqpStateDay.setIdleTime(0.0);
+                    edcEqpState.setState("RUN");
                 } else {
                     Double idle = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(0.0);
                     rptEqpStateDay.setIdleTime(idle);
+                    edcEqpState.setState("IDLE");
                 }
                 rptEqpStateDay.setPmTime(0.0);
                 rptEqpStateDay.setAlarmTime(0.0);
+                edcEqpState.setEqpId(eqpId);
+                edcEqpState.setStartTime(startTime);
+                edcEqpState.setEndTime(endTime);
+                edcEqpState.setStateTimes(24 * 60 * 60 * 1000000 * 0.001);
+                edcEqpStateList.add(edcEqpState);
                 rptEqpStateDayList.add(rptEqpStateDay);
             }
         }
         if (rptEqpStateDayList.size() > 0) {
             rptEqpStateDayService.insertBatch(rptEqpStateDayList, 50);
+            edcEqpStateService.insertBatch(edcEqpStateList,50);
         }
 
     }

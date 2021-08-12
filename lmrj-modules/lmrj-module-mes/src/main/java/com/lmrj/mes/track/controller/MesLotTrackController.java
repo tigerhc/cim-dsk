@@ -268,6 +268,17 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                     return eqpId1 + "设备" + lastLotTrack.getLotNo() + " is not finished ! Please do track out first";
                 }
             }
+
+            //判断物料信息是否符合规则
+            String materialInfos[] = materialInfo.split("_");
+            for (String info : materialInfos) {
+                if(info.split(",").length==1){
+                    if(info.contains("XP1") || info.contains("DBC1")){
+                        return "materialInfo lotNo must be not null！(物料1批量信息不能为空！)";
+                    }
+                }
+            }
+
             MesResult result = mesLotTrackService.apjTrackin(subLineNo, productionNo, productionName, orderNo, lotNo, "", opId);
             JSONObject jo = JSONObject.fromObject(result);//日志记录结果
             fabLogService.info(subLineNo, "Result6", "MesLotTrackController.dskApjTrackin", jo.toString(), trackinfo, "wangdong");//日志记录
@@ -275,7 +286,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
                 try {
                     //将物料信息存入数据库
-                    String materialInfos[] = materialInfo.split("_");
                     if(materialInfos.length>0){
                         MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
                         if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){
@@ -1175,6 +1185,16 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
             } else if (eqpId1.equals("OVEN2")) {
                 eqpId1 = "DM-OVEN2";
             }
+            //判断物料信息是否符合规则
+            String materialInfos[] = materialInfo.split("~");
+            for (String info : materialInfos) {
+                if(info.split(",").length==1){
+                    if(info.contains("JZJ1") || info.contains("HXG1") || info.contains("RMDZ1")
+                            || info.contains("YXKD1") || info.contains("YXKX1")){
+                        return "materialInfo lotNo must be not null！(物料1批量信息不能为空！)";
+                    }
+                }
+            }
             //判断批次数据入账是否符合逻辑
             MesLotTrack nowLotTrack = mesLotTrackService.findLotTrack(eqpId1, lotNo, productionNo);
             if (nowLotTrack == null) {
@@ -1197,7 +1217,6 @@ public class MesLotTrackController extends BaseCRUDController<MesLotTrack> {
                 //将物料信息存入数据库
                 List<MesLotMaterialInfo> materialInfosList = new ArrayList<>();
                 try {
-                    String materialInfos[] = materialInfo.split("~");
                     if(materialInfos.length>0){
                         MesLotMaterial mesLotMaterial =  mesLotMaterialService.selectMaterialData(eqpId1,lotNo);
                         if(mesLotMaterial == null || "".equals(mesLotMaterial.getEqpId()) || mesLotMaterial.getEqpId() ==null){

@@ -3,7 +3,6 @@ package com.lmrj.oven.batchlot.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.oven.batchlot.entity.FabEquipmentOvenStatus;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -49,6 +48,8 @@ public interface IOvnBatchLotService extends ICommonService<OvnBatchLot> {
     OvnBatchLot findBatchDataByLot(String eqpId , String lotNo);
 
     List<OvnBatchLot> findDataByTime(String beginTime, String endTime);
+
+    List<OvnBatchLot> findDataByEqpId(String beginTime, String endTime,String eqpId);
 
     List<String> lastDayEqpList(Date startTime,Date endTime);
 }

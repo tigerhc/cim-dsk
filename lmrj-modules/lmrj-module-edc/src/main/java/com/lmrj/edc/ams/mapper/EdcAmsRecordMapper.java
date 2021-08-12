@@ -25,6 +25,8 @@ import java.util.Map;
 public interface EdcAmsRecordMapper extends BaseMapper<EdcAmsRecord> {
     List<EdcAmsRecord> selectAmsRecord(@Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("department") String department, @Param("fab") String fab);
 
+    List<EdcAmsRecord> selectAmsRecordByTime(@Param("department") String department,@Param("startTime") Date startTime);
+
     @Select("select * from edc_ams_record where start_date between #{startTime} and #{endTime} order by start_date")
     List<EdcAmsRecord> findAmsRecordByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 

@@ -36,6 +36,19 @@
         limit 5
     </select>
 
+    <select id="selectAmsRecordByTime" resultType="com.lmrj.edc.ams.entity.EdcAmsRecord">
+        SELECT
+        <include refid="Base_Column_List"/>, f.MODEL_NAME modelName
+        FROM
+        edc_ams_record t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+        WHERE f.active_flag = 'Y'
+        and f.department = #{department}
+        and t.start_date > #{startTime}
+        group by f.eqp_id
+        order by t.start_date desc
+    </select>
+
     <select id="selectAlarmCountByLine" resultType="map">
            select tt.eqp_id, tt.alarm_count, error_count from
                (select eqp_id,count(*) alarm_count, count(*) error_count

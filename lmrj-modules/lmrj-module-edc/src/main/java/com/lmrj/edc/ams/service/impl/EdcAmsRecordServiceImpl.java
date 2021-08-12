@@ -33,6 +33,11 @@ public class EdcAmsRecordServiceImpl extends CommonServiceImpl<EdcAmsRecordMappe
     }
 
     @Override
+    public List<EdcAmsRecord> selectAmsRecordByTime(String department,Date startTime){
+        return baseMapper.selectAmsRecordByTime(department,startTime);
+    }
+
+    @Override
     public List<Map> selectAlarmCountByLine(String beginTime, String endTime, String lineNo) {
         return baseMapper.selectAlarmCountByLine(beginTime, endTime, lineNo);
     }
