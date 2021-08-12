@@ -147,12 +147,9 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
         }
 
     }
-<<<<<<< .merge_file_a13268
-=======
 
     @Override
     public List<String> getTitleByEqpId(String eqpId) {
         return baseMapper.selectTitle(eqpId);
     }
->>>>>>> .merge_file_a01984
 }

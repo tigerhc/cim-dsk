@@ -228,11 +228,6 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         ServletUtils.printJson(response, content);
     }
-<<<<<<< .merge_file_a21008
-
-    @RequestMapping(value = "/tempExport",method = {RequestMethod.GET, RequestMethod.POST})
-    public Response tempExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
-=======
     @RequestMapping(value = "/kLineExport",method = {RequestMethod.GET, RequestMethod.POST})
     public Response kLineExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
         if(StringUtil.isEmpty(eqpId) || StringUtil.isEmpty(startTime) || StringUtil.isEmpty(endTime)){
@@ -268,7 +263,6 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         if(StringUtil.isEmpty(eqpId) || StringUtil.isEmpty(startTime) || StringUtil.isEmpty(endTime)){
             return Response.error("参数不正确,导出失败");
         }
->>>>>>> .merge_file_a26416
         Response res = Response.ok("导出成功");
         String title = "温度导出";
         Map<String, Object> maps = ovnBatchLotService.tempExport(eqpId, startTime, endTime);
@@ -292,8 +286,6 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         return res;
     }
-<<<<<<< .merge_file_a21008
-=======
     private List<ExcelExportEntity> getKLineTempKeyList(String eqpId, List<String> titles){
         List<ExcelExportEntity> keyList = new LinkedList<>();
         ExcelExportEntity keyFirstCol = new ExcelExportEntity(" ","1");
@@ -348,7 +340,6 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         return rs;
     }
 
->>>>>>> .merge_file_a26416
     private List<ExcelExportEntity> getTempKeyList(String[] titles){
         List<ExcelExportEntity> keyList = new LinkedList<>();
         if(titles!=null && titles.length > 0){
@@ -363,10 +354,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         return keyList;
     }
-<<<<<<< .merge_file_a21008
-=======
 
->>>>>>> .merge_file_a26416
     private List<Map<String, String>> getTempDataList(Map<String, Object> tempMap){
         try {
             List<String> maxList = (List) tempMap.get("maxLimit");
@@ -460,6 +448,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         return maps;
     }
 }
+
 
 
 

@@ -42,36 +42,39 @@ import java.util.*;
 @Slf4j
 @Transactional
 @Service("ovnbatchlotService")
-public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper, OvnBatchLot> implements IOvnBatchLotService {
+public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper,OvnBatchLot> implements IOvnBatchLotService {
     @Autowired
     IOvnBatchLotParamService ovnBatchLotParamService;
     String[] FTP94 = {"10.11.100.40", "21", "cim", "Pp123!@#"};
 
     @Override
-    public List<OvnBatchLot> findDataByTime(String beginTime, String endTime) {
-        return baseMapper.findDataByTime(beginTime, endTime);
+    public List<OvnBatchLot> findDataByTime(String beginTime, String endTime){
+        return baseMapper.findDataByTime(beginTime,endTime);
+    }
+
+    @Override
+    public List<OvnBatchLot> findDataByEqpId(String beginTime, String endTime,String eqpId){
+        return baseMapper.findDataByEqpId(beginTime,endTime,eqpId);
     }
 
     @Override
     public List<String> lastDayEqpList(Date startTime, Date endTime) {
-        return baseMapper.lastDayEqpList(startTime, endTime);
+        return baseMapper.lastDayEqpList(startTime,endTime);
     }
 
     @Override
-    public OvnBatchLot findBatchData(String eqpId, Date startTime) {
-        return baseMapper.findBatchData(eqpId, startTime);
+    public OvnBatchLot findBatchData(String eqpId , Date startTime){
+        return baseMapper.findBatchData(eqpId,startTime);
     }
-
     @Override
-    public OvnBatchLot findBatchDataByLot(String eqpId, String lotNo) {
-        return baseMapper.findBatchDataByLot(eqpId, lotNo);
+    public  OvnBatchLot findBatchDataByLot(String eqpId , String lotNo){
+        return baseMapper.findBatchDataByLot(eqpId,lotNo);
     }
-
     @Override
     public OvnBatchLot selectById(Serializable id) {
         OvnBatchLot ovnBatchLot = super.selectById(id);
         EntityWrapper<OvnBatchLotParam> entityWrapper = new EntityWrapper<OvnBatchLotParam>();
-        entityWrapper.orderBy("createDate", true);
+        entityWrapper.orderBy("createDate",true);
         ovnBatchLot.setOvnBatchLotParamList(ovnBatchLotParamService.selectList(entityWrapper.eq("BATCH_ID", ovnBatchLot.getId())));
         return ovnBatchLot;
     }
@@ -88,13 +91,8 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
     }
 
     @Override
-    public List<Map> selectFabStatusParam(List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList) {
-        return baseMapper.selectFabStatusParam(fabEquipmentOvenStatusList);
-    }
-
-    @Override
-    public List<OvnBatchLot> findDataByEqpId(String beginTime, String endTime, String eqpId) {
-        return baseMapper.findDataByEqpId(beginTime,endTime,eqpId);
+    public List<Map> selectFabStatusParam( List<FabEquipmentOvenStatus> fabEquipmentOvenStatusList) {
+        return baseMapper.selectFabStatusParam( fabEquipmentOvenStatusList);
     }
 
     @Override
@@ -111,7 +109,7 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
         for (OvnBatchLotParam ovnBatchLotParam : ovnBatchLotParamList) {
             ovnBatchLotParam.setBatchId(ovnBatchLot.getId());
         }
-        ovnBatchLotParamService.insertBatch(ovnBatchLotParamList, 100);
+        ovnBatchLotParamService.insertBatch(ovnBatchLotParamList,100);
         return true;
     }
 
@@ -122,12 +120,12 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
 
         //移动温度曲线文件至备份文件夹
         log.info("第二步{}备份文件{}", eqptId, fileName);
-        boolean copyFlag = FtpUtil.copyFile(FTP94, "/oven/" + eqptId, fileName, "/oven/goodback/" + DateUtil.getDate("yyyyMM") + "/" + eqptId, fileName);
+        boolean copyFlag = FtpUtil.copyFile(FTP94, "/oven/"+eqptId,fileName,"/oven/goodback/"+ DateUtil.getDate("yyyyMM")+"/"+eqptId,fileName);
         //删除文件
         boolean delFlag = false;
-        if (copyFlag) {
+        if(copyFlag){
             log.info("第三步{}删除文件{}", eqptId, fileName);
-            delFlag = FtpUtil.deleteFile(FTP94, "/oven/" + eqptId + "/" + fileName);
+            delFlag = FtpUtil.deleteFile(FTP94, "/oven/"+eqptId+"/"+fileName);
         }
         return delFlag;
     }
@@ -138,43 +136,43 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
         ovnBatchLot.setOfficeId("21100019");
         // TODO: 2019/6/24 判断文件是否存在
         FTPClient ftpClient = FtpUtil.connectFtp(FTP94);
-        Boolean fileExistFlag = FtpUtil.checkFileExist(ftpClient, "/oven/" + eqptId, fileName);
-        if (!fileExistFlag) {
+        Boolean fileExistFlag = FtpUtil.checkFileExist(ftpClient,"/oven/"+eqptId,fileName);
+        if(!fileExistFlag){
             try {
                 // TODO: 2019/6/24 打印日志
                 //this.sendMail(eqptId,lotNo,"文件不存在",fileName+"文件不存在");
                 //imMesCallService.save(eventId, "1", eqptId, "CureFtpFileAnalysis", "处理结束,文件不存在", lotNo);
                 return null;
-            } catch (Exception e) {
+            }catch (Exception e){
                 e.printStackTrace();
             }
         }
         // TODO: 2019/6/24 解析文件
-        log.info("----acquireFile----eqpId:" + eqptId + ";fileName:" + fileName + ";连接ftp服务器,获取输入流;");
+        log.info("----acquireFile----eqpId:"+eqptId+";fileName:"+fileName+";连接ftp服务器,获取输入流;");
         // TODO: 2019/10/16 判断是否为linux服务器
-        FtpUtil.downloadFile(ftpClient, "/oven/" + eqptId, fileName, "C:/tmp/file/cure/");
+        FtpUtil.downloadFile(ftpClient,"/oven/"+eqptId,fileName,"C:/tmp/file/cure/");
         InputStream in = new FileInputStream("C://tmp/file/cure/" + fileName);
-        log.info("----acquireFile----eqpId:" + eqptId + ";fileName:" + fileName + ";将流整体读取;");
+        log.info("----acquireFile----eqpId:"+eqptId+";fileName:"+fileName+";将流整体读取;");
         BufferedReader br = new BufferedReader(new InputStreamReader(in)); //将流整体读取。
 
 
         String str;
         List<OvnBatchLotParam> ovnBatchLotParamList = new ArrayList<OvnBatchLotParam>();
         while ((str = br.readLine()) != null) {
-            log.info("csv:" + str);
+            log.info("csv:"+str);
             if (str.length() == 0) {
                 continue;
             }
-            if (str.indexOf("vice,") >= 0) {
+            if(str.indexOf("vice,") >= 0){
                 ovnBatchLot.setEqpId(str.split(",")[1]);
                 continue;
             }
             if (str.indexOf("Lot,") >= 0) {
-                ovnBatchLot.setLotId(str.replace("Lot,", ""));
+                ovnBatchLot.setLotId(str.replace("Lot,",""));
                 continue;
             }
-            if (str.indexOf("Recipe,") >= 0) {
-                ovnBatchLot.setRecipeCode(str.replace("Recipe,", ""));
+            if(str.indexOf("Recipe,") >= 0){
+                ovnBatchLot.setRecipeCode(str.replace("Recipe,",""));
                 continue;
             }
 
@@ -197,23 +195,23 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
             ovnBatchLotParam.setTempSp(tempArray[5]);
             ovnBatchLotParamList.add(ovnBatchLotParam);
         }
-        if (ovnBatchLotParamList.size() <= 5) {
+        if(ovnBatchLotParamList.size()<=5){
             log.info("数据记录不足");
             throw new RuntimeException("数据记录不足，在五条以下");
         }
         ovnBatchLot.setOvnBatchLotParamList(ovnBatchLotParamList);
-        log.info("----acquireFile----eqpId:" + eqptId + ";fileName:" + fileName + ";读取完成;");
+        log.info("----acquireFile----eqpId:"+eqptId+";fileName:"+fileName+";读取完成;");
 
         //判断温度曲线是否正常
         ovnBatchLot.setCheckFlag("Y");
-        for (OvnBatchLotParam temp : ovnBatchLotParamList) {
+        for(OvnBatchLotParam temp :ovnBatchLotParamList){
             Double pv = Double.parseDouble(temp.getTempPv());
             Double max = Double.parseDouble(temp.getTempMax());
             Double min = Double.parseDouble(temp.getTempMin());
-            if (pv > max || pv < min) {
-                log.info("----acquireFile----eqpId:" + eqptId + ";fileName:" + fileName + ";温度曲线异常;");
+            if( pv>max|| pv<min){
+                log.info("----acquireFile----eqpId:"+eqptId+";fileName:"+fileName+";温度曲线异常;");
                 ovnBatchLot.setCheckFlag("N");
-                ovnBatchLot.setCheckResult("温度超标：温度(" + pv + "),上限温度(" + max + "),下限温度(" + min + ")");
+                ovnBatchLot.setCheckResult("温度超标：温度("+pv+"),上限温度("+max+"),下限温度("+min+")");
                 break;
             }
         }
@@ -221,24 +219,24 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
         // TODO: 2019/6/24 插入数据库中
         List<OvnBatchLotParam> lll = ovnBatchLot.getOvnBatchLotParamList();
         ovnBatchLot.setStartTime(lll.get(0).getCreateDate());
-        ovnBatchLot.setEndTime(lll.get(lll.size() - 1).getCreateDate());
+        ovnBatchLot.setEndTime(lll.get(lll.size()-1).getCreateDate());
         ovnBatchLot.setCreateBy("1");
         ovnBatchLot.setCreateDate(new Date());
-        for (OvnBatchLotParam temp : ovnBatchLot.getOvnBatchLotParamList()) {
+        for(OvnBatchLotParam temp: ovnBatchLot.getOvnBatchLotParamList()){
             temp.setCreateBy("1");
         }
         this.insert(ovnBatchLot);
         return ovnBatchLot;
     }
 
-    public void resolveAllTempFile(String eqpId) {
-        FTPFile[] ftpFiles = FtpUtil.listFile(FTP94, "/oven/" + eqpId + "/");
-        for (FTPFile ftpFile : ftpFiles) {
-            if (ftpFile.getName().length() < 14) {
+    public void resolveAllTempFile(String eqpId){
+        FTPFile[] ftpFiles = FtpUtil.listFile(FTP94,"/oven/"+eqpId+"/");
+        for(FTPFile ftpFile: ftpFiles){
+            if(ftpFile.getName().length()<14){
                 continue;
             }
             try {
-                log.info("/oven/" + eqpId + "/" + ftpFile.getName());
+                log.info("/oven/"+eqpId+"/"+ ftpFile.getName());
                 resolveTemperatureFile(eqpId, ftpFile.getName());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -255,7 +253,7 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
         List<String> minLimit = new ArrayList<>(); //下限
         List<String> setValue = new ArrayList<>(); //设定值
         List<Map<String, Object>> tempData = new ArrayList<>();//所有温度实测值
-        if (dataList != null && dataList.size() > 0) {
+        if(dataList!=null && dataList.size()>0){
             boolean minOtherLimit = true;
             boolean maxOtherLimit = true;
             boolean setOtherLimit = true;
@@ -264,31 +262,18 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
                 Map<String, Object> tempDataItem = new HashMap<>();//单个温度数据
                 tempDataItem.put("createTime", MapUtil.getString(dataItem, "create_date"));//数据的时间
                 // 第一通道的温度
-                if (minLimit.size() == 0) {
+                if(minLimit.size() == 0){
                     minLimit.add(MapUtil.getString(dataItem, "temp_min"));
                 }
-                if (maxLimit.size() == 0) {
+                if(maxLimit.size() == 0){
                     maxLimit.add(MapUtil.getString(dataItem, "temp_max"));
                 }
-                if (setValue.size() == 0) {
+                if(setValue.size() == 0){
                     setValue.add(MapUtil.getString(dataItem, "temp_sp"));
                 }
                 tempList.add(MapUtil.getString(dataItem, "temp_pv"));
                 // 其他通道的温度
                 String otherTemps = MapUtil.getString(dataItem, "other_temps_value");
-<<<<<<< .merge_file_a23304
-                String[] otherTempArr = otherTemps.split(",");
-                if (otherTempArr != null && otherTempArr.length > 0) {
-                    for (int i = 0; i < otherTempArr.length; i++) {
-                        if (i % 4 == 0) {
-                            tempList.add(otherTempArr[i]);
-                        } else if (i % 4 == 1 && setOtherLimit) {
-                            setValue.add(otherTempArr[i]);
-                        } else if (i % 4 == 2 && minOtherLimit) {
-                            minLimit.add(otherTempArr[i]);
-                        } else if (i % 4 == 3 && maxOtherLimit) {
-                            maxLimit.add(otherTempArr[i]);
-=======
                 if(StringUtil.isNotEmpty(otherTemps)){
                     String[] otherTempArr = otherTemps.split(",");
                     if (otherTempArr!=null && otherTempArr.length>0) {
@@ -302,7 +287,6 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
                             } else if(i % 4 == 3 && maxOtherLimit){
                                 maxLimit.add(otherTempArr[i]);
                             }
->>>>>>> .merge_file_a23308
                         }
                         setOtherLimit = false;
                         minOtherLimit = false;
@@ -321,147 +305,148 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
     }
 
     @Override
-    public List<Map> findDetailBytime(String beginTime, String endTime, String eqpId) {
-        beginTime = beginTime + " 00:00:00";
-        endTime = endTime + " 23:59:59";
-        int count = baseMapper.findCountBytime(eqpId, beginTime, endTime);
-        if (count > 1000000) {
+    public List<Map> findDetailBytime(String beginTime, String endTime,String eqpId) {
+        beginTime = beginTime+" 00:00:00";
+        endTime = endTime+" 23:59:59";
+        int count = baseMapper.findCountBytime(eqpId,  beginTime,  endTime);
+        if(count>1000000){
             return null;
-        } else {
-            List<Map> detail = baseMapper.findDetailBytime(eqpId, beginTime, endTime);
-            if (eqpId.equals("SIM-REFLOW1")) {
+        }else{
+            List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
+            if (eqpId.equals("SIM-REFLOW1")){
                 long timeFlag = 0;
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     Date begin = format.parse(beginTime);
                     Date end = format.parse(endTime);
-                    timeFlag = end.getTime() - begin.getTime();
+                    timeFlag = end.getTime()-begin.getTime();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                if (timeFlag > 24 * 3600 * 1000 * 7 && !ObjectUtil.isNullOrEmpty(detail.get(0).get("other_temps_value"))) {
+                if (timeFlag > 24*3600*1000*7&& !ObjectUtil.isNullOrEmpty(detail.get(0).get("other_temps_value"))){
                     int flag = 0;
-                    List<Map> result = new ArrayList<>();
-                    Map<String, Object> temp = new HashMap<>();
+                    List<Map> result =new ArrayList<>();
+                    Map<String,Object> temp = new HashMap<>();
                     BigDecimal pv = new BigDecimal(0);
                     String resultArr = (String) detail.get(0).get("other_temps_value");
                     String[] strResultArr = resultArr.split(",");
                     Double[] Other = new Double[strResultArr.length];
-                    for (int j = 0; j < strResultArr.length; j++) {
+                    for (int j = 0; j < strResultArr.length ; j++) {
 
-                        if (j == 0 || j % 4 == 0) {
-                            Other[j] = Double.valueOf(0);
+                        if (j==0||j%4 == 0){
+                            Other[j]= Double.valueOf(0);
                         } else {
-                            Other[j] = (Double.valueOf(strResultArr[j]));
+                            Other[j]=(Double.valueOf(strResultArr[j]));
                         }
                     }
-                    for (int i = 0; i < detail.size(); i++) {
-                        if ((i != 0 && flag == 60) || (i == (detail.size() - 1))) {
-                            if (i == (detail.size() - 1)) {
+                    for (int i = 0; i <detail.size() ; i++) {
+                        if((i!=0&&flag==60)||(i==(detail.size()-1))){
+                            if (i==(detail.size()-1)){
                                 String convert = String.valueOf(detail.get(i).get("temp_pv"));
                                 BigDecimal pv_temp = new BigDecimal(convert);
-                                pv = pv.add(pv_temp);
+                                pv = pv.add( pv_temp);
                                 String str = (String) detail.get(i).get("other_temps_value");
                                 String[] strArr = str.split(",");
                                 Double[] doubleArr = new Double[strArr.length];
-                                for (int j = 0; j < strArr.length; j++) {
-                                    doubleArr[j] = (Double.valueOf(strArr[j]));
+                                for (int j = 0; j <strArr.length ; j++) {
+                                    doubleArr[j]=(Double.valueOf(strArr[j]));
                                 }
-                                for (int j = 0; j < doubleArr.length; j++) {
-                                    if (j == 0 || j % 4 == 0) {
+                                for (int j = 0; j <doubleArr.length ; j++) {
+                                    if (j==0||j%4 == 0){
                                         BigDecimal first = BigDecimal.valueOf(Other[j]);
                                         BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
                                         Other[j] = Double.valueOf(first.add(second).toString());
                                     }
                                 }
                             }
-                            for (int j = 0; j < Other.length; j++) {
-                                if (j == 0 || j % 4 == 0) {
+                            for (int j = 0; j <Other.length ; j++) {
+                                if (j==0||j%4 == 0){
                                     BigDecimal first = BigDecimal.valueOf(Other[j]);
                                     BigDecimal multiply = new BigDecimal(60);
-                                    if ((detail.size() % 60 != 0) && i == detail.size() - 1) {
-                                        multiply = new BigDecimal(detail.size() % 60);
+                                    if((detail.size()%60!=0)&&i==detail.size()-1){
+                                        multiply = new BigDecimal(detail.size()%60);
                                     }
-                                    Other[j] = Double.valueOf(first.divide(multiply, 2, RoundingMode.HALF_UP).toString());
+                                    Other[j] =Double.valueOf(first.divide(multiply,2, RoundingMode.HALF_UP).toString());
                                 }
                             }
-                            Map<String, Object> element = new HashMap<>();
+                            Map<String,Object> element = new HashMap<>();
                             String[] stringArr = new String[Other.length];
-                            for (int j = 0; j < Other.length; j++) {
+                            for (int j = 0; j <Other.length ; j++) {
                                 stringArr[j] = Other[j].toString();
                             }
                             BigDecimal multiplyTwo = new BigDecimal(60);
-                            if ((detail.size() % 60 != 0) && i == detail.size() - 1) {
-                                multiplyTwo = new BigDecimal(detail.size() % 60);
+                            if((detail.size()%60!=0)&&i==detail.size()-1){
+                                multiplyTwo = new BigDecimal(detail.size()%60);
                             }
-                            element.put("temp_pv", Double.valueOf(pv.divide(multiplyTwo, 2, RoundingMode.HALF_UP).toString()));
-                            element.put("temp_min", detail.get(i).get("temp_min"));
-                            element.put("temp_sp", detail.get(i).get("temp_sp"));
-                            element.put("temp_max", detail.get(i).get("temp_max"));
-                            element.put("create_date", detail.get(i).get("create_date"));
-                            element.put("other_temps_value", StringUtil.join(stringArr, ","));
+                            element.put("temp_pv",Double.valueOf(pv.divide(multiplyTwo,2,RoundingMode.HALF_UP).toString()));
+                            element.put("temp_min",detail.get(i).get("temp_min"));
+                            element.put("temp_sp",detail.get(i).get("temp_sp"));
+                            element.put("temp_max",detail.get(i).get("temp_max"));
+                            element.put("create_date",detail.get(i).get("create_date"));
+                            element.put("other_temps_value", StringUtil.join(stringArr,","));
                             result.add(element);
                             pv = new BigDecimal(0);
                             String str = (String) detail.get(i).get("other_temps_value");
                             String[] strArr = str.split(",");
                             Double[] doubleArr = new Double[strArr.length];
-                            for (int j = 0; j < strArr.length; j++) {
-                                if (j == 0 || j % 4 == 0) {
-                                    doubleArr[j] = Double.valueOf(0);
-                                } else {
-                                    doubleArr[j] = (Double.valueOf(strArr[j]));
+                            for (int j = 0; j <strArr.length ; j++) {
+                                if (j==0||j%4 == 0){
+                                    doubleArr[j]= Double.valueOf(0);
+                                }else {
+                                    doubleArr[j]=(Double.valueOf(strArr[j]));
                                 }
                             }
                             Other = doubleArr;
-                            flag = 0;
+                            flag=0;
                         }
                         String convert = String.valueOf(detail.get(i).get("temp_pv"));
                         BigDecimal pv_temp = new BigDecimal(convert);
-                        pv = pv.add(pv_temp);
+                        pv = pv.add( pv_temp);
                         String str = (String) detail.get(i).get("other_temps_value");
                         String[] strArr = str.split(",");
                         Double[] doubleArr = new Double[strArr.length];
-                        for (int j = 0; j < strArr.length; j++) {
-                            doubleArr[j] = (Double.valueOf(strArr[j]));
+                        for (int j = 0; j <strArr.length ; j++) {
+                            doubleArr[j]=(Double.valueOf(strArr[j]));
                         }
-                        for (int j = 0; j < doubleArr.length; j++) {
-                            if (j == 0 || j % 4 == 0) {
+                        for (int j = 0; j <doubleArr.length ; j++) {
+                            if (j==0||j%4 == 0){
                                 BigDecimal first = BigDecimal.valueOf(Other[j]);
                                 BigDecimal second = BigDecimal.valueOf(doubleArr[j]);
                                 Other[j] = Double.valueOf(first.add(second).toString());
                             }
                         }
-                        flag += 1;
+                        flag+=1;
                     }
 
 
-                    result.remove(result.size() - 1);
-                    return result;
 
-                }
-            }
+                    result.remove(result.size()-1);
+                    return  result;
+
+                }}
             return detail;
         }
     }
 
     @Override
-    public List<Map> findDetailBytimeOther(String eqpId, String lotNo) {
+    public List<Map> findDetailBytimeOther(String eqpId,String lotNo) {
         StringBuffer sb = new StringBuffer();
-        if (lotNo != null) {
-            for (int i = 0; i < lotNo.length(); i++) {
+        if(lotNo != null) {
+            for(int i = 0; i < lotNo.length(); i++) {
                 char c = lotNo.charAt(i);
-                if (Character.isLowerCase(c)) {
+                if(Character.isLowerCase(c)) {
                     sb.append(Character.toUpperCase(c));
-                } else {
+                }else {
                     sb.append(c);
                 }
             }
         }
-        List<Map> detail = baseMapper.findDetailBytimeOther(eqpId, sb.toString());
+        List<Map> detail =  baseMapper.findDetailBytimeOther(eqpId,sb.toString());
 
         return detail;
 
     }
+
 
 
     @Override
@@ -472,12 +457,13 @@ public class OvnBatchLotServiceImpl extends CommonServiceImpl<OvnBatchLotMapper,
 
     @Override
     public boolean saveTempData(List<Map<String, Object>> eqpList, List<Map<String, Object>> temp) {
-        if (eqpList != null && eqpList.size() > 0) {
+        if(eqpList!=null && eqpList.size()>0){
             baseMapper.saveEqp(eqpList);
         }
-        if (temp != null && temp.size() > 0) {
+        if(temp!=null && temp.size()>0){
             baseMapper.saveTempParam(temp);
         }
         return true;
     }
 }
+
