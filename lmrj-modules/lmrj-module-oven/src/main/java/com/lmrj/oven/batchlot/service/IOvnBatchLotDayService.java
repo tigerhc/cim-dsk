@@ -21,4 +21,9 @@ public interface IOvnBatchLotDayService {
     Integer oldData(String periodDate);
 
     void fParamToDay(String eqpId, String periodDate);
+<<<<<<< .merge_file_a11280
+=======
+
+    List<String> getTitleByEqpId(String eqpId);
+>>>>>>> .merge_file_a01436
 }

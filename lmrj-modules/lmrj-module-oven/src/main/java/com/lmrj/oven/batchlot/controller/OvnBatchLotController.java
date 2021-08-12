@@ -228,9 +228,47 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         ServletUtils.printJson(response, content);
     }
+<<<<<<< .merge_file_a21008
 
     @RequestMapping(value = "/tempExport",method = {RequestMethod.GET, RequestMethod.POST})
     public Response tempExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
+=======
+    @RequestMapping(value = "/kLineExport",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response kLineExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
+        if(StringUtil.isEmpty(eqpId) || StringUtil.isEmpty(startTime) || StringUtil.isEmpty(endTime)){
+            return Response.error("参数不正确,导出失败");
+        }
+        Response res = Response.ok("导出成功");
+        String title = "温度K线图导出";
+        List<OvnBatchLotDay> ovnBatchLotDays = ovnBatchLotDayService.findDetail(eqpId,startTime, endTime);
+        List<String> titles = ovnBatchLotDayService.getTitleByEqpId(eqpId);
+        List<ExcelExportEntity> keyList = getKLineTempKeyList(eqpId, titles);
+        List<Map<String, String>> exportDataList = getKLineDataList(titles, ovnBatchLotDays);
+        try {
+            Workbook book = MyExcelExportUtil.exportExcel(new ExportParams("温度K线图数据导出"+eqpId,"详细信息"),keyList,exportDataList, 2);// TODO 811
+            FileOutputStream fos = new FileOutputStream("D:/ExcelExportForMap.xls");
+            book.write(fos);
+            fos.close();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            book.write(bos);
+            byte[] bytes = bos.toByteArray();
+            String bytesRes = StringUtil.bytesToHexString2(bytes);
+            title = title + "-" + DateUtil.getDateTime();
+            res.put("bytes", bytesRes);
+            res.put("title", title);
+            return res;
+        } catch (Exception e){
+            logger.error("温度K线图导出遇到异常,参数是:"+eqpId+",startTime:"+startTime+",endTime:"+endTime, e);
+        }
+        return res;
+    }
+
+    @RequestMapping(value = "/tempExport",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response tempExport(@RequestParam String eqpId,@RequestParam String startTime, @RequestParam String endTime){
+        if(StringUtil.isEmpty(eqpId) || StringUtil.isEmpty(startTime) || StringUtil.isEmpty(endTime)){
+            return Response.error("参数不正确,导出失败");
+        }
+>>>>>>> .merge_file_a26416
         Response res = Response.ok("导出成功");
         String title = "温度导出";
         Map<String, Object> maps = ovnBatchLotService.tempExport(eqpId, startTime, endTime);
@@ -254,6 +292,63 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         return res;
     }
+<<<<<<< .merge_file_a21008
+=======
+    private List<ExcelExportEntity> getKLineTempKeyList(String eqpId, List<String> titles){
+        List<ExcelExportEntity> keyList = new LinkedList<>();
+        ExcelExportEntity keyFirstCol = new ExcelExportEntity(" ","1");
+        keyList.add(keyFirstCol);
+        ExcelExportEntity keyTimeCol = new ExcelExportEntity("时间","2");
+        keyList.add(keyTimeCol);
+        ExcelExportEntity keyCol1 = new ExcelExportEntity("设备号","3");
+        keyList.add(keyCol1);
+        if(titles.size()>0){
+            for(int i=0; i< titles.size();i++){
+                ExcelExportEntity titleKeyCol1 = new ExcelExportEntity(titles.get(i)+"(开始温度)",String.valueOf((i*4)+4));
+                keyList.add(titleKeyCol1);
+                ExcelExportEntity titleKeyCol2 = new ExcelExportEntity(titles.get(i)+"(结束温度)",String.valueOf((i*4)+5));
+                keyList.add(titleKeyCol2);
+                ExcelExportEntity titleKeyCol3 = new ExcelExportEntity(titles.get(i)+"(最大温度)",String.valueOf((i*4)+6));
+                keyList.add(titleKeyCol3);
+                ExcelExportEntity titleKeyCol4 = new ExcelExportEntity(titles.get(i)+"(最小温度)",String.valueOf((i*4)+7));
+                keyList.add(titleKeyCol4);
+            }
+        }
+        return keyList;
+    }
+
+    private List<Map<String, String>> getKLineDataList(List<String> titles, List<OvnBatchLotDay> dataList){
+        Map<String, String> titleIndex = new HashMap<>();
+        for(int j=0; j<titles.size(); j++){
+            titleIndex.put(titles.get(j)+"(开始温度)", String.valueOf((j*4)+4));
+            titleIndex.put(titles.get(j)+"(结束温度)", String.valueOf((j*4)+5));
+            titleIndex.put(titles.get(j)+"(最大温度)", String.valueOf((j*4)+6));
+            titleIndex.put(titles.get(j)+"(最小温度)", String.valueOf((j*4)+7));
+        }
+        List<Map<String, String>> rs = new ArrayList<>();
+        if(dataList.size()>0){
+            Map<String, String> dataItem = null;
+            String curPeriodDate = "";
+            for(int i=0; i<dataList.size(); i++){
+                if(StringUtil.isEmpty(curPeriodDate) || !dataList.get(i).getPeriodDate().equals(curPeriodDate)){
+                    if(dataItem!=null){
+                        rs.add(dataItem);
+                    }
+                    dataItem = new HashMap<>();
+                    curPeriodDate = dataList.get(i).getPeriodDate();
+                }
+                dataItem.put("2", dataList.get(i).getPeriodDate());
+                dataItem.put("3", dataList.get(i).getEqpId());
+                dataItem.put(titleIndex.get(dataList.get(i).getEqpTemp() + "(开始温度)"), dataList.get(i).getTempStart());
+                dataItem.put(titleIndex.get(dataList.get(i).getEqpTemp() + "(结束温度)"), dataList.get(i).getTempEnd());
+                dataItem.put(titleIndex.get(dataList.get(i).getEqpTemp() + "(最大温度)"), dataList.get(i).getTempMax());
+                dataItem.put(titleIndex.get(dataList.get(i).getEqpTemp() + "(最小温度)"), dataList.get(i).getTempMin());
+            }
+        }
+        return rs;
+    }
+
+>>>>>>> .merge_file_a26416
     private List<ExcelExportEntity> getTempKeyList(String[] titles){
         List<ExcelExportEntity> keyList = new LinkedList<>();
         if(titles!=null && titles.length > 0){
@@ -268,6 +363,10 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
         }
         return keyList;
     }
+<<<<<<< .merge_file_a21008
+=======
+
+>>>>>>> .merge_file_a26416
     private List<Map<String, String>> getTempDataList(Map<String, Object> tempMap){
         try {
             List<String> maxList = (List) tempMap.get("maxLimit");
