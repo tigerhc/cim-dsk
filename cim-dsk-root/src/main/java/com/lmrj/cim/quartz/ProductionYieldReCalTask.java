@@ -7,6 +7,7 @@ import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -26,9 +27,13 @@ public class ProductionYieldReCalTask {
     @Autowired
     IMesLotTrackService mesLotTrackService;
     public String filePath = "E:\\FTP\\EQUIPMENT\\SIM\\2020\\PRINTER\\SIM-PRINTER1\\07";
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //@Scheduled(cron = "0 45 14 * * ?")
     public void fileAnalysistest() throws Exception {
+        if(!jobenabled){
+            return;
+        }
         List<File> fileList = getFileList(filePath);
         for (File file : fileList) {
             log.info("开始解析 : {}", file.getName());

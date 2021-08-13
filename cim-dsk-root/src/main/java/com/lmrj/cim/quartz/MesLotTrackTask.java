@@ -7,6 +7,7 @@ import com.lmrj.mes.track.entity.MesLotTrack;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,10 +24,14 @@ public class MesLotTrackTask {
     private IFabLogService fabLogService;
     @Autowired
     IMesLotTrackService iMesLotTrackService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //修复mes_lot_track表中的批量内连番
     //@Scheduled(cron = "0 0/5 * * * ?")
     public void fixLotTrackData() {
+        if(!jobenabled){
+            return;
+        }
         Date startTime = new Date();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);

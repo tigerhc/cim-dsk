@@ -7,6 +7,7 @@ import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.file.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -25,12 +26,17 @@ public class YieldCheckTask {
     IMesLotTrackService mesLotTrackService;
     @Autowired
     IEdcDskLogOperationService iEdcDskLogOperationService;
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 生成TRM前一天的表格
      * 每隔10分钟一次
      */
     //@Scheduled(cron = "0 0 1 * * ?")
     public void yieldCheck() {
+        if(!jobenabled){
+            return;
+        }
         Date endTime=new Date();
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR_OF_DAY,-1);

@@ -20,7 +20,8 @@ public class RptYieldDayTask {
     RptLotYieldDayServiceImpl rptLotYieldDayService;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     @Value("${dsk.lineNo}")
     String lineNo;
     /**
@@ -29,6 +30,9 @@ public class RptYieldDayTask {
      */
     //@Scheduled(cron = "0 0/20 * * * ?")
     public void updateDayYield() {
+        if(!jobenabled){
+            return;
+        }
         for (int i = 15; i >=0 ; i--) {
             Date endTime=new Date();
             Calendar cal = Calendar.getInstance();

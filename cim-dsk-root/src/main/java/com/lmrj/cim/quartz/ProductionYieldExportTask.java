@@ -4,6 +4,7 @@ import com.lmrj.dsk.eqplog.service.impl.EdcDskLogProductionServiceImpl;
 import com.lmrj.mes.track.entity.MesLotTrack;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -15,9 +16,13 @@ import java.util.List;
 public class ProductionYieldExportTask {
     @Autowired
     EdcDskLogProductionServiceImpl edcDskLogProductionService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //@Scheduled(cron = "0 30 23 * * ?")
     public void doExportProductionCsv() throws Exception {
+        if(!jobenabled){
+            return;
+        }
         log.info("导出production csv任务执行");
         try{
             Date endTime = new Date();

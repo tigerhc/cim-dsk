@@ -13,6 +13,7 @@ import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -37,13 +38,17 @@ public class EqpStateTask {
     private IRptEqpStateDayService rptEqpStateDayService;
     @Autowired
     IMesLotTrackService iMesLotTrackService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 计算当天的设备OEE数据
      * 每隔10分钟一次
      */
     //@Scheduled(cron = "0 0/10 * * * ?")
     public void eqpStateDay() {
+        if(!jobenabled){
+            return;
+        }
         log.info("EqpStateTask定时任务开始执行");
         try {
             //当天时间
@@ -82,6 +87,9 @@ public class EqpStateTask {
     //计算前一天设备OEE
     @Scheduled(cron = "0 0 1 * * ?")
     public void eqpOldStateDay() {
+        if(!jobenabled){
+            return;
+        }
         log.info("EqpStateTask定时任务开始执行");
         try {
             //当天时间
@@ -112,6 +120,9 @@ public class EqpStateTask {
      */
     //@Scheduled(cron = "0 0 8 * * ?")
     public void fixeqpState(Date startTime, Date endTime) {
+        if(!jobenabled){
+            return;
+        }
         log.info("定时任务开始执行startTime {} --> endTime {}", startTime, endTime);
         List<String> eqpIdList = edcEqpStateService.findEqpId(startTime, endTime);
          for (String eqpId : eqpIdList) {
@@ -123,6 +134,9 @@ public class EqpStateTask {
     //数据补充：为昨日没有生成OEE数据的设备生成一条数据，保证页面可以查到
     @Scheduled(cron = "0 0 2 * * ?")
     public void dataSupplement() {
+        if(!jobenabled){
+            return;
+        }
         Date startTime = new Date();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -182,6 +196,9 @@ public class EqpStateTask {
 
     //@Scheduled(cron = "0 0 11 * * ?")
     public void dataFilling() {
+        if(!jobenabled){
+            return;
+        }
         List<String> epqIdList = new ArrayList<>();
         epqIdList = iFabEquipmentService.findEqpIdList();
         Date startTime = new Date();

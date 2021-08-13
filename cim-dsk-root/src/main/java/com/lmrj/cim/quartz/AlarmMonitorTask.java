@@ -10,6 +10,7 @@ import com.lmrj.mes.track.service.IMesLotTrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,13 +31,17 @@ public class AlarmMonitorTask {
     IFabEquipmentService iFabEquipmentService;
     @Autowired
     private AmqpTemplate rabbitTemplate;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 监控设备报警持续时间，
      * 每隔10分钟一次
      */
     //@Scheduled(cron = "0 10 * * * ?")
     public void AlarmMonitor() {
+        if(!jobenabled){
+            return;
+        }
         List<String> eqpIdList = new ArrayList<>();
         eqpIdList = iFabEquipmentService.findEqpIdList();
         for (String eqpId : eqpIdList) {

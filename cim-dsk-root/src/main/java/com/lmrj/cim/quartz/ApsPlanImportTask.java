@@ -34,8 +34,12 @@ public class ApsPlanImportTask {
 
     @Value("${aps.dir}")
     public String dir;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     public void rundskAps() {
+        if(!jobenabled){
+            return;
+        }
         try {
             log.info("计划插入定时任务开始执行");
             String[] extensions = {"xls"};

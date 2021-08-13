@@ -6,6 +6,7 @@ import com.lmrj.fab.eqp.service.impl.FabEquipmentServiceImpl;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -20,9 +21,14 @@ public class OperationYieldExportTask {
     EdcDskLogOperationServiceImpl edcDskLogOperationService;
     @Autowired
     FabEquipmentServiceImpl fabEquipmentService;
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //@Scheduled(cron = "0 30 23 * * ?")
     //跨月怎么办
     public void doExportOperationCsv() throws Exception {
+        if(!jobenabled){
+            return;
+        }
         log.info("修正Operation csv任务执行");
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 8);

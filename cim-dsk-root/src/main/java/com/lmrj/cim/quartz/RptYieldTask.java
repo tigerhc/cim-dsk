@@ -11,6 +11,7 @@ import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -29,7 +30,8 @@ public class RptYieldTask {
     private IRptLotYieldService rptLotYieldService;
     @Autowired
     private IEdcDskLogProductionService edcDskLogProductionService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 计算产量,写入报表 edc_dsk_log_production -- >   rpt_lot_yield
      * <p>
@@ -37,6 +39,9 @@ public class RptYieldTask {
      */
     //@Scheduled(cron = "0 0/10 * * * ?")
     public void updateYield() {
+        if(!jobenabled){
+            return;
+        }
         log.info("定时任务开始执行");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR_OF_DAY,-8);

@@ -7,6 +7,7 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.dsk.eqplog.service.IEdcDskLogProductionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,12 +22,16 @@ public class OperationYieldTask {
     private IEdcDskLogOperationService edcDskLogOperationService;
     @Autowired
     private IEdcDskLogProductionService edcDskLogProductionService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 计算产量,写入操操作日志
      */
     //@Scheduled(cron = "0 0/10 * * * ?")
     public void updateOperationYield() {
+        if(!jobenabled){
+            return;
+        }
         log.info("OperationYieldTask定时任务开始执行");
         //2天前
         Calendar cal = Calendar.getInstance();

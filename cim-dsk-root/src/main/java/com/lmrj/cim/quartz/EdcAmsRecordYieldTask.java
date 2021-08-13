@@ -6,6 +6,7 @@ import com.lmrj.edc.ams.entity.EdcAmsRecord;
 import com.lmrj.edc.ams.service.IEdcAmsRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,12 +21,16 @@ public class EdcAmsRecordYieldTask {
     private IEdcAmsRecordService iEdcAmsRecordService;
     @Autowired
     private IEdcDskLogProductionService edcDskLogProductionService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 计算产量,写入操操作日志
      */
     //@Scheduled(cron = "0 0/5 * * * ?")
     public void updateAmsRecordYield() {
+        if(!jobenabled){
+            return;
+        }
         log.info("EdcAmsRecordYieldTask定时任务开始执行");
         Date endTime = new Date();
         Calendar cal = Calendar.getInstance();

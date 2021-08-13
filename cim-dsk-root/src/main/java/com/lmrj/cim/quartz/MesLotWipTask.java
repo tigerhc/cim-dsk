@@ -28,10 +28,14 @@ public class MesLotWipTask {
     IMesLotTrackService iMesLotTrackService;
     @Value("${dsk.lineNo}")
     String lineNo;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //往mes_lot_wip表中导入数据
     //@Scheduled(cron = "0 10 0 * * ?")
     public void buildWipData() {
+        if(!jobenabled){
+            return;
+        }
         Date endTime = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);

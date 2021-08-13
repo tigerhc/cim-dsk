@@ -43,6 +43,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -700,11 +702,16 @@ public class EdcDskLogHandler {
     @RabbitListener(queues = {"C2S.Q.ALARMRPT.DATA"})
     public String repeatAlarm(String msg) {
         log.info("C2S.Q.ALARMRPT.DATA消息接收开始执行 " + msg);
-        repeatAlarmUtil.queryAlarmDefine();
-        Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
-        EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
-        System.out.println(edcAmsRecord);
-        repeatAlarmUtil.repeatAlarm(edcAmsRecord);
+        try {
+            repeatAlarmUtil.queryAlarmDefine();
+            Map<String, String> msgMap = JsonUtil.from(msg, Map.class);
+            EdcAmsRecord edcAmsRecord = JsonUtil.from(msgMap.get("alarm"), EdcAmsRecord.class);
+            System.out.println(edcAmsRecord);
+            repeatAlarmUtil.repeatAlarm(edcAmsRecord);
+        } catch (Exception e) {
+            log.error("C2S.Q.ALARMRPT.DATA消息接收开始执行 " + msg,e);
+            e.printStackTrace();
+        }
         return JsonUtil.toJsonString(MesResult.ok("ok"));
     }
 
@@ -771,45 +778,50 @@ public class EdcDskLogHandler {
             fabEquipmentStatusService.updateYield(edcDskLogRecipe.getEqpId(), "", edcDskLogRecipe.getRecipeCode(), -1, -1);
         });
     }
-
+    @Transactional(propagation= Propagation.NOT_SUPPORTED)
     @RabbitHandler
     @RabbitListener(queues = {"C2S.Q.TEMPLOG.DATA"})
     public void parseTempHlog(String msg) {
         log.info("C2S.Q.TEMPLOG.DATA recieved message 开始解析{}温度曲线文件 : {} " + msg);
-        OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
-        String eqpId = ovnBatchLot.getEqpId();
-        if (StringUtil.isNotBlank(eqpId)) {
-            if (!eqpId.equals("")) {
-                FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
-                ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
-                FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                if (equipmentStatus != null) {
-                    ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+        try {
+            OvnBatchLot ovnBatchLot = JsonUtil.from(msg, OvnBatchLot.class);
+            String eqpId = ovnBatchLot.getEqpId();
+            if (StringUtil.isNotBlank(eqpId)) {
+                if (!eqpId.equals("")) {
+                    FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
+                    ovnBatchLot.setOfficeId(fabEquipment.getOfficeId());
+                    FabEquipmentStatus equipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                    if (equipmentStatus != null) {
+                        ovnBatchLot.setRecipeCode(equipmentStatus.getRecipeCode());
+                    }
                 }
-            }
-            Long time = ovnBatchLot.getStartTime().getTime() - 24 * 60 * 60 * 1000;
-            Date startTime = new Date(time);
-            if (eqpId.equals("SIM-PRINTER1")) {
-                ovnBatchLot.setOtherTempsTitle("温度,湿度");
-            }
-            OvnBatchLot ovnBatchLot1 = ovnBatchLotService.findBatchData(eqpId, startTime);
-            if (ovnBatchLot1 != null) {
-                List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
-                ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
-                ovnBatchLotService.updateById(ovnBatchLot1);
+                Long time = ovnBatchLot.getStartTime().getTime() - 24 * 60 * 60 * 1000;
+                Date startTime = new Date(time);
+                if (eqpId.equals("SIM-PRINTER1")) {
+                    ovnBatchLot.setOtherTempsTitle("温度,湿度");
+                }
+                OvnBatchLot ovnBatchLot1 = ovnBatchLotService.findBatchData(eqpId, startTime);
+                if (ovnBatchLot1 != null) {
+                    List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                    ovnBatchLot1.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                    ovnBatchLotService.updateById(ovnBatchLot1);
 
-                for (OvnBatchLotParam ovnBatchLotParam : OvnBatchLotParamList) {
-                    ovnBatchLotParam.setBatchId(ovnBatchLot1.getId());
+                    for (OvnBatchLotParam ovnBatchLotParam : OvnBatchLotParamList) {
+                        ovnBatchLotParam.setBatchId(ovnBatchLot1.getId());
+                    }
+                    iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
+                } else {
+                    List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
+                    ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
+                    ovnBatchLotService.insert(ovnBatchLot);
                 }
-                iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
-            } else {
-                List<OvnBatchLotParam> OvnBatchLotParamList = ovnBatchLot.getOvnBatchLotParamList();
-                ovnBatchLot.setEndTime(OvnBatchLotParamList.get(OvnBatchLotParamList.size() - 1).getCreateDate());
-                ovnBatchLotService.insert(ovnBatchLot);
+                if (filterEqpId(eqpId)) {
+                    tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
+                }
             }
-            if (filterEqpId(eqpId)) {
-                tempFilter(ovnBatchLot, msg);//如果温度数据不在上下限内，发送邮件
-            }
+        } catch (Exception e) {
+            log.error("C2S.Q.TEMPLOG.DATA recieved message 解析{}温度曲线文件出错 : {} " + msg,e);
+            e.printStackTrace();
         }
     }
 

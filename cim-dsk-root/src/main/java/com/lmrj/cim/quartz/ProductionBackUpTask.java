@@ -7,6 +7,7 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -24,13 +25,17 @@ public class ProductionBackUpTask {
 
     @Autowired
     private IFabEquipmentService fabEquipmentService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 备份数据 edc_dsk_log_production -- >   edc_dsk_log_production_his
      */
     //@Scheduled(cron = "0 10 * * * ?")
     //@Scheduled(cron = "0 50 9 * * ?")
     public void backupPdt() {
+        if(!jobenabled){
+            return;
+        }
         log.info("ProductionBackUpTask定时任务开始执行");
         //7天前
         Calendar calstart= Calendar.getInstance();

@@ -27,7 +27,10 @@ import com.lmrj.mes.track.service.IMesLotMaterialInfoService;
 import com.lmrj.mes.track.service.IMesLotMaterialService;
 import com.lmrj.mes.track.service.IMesLotTrackService;
 import com.lmrj.ms.record.entity.MsMeasureRecord;
+import com.lmrj.oven.batchlot.entity.OvnBatchLot;
+import com.lmrj.oven.batchlot.entity.OvnBatchLotParam;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
+import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.oven.batchlot.task.OvenDayTask;
 import com.lmrj.util.FileUtils;
@@ -99,6 +102,8 @@ public class RptYieldDayTaskTest {
     @Autowired
     private IOvnBatchLotService ovnBatchLotService;
     @Autowired
+    private IOvnBatchLotParamService ovnBatchLotParamService;
+    @Autowired
     private IOvnBatchLotDayService ovnBatchLotDayService;
     private Boolean isRun = Boolean.FALSE;
     @Autowired
@@ -111,10 +116,18 @@ public class RptYieldDayTaskTest {
     IMesLotTrackService iMesLotTrackService;
 
 
-    
+    @Autowired
+    MesLotWipTask mesLotWipTask;
+
     @Test
-    public void eapStateFix(){
-        for (int i = 1; i <30 ; i++) {
+    public void wipTask() {
+        mesLotWipTask.buildWipData();
+    }
+
+
+    @Test
+    public void eapStateFix() {
+        for (int i = 1; i < 30; i++) {
             Date startTime = new Date();
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -125,20 +138,52 @@ public class RptYieldDayTaskTest {
             startTime = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, 1);
             Date endTime = cal.getTime();
-            dataSupplement(startTime,endTime);
+            dataSupplement(startTime, endTime);
         }
 
     }
 
-    public void dataSupplement(Date startTime ,Date endTime) {
-        
+    @Test
+    public void eqpStateFix() {
+        Date endTime = new Date();
+        for (int i = 10; i >= 0; i--) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.add(Calendar.DAY_OF_MONTH, -i);
+            endTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date startTime = cal.getTime();
+            eqpStateTask.fixeqpState(startTime, endTime);
+        }
+        for (int i = 1; i < 12; i++) {
+            Date startTime = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.add(Calendar.DAY_OF_MONTH, -i);
+            startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Date endTime1 = cal.getTime();
+            dataSupplement(startTime, endTime1);
+        }
+
+    }
+
+    public void dataSupplement(Date startTime, Date endTime) {
         List<String> eqpIdList = new ArrayList<>();
         eqpIdList = iFabEquipmentService.findEqpIdList();
         List<RptEqpStateDay> rptEqpStateDayList = Lists.newArrayList();
+        List<EdcEqpState> edcEqpStateList = Lists.newArrayList();
         for (String eqpId : eqpIdList) {
-            List<EdcEqpState> eqpStateList = edcEqpStateService.getAllByTime(startTime, endTime, eqpId);
-            if (eqpStateList.size() == 0) {
+            EdcEqpState eqpState = edcEqpStateService.calEqpSateDayByeqpId(startTime, endTime, eqpId);
+            if (eqpState == null || "".equals(eqpState.getState())) {
                 RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
+                EdcEqpState edcEqpState = new EdcEqpState();
                 rptEqpStateDay.setEqpId(eqpId);
                 rptEqpStateDay.setPeriodDate(DateUtil.formatDate(startTime, "yyyyMMdd"));
                 Boolean flag = false;
@@ -153,20 +198,27 @@ public class RptYieldDayTaskTest {
                     Double run = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(run);
                     rptEqpStateDay.setIdleTime(0.0);
+                    edcEqpState.setState("RUN");
                 } else {
                     Double idle = 24 * 60 * 60 * 1000 * 0.001;
                     rptEqpStateDay.setRunTime(0.0);
                     rptEqpStateDay.setIdleTime(idle);
+                    edcEqpState.setState("IDLE");
                 }
                 rptEqpStateDay.setPmTime(0.0);
                 rptEqpStateDay.setAlarmTime(0.0);
+                edcEqpState.setEqpId(eqpId);
+                edcEqpState.setStartTime(startTime);
+                edcEqpState.setEndTime(endTime);
+                edcEqpState.setStateTimes(24 * 60 * 60 * 1000000 * 0.001);
+                edcEqpStateList.add(edcEqpState);
                 rptEqpStateDayList.add(rptEqpStateDay);
             }
         }
         if (rptEqpStateDayList.size() > 0) {
             rptEqpStateDayService.insertBatch(rptEqpStateDayList, 50);
+            edcEqpStateService.insertBatch(edcEqpStateList, 50);
         }
-
     }
 
 
@@ -307,36 +359,6 @@ public class RptYieldDayTaskTest {
                 rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
             }
         }
-    }
-
-    @Test
-    public void eqpStateFix() {
-        Date endTime = new Date();
-        for (int i = 8; i >= 0; i--) {
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.add(Calendar.DAY_OF_MONTH, -i);
-            endTime = cal.getTime();
-            cal.add(Calendar.DAY_OF_MONTH, -1);
-            Date startTime = cal.getTime();
-            eqpStateTask.fixeqpState(startTime, endTime);
-        }
-        for (int i = 1; i <10 ; i++) {
-            Date startTime = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            cal.add(Calendar.DAY_OF_MONTH, -i);
-            startTime = cal.getTime();
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-            Date endTime1 = cal.getTime();
-            dataSupplement(startTime,endTime1);
-        }
-
     }
 
 
@@ -766,4 +788,53 @@ public class RptYieldDayTaskTest {
             }
         }
     }
+
+    @Test
+    public void reflowdatafix() {
+        List<OvnBatchLotParam> ovnBatchLotParamsList = new ArrayList<>();
+        List<OvnBatchLot> ovnBatchLotList = ovnBatchLotService.findDataByEqpId("2021-07-01 00:00:00.000000", "2021-08-01 00:00:00.000000", "SIM-REFLOW1");
+        List<OvnBatchLotParam> newParamList = new ArrayList<>();
+        for (OvnBatchLot ovnBatchLot : ovnBatchLotList) {
+            ovnBatchLotParamsList = ovnBatchLotParamService.selectDataBybatchId(ovnBatchLot.getId());
+            for (OvnBatchLotParam ovnBatchLotParam : ovnBatchLotParamsList) {
+                String othertempvalue = ovnBatchLotParam.getOtherTempsValue();
+                if (othertempvalue.split(",").length == 66) {
+                    String columns[] = othertempvalue.split(",");
+                    String[] paramsValues = Arrays.copyOfRange(columns, 0, 60);
+                    String newOtherTempsValue = StringUtil.join(paramsValues, ",") + "," + columns[60] + "," + columns[61] + ",,," + columns[62] + "," + columns[63] + ",,," + columns[64] + "," + columns[65] + ",,,";
+                    ovnBatchLotParam.setOtherTempsValue(newOtherTempsValue);
+                    if (newParamList.size() > 10000) {
+                        ovnBatchLotParamService.updateBatchById(newParamList, 10000);
+                        newParamList = new ArrayList<>();
+                        newParamList.add(ovnBatchLotParam);
+                    } else {
+                        newParamList.add(ovnBatchLotParam);
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Test
+    public void reflowdatafix2() {
+        List<OvnBatchLotParam> ovnBatchLotParamsList = new ArrayList<>();
+        ovnBatchLotParamsList = ovnBatchLotParamService.selectDataByeqpId("SIM-REFLOW1", "2021-07-29 00:00:00.000000", "2021-08-13 00:00:00.000000");
+        for (OvnBatchLotParam ovnBatchLotParam : ovnBatchLotParamsList) {
+            System.out.println(ovnBatchLotParam.toString());
+        }
+        List<OvnBatchLotParam> newParamList = new ArrayList<>();
+        for (OvnBatchLotParam ovnBatchLotParam : ovnBatchLotParamsList) {
+            String othertempvalue = ovnBatchLotParam.getOtherTempsValue();
+            if (othertempvalue.split(",").length == 66) {
+                String columns[] = othertempvalue.split(",");
+                String[] paramsValues = Arrays.copyOfRange(columns, 0, 60);
+                String newOtherTempsValue = StringUtil.join(paramsValues, ",") + "," + columns[60] + "," + columns[61] + ",,," + columns[62] + "," + columns[63] + ",,," + columns[64] + "," + columns[65] + ",,,";
+                ovnBatchLotParam.setOtherTempsValue(newOtherTempsValue);
+                newParamList.add(ovnBatchLotParam);
+            }
+        }
+        ovnBatchLotParamService.updateBatchById(newParamList,20000);
+    }
+
 }

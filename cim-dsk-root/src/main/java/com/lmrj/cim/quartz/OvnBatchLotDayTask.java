@@ -4,6 +4,7 @@ import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -19,8 +20,13 @@ public class OvnBatchLotDayTask {
     @Autowired
     private IOvnBatchLotDayService ovnBatchLotDayService;
     private Boolean isRun=Boolean.FALSE;
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     //@Scheduled(cron = "0 0 1 * * ?")
     public void run() {
+        if(!jobenabled){
+            return;
+        }
         try {
             log.info(" 那日统计设备温度极值开始......................................" + (new Date()));
             if (!isRun) {

@@ -30,13 +30,17 @@ public class ClientCheckTask {
     private AmqpTemplate rabbitTemplate;
     @Value("${dsk.lineNo}")
     String lineNo;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     /**
      * 检查客户端连接状态，每十分钟检查一次
      * 每隔10分钟一次
      */
     //@Scheduled(cron = "0 20 * * * ?")
     public void clientCheck() {
+        if(!jobenabled){
+            return;
+        }
         List<String> bcCodeList = new ArrayList<>();
         if ("SIM".equals(lineNo)) {
             bcCodeList.add("SIM-BC1");

@@ -78,29 +78,32 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
     }
 
     @RequestMapping("/currentAlarmInfo")
-    public Response findCurrentAlarmInfo(@RequestParam String subLineNo, HttpServletRequest request, HttpServletResponse response) {
+    public Response findCurrentAlarmInfo(@RequestParam String department, HttpServletRequest request, HttpServletResponse response) {
         Response res = new Response();
         String alarmInfo = "警报发生：";
+        String idelInfo = "";
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -10);
-        List<EdcAmsRecord> amsRecordList = iEdcAmsRecordService.selectAmsRecordByTime(subLineNo, calendar.getTime());
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        List<EdcAmsRecord> amsRecordList = iEdcAmsRecordService.selectAmsRecordByTime(department, calendar.getTime());
         if (amsRecordList.size() > 0) {
             for (EdcAmsRecord edcAmsRecord : amsRecordList) {
                 String eqpId = edcAmsRecord.getEqpId();
                 FabEquipmentStatus fabEquipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                if ("RUN".equals(fabEquipmentStatus.getEqpStatus())) {
-
-                } else if ("ALARM".equals(fabEquipmentStatus.getEqpStatus())) {
+                if ("ALARM".equals(fabEquipmentStatus.getEqpStatus())) {
                     String alarmStr = edcAmsRecord.getEqpId() + ":" + edcAmsRecord.getAlarmName();
                     alarmInfo = alarmInfo + "   " + alarmStr;
                 }
             }
         }
+        List<FabEquipmentStatus> fabEquipmentStatus = fabEquipmentStatusService.selectEqpStatus("", "", "",department);
         if (!"警报发生：".equals(alarmInfo)) {
             res.put("record", alarmInfo);
             res.put("eqpStatus", "ALARM");
-        } else {
-            res.put("record", "设备运转正常");
+        } else if("".equals(idelInfo)){
+            res.put("record", alarmInfo);
+            res.put("eqpStatus", "IDEL");
+        } else{
+            res.put("record", "设备正常稼动中");
             res.put("eqpStatus", "RUN");
         }
         return res;
