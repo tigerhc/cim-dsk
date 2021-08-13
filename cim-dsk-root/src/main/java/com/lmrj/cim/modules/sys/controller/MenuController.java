@@ -60,6 +60,7 @@ public class MenuController extends BaseBeanController<Menu> {
         if (!StringUtil.isEmpty(projectId)){
             entityWrapper.eq("project_id",projectId);
         }
+        entityWrapper.eq("del_flag",0);
         entityWrapper.orderBy("sort");
         List<Menu> treeNodeList = menuService.selectTreeList(entityWrapper);
         List<VueTreeHelper.VueTreeNode> vueTreeNodes = VueTreeHelper.create().sort(treeNodeList);
