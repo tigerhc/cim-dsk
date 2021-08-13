@@ -196,3 +196,4 @@ dsk:
 
 mapping:
   jobenabled: false
+  trayjobenabled: false

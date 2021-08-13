@@ -22,7 +22,7 @@ public class TrayChipScheduler {
     @Autowired
     private IMapTrayChipMovePseudoService mapTrayChipMovePseudoService;
 
-    @Value("${mapping.jobenabled}")
+    @Value("${mapping.trayjobenabled}")
     private Boolean jobenabled;
 
     private boolean pseduoDoingFlag=false;//伪码追溯进行中
@@ -60,6 +60,7 @@ public class TrayChipScheduler {
                         log.error("伪码追溯遇到了一个异常"+item.getEqpId(),e);
                     }
                 }
+//                mapTrayChipMovePseudoService.tracePseudoData("DM-DBCT-SORT2");
 
                 try{//制品码追溯
                     log.info("伪码HB2追溯开始:");
