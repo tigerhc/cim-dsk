@@ -5,6 +5,7 @@ import com.lmrj.dsk.eqplog.service.IEdcDskLogOperationService;
 import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -17,8 +18,12 @@ public class DataRestore {
     private IEdcDskLogOperationService edcDskLogOperationService;
     @Autowired
     private IEdcEqpStateService edcEqpStateService;
-
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
     public void OperationDataRestore() throws Exception{
+        if(!jobenabled){
+            return;
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
         Date startTime = simpleDateFormat.parse("2020-05-08 00:00:00");
         Date endTime = simpleDateFormat.parse("2020-05-09 00:00:00");

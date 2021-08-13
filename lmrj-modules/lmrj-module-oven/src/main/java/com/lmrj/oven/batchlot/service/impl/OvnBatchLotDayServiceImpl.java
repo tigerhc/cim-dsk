@@ -106,7 +106,8 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
                             ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
                             try {
-                                baseMapper.insert(ovnBatchLotDay);
+                                //baseMapper.insert(ovnBatchLotDay);
+                                System.out.println(ovnBatchLotDay.toString());
                             } catch (Exception e) {
                                 log.error("ovnBatchLotDay 数据插入出错  "+ovnBatchLotDay.getId(),e);
                                 e.printStackTrace();
@@ -132,7 +133,8 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     ovnBatchLotDay.setPeriodDate(list1.get(0).get("periodDate").toString());
                     ovnBatchLotDay.setTitleOrder(0);
                     try {
-                        baseMapper.insert(ovnBatchLotDay);
+                        //baseMapper.insert(ovnBatchLotDay);
+                        System.out.println(ovnBatchLotDay.toString());
                     } catch (Exception e) {
                         log.error("ovnBatchLotDay插入第一条数据,插入出错 "+ovnBatchLotDay.getId(),e);
                         e.printStackTrace();

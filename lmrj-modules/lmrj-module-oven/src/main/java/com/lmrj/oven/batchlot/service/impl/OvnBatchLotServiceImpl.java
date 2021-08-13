@@ -11,7 +11,6 @@ import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
 import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.file.FtpUtil;
-import com.lmrj.util.lang.ObjectUtil;
 import com.lmrj.util.lang.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
@@ -21,10 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -313,7 +308,7 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
             return null;
         }else{
             List<Map> detail =  baseMapper.findDetailBytime(eqpId,  beginTime,  endTime);
-            if (eqpId.equals("SIM-REFLOW1")){
+            /*if (eqpId.equals("SIM-REFLOW1")){
                 long timeFlag = 0;
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -423,7 +418,8 @@ public class OvnBatchLotServiceImpl  extends CommonServiceImpl<OvnBatchLotMapper
                     result.remove(result.size()-1);
                     return  result;
 
-                }}
+                }
+            }*/
             return detail;
         }
     }

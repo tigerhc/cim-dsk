@@ -611,7 +611,7 @@ public class EdcDskLogHandler {
                 edcEvtRecord.setEventId(eventId);
                 String eventDesc = edcDskLogOperation.getEventName();
                 String eventParams = edcDskLogOperation.getEventDetail();
-                if (eventDesc == null && eventParams == null) {
+                if ((eventDesc == null || "".equals(eventDesc)) && (eventParams == null || "".equals(eventParams))) {
                     if ("0".equals(eventId)) {
                         eventDesc = "自動生産動作停止";
                         eventParams = "自動生産動作停止";
