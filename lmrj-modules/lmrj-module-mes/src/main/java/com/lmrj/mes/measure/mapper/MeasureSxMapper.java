@@ -22,8 +22,13 @@ public interface MeasureSxMapper extends BaseMapper<MeasureSx> {
     List<Map<String, String>> findGiProductionNo(Map<String, Object> param);
 
     @Select("SELECT lot_no AS lotNo ,a1 ,b1 ,c1 ,d1 ,a2 ,b2 ,c2 ,d2,DATE_FORMAT(mea_date,'%Y-%m-%d %H:%i:%s') as 'meaDate' " +
-            "FROM measure_sx_record WHERE production_no = #{productionName} AND serial_counter = #{number} AND measure_type = #{type}  AND measure_judgment = 'OK' AND  mea_date BETWEEN #{startDate} AND #{endDate} ORDER  BY lot_no")
+            "FROM measure_sx_record WHERE production_no = #{productionName} AND serial_counter = #{number} AND measure_type = #{type}  AND measure_judgment = 'OK' " +
+            " AND  mea_date BETWEEN #{startDate} AND #{endDate} ORDER  BY lot_no")
     List<Map<String, String>> findSxNumber(@Param("productionName") String productionName,@Param("number")String number, @Param("startDate") String startDate,@Param("endDate") String endDate,@Param("type") String type);
+
+    @Select("SELECT DISTINCT lot_no FROM measure_sx_record WHERE production_no = #{productionName} AND measure_type = #{type}  AND measure_judgment = 'OK' " +
+            "AND  mea_date BETWEEN #{startDate} AND #{endDate} ORDER  BY lot_no")
+    List<String> findSxLotNo(@Param("productionName") String productionName, @Param("startDate") String startDate,@Param("endDate") String endDate,@Param("type") String type);
 
     @Select("SELECT lot_no AS lotNo ,a1 as 'a' ,b1 as 'b',c1 as 'c1',DATE_FORMAT(mea_date,'%Y-%m-%d %H:%i:%s') as 'meaDate',serial_counter as serialCounter," +
             "c2 as 'c2',c3 as 'c3',c4 as 'c4',c5 as 'c5',c6 as 'c6',c7 as 'c7',c8 as 'c8',c9 as 'c9',c10 as 'c10',c11 as 'c11',c12 as 'c12',c13 as 'c13',c14 as 'c14'," +

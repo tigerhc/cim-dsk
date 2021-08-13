@@ -23,6 +23,8 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
 
     private Map<String, String> giLineName = JsonUtil.from("{\"burr_f\":\"毛刺\",\"pin_f1\":\"1:1PIN\",\"pin_f2\":\"1:2PIN\",\"pin_f3\":\"1:3PIN\",\"pin_f4\":\"1:4PIN\",\"pin_f5\":\"1:5PIN\",\"pin_f6\":\"1:6PIN\",\"pin_f1_f2\":\"1:1PIN-2PIN\",\"pin_f2_f3\":\"1:2PIN-3PIN\",\"pin_f3_f4\":\"1:3PIN-4PIN\",\"pin_f4_f5\":\"1:4PIN-5PIN\",\"pin_f5_f6\":\"1:5PIN-6PIN\",\"pin_s1\":\"2:1PIN\",\"pin_s2\":\"2:2PIN\",\"pin_s3\":\"2:3PIN\",\"pin_s4\":\"2:4PIN\",\"pin_s5\":\"2:5PIN\",\"pin_s6\":\"2:6PIN\"}", HashMap.class);
 
+    private Map<String, Double> sxLimit = JsonUtil.from("{\"LFMINa\":13.9,\"LFMAXa\":14.3,\"LFMINb\":0.4,\"LFMAXb\":1,\"LFMINc\":0.07,\"LFMAXc\":0.13,\"LFMINd\":0,\"LFMAXd\":17,\"checkMINa\":13.9,\"checkMAXa\":14.3,\"checkMINb\":0.4,\"checkMAXb\":1,\"checkMINc\":0.02,\"checkMAXc\":0.13,\"checkMINd\":0,\"checkMAXd\":17}", HashMap.class);
+
     @Override
     public List<Map<String, String>> findProductionNo(String type, String lineNo) {
         if("SX".equals(lineNo)){
@@ -37,124 +39,216 @@ public class MeasureSxServiceImpl extends CommonServiceImpl<MeasureSxMapper, Mea
         }
     }
 
-    public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
-        double cMin = 0;
-        if(!"LF".equals(type)){
-            cMin = 0.02;
-        } else {
-            cMin = 0.07;
-        }
-        number = "1";
-        List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
-        number = "2";
-        List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
-        List patent = new LinkedList();
-        List title = new LinkedList();
-        List arr = new LinkedList();
-        List totalValue = new LinkedList();
-        List totalValue2 = new LinkedList();
-        for (Map map : result) {
-            title.add(map.get("lotNo"));
-            totalValue.add(map.get(local + "1"));
-            totalValue.add(map.get(local + "2"));
-        }
-        for (Map map : result2) {
-            totalValue2.add(map.get(local + "1"));
-            totalValue2.add(map.get(local + "2"));
-        }
+//    public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
+//        double cMin = 0;
+//        if(!"LF".equals(type)){
+//            cMin = 0.02;
+//        } else {
+//            cMin = 0.07;
+//        }
+//        number = "1";
+//        List<Map<String, String>> result = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
+//        number = "2";
+//        List<Map<String, String>> result2 = measureSxMapper.findSxNumber(productionName, number, startDate, endDate, type);
+//        List patent = new LinkedList();
+//        List title = new LinkedList();
+//        List arr = new LinkedList();
+//        List totalValue = new LinkedList();
+//        List totalValue2 = new LinkedList();
+//        for (Map map : result) {
+//            title.add(map.get("lotNo"));
+//            totalValue.add(map.get(local + "1"));
+//            totalValue.add(map.get(local + "2"));
+//        }
+//        for (Map map : result2) {
+//            totalValue2.add(map.get(local + "1"));
+//            totalValue2.add(map.get(local + "2"));
+//        }
+//
+//        for (int i = 0; i < 6; i++) {
+//            Map element = new HashMap();
+//            if (i == 2 || i == 3) {
+//                Map markLine = new HashMap();
+//                List dataB = new ArrayList();
+//                Map basic = new HashMap();
+//                basic.put("type", "max");
+//                basic.put("name", "最大数据");
+//                dataB.add(basic);
+//                markLine.put("data", dataB);
+//                element.put("markLine", markLine);
+//            }
+//            switch (i) {
+//                case 0:
+//                    element.put("name", "1-1:" + local.toUpperCase());
+//                    break;
+//                case 1:
+//                    element.put("name", "1-2:" + local.toUpperCase());
+//                    break;
+//                case 2:
+//                    element.put("name", "上限");
+//                    break;
+//                case 3:
+//                    element.put("name", "下限");
+//                    break;
+//                case 4:
+//                    element.put("name", "2-1:" + local.toUpperCase());
+//                    break;
+//                case 5:
+//                    element.put("name", "2-2:" + local.toUpperCase());
+//                    break;
+//            }
+//            element.put("type", "line");
+//            List elementArr = new LinkedList();
+//            int size = (result.size() > result2.size()) ? result2.size() : result.size();
+//            for (int j = 0; j < size; j++) {
+//                if (i == 2) {
+//                    if (local.equals("a")) {
+//                        elementArr.add(14.3);
+//                    } else if (local.equals("b")) {
+//                        elementArr.add(1.00);
+//                    } else if (local.equals("c")) {
+//                        elementArr.add(0.13);
+//                    } else if (local.equals("d")) {
+//                        elementArr.add(17);
+//                    }
+//                } else if (i == 3) {
+//                    if (local.equals("a")) {
+//                        elementArr.add(13.9);
+//                    } else if (local.equals("b")) {
+//                        elementArr.add(0.4);
+//                    } else if (local.equals("c")) {
+//                        elementArr.add(cMin);//elementArr.add(0.07);
+//                    } else if (local.equals("d")) {
+//                        elementArr.add(0);
+//                    }
+//                } else {
+//                    if (i < 2) {
+//                        elementArr.add(totalValue.get((j * 2) + i));
+//                    } else if (i > 3) {
+//                        if (i == 4) {
+//                            int q = 0;
+//                            elementArr.add(totalValue2.get((j * 2) + q));
+//                        }
+//                        if (i == 5) {
+//                            int q = 1;
+//                            elementArr.add(totalValue2.get((j * 2) + q));
+//                        }
+//                    }
+//                }
+//            }
+//            element.put("data", elementArr);
+//            arr.add(element);
+//        }
+//        patent.add(title);
+//        patent.add(arr);
+//        Map min = new HashMap();
+//        if (local.equals("a")) { //13.9
+//            min.put("min", 13.8);
+//        } else if (local.equals("b")) { //0.4
+//            min.put("min", 0.3);
+//        } else if (local.equals("c")) {   //0.07
+//            min.put("min", 0.06);
+//        } else if (local.equals("d")) {   //0
+//            min.put("min", 0);
+//        }
+//        patent.add(min);
+//        return patent;
+//    }
 
-        for (int i = 0; i < 6; i++) {
-            Map element = new HashMap();
-            if (i == 2 || i == 3) {
-                Map markLine = new HashMap();
-                List dataB = new ArrayList();
-                Map basic = new HashMap();
-                basic.put("type", "max");
-                basic.put("name", "最大数据");
-                dataB.add(basic);
-                markLine.put("data", dataB);
-                element.put("markLine", markLine);
-            }
-            switch (i) {
-                case 0:
-                    element.put("name", "1-1:" + local.toUpperCase());
+    public List findSxNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
+        List<Map<String, String>> line1Data = measureSxMapper.findSxNumber(productionName, "1", startDate, endDate, type);
+        List<Map<String, String>> line2Data = measureSxMapper.findSxNumber(productionName, "2", startDate, endDate, type);
+        List<String> xAsix = measureSxMapper.findSxLotNo(productionName, startDate, endDate, type);//echart 横轴数据
+        List<Double> data1_1 = new ArrayList<>();
+        List<Double> data1_2 = new ArrayList<>();
+        List<Double> data2_1 = new ArrayList<>();
+        List<Double> data2_2 = new ArrayList<>();
+
+        List<Double> minLimit = new ArrayList<>();//下限
+        List<Double> maxLimit = new ArrayList<>();//上限
+
+        //将数据库中的原数据拆分出echart 需要的各个线
+        for(String lotItem : xAsix){
+            // 1- 线
+            boolean unExistLine1 = true;
+            for (Map<String, String> data : line1Data){
+                if(lotItem.equals(MapUtil.getString(data, "lotNo"))){
+                    unExistLine1 = false;
+                    String item1_1 = MapUtil.getString(data, local+"1");
+                    data1_1.add(StringUtil.isEmpty(item1_1)?null:Double.parseDouble(item1_1));
+                    String item1_2 = MapUtil.getString(data, local+"2");
+                    data1_2.add(StringUtil.isEmpty(item1_2)?null:Double.parseDouble(item1_2));
                     break;
-                case 1:
-                    element.put("name", "1-2:" + local.toUpperCase());
-                    break;
-                case 2:
-                    element.put("name", "上限");
-                    break;
-                case 3:
-                    element.put("name", "下限");
-                    break;
-                case 4:
-                    element.put("name", "2-1:" + local.toUpperCase());
-                    break;
-                case 5:
-                    element.put("name", "2-2:" + local.toUpperCase());
-                    break;
-            }
-            element.put("type", "line");
-            List elementArr = new LinkedList();
-            int size = (result.size() > result2.size()) ? result2.size() : result.size();
-            for (int j = 0; j < size; j++) {
-                if (i == 2) {
-                    if (local.equals("a")) {
-                        elementArr.add(14.3);
-                    } else if (local.equals("b")) {
-                        elementArr.add(1.00);
-                    } else if (local.equals("c")) {
-                        elementArr.add(0.13);
-                    } else if (local.equals("d")) {
-                        elementArr.add(17);
-                    }
-                } else if (i == 3) {
-                    if (local.equals("a")) {
-                        elementArr.add(13.9);
-                    } else if (local.equals("b")) {
-                        elementArr.add(0.4);
-                    } else if (local.equals("c")) {
-                        elementArr.add(cMin);//elementArr.add(0.07);
-                    } else if (local.equals("d")) {
-                        elementArr.add(0);
-                    }
-                } else {
-                    if (i < 2) {
-                        elementArr.add(totalValue.get((j * 2) + i));
-                    } else if (i > 3) {
-                        if (i == 4) {
-                            int q = 0;
-                            elementArr.add(totalValue2.get((j * 2) + q));
-                        }
-                        if (i == 5) {
-                            int q = 1;
-                            elementArr.add(totalValue2.get((j * 2) + q));
-                        }
-                    }
                 }
             }
-            element.put("data", elementArr);
-            arr.add(element);
+            if(unExistLine1){
+                data1_1.add(null);
+                data1_2.add(null);
+            }
+            // 2- 线
+            boolean unExistLine2 = true;
+            for (Map<String, String> data : line2Data){
+                if(lotItem.equals(MapUtil.getString(data, "lotNo"))){
+                    unExistLine2 = false;
+                    String item2_1 = MapUtil.getString(data, local+"1");
+                    data2_1.add(StringUtil.isEmpty(item2_1)?null:Double.parseDouble(item2_1));
+                    String item2_2 = MapUtil.getString(data, local+"2");
+                    data2_2.add(StringUtil.isEmpty(item2_2)?null:Double.parseDouble(item2_2));
+                    break;
+                }
+            }
+            if(unExistLine2){
+                data2_1.add(null);
+                data2_2.add(null);
+            }
+            minLimit.add(sxLimit.get(type+"MIN"+local));
+            maxLimit.add(sxLimit.get(type+"MAX"+local));
         }
-        patent.add(title);
-        patent.add(arr);
-        Map min = new HashMap();
-        if (local.equals("a")) { //13.9
-            min.put("min", 13.8);
-        } else if (local.equals("b")) { //0.4
-            min.put("min", 0.3);
-        } else if (local.equals("c")) {   //0.07
-            min.put("min", 0.06);
-        } else if (local.equals("d")) {   //0
-            min.put("min", 0);
-        }
-        patent.add(min);
-        return patent;
+
+        List optionDatas = new ArrayList();//echart 需要的各个线
+        optionDatas.add(xAsix);
+        //将数据的分配name并放入返回对象中
+        List<Map<String, Object>> lines = new ArrayList<>();
+        Map<String, Object> lineObj1_1 = new HashMap<>();
+        lineObj1_1.put("name","1-1:"+local.toUpperCase());
+        lineObj1_1.put("type","line");
+        lineObj1_1.put("data", data1_1);
+        lines.add(lineObj1_1);
+        Map<String, Object> lineObj1_2 = new HashMap<>();
+        lineObj1_2.put("name","1-2:"+local.toUpperCase());
+        lineObj1_2.put("type","line");
+        lineObj1_2.put("data", data1_2);
+        lines.add(lineObj1_2);
+        //由于前端页面echart线的颜色影响,,lines的第3和4需是上下限
+        Map<String, Object> lineMinObj = new HashMap<>();
+        lineMinObj.put("name","下限");
+        lineMinObj.put("type","line");
+        lineMinObj.put("data", minLimit);
+        lineMinObj.put("markLine", getMarkLine());
+        lines.add(lineMinObj);
+        Map<String, Object> lineMaxObj = new HashMap<>();
+        lineMaxObj.put("name","上限");
+        lineMaxObj.put("type","line");
+        lineMaxObj.put("data", maxLimit);
+        lineMaxObj.put("markLine", getMarkLine());
+        lines.add(lineMaxObj);
+
+        Map<String, Object> lineObj2_1 = new HashMap<>();
+        lineObj2_1.put("name","2-1:"+local.toUpperCase());
+        lineObj2_1.put("type","line");
+        lineObj2_1.put("data", data2_1);
+        lines.add(lineObj2_1);
+        Map<String, Object> lineObj2_2 = new HashMap<>();
+        lineObj2_2.put("name","2-2:"+local.toUpperCase());
+        lineObj2_2.put("type","line");
+        lineObj2_2.put("data", data2_2);
+        lines.add(lineObj2_2);
+        optionDatas.add(lines);
+
+        return optionDatas;
     }
 
-    /** wangdong 简单重构
-     */
+    /** wangdong 简单重构*/
     public List findSimNumber(String productionName, String number, String startDate, String endDate, String type, String local) {
         List<Map<String, String>> dataList = measureSxMapper.findSimNumber(productionName, startDate, endDate, type);//所有线的原数据集合
         List<Map<String, String>> limitList = measureSxMapper.findSimLimit();
