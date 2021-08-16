@@ -241,7 +241,7 @@ public class EdcDskLogHandler {
 
             }
         } catch (Exception e) {
-            log.error("产量数据入库报错！", e);
+            log.error("产量数据入库报错！"+ msg, e);
             e.printStackTrace();
         }
 

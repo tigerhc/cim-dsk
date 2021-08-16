@@ -107,7 +107,7 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
             res.put("eqpStatus", "ALARM");
         } else if(!"设备待机：".equals(idelInfo)){
             res.put("record", idelInfo);
-            res.put("eqpStatus", "IDEL");
+            res.put("eqpStatus", "IDLE");
         } else{
             res.put("record", "设备正常稼动中");
             res.put("eqpStatus", "RUN");
