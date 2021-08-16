@@ -101,6 +101,9 @@
                 OR
                 (r.start_time &gt; #{beginTime}
                 AND r.start_time &lt; #{endTime})
+                OR
+                (r.start_time &lt; #{beginTime}
+                AND r.end_time &gt; #{endTime})
               )
           and t.create_date between #{beginTime} and #{endTime}
         order by t.create_date, t.batch_id

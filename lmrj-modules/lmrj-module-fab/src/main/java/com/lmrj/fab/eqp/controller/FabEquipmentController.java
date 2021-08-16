@@ -92,11 +92,17 @@ public class FabEquipmentController extends BaseCRUDController<FabEquipment> {
         if("MS".equals(param)){
             eqpIdMsList2(model, request, response);
             return;
+        }else if("OEE".equals(param)){
+            List<Map> list = fabEquipmentService.findOeeEqpMap();
+            DateResponse listjson = new DateResponse(list);
+            String content = JSON.toJSONString(listjson);
+            ServletUtils.printJson(response, content);
+        }else {
+            List<Map> list = fabEquipmentService.findEqpMap();
+            DateResponse listjson = new DateResponse(list);
+            String content = JSON.toJSONString(listjson);
+            ServletUtils.printJson(response, content);
         }
-        List<Map> list = fabEquipmentService.findEqpMap();
-        DateResponse listjson = new DateResponse(list);
-        String content = JSON.toJSONString(listjson);
-        ServletUtils.printJson(response, content);
     }
 
     @RequestMapping(value = "/SelectStarteqpIdlist", method = { RequestMethod.GET, RequestMethod.POST })

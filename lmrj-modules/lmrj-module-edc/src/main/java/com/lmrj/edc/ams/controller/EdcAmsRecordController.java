@@ -81,7 +81,7 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
     public Response findCurrentAlarmInfo(@RequestParam String department, HttpServletRequest request, HttpServletResponse response) {
         Response res = new Response();
         String alarmInfo = "警报发生：";
-        String idelInfo = "";
+        String idelInfo = "设备待机：";
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR_OF_DAY, -2);
         List<EdcAmsRecord> amsRecordList = iEdcAmsRecordService.selectAmsRecordByTime(department, calendar.getTime());
@@ -91,16 +91,22 @@ public class EdcAmsRecordController extends BaseCRUDController<EdcAmsRecord> {
                 FabEquipmentStatus fabEquipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
                 if ("ALARM".equals(fabEquipmentStatus.getEqpStatus())) {
                     String alarmStr = edcAmsRecord.getEqpId() + ":" + edcAmsRecord.getAlarmName();
-                    alarmInfo = alarmInfo + "   " + alarmStr;
+                    alarmInfo = alarmInfo + "      " + alarmStr;
                 }
             }
         }
         List<FabEquipmentStatus> fabEquipmentStatus = fabEquipmentStatusService.selectEqpStatus("", "", "",department);
+        for (FabEquipmentStatus equipmentStatus : fabEquipmentStatus) {
+            if("IDLE".equals(equipmentStatus.getEqpStatus())){
+                String idelStr = equipmentStatus.getEqpId();
+                idelInfo = idelInfo + "      " + idelStr;
+            }
+        }
         if (!"警报发生：".equals(alarmInfo)) {
             res.put("record", alarmInfo);
             res.put("eqpStatus", "ALARM");
-        } else if("".equals(idelInfo)){
-            res.put("record", alarmInfo);
+        } else if(!"设备待机：".equals(idelInfo)){
+            res.put("record", idelInfo);
             res.put("eqpStatus", "IDEL");
         } else{
             res.put("record", "设备正常稼动中");

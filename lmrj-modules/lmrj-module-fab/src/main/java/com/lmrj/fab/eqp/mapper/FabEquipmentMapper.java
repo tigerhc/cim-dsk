@@ -3,7 +3,6 @@ package com.lmrj.fab.eqp.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabSensor;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -37,6 +36,9 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
     List<String> findEqpIdList();
 
     List<Map> findEqpMap();
+
+    List<Map> findOeeEqpMap();
+
     List<Map> findEqpMapByCode(@Param("classCode") String classCode);
     //List<String> eqpIdMsList();
     List<Map> findEqpMsMap();

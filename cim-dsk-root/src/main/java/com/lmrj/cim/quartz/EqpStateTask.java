@@ -189,9 +189,18 @@ public class EqpStateTask {
         }
         if (rptEqpStateDayList.size() > 0) {
             rptEqpStateDayService.insertBatch(rptEqpStateDayList, 50);
-            edcEqpStateService.insertBatch(edcEqpStateList,50);
+            for (EdcEqpState edcEqpState : edcEqpStateList) {
+                EdcEqpState lastedcEqpState =  edcEqpStateService.findLastData2(edcEqpState.getStartTime(),edcEqpState.getEqpId());
+                if(lastedcEqpState.getEndTime() == null || lastedcEqpState.getEndTime()!=edcEqpState.getStartTime()){
+                    lastedcEqpState.setEndTime(edcEqpState.getStartTime());
+                    Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                    lastedcEqpState.setStateTimes(state);
+                    edcEqpStateList.add(lastedcEqpState);
+                }
+            }
+            edcEqpStateService.insertOrUpdateAllColumnBatch(edcEqpStateList,50);
         }
-
+        
     }
 
     //@Scheduled(cron = "0 0 11 * * ?")

@@ -1,6 +1,5 @@
 package com.lmrj.oven.batchlot.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.oven.batchlot.entity.OvnBatchLot;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotDay;
@@ -8,6 +7,7 @@ import com.lmrj.oven.batchlot.mapper.OvnBatchLotDayMapper;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotDayService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotParamService;
 import com.lmrj.oven.batchlot.service.IOvnBatchLotService;
+import com.lmrj.util.calendar.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
         try {
             Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
             Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
-            List<OvnBatchLot> ovnBatchLots = ovnBatchLotService.selectList(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId).between("create_date", startTime, endTime));
+            List<OvnBatchLot> ovnBatchLots = ovnBatchLotService.findDataByEqpId(DateUtil.formatDate(startTime,"yyyy-MM-dd HH:mm:ss"),DateUtil.formatDate(endTime,"yyyy-MM-dd HH:mm:ss"),eqpId);
             if (ovnBatchLots != null && ovnBatchLots.size() > 0) {
                 List<Map> list = new ArrayList<>();
                 Map<String, String> map = new HashMap<String, String>();
@@ -106,7 +106,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
                             ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
                             try {
-                                //baseMapper.insert(ovnBatchLotDay);
+                                baseMapper.insert(ovnBatchLotDay);
                                 System.out.println(ovnBatchLotDay.toString());
                             } catch (Exception e) {
                                 log.error("ovnBatchLotDay 数据插入出错  "+ovnBatchLotDay.getId(),e);
@@ -133,7 +133,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     ovnBatchLotDay.setPeriodDate(list1.get(0).get("periodDate").toString());
                     ovnBatchLotDay.setTitleOrder(0);
                     try {
-                        //baseMapper.insert(ovnBatchLotDay);
+                        baseMapper.insert(ovnBatchLotDay);
                         System.out.println(ovnBatchLotDay.toString());
                     } catch (Exception e) {
                         log.error("ovnBatchLotDay插入第一条数据,插入出错 "+ovnBatchLotDay.getId(),e);

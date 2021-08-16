@@ -1,11 +1,8 @@
 package com.lmrj.fab.eqp.service;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabSensor;
-import com.lmrj.fab.eqp.mapper.FabSensorMapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +33,8 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
     List<String> findEqpIdList();
 
     List<Map> findEqpMap();
+
+    List<Map> findOeeEqpMap();
 
     List<Map> findEqpMapByCode(String classCode);
 

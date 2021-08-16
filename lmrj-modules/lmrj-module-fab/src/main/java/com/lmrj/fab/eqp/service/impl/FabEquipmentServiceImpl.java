@@ -1,7 +1,6 @@
 package com.lmrj.fab.eqp.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.common.mybatis.mvc.service.impl.CommonServiceImpl;
 import com.lmrj.fab.eqp.entity.FabEquipment;
 import com.lmrj.fab.eqp.entity.FabSensor;
@@ -10,8 +9,6 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +70,11 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     @Override
     public List<Map> findEqpMap() {
         return baseMapper.findEqpMap();
+    }
+
+    @Override
+    public List<Map> findOeeEqpMap() {
+        return baseMapper.findOeeEqpMap();
     }
 
     @Override
