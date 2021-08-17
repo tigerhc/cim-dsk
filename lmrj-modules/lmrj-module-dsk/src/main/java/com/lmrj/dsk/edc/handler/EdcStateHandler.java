@@ -106,7 +106,7 @@ public class EdcStateHandler {
                 e.printStackTrace();
             }
         }else{
-            if(lastedcEqpState.getStartTime().getTime()==edcEqpState.getStartTime().getTime()){
+            if(lastedcEqpState.getStartTime().compareTo(edcEqpState.getStartTime())==0){
                 log.info("edcEqpState数据重复："+edcEqpState);
             }else{
                 lastedcEqpState.setEndTime(edcEqpState.getStartTime());

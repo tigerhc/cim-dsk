@@ -33,7 +33,7 @@
                 and  (start_time between #{startTime} and #{endTime}
                 or end_time between #{startTime} and #{endTime}
                 )
-                order by start_time
+                order by start_time ,end_time
 
        </select>
 
