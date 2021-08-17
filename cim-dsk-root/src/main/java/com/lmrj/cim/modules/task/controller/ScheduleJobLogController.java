@@ -15,6 +15,7 @@ import com.lmrj.util.lang.StringUtil;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.cim.utils.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,14 +41,18 @@ import java.util.List;
 @RequiresPathPermission("task:schedule:joblog")
 @LogAspectj(title = "计划任务日志")
 public class ScheduleJobLogController extends BaseBeanController<ScheduleJobLog> {
-
     @Autowired
     private IScheduleJobLogService scheduleJobLogService;
+    @Value("${mapping.jobenabled}")
+    private Boolean jobenabled;
 
     @GetMapping(value = "list")
     @LogAspectj(logType = LogType.SELECT)
     @RequiresMethodPermissions("list")
     public void list( HttpServletRequest request) throws IOException {
+        if(!jobenabled){
+            return;
+        }
         //加入条件
         EntityWrapper<ScheduleJobLog> entityWrapper = new EntityWrapper<>(ScheduleJobLog.class);
         entityWrapper.orderBy("createTime",false);

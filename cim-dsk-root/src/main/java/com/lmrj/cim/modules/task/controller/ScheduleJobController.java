@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.lmrj.cim.utils.PageRequest;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,8 @@ import java.util.List;
 @RequiresPathPermission("task:schedule:job")
 @LogAspectj(title = "计划任务")
 public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
-
+	@Value("${mapping.jobenabled}")
+	private Boolean jobenabled;
 	@Autowired
 	private IScheduleJobService scheduleJobService;
 
@@ -58,6 +60,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@RequiresMethodPermissions("add")
 	public Response add(ScheduleJob entity, BindingResult result,
 						   HttpServletRequest request, HttpServletResponse response) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		// 验证错误
 		this.checkError(entity,result);
 		if (!CronExpression.isValidExpression(entity.getCronExpression())) {
@@ -72,6 +77,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@RequiresMethodPermissions("update")
 	public Response update(ScheduleJob entity, BindingResult result,
 						   HttpServletRequest request, HttpServletResponse response) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		// 验证错误
 		this.checkError(entity,result);
 		if (!CronExpression.isValidExpression(entity.getCronExpression())) {
@@ -91,6 +99,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 
 	@PostMapping(value = "/saveScheduleJob")
 	public Response saveScheduleJob(ScheduleJob scheduleJob, HttpServletRequest request, HttpServletResponse response) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		if (!CronExpression.isValidExpression(scheduleJob.getCronExpression())) {
 			return Response.error("cron表达式格式不对");
 		}
@@ -114,6 +125,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@LogAspectj(logType = LogType.DELETE)
 	@RequiresMethodPermissions("delete")
 	public Response batchDelete(@RequestParam("ids") String[] ids) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		List<String> idList = java.util.Arrays.asList(ids);
 		scheduleJobService.deleteBatchIds(idList);
 		return Response.ok("删除成功");
@@ -124,6 +138,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@RequiresMethodPermissions("change:job:status")
 	public Response changeJobStatus(@PathVariable("id") String id, HttpServletRequest request,
 									HttpServletResponse response) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		String cmd = request.getParameter("cmd");
 		String label = "停止";
 		if (cmd.equals("start")) {
@@ -144,6 +161,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@LogAspectj(logType = LogType.OTHER,title = "任务更新")
 	@RequiresMethodPermissions("update:cron")
 	public Response updateCron(@PathVariable("id") String id) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		scheduleJobService.updateCron(id);
 		return Response.ok("任务更新成功");
 	}
@@ -153,6 +173,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@RequiresMethodPermissions("run:ajob:now")
 	public Response runAJobNow(ScheduleJob scheduleJob, HttpServletRequest request,
 							   HttpServletResponse response) {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 	    scheduleJobService.runAJobNow(scheduleJob.getId());
 		return Response.ok("任务启动成功");
 	}
@@ -165,6 +188,9 @@ public class ScheduleJobController extends BaseBeanController<ScheduleJob> {
 	@LogAspectj(logType = LogType.OTHER,title = "刷新任务")
 	@RequiresMethodPermissions("refresh:job")
 	public Response refreshJob() {
+		if(!jobenabled){
+			return Response.error("定时任务被暂停");
+		}
 		scheduleJobService.refreshTask();
 		return Response.ok("刷新任务成功");
 	}

@@ -78,6 +78,9 @@ public class ImageMoveTask {
 
     @Scheduled(cron = "0 0/20 * * * ?")
     public void smaKongDong() {
+        if(!jobenabled){
+            return;
+        }
         if ("SIM".equals(lineNo)) {
             List<File> fileList =
                     (List<File>) FileUtil.listFiles(new File(path2), new String[]{"bmp"}, true);
