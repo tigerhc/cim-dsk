@@ -82,3 +82,7 @@ ADD COLUMN `material_name`  varchar(50) NULL AFTER `material_id`;
 
 ALTER TABLE `ovn_batch_lot_day`
 ADD COLUMN `title_order`  int(4) NULL DEFAULT 0 COMMENT '标题排序' AFTER `period_date`;
+
+ALTER TABLE `ovn_batch_lot_day`
+ADD INDEX `eqp_idx` (`eqp_id`) USING BTREE ,
+ADD INDEX `period_date_idx` (`period_date`) USING BTREE ;
