@@ -78,6 +78,11 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
     }
 
     @Override
+    public List<FabEquipment> findOeeEqpList(){
+        return baseMapper.findOeeEqpList();
+    }
+
+    @Override
     public List<Map> findEqpMapByCode(String classCode) {
         return baseMapper.findEqpMapByCode(classCode);
     }

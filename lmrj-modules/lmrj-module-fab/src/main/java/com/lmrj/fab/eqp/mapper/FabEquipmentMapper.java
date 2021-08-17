@@ -39,6 +39,9 @@ public interface FabEquipmentMapper extends BaseMapper<FabEquipment> {
 
     List<Map> findOeeEqpMap();
 
+    @Select("select *  from fab_equipment where del_flag = '0' and active_flag = 'Y' and eqp_statecol_flag = '1' order by sort_no, step_id")
+    List<FabEquipment> findOeeEqpList();
+
     List<Map> findEqpMapByCode(@Param("classCode") String classCode);
     //List<String> eqpIdMsList();
     List<Map> findEqpMsMap();

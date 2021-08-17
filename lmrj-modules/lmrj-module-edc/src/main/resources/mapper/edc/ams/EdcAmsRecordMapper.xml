@@ -44,7 +44,6 @@
         LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
         WHERE f.active_flag = 'Y'
         and f.department = #{department}
-        and t.start_date > #{startTime}
         group by f.eqp_id
         order by t.start_date desc
     </select>

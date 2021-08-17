@@ -34,6 +34,8 @@ public interface IFabEquipmentService extends ICommonService<FabEquipment> {
 
     List<Map> findEqpMap();
 
+    List<FabEquipment> findOeeEqpList();
+
     List<Map> findOeeEqpMap();
 
     List<Map> findEqpMapByCode(String classCode);
