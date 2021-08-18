@@ -75,6 +75,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
         List<EdcEqpState> eqpStateList = edcEqpStateMapper.getAllByTime(startTime, endTime, eqpId);
         List<EdcEqpState> neweqpStateList = new ArrayList<>();
         List<EdcEqpState> lasteqpStateList = new ArrayList<>();
+
         if (eqpStateList.size() > 0) {
             for (int i = 0; i < eqpStateList.size() - 1; i++) {
                 EdcEqpState edcEqpState = eqpStateList.get(i);
@@ -179,7 +180,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
                     fabLogService.info("", eventId, "edc_eqp_state更新", "数据更新成功," + neweqpStateList.size() + "条数据已更新", "", "");
                 }
             }
-        } else if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size() == 0) {
+        }/* else if (CollectionUtils.isEmpty(eqpStateList) || eqpStateList.size() == 0) {
             EdcEqpState edcEqpState = new EdcEqpState();
             edcEqpState.setEqpId(eqpId);
             edcEqpState.setStartTime(startTime);
@@ -197,7 +198,7 @@ public class EdcEqpStateServiceImpl extends CommonServiceImpl<EdcEqpStateMapper,
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         return eqpStateList.size();
     }
 

@@ -109,9 +109,7 @@ public class FabEquipmentServiceImpl extends CommonServiceImpl<FabEquipmentMappe
 
     @Override
     public List<FabEquipment> getTempEqpList() {
-
         return baseMapper.findTempEqpList();
-
     }
 
     /**

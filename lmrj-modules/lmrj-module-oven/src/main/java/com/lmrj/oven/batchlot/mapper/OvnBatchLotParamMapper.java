@@ -41,4 +41,7 @@ public interface OvnBatchLotParamMapper extends BaseMapper<OvnBatchLotParam> {
 
  List<Map> fParamToDayone(@Param("id")String id, @Param( "startTime" ) Date startTime, @Param( "endTime" )Date endTime, @Param( "periodDate" )String periodDate,
                           @Param("eqpId")String eqpId,@Param("eqpTemp")String eqpTemp);
+
+ List<Map> newfParamToDayone(@Param("id")String id, @Param( "startTime" ) Date startTime, @Param( "endTime" )Date endTime, @Param( "periodDate" )String periodDate,
+                          @Param("eqpId")String eqpId,@Param("eqpTemp")String eqpTemp);
 }

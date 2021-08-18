@@ -150,6 +150,89 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
 
     }
 
+
+    @Override
+    public void newfParamToDay(String eqpId, String periodDate) {
+        //获取Lot数据
+        try {
+            Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
+            Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
+            OvnBatchLot ovnBatchLot = ovnBatchLotService.findBatchData(eqpId,startTime);
+            if (ovnBatchLot != null) {
+                List<Map> list = new ArrayList<>();
+                Map<String, String> map = new HashMap<String, String>();
+                String[] titles = ovnBatchLot.getOtherTempsTitle().split(",");
+                Map<String, Integer> titleOrderMap = new HashMap<>();
+                for (int i = 1; i < titles.length; i++) {
+                    map = new HashMap<String, String>();
+                    map.put("indexPv", String.valueOf((i - 1) * 4 + 1));
+                    map.put("id", ovnBatchLot.getId());
+                    map.put("eqpId", ovnBatchLot.getEqpId());
+                    map.put("eqpTemp", titles[i]);
+                    map.put("tableName", "a" + i);
+                    titleOrderMap.put(titles[i],i);
+                    list.add(map);
+                }
+                try {
+                    if (list.size() > 0) {
+                        List<Map> retlist = baseMapper.newfParamToDay(list, startTime, endTime, periodDate);
+                        int index = 0;
+                        for (Map retmap : retlist) {
+                            OvnBatchLotDay ovnBatchLotDay = new OvnBatchLotDay();
+                            ovnBatchLotDay.setEqpId(retmap.get("eqpid").toString());
+                            ovnBatchLotDay.setEqpTemp(retmap.get("eqptemp").toString());
+                            ovnBatchLotDay.setTempMax(retmap.get("tempMax").toString());
+                            ovnBatchLotDay.setTempMin(retmap.get("tempMin").toString());
+                            ovnBatchLotDay.setTempStart(retmap.get("tempStart").toString());
+                            ovnBatchLotDay.setTempEnd(retmap.get("tempEnd").toString());
+                            ovnBatchLotDay.setPeriodDate(retmap.get("periodDate").toString());
+                            ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
+                            ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
+                            try {
+                                baseMapper.insert(ovnBatchLotDay);
+                                System.out.println(ovnBatchLotDay.toString());
+                            } catch (Exception e) {
+                                log.error("ovnBatchLotDay 数据插入出错  "+ovnBatchLotDay.getId(),e);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("ovnBatchLotDay 数据插入出错  ",e);
+                    e.printStackTrace();
+                }
+                try {
+                    //插入第一条
+                    OvnBatchLotDay ovnBatchLotDay = new OvnBatchLotDay();
+                    ovnBatchLotDay.setEqpId(ovnBatchLot.getEqpId());
+                    ovnBatchLotDay.setEqpTemp(titles[0]);
+                    List<Map> list1 = ovnBatchLotParamService.newfParamToDayone(ovnBatchLot.getId(), startTime, endTime, periodDate, eqpId, titles[0]);
+                    ovnBatchLotDay.setEqpId(list1.get(0).get("eqpId").toString());
+                    ovnBatchLotDay.setEqpTemp(list1.get(0).get("eqpTemp").toString());
+                    ovnBatchLotDay.setTempMax(list1.get(0).get("tempMax").toString());
+                    ovnBatchLotDay.setTempMin(list1.get(0).get("tempMin").toString());
+                    ovnBatchLotDay.setTempStart(list1.get(0).get("tempStart").toString());
+                    ovnBatchLotDay.setTempEnd(list1.get(0).get("tempEnd").toString());
+                    ovnBatchLotDay.setPeriodDate(list1.get(0).get("periodDate").toString());
+                    ovnBatchLotDay.setTitleOrder(0);
+                    try {
+                        baseMapper.insert(ovnBatchLotDay);
+                        System.out.println(ovnBatchLotDay.toString());
+                    } catch (Exception e) {
+                        log.error("ovnBatchLotDay插入第一条数据,插入出错 "+ovnBatchLotDay.getId(),e);
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    log.error("ovnBatchLotDay插入第一条数据,插入出错 ",e);
+                    e.printStackTrace();
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     public List<String> getTitleByEqpId(String eqpId) {
         return baseMapper.selectTitle(eqpId);

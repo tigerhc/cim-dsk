@@ -1,10 +1,8 @@
 package com.lmrj.oven.batchlot.service;
 
 import com.lmrj.oven.batchlot.entity.OvnBatchLotDay;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IOvnBatchLotDayService {
 
@@ -21,6 +19,8 @@ public interface IOvnBatchLotDayService {
     Integer oldData(String periodDate);
 
     void fParamToDay(String eqpId, String periodDate);
+
+    void newfParamToDay(String eqpId, String periodDate);
 
     List<String> getTitleByEqpId(String eqpId);
 }

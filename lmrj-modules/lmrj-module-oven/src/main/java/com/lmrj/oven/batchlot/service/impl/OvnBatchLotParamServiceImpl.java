@@ -38,9 +38,15 @@ public class OvnBatchLotParamServiceImpl  extends CommonServiceImpl<OvnBatchLotP
     public List<OvnBatchLotParam> selectDataBybatchId(String batchId){
         return baseMapper.selectDataBybatchId(batchId);
     }
+
     public List<Map> fParamToDayone(String id,Date startTime,Date endTime,String periodDate,
                                     String eqpId, String eqpTemp){
         return baseMapper.fParamToDayone(id,startTime,endTime,periodDate,eqpId,eqpTemp);
+    }
+
+    public List<Map> newfParamToDayone(String id,Date startTime,Date endTime,String periodDate,
+                                    String eqpId, String eqpTemp){
+        return baseMapper.newfParamToDayone(id,startTime,endTime,periodDate,eqpId,eqpTemp);
     }
 
     @Override

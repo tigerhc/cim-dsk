@@ -2,6 +2,7 @@ package com.lmrj.edc.state.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.lmrj.edc.state.entity.EdcEqpState;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -25,6 +26,9 @@ import java.util.List;
 public interface EdcEqpStateMapper extends BaseMapper<EdcEqpState> {
 
     List<EdcEqpState> getAllByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime, @Param("eqpId") String eqpId);
+
+    @Delete("delete from edc_eqp_state where start_time = end_time and start_time between #{startTime}  and #{endTime}")
+    Integer deleteErrorByTime(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<EdcEqpState> calEqpSateDay(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 

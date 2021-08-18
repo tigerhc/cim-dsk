@@ -88,6 +88,14 @@
         order by t.create_date, t.batch_id
     </select>
 
+    <select id="newfindCountBytime" resultType="int">
+        select count(*)
+        from ovn_batch_lot_param t
+        where t.eqp_id = #{eqpId}
+          and t.create_date between #{beginTime} and #{endTime}
+        order by t.create_date
+    </select>
+
     <select id="findDetailBytime" resultType="java.util.Map">
         select t.temp_pv,
                t.temp_sp,
@@ -109,6 +117,17 @@
         order by t.create_date, t.batch_id
     </select>
 
+    <select id="newfindDetailBytime" resultType="java.util.Map">
+        select t.temp_pv,
+               t.temp_sp,
+                   t.temp_min,
+                   t.temp_max,t.other_temps_value,t.create_date
+        from  ovn_batch_lot_param t
+        where t.eqp_id = #{eqpId}
+          and t.create_date between #{beginTime} and #{endTime}
+        order by t.create_date, t.batch_id
+    </select>
+
     <select id="findDetailBytimeOther" resultType="java.util.Map">
         select t.temp_pv,
                t.temp_sp,
@@ -119,7 +138,6 @@
           and r.lot_id = #{lotNo}
         order by t.create_date, t.batch_id
     </select>
-
 
     <select id="findToEqpId" parameterType="java.lang.String" resultType="java.util.Map">
         select eqp_id as "eqpId",

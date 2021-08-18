@@ -88,7 +88,7 @@ public class EqpStateTask {
     }
 
     //计算前一天设备OEE
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void eqpOldStateDay() {
         if (!jobenabled) {
             return;
@@ -146,17 +146,17 @@ public class EqpStateTask {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
+        Date endTime = cal.getTime();
         cal.add(Calendar.DAY_OF_MONTH, -1);
         startTime = cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH, 1);
-        Date endTime = cal.getTime();
         List<String> eqpIdList = new ArrayList<>();
         eqpIdList = iFabEquipmentService.findEqpIdList();
         List<RptEqpStateDay> rptEqpStateDayList = Lists.newArrayList();
         List<EdcEqpState> edcEqpStateList = Lists.newArrayList();
         for (String eqpId : eqpIdList) {
+            edcEqpStateService.syncEqpSate(startTime, endTime, eqpId);
             EdcEqpState eqpState = edcEqpStateService.calEqpSateDayByeqpId(startTime, endTime, eqpId);
-            if (eqpState == null || "".equals(eqpState.getState())) {
+            if (eqpState == null || "".equals(eqpState.getState()) || null == eqpState.getState() ) {
                 RptEqpStateDay rptEqpStateDay = new RptEqpStateDay();
                 EdcEqpState edcEqpState = new EdcEqpState();
                 rptEqpStateDay.setEqpId(eqpId);
@@ -187,24 +187,25 @@ public class EqpStateTask {
                 edcEqpState.setStartTime(startTime);
                 edcEqpState.setEndTime(endTime);
                 edcEqpState.setStateTimes(24 * 60 * 60 * 1000000 * 0.001);
-                edcEqpStateList.add(edcEqpState);
-                rptEqpStateDayList.add(rptEqpStateDay);
+                EdcEqpState eqpState1 = edcEqpStateService.findNewData2(startTime,eqpId);
+                if(eqpState1.getStartTime().compareTo(startTime)!=0){
+                    edcEqpStateList.add(edcEqpState);
+                }
             }
         }
         if (rptEqpStateDayList.size() > 0) {
             rptEqpStateDayService.insertBatch(rptEqpStateDayList, 50);
             for (EdcEqpState edcEqpState : edcEqpStateList) {
-                EdcEqpState lastedcEqpState = edcEqpStateService.findLastData2(edcEqpState.getStartTime(), edcEqpState.getEqpId());
-                if (lastedcEqpState.getEndTime() == null || lastedcEqpState.getEndTime() != edcEqpState.getStartTime()) {
+                EdcEqpState lastedcEqpState = edcEqpStateService.findNewData2(edcEqpState.getStartTime(), edcEqpState.getEqpId());
+                if (lastedcEqpState.getEndTime() == null || lastedcEqpState.getEndTime().compareTo(edcEqpState.getStartTime())!=0 ) {
                     lastedcEqpState.setEndTime(edcEqpState.getStartTime());
                     Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
                     lastedcEqpState.setStateTimes(state);
-                    edcEqpStateList.add(lastedcEqpState);
+                    edcEqpStateService.insertOrUpdate(lastedcEqpState);
                 }
             }
             edcEqpStateService.insertOrUpdateAllColumnBatch(edcEqpStateList, 50);
         }
-
     }
 
     //@Scheduled(cron = "0 0 11 * * ?")

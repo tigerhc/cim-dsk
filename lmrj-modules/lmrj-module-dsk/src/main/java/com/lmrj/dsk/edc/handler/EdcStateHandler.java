@@ -4,12 +4,15 @@ import com.lmrj.edc.state.entity.EdcEqpState;
 import com.lmrj.edc.state.service.IEdcEqpStateService;
 import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
+import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
 
 @Service
 @Slf4j
@@ -109,20 +112,56 @@ public class EdcStateHandler {
             if(lastedcEqpState.getStartTime().compareTo(edcEqpState.getStartTime())==0){
                 log.info("edcEqpState数据重复："+edcEqpState);
             }else{
-                lastedcEqpState.setEndTime(edcEqpState.getStartTime());
-                Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
-                lastedcEqpState.setStateTimes(state);
-                try {
-                    edcEqpStateService.updateById(lastedcEqpState);
-                } catch (Exception e) {
-                    log.error("状态更新出错，edcEqpState数据更新失败"+e);
-                    e.printStackTrace();
-                }
-                try {
-                    iEdcEqpStateService.insert(edcEqpState);
-                } catch (Exception e) {
-                    log.error("状态插入出错，edcEqpState数据新建失败"+e);
-                    e.printStackTrace();
+                //上一条状态与当前状态为同一天
+                if(DateUtil.formatDate(lastedcEqpState.getStartTime(),"yyyy-MM-dd").equals(DateUtil.formatDate(edcEqpState.getStartTime(),"yyyy-MM-dd"))){
+                    lastedcEqpState.setEndTime(edcEqpState.getStartTime());
+                    Double state = (double) (edcEqpState.getStartTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                    lastedcEqpState.setStateTimes(state);
+                    try {
+                        edcEqpStateService.updateById(lastedcEqpState);
+                    } catch (Exception e) {
+                        log.error("状态更新出错，edcEqpState数据更新失败"+e);
+                        e.printStackTrace();
+                    }
+                    try {
+                        iEdcEqpStateService.insert(edcEqpState);
+                    } catch (Exception e) {
+                        log.error("状态插入出错，edcEqpState数据新建失败"+e);
+                        e.printStackTrace();
+                    }
+                }else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    lastedcEqpState.setEndTime(cal.getTime());
+                    Double state = (double) (cal.getTime().getTime() - lastedcEqpState.getStartTime().getTime());
+                    lastedcEqpState.setStateTimes(state);
+                    try {
+                        edcEqpStateService.updateById(lastedcEqpState);
+                    } catch (Exception e) {
+                        log.error("状态更新出错，edcEqpState数据更新失败"+ lastedcEqpState.toString() + "  " +e);
+                        e.printStackTrace();
+                    }
+                    EdcEqpState newEdceqpState = new EdcEqpState();
+                    newEdceqpState.setStartTime(cal.getTime());
+                    newEdceqpState.setEndTime(edcEqpState.getStartTime());
+                    Double newstate = (double) (edcEqpState.getStartTime().getTime() - cal.getTime().getTime());
+                    newEdceqpState.setStateTimes(newstate);
+                    newEdceqpState.setState(lastedcEqpState.getState());
+                    try {
+                        edcEqpStateService.insert(newEdceqpState);
+                    } catch (Exception e) {
+                        log.error("状态更新出错，newEdceqpState数据更新失败"+ newEdceqpState.toString() + "  " +e);
+                        e.printStackTrace();
+                    }
+                    try {
+                        iEdcEqpStateService.insert(edcEqpState);
+                    } catch (Exception e) {
+                        log.error("状态插入出错，edcEqpState数据新建失败"+ edcEqpState.toString() + "  " +e);
+                        e.printStackTrace();
+                    }
                 }
             }
         }

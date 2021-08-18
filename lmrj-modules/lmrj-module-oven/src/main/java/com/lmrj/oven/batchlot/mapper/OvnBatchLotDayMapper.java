@@ -26,5 +26,7 @@ public interface OvnBatchLotDayMapper extends BaseMapper<OvnBatchLotDay>{
 
     List<Map> fParamToDay(@Param( "list" )List<Map> list,@Param( "startTime" ) Date startTime,@Param( "endTime" )Date endTime,@Param( "periodDate" )String periodDate);
 
+    List<Map> newfParamToDay(@Param( "list" )List<Map> list,@Param( "startTime" ) Date startTime,@Param( "endTime" )Date endTime,@Param( "periodDate" )String periodDate);
+
     List<String> selectTitle(String eqpId);
 }

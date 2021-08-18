@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lmrj.oven.batchlot.mapper.OvnBatchLotParamMapper" >
+<mapper namespace="com.lmrj.oven.batchlot.mapper.OvnBatchLotParamMapper">
 
-	<sql id="Base_Column_List" >
+    <sql id="Base_Column_List">
        t.id,
        t.batch_id,
        t.temp_pv,
@@ -25,24 +25,109 @@
        t.del_flag
 	</sql>
 
-       <select id="fParamToDayone" resultType="java.util.Map">
-             select #{periodDate} as periodDate,#{eqpId} as eqpId,#{eqpTemp} as eqpTemp,max(a.temp_pv) as tempMax,min(a.temp_pv) as tempMin,
-              (select temp_pv from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
-        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
-         and create_date between #{startTime} and #{endTime} and create_date = (select min(create_date) from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
-        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
-        and create_date between #{startTime} and #{endTime}) limit 1 ) as tempStart,
-              (select temp_pv from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
-        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
-         and create_date between #{startTime} and #{endTime} and create_date = (select max(create_date) from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
-        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
-         and create_date between #{startTime} and #{endTime}) limit 1
-         ) as tempEnd   from ovn_batch_lot_param a
-              where a.batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
-        AND end_time &lt; #{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
-         and a.create_date between #{startTime} and #{endTime}
+    <select id="fParamToDayone" resultType="java.util.Map">
+             SELECT #{periodDate} as periodDate,#{eqpId} as eqpId,#{eqpTemp} as eqpTemp,max(a.temp_pv) as tempMax,min(a.temp_pv) as tempMin,
+(
+	SELECT
+		temp_pv
+	FROM
+		ovn_batch_lot_param
+	WHERE
+		batch_id IN (
+		SELECT
+			id
+		FROM
+			ovn_batch_lot
+		WHERE
+			eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
+
+			AND end_time &lt;#{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
+
+		AND create_date BETWEEN #{startTime} and #{endTime} and create_date = (select min(create_date) from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
+
+		AND end_time &lt;#{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
+
+		AND create_date BETWEEN #{startTime} and #{endTime}) limit 1 ) as tempStart,
+		(
+			SELECT
+				temp_pv
+			FROM
+				ovn_batch_lot_param
+			WHERE
+				batch_id IN (
+				SELECT
+					id
+				FROM
+					ovn_batch_lot
+				WHERE
+					eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
+
+					AND end_time &lt;#{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
+
+				AND create_date BETWEEN #{startTime} and #{endTime} and create_date = (select max(create_date) from ovn_batch_lot_param where batch_id in (select id from ovn_batch_lot where eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
+
+				AND end_time &lt;#{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
+
+				AND create_date BETWEEN #{startTime} and #{endTime}) limit 1
+
+			) AS tempEnd
+			FROM
+				ovn_batch_lot_param a
+			WHERE
+				a.batch_id IN (
+				SELECT
+					id
+				FROM
+					ovn_batch_lot
+				WHERE
+					eqp_id = #{eqpId} and ((end_time &gt; #{startTime}
+
+					AND end_time &lt;#{endTime}) OR (start_time &gt; #{startTime} AND start_time &lt; #{endTime}) OR (start_time &lt; #{startTime} AND end_time &gt; #{endTime})))
+
+AND a.create_date BETWEEN #{startTime} and #{endTime}
        </select>
 
+    <select id="newfParamToDayone" resultType="java.util.Map">
+             SELECT #{periodDate} as periodDate,#{eqpId} as eqpId,#{eqpTemp} as eqpTemp,max(a.temp_pv) as tempMax,min(a.temp_pv) as tempMin,
+(
+	SELECT
+		temp_pv
+	FROM
+		ovn_batch_lot_param
+	WHERE
+		eqp_id = #{eqpId}
+
+		AND create_date BETWEEN #{startTime} and #{endTime}
+
+		AND create_date = (
+		SELECT
+			min( create_date )
+		FROM
+			ovn_batch_lot_param
+		WHERE
+			eqp_id = #{eqpId}
+
+			AND create_date BETWEEN #{startTime} and #{endTime}) limit 1 ) as tempStart,
+			(
+			SELECT
+				temp_pv
+			FROM
+				ovn_batch_lot_param
+			WHERE
+				eqp_id = #{eqpId}
+
+				AND create_date BETWEEN #{startTime} and #{endTime}
+
+				AND create_date = ( SELECT max( create_date ) FROM ovn_batch_lot_param WHERE eqp_id = #{eqpId}
+					AND create_date BETWEEN #{startTime} and #{endTime}) limit 1
+				) AS tempEnd
+			FROM
+				ovn_batch_lot_param a
+			WHERE
+				a.eqp_id = #{eqpId}
+
+	AND a.create_date BETWEEN #{startTime} and #{endTime}
+       </select>
 
 
     <select id="selectDataByeqpId" resultType="com.lmrj.oven.batchlot.entity.OvnBatchLotParam">
