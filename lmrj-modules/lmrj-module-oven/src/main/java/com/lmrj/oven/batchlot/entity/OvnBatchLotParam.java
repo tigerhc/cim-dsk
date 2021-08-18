@@ -27,6 +27,8 @@ public class OvnBatchLotParam extends BaseDataEntity {
     /**编号*/
     @TableField(value = "id")
     private String id;
+    @TableField(value = "eqp_id")
+    private String eqpId;
     @TableField(value = "batch_id")
 	private String batchId;
     /**温度PV*/
@@ -53,7 +55,4 @@ public class OvnBatchLotParam extends BaseDataEntity {
 
     @TableField(value = "other_temps_value")
     private String otherTempsValue;
-
-
-
 }
