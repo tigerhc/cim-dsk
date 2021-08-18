@@ -42,7 +42,7 @@ public interface RptLotYieldDayMapper extends BaseMapper<RptLotYieldDay> {
     @Select("select lot_yield from mes_lot_track where lot_no=#{lotNo} and start_time or end_time between #{startTime} AND #{endTime} and eqp_Id=#{eqpId} ORDER BY start_time DESC LIMIT 1  ")
     Integer findLotYield(@Param("eqpId") String eqpId, @Param("lotNo") String lotNo, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    @Select("select distinct station_code from fab_equipment where line_no=#{lineNo} and station_code != ''")
+    @Select("select distinct station_code from fab_equipment where line_no=#{lineNo} and station_code != '' and eqp_yieldcol_flag = 1 order by sort_no")
     List<Map<String,Object>> searchStand( @Param("lineNo") String lineNo);
 
     @Select("select sum(lot_yield) as lot_yield,sum(lot_yield_eqp) as lot_yield_eqp,eqp_id from rpt_lot_yield_day where station_code=#{stationId} and period_date=#{date} and line_no =#{lineNo} GROUP BY eqp_id")

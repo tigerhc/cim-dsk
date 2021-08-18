@@ -1,5 +1,6 @@
 package com.lmrj.oven.batchlot.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
@@ -7,6 +8,8 @@ import com.baomidou.mybatisplus.enums.IdType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @TableName("ovn_batch_lot_day")
 @AllArgsConstructor
@@ -47,4 +50,8 @@ public class OvnBatchLotDay {
 
     @TableField(value = "title_order")
     private int titleOrder;
+
+    @TableField(value = "create_date")
+    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    private Date createDate;
 }
