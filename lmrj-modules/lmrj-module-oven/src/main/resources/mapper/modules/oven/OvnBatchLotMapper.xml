@@ -125,7 +125,7 @@
         from  ovn_batch_lot_param t
         where t.eqp_id = #{eqpId}
           and t.create_date between #{beginTime} and #{endTime}
-        order by t.create_date, t.batch_id
+        order by t.create_date
     </select>
 
     <select id="findDetailBytimeOther" resultType="java.util.Map">
