@@ -154,9 +154,9 @@
         </foreach>
     </insert>
     <insert id="saveTempParam" parameterType="java.util.Map">
-        insert into ovn_batch_lot_param(id,batch_id,temp_pv,create_date,del_flag)values
+        insert into ovn_batch_lot_param(id,eqp_id,batch_id,temp_pv,create_date,del_flag)values
         <foreach collection="temps" item="item" separator=",">
-            (#{item.id},#{item.batchId},#{item.tempPv},#{item.sendTime},0)
+            (#{item.id},#{item.eqpId},#{item.batchId},#{item.tempPv},#{item.sendTime},0)
         </foreach>
     </insert>
 

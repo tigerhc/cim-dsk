@@ -214,7 +214,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @RequestMapping(value = "/tempbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public void rptMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
                                   HttpServletRequest request, HttpServletResponse response) {
-        List<Map> maps = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
+        List<Map> maps = ovnBatchLotService.newfindDetailBytime(beginTime, endTime, eqpId);
         List<OvnBatchLotDay> ovnBatchLotDays = ovnBatchLotDayService.findDetail(eqpId,beginTime, endTime);
         String content = "";
         if (maps == null) {
@@ -415,7 +415,7 @@ public class OvnBatchLotController extends BaseCRUDController<OvnBatchLot> {
     @RequestMapping(value = "/tempCharbytime/{eqpId}", method = {RequestMethod.GET, RequestMethod.POST})
     public Map tempMsRecordByTime(@PathVariable String eqpId, @RequestParam String beginTime, @RequestParam String endTime,
                                   HttpServletRequest request, HttpServletResponse response) {
-        List<Map> os = ovnBatchLotService.findDetailBytime(beginTime, endTime, eqpId);
+        List<Map> os = ovnBatchLotService.newfindDetailBytime(beginTime, endTime, eqpId);
         OvnBatchLot ovnBatchLot = ovnBatchLotService.selectOne(new EntityWrapper<OvnBatchLot>().eq("eqp_id", eqpId));
         Map maps = new HashMap();
         String aaa[] = ovnBatchLot.getOtherTempsTitle().split(",");

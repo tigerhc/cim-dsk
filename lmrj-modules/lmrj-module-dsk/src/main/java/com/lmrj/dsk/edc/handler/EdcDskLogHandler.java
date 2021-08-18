@@ -808,6 +808,7 @@ public class EdcDskLogHandler {
 
                     for (OvnBatchLotParam ovnBatchLotParam : OvnBatchLotParamList) {
                         ovnBatchLotParam.setBatchId(ovnBatchLot1.getId());
+                        ovnBatchLotParam.setEqpId(ovnBatchLot1.getEqpId());//子表冗余一份eqpId,为解决温度查询慢的问题
                     }
                     iOvnBatchLotParamService.insertBatch(OvnBatchLotParamList);
                 } else {
