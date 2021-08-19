@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,11 +72,16 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @GetMapping("listEqpStatus")
     public void list(HttpServletRequest request, HttpServletResponse response,@RequestParam String curProject){//TODO 高协助首页分前后工程  curProject
+        Map<String, Object> rs = new HashMap<>();
         List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "",curProject);
-        if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
-            FastJsonUtils.print(fabEquipmentStatusList);
-        }
-        FastJsonUtils.print(fabEquipmentStatusList);
+        rs.put("eqpList",fabEquipmentStatusList);
+        rs.put("displayText", "设备正常稼动中");
+        rs.put("displayStatus", "RUN");
+//        if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
+//            FastJsonUtils.print(fabEquipmentStatusList);
+//        }
+//        FastJsonUtils.print(fabEquipmentStatusList);
+        FastJsonUtils.print(rs);
     }
 
     @GetMapping("listPdtStatus")
