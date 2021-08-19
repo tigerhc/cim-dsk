@@ -3,6 +3,8 @@ package com.lmrj.ms.config.service;
 import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.ms.config.entity.MsMeasureConfig;
 
+import java.util.List;
+
 /**
 * All rights Reserved, Designed By www.lmrj.com
 *
@@ -15,5 +17,7 @@ import com.lmrj.ms.config.entity.MsMeasureConfig;
 * @copyright: 2019 www.lmrj.com Inc. All rights reserved.
 */
 public interface IMsMeasureConfigService extends ICommonService<MsMeasureConfig> {
+
+    List<String> eqpModelNameList();
 
 }

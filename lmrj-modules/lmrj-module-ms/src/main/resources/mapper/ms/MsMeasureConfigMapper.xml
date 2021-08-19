@@ -21,4 +21,8 @@
        t.update_date,
        t.del_flag
 	</sql>
+
+       <select id="eqpModelNameList" resultType="string">
+              select eqp_model_name from ms_measure_config where del_flag = '0'
+       </select>
 </mapper>
