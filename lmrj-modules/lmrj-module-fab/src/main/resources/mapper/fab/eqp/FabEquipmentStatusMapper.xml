@@ -96,20 +96,6 @@
         order by f.SORT_NO
     </select>
 
-    <select id="selectFabStatusParam" resultType="map" parameterType="java.util.List">
-        SELECT
-        eqp_id eqpId,
-        PARAM_CODE paramCode,
-        PARAM_VALUE paramValue
-        FROM
-        edc_param_record_dtl
-        where eqp_id in
-
-        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            #{item.eqpId}
-        </foreach>
-    </select>
-
     <select id="selectYield" resultType="map">
         select step_code, max(lot_no) lot_no , sum(lot_yield) lot_yield , min(eqp_status) eqp_status
         from fab_equipment_status t left join fab_equipment e on t.eqp_id = e.eqp_id
@@ -125,6 +111,21 @@
         from   mes_lot_wip
         where  end_time is not null
         group by station_code
+    </select>
+
+    <select id="selectAlarmInfo" resultType="map">
+        SELECT
+        t.eqp_id eqpId,
+        t.alarm_name alarmName,
+        t.start_date startDate,
+        f.MODEL_NAME modelName
+        FROM
+        edc_ams_record t
+        LEFT JOIN fab_equipment f on t.EQP_ID=f.EQP_ID and f.del_flag=0
+        WHERE f.active_flag = 'Y'
+        and f.department = #{department}
+        group by f.eqp_id
+        order by f.sort_no
     </select>
 
 

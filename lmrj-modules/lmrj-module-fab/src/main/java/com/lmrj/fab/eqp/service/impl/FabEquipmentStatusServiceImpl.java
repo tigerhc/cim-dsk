@@ -93,6 +93,7 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
         // TODO: 2020/5/8 尽量补齐其他状态,若状态不存在,则补0
         return baseMapper.selectEqpStatusChart();
     }
+
     @Override
     public List<Map> selectYield(String lineNo,String department){
         List<Map> yields =  baseMapper.selectYield(lineNo,department);
@@ -119,6 +120,11 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
             return null;
         }
         return fabEquipmentStatusList.get(0);
+    }
+
+    @Override
+    public List<Map> selectAlarmInfo(String lineNo,String department){
+        return baseMapper.selectAlarmInfo(lineNo,department);
     }
 
 }

@@ -39,4 +39,5 @@ public interface FabEquipmentStatusMapper extends BaseMapper<FabEquipmentStatus>
 
     List<FabEquipmentStatus> selectEqpStatus(@Param("officeId") String officeId, @Param("lineNo") String lineNo, @Param("fab") String fab, @Param("department") String department);
 
+    List<Map> selectAlarmInfo(@Param("lineNo") String lineNo, @Param("department") String department);
 }
