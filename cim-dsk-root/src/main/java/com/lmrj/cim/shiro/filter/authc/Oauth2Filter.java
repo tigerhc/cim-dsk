@@ -92,6 +92,16 @@ public class Oauth2Filter extends AccessControlFilter {
                 if(String.valueOf(request1.getRequestURL()).contains("ws")){
                     return Boolean.TRUE;
                 }
+                // 首页大屏展示的相关接口
+                if(String.valueOf(request1.getRequestURL()).contains("/fab/fabequipmentstatus/chart")){
+                    return Boolean.TRUE;
+                }
+                if(String.valueOf(request1.getRequestURL()).contains("/fab/fabequipmentstatus/listEqpStatus")){
+                    return Boolean.TRUE;
+                }
+                if(String.valueOf(request1.getRequestURL()).contains("/fab/fabequipmentstatus/listPdtStatus")){
+                    return Boolean.TRUE;
+                }
                 responseResult = Response.error(ResponseError.TOKEN_IS_NULL,MessageUtils.getMessage("error."+ResponseError.TOKEN_IS_NULL));
             }
         } catch (AuthenticationException e) {
