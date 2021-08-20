@@ -65,7 +65,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
     }
 
     @GetMapping("listEqpStatus")
-    public void list(HttpServletRequest request, HttpServletResponse response,@RequestParam String curProject){//TODO 高协助首页分前后工程  curProject
+    public void list(HttpServletRequest request, HttpServletResponse response,@RequestParam String curProject){
         Map<String, Object> rs = new HashMap<>();
         List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "",curProject);
         rs.put("eqpList",fabEquipmentStatusList);
@@ -90,7 +90,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
             rs.put("displayText", "设备正常稼动中");
             rs.put("displayStatus", "RUN");
         }
-
+        rs.put("curProject", curProject);
 //        if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
 //            FastJsonUtils.print(fabEquipmentStatusList);
 //        }
