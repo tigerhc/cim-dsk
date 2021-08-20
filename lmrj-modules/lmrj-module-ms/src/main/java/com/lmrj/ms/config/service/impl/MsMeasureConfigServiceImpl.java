@@ -91,4 +91,9 @@ public class MsMeasureConfigServiceImpl  extends CommonServiceImpl<MsMeasureConf
         }
         return true;
     }
+
+    @Override
+    public List<String> eqpModelNameList() {
+        return baseMapper.eqpModelNameList();
+    }
 }
