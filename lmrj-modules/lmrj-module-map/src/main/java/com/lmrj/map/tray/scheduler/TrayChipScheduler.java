@@ -2,6 +2,7 @@ package com.lmrj.map.tray.scheduler;
 
 import com.lmrj.map.tray.entity.MapEquipmentConfig;
 import com.lmrj.map.tray.service.IMapTrayChipMovePseudoService;
+import com.lmrj.map.tray.service.IMapTrayChipMoveService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,13 +22,15 @@ public class TrayChipScheduler {
 //    private IMapTrayChipLogService mpTrayChipLogService;
     @Autowired
     private IMapTrayChipMovePseudoService mapTrayChipMovePseudoService;
+    @Autowired
+    private IMapTrayChipMoveService mapTrayChipMoveService;
 
     @Value("${mapping.trayjobenabled}")
     private Boolean jobenabled;
 
     private boolean pseduoDoingFlag=false;//伪码追溯进行中
 
-//    @Scheduled(cron = "0 0/5 * * * ?") //TODO 试做开始后，确认各个设备日志正确后放开
+//    @Scheduled(cron = "0 0/5 * * * ?")
 //    public void TrayChipData(){
 //        if(jobenabled){
 //            log.info("---------------------------------------------------执行执行TrayChipData开始");
@@ -51,7 +54,7 @@ public class TrayChipScheduler {
             if(!pseduoDoingFlag){
                 pseduoDoingFlag = true;
                 //追溯伪码(含段尾设备不良品追溯)
-                List<MapEquipmentConfig> eqpConfigs = mapTrayChipMovePseudoService.getLineEndEqp();
+                List<MapEquipmentConfig> eqpConfigs = mapTrayChipMoveService.getLineEndEqp();
                 for(MapEquipmentConfig item : eqpConfigs){
                     try{
                         log.info("伪码追溯开始:"+item.getEqpId());

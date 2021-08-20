@@ -13,6 +13,7 @@ import com.lmrj.map.tray.entity.MapTrayChipLog;
 import com.lmrj.map.tray.mapper.MapTrayChipMoveMapper;
 import com.lmrj.map.tray.service.IMapTrayChipLogService;
 import com.lmrj.map.tray.service.IMapTrayChipMoveProcessService;
+import com.lmrj.map.tray.service.IMapTrayChipMoveService;
 import com.lmrj.map.tray.util.TraceDateUtil;
 import com.lmrj.map.tray.vo.MapTrayChipMoveQueryVo;
 import com.lmrj.util.calendar.DateUtil;
@@ -59,6 +60,9 @@ public class MapTrayChipMoveController {
     private IMapTrayChipLogService mpTrayChipLogService;
     @Autowired
     private AmqpTemplate rabbitTemplate;
+
+    @Autowired
+    private IMapTrayChipMoveService mapTrayChipMoveService;
 
     /**
      * 根据页码和每页记录数，以及查询条件动态加载数据
@@ -201,6 +205,13 @@ public class MapTrayChipMoveController {
             var16.printStackTrace();
             return Response.error(999998, "导出失败");
         }
+    }
+
+    @RequestMapping(value = "/findMaterial",method = {RequestMethod.GET, RequestMethod.POST})
+    public Response findMaterial(@RequestParam String eqpId, @RequestParam String lotNo){
+        Response res = Response.ok();
+        res.put("meterial", mapTrayChipMoveService.findMaterial(eqpId, lotNo));
+        return res;
     }
 
     private List<ExcelExportEntity> getExportKeyList(){

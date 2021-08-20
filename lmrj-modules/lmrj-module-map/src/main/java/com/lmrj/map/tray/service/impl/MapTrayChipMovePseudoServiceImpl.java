@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Service
+@Service("MapTrayChipMovePseudoService")
 public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTrayChipMoveMapper, MapTrayChipMove> implements IMapTrayChipMovePseudoService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     String firstEqpId = "DM-IGBT-SMT1,DM-FRD-SMT1,DM-DBCT-SORT1,DM-DBCB-SORT1";//第一段结尾设备,即没有上一段的设备
@@ -105,12 +105,6 @@ public class MapTrayChipMovePseudoServiceImpl  extends CommonServiceImpl<MapTray
             }
         }
         saveErrData(traceLogs, null, null, true);
-    }
-
-    /** 获得每段线中的结束点的设备*/
-    @Override
-    public List<MapEquipmentConfig> getLineEndEqp() {
-        return baseMapper.getMapEqpConfig();
     }
 
     /**追溯最后一段的数据,二次热压段的追溯(本段不同于上方伪码追溯,本段是制品码的追溯,不会改变伪码),本段就是组立机的良品和不良品追溯

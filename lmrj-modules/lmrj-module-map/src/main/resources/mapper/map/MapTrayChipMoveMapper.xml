@@ -566,4 +566,13 @@
 		where material_id in (SELECT id from mes_lot_material where eqp_id='DM-HB2-SORT2' and lot_no=#{lotNo})
 		and (material_name='IGBT' or material_name='FRD')
 	</select>
+
+	<!--物料查询-->
+	<select id="findMaterial" parameterType="java.util.Map" resultType="java.util.Map">
+		   select b.material_name as materialName, b.lot_no as lotNo, b.params
+		     from mes_lot_material a
+		LEFT JOIN mes_lot_material_info b on a.id = b.material_id
+		    where a.eqp_id = #{eqpId}
+		      and a.lot_no = #{lotNo}
+	</select>
 </mapper>

@@ -119,4 +119,6 @@ public interface MapTrayChipMoveMapper extends BaseMapper<MapTrayChipMove> {
     List<MapTrayChipMove> findNGStart();
 
     String findMaterialByHB2(String lotNo);
+
+    List<Map<String, Object>> findMaterial(Map<String, Object> param);
 }
