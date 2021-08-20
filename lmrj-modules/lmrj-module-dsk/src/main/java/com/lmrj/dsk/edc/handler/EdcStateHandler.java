@@ -59,7 +59,7 @@ public class EdcStateHandler {
         //设置上一条数据的结束时间，并计算持续时间
         EdcEqpState edcEqpState = JsonUtil.from(msg,EdcEqpState.class);
         if(edcEqpState.getEqpId().contains("SIM-DM")){
-            fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "");
+            fabEquipmentStatusService.updateStatus(edcEqpState.getEqpId(),edcEqpState.getState(), "", "","");
         }
         eqpStateDataHandle(edcEqpState);
         /*if(!"ALARM".equals(edcEqpState.getState())){

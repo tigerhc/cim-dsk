@@ -517,6 +517,13 @@ public class EdcDskLogHandler {
         if (StringUtil.isNotBlank(eqpId)) {
             FabEquipment fabEquipment = fabEquipmentService.findEqpByCode(eqpId);
             for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
+                if(eqpId.contains("XRAY")){
+                    if("0".equals(edcDskLogOperation.getEventId())){
+                        edcDskLogOperation.setEventId("1");
+                    }else if("1".equals(edcDskLogOperation.getEventId())){
+                        edcDskLogOperation.setEventId("0");
+                    }
+                }
                 EdcDskLogProduction pro = edcDskLogProductionService.findLastYield(edcDskLogOperation.getEqpId(), edcDskLogOperation.getStartTime());
                 if (pro != null) {
                     edcDskLogOperation.setLotYield(pro.getLotYield());
@@ -563,8 +570,16 @@ public class EdcDskLogHandler {
         List<EdcAmsRecord> edcAmsRecordList = Lists.newArrayList();
         List<EdcEqpState> edcEqpStateList = Lists.newArrayList();
         String status = "";
+        String alarmInfo = "";
         for (EdcDskLogOperation edcDskLogOperation : edcDskLogOperationlist) {
             String eventId = edcDskLogOperation.getEventId();
+            if(eqpId.contains("XRAY")){
+                if("0".equals(eventId)){
+                    eventId = "1";
+                }else if("1".equals(eventId)){
+                    eventId = "0";
+                }
+            }
             if (("2".equals(eventId))) {
                 EdcAmsRecord edcAmsRecord = new EdcAmsRecord();
                 edcAmsRecord.setEqpId(edcDskLogOperation.getEqpId());
@@ -577,6 +592,7 @@ public class EdcDskLogHandler {
                     }
                 }
                 edcAmsRecord.setAlarmName(alarmName);
+                alarmInfo = alarmName;
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());
@@ -679,7 +695,7 @@ public class EdcDskLogHandler {
                     String stateJson = JsonUtil.toJsonString(edcEqpState);
                     rabbitTemplate.convertAndSend("C2S.Q.STATE.DATA", stateJson);
                     //修改页面设备状态
-                    fabEquipmentStatusService.updateStatus(eqpId, status, "", "");
+                    fabEquipmentStatusService.updateStatus(eqpId, status, "", "",alarmInfo);
                 }
             }
         }

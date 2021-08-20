@@ -44,6 +44,9 @@
        <if test="recipeCode != null and recipeCode != ''">
            , recipe_code = #{recipeCode}
        </if>
+       <if test="alarmName != null and alarmName != ''">
+           , alarm_name = #{alarmName}
+       </if>
       where EQP_ID = #{eqpID}
    </update>
 

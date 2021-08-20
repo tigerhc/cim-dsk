@@ -24,7 +24,7 @@ public interface FabEquipmentStatusMapper extends BaseMapper<FabEquipmentStatus>
 
     List<Map> selectEqpStatusChart();
 
-    int updateStatus(@Param("eqpID") String eqpID, @Param("status") String status, @Param("lotNo") String lotId, @Param("recipeCode") String recipeCode);
+    int updateStatus(@Param("eqpID") String eqpID, @Param("status") String status, @Param("lotNo") String lotId, @Param("recipeCode") String recipeCode,@Param("alarmName") String alarmName);
 
     int updateYield(@Param("eqpID") String eqpID, @Param("lotNo") String lotId, @Param("recipeCode") String recipeCode
             , @Param("lotYield") int lotYield, @Param("dayYield") int dayYield);

@@ -55,5 +55,8 @@ public class FabEquipmentStatus extends BaseDataEntity {
     /**批次设备产量*/
     @TableField(value = "lot_yield_eqp")
     private Integer lotYieldEqp;
+    /**设备报警内容*/
+    @TableField(value = "alarm_name")
+    private Integer alarmNane;
 
 }
