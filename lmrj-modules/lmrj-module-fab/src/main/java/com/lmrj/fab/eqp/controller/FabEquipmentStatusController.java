@@ -1,6 +1,5 @@
 package com.lmrj.fab.eqp.controller;
 
-import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.lmrj.common.http.Response;
 import com.lmrj.common.mvc.annotation.ViewPrefix;
 import com.lmrj.common.mybatis.mvc.controller.BaseCRUDController;
@@ -12,15 +11,11 @@ import com.lmrj.fab.eqp.service.IFabEquipmentService;
 import com.lmrj.fab.eqp.service.IFabEquipmentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +42,6 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
 
     @Autowired
     private IFabEquipmentStatusService fabEquipmentStatusService;
-
     @Autowired
     private IFabEquipmentService fabEquipmentService;
 
@@ -75,8 +69,28 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
         Map<String, Object> rs = new HashMap<>();
         List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "",curProject);
         rs.put("eqpList",fabEquipmentStatusList);
-        rs.put("displayText", "设备正常稼动中");
-        rs.put("displayStatus", "RUN");
+        String alarmInfo = "警报发生：";
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, -2);
+        List<Map> amsInfoLis = fabEquipmentStatusService.selectAlarmInfo(lineNo1,curProject);
+        if(amsInfoLis.size()>0){
+            for (Map amsInfoLi : amsInfoLis) {
+                String eqpId = (String) amsInfoLi.get("eqpId");
+                FabEquipmentStatus fabEquipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
+                if ("ALARM".equals(fabEquipmentStatus.getEqpStatus())) {
+                    String alarmStr = eqpId + ":" + (String) amsInfoLi.get("alarmName");
+                    alarmInfo = alarmInfo + "            " + alarmStr;
+                }
+            }
+        }
+        if (!"警报发生：".equals(alarmInfo)) {
+            rs.put("displayText", alarmInfo);
+            rs.put("displayStatus", "ALARM");
+        } else{
+            rs.put("displayText", "设备正常稼动中");
+            rs.put("displayStatus", "RUN");
+        }
+
 //        if (CollectionUtils.isEmpty(fabEquipmentStatusList)) {
 //            FastJsonUtils.print(fabEquipmentStatusList);
 //        }

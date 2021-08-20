@@ -23,11 +23,12 @@ public class OvnBatchLotDayTask {
     private IOvnBatchLotDayService ovnBatchLotDayService;
     @Autowired
     IFabEquipmentService iFabEquipmentService;
-    private Boolean isRun=Boolean.FALSE;
+    private Boolean isRun = Boolean.FALSE;
     @Value("${mapping.jobenabled}")
     private Boolean jobenabled;
+
     //@Scheduled(cron = "0 0 1 * * ?")
-    public void run() {
+    /*public void run() {
         if(!jobenabled){
             return;
         }
@@ -61,16 +62,16 @@ public class OvnBatchLotDayTask {
             log.error("K线图数据生成报错");
             e.printStackTrace();
         }
-    }
-
-    public void newOvnBatchLotDay(){
-        if(!jobenabled){
+    }*/
+//@Scheduled(cron = "0 0 1 * * ?")
+    public void run() {
+        if (!jobenabled) {
             return;
         }
         try {
             log.info(" 那日统计设备温度极值开始......................................" + (new Date()));
             if (!isRun) {
-                isRun=Boolean.TRUE;
+                isRun = Boolean.TRUE;
                 try {
                     //获取当前的时间的前一天并转为YYYY-MM-DD
                     Calendar ca = Calendar.getInstance();
@@ -83,12 +84,12 @@ public class OvnBatchLotDayTask {
                     List<FabEquipment> fabEquipmentList = iFabEquipmentService.getTempEqpList();
                     for (FabEquipment fabEquipment : fabEquipmentList) {
                         String eqpId = fabEquipment.getEqpId();
-                        ovnBatchLotDayService.newfParamToDay(eqpId,periodDate);
+                        ovnBatchLotDayService.newfParamToDay(eqpId, periodDate);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
-                }finally {
-                    isRun=Boolean.FALSE;
+                } finally {
+                    isRun = Boolean.FALSE;
                 }
             }
         } catch (Exception e) {

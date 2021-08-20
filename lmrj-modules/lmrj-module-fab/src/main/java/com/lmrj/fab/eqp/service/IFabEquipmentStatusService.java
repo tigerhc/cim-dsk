@@ -36,4 +36,7 @@ public interface IFabEquipmentStatusService extends ICommonService<FabEquipmentS
     List<Map> selectYield(String lineNo,String department);
 
     FabEquipmentStatus findByEqpId(String eqpId);
+
+    List<Map> selectAlarmInfo(String lineNo,String department);
+
 }
