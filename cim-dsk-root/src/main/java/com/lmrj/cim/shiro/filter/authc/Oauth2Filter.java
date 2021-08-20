@@ -102,6 +102,9 @@ public class Oauth2Filter extends AccessControlFilter {
                 if(String.valueOf(request1.getRequestURL()).contains("/fab/fabequipmentstatus/listPdtStatus")){
                     return Boolean.TRUE;
                 }
+                if(String.valueOf(request1.getRequestURL()).contains("/mes/meslotwip/indexFour")){
+                    return Boolean.TRUE;
+                }
                 responseResult = Response.error(ResponseError.TOKEN_IS_NULL,MessageUtils.getMessage("error."+ResponseError.TOKEN_IS_NULL));
             }
         } catch (AuthenticationException e) {
