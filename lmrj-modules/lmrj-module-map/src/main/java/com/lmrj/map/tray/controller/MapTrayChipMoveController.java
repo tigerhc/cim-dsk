@@ -20,6 +20,7 @@ import com.lmrj.util.calendar.DateUtil;
 import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -58,7 +59,7 @@ import java.util.zip.ZipOutputStream;
 @ViewPrefix("map/maptraychipmove")
 @RequiresPathPermission("map:maptraychipmove")
 @LogAspectj(title = "map_tray_chip_move")
-
+@Slf4j
 public class MapTrayChipMoveController {
     @Autowired
     private IMapTrayChipMoveProcessService mapTrayChipMoveProcessService;
@@ -96,6 +97,7 @@ public class MapTrayChipMoveController {
         if (total > 0) {
             list = mapper.queryChipMove(query);
         }
+        log.info("追溯查询的返回列表的长度是:"+list.size());//重现vue换包时返回[]的问题  TODO  解决后删掉
         Response resp = DateResponse.ok(list);
         resp.put("total", total);
         return resp;

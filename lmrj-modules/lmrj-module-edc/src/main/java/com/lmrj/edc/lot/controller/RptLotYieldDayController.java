@@ -98,7 +98,7 @@ public class RptLotYieldDayController extends BaseCRUDController<RptLotYieldDay>
     }
 
     @RequestMapping(value = "/searchStand/{lineNo}")
-    public List<Map<String, Object>> searchStand(@PathVariable("lineNo") String lineNo) {
+    public List<Map<String, Object>> searchStand(@PathVariable("lineNo") String lineNo, @RequestParam String dataType) { // TODO dataType:operation(报警统计)/production(生成日报表)
         return rptLotYieldDayService.searchStand(lineNo);
     }
 
