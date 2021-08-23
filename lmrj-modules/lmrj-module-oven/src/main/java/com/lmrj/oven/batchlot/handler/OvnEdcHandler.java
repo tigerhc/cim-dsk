@@ -91,7 +91,7 @@ public class OvnEdcHandler {
         EdcAmsRecord edcAmsRecord = JsonUtil.from(msg, EdcAmsRecord.class);
         edcAmsRecord.setCreateDate(new Date());
         edcAmsRecordService.insert(edcAmsRecord);
-        fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM","", "");
+        fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM","", "","");
     }
 
     @RabbitHandler
@@ -140,7 +140,7 @@ public class OvnEdcHandler {
 
         statusMap.forEach((k,v)->{
             if(StringUtil.isNotEmpty(k)){
-                fabEquipmentStatusService.updateStatus(k,v,"","");
+                fabEquipmentStatusService.updateStatus(k,v,"","","");
             }
 
         });

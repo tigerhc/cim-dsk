@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,15 +69,14 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
         List<FabEquipmentStatus> fabEquipmentStatusList=fabEquipmentStatusService.selectEqpStatus("", "", "",curProject);
         rs.put("eqpList",fabEquipmentStatusList);
         String alarmInfo = "警报发生：";
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, -2);
-        List<Map> amsInfoLis = fabEquipmentStatusService.selectAlarmInfo(lineNo1,curProject);
-        if(amsInfoLis.size()>0){
-            for (Map amsInfoLi : amsInfoLis) {
-                String eqpId = (String) amsInfoLi.get("eqpId");
-                FabEquipmentStatus fabEquipmentStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                if ("ALARM".equals(fabEquipmentStatus.getEqpStatus())) {
-                    String alarmStr = eqpId + ":" + (String) amsInfoLi.get("alarmName");
+        //Calendar calendar = Calendar.getInstance();
+        //calendar.add(Calendar.HOUR_OF_DAY, -2);
+        //List<Map> amsInfoLis = fabEquipmentStatusService.selectAlarmInfo(lineNo1,curProject);
+        if(fabEquipmentStatusList.size()>0){
+            for (FabEquipmentStatus fabEquipmentStatus : fabEquipmentStatusList) {
+                String eqpId = fabEquipmentStatus.getEqpId();
+                if("ALARM".equals(fabEquipmentStatus.getEqpStatus())){
+                    String alarmStr = eqpId + ":" + fabEquipmentStatus.getAlarmNane();
                     alarmInfo = alarmInfo + "            " + alarmStr;
                 }
             }

@@ -36,8 +36,8 @@ public class FabEquipmentStatusServiceImpl  extends CommonServiceImpl<FabEquipme
     private FabEquipmentMapper fabEquipmentMapper;
 
     @Override
-    public int updateStatus(String eqpID,String status, String lotNo, String recipeCode) {
-        return baseMapper.updateStatus(eqpID,status, lotNo, recipeCode);
+    public int updateStatus(String eqpID,String status, String lotNo, String recipeCode, String alarmName) {
+        return baseMapper.updateStatus(eqpID,status, lotNo, recipeCode, alarmName);
     }
 
     @Override

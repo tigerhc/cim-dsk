@@ -777,7 +777,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         if (StringUtil.isNotBlank(lotNo) || StringUtil.isNotBlank(recipeCode)) {
             //没有采集状态数据的设备，在出账时改变设备状态为IDLE
             if(eqpId.contains("OVEN") || eqpId.contains("GW") || eqpId.contains("AOI")){
-                fabEquipmentStatusService.updateStatus(eqpId,"RUN",lotNo, recipeCode);
+                fabEquipmentStatusService.updateStatus(eqpId,"RUN",lotNo, recipeCode,"");
             }else {
                 fabEquipmentStatusService.updateYield(eqpId, lotNo, recipeCode, 0, 0);
             }
@@ -812,7 +812,7 @@ public class MesLotTrackServiceImpl extends CommonServiceImpl<MesLotTrackMapper,
         this.insertOrUpdate(mesLotTrack);
         //没有采集状态数据的设备，在出账时改变设备状态为IDLE
         if(eqpId.contains("OVEN") || eqpId.contains("GW") || eqpId.contains("AOI")){
-            fabEquipmentStatusService.updateStatus(eqpId,"IDLE",lotNo, recipeCode);
+            fabEquipmentStatusService.updateStatus(eqpId,"IDLE",lotNo, recipeCode,"");
         }
         return MesResult.ok("Y");
     }

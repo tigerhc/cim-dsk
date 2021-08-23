@@ -230,10 +230,10 @@ public class EdcSecsLogHandler {
         edcEqpState.setEqpId(edcAmsRecord.getEqpId());
         edcEqpState.setStartTime(edcAmsRecord.getStartDate());
         if("0".equals(edcAmsRecord.getAlarmSwitch())){
-            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"IDLE", "", "");
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"IDLE", "", "","");
             edcEqpState.setState("IDLE");
         }else {
-            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "");
+            fabEquipmentStatusService.updateStatus(edcAmsRecord.getEqpId(),"ALARM", "", "","");
             edcEqpState.setState("ALARM");
         }
         if(edcEqpState.getState()!=null){

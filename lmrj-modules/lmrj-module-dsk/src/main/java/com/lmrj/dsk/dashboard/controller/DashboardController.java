@@ -75,6 +75,7 @@ public class DashboardController {
 
     /**
      * 左上脚-1
+     * 车间各线别稼动率
      * @param request
      * @param response
      * @return
