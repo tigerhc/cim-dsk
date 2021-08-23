@@ -21,6 +21,7 @@ import com.lmrj.util.collection.MapUtil;
 import com.lmrj.util.lang.StringUtil;
 import com.lmrj.util.mapper.JsonUtil;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,9 +29,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * All rights Reserved, Designed By www.lmrj.com
@@ -49,6 +58,7 @@ import java.util.*;
 @ViewPrefix("map/maptraychipmove")
 @RequiresPathPermission("map:maptraychipmove")
 @LogAspectj(title = "map_tray_chip_move")
+
 public class MapTrayChipMoveController {
     @Autowired
     private IMapTrayChipMoveProcessService mapTrayChipMoveProcessService;
@@ -169,17 +179,6 @@ public class MapTrayChipMoveController {
         return rs;
     }
 
-    /** 追溯查询物料信息
-     */
-    @RequestMapping(value = "getPuctionGoods", method = {RequestMethod.GET, RequestMethod.POST})
-    public Response getPuctionGoods(@RequestParam String startTime, String eqpId){
-        Response rs = Response.ok();
-        startTime = startTime.replace("T", " ");
-        startTime = startTime.length()>19?startTime.substring(19):startTime;
-        System.out.println(startTime+","+eqpId);
-        return rs;
-    }
-
     @RequestMapping(value = "/traceDataExport",method = {RequestMethod.GET, RequestMethod.POST})
     public Response traceDataExport(MapTrayChipMoveQueryVo query){
         try {
@@ -207,12 +206,64 @@ public class MapTrayChipMoveController {
         }
     }
 
+    /** 追溯查询物料信息 */
     @RequestMapping(value = "/findMaterial",method = {RequestMethod.GET, RequestMethod.POST})
     public Response findMaterial(@RequestParam String eqpId, @RequestParam String lotNo){
         Response res = Response.ok();
         res.put("meterial", mapTrayChipMoveService.findMaterial(eqpId, lotNo));
         return res;
     }
+
+    /**
+     * 文件打成压缩包下载
+     */
+//    @RequiresPermissions("system:appraising:detail")
+//    @RequestMapping(value = "/downloadFile",method = {RequestMethod.GET, RequestMethod.POST})
+//    public void downloadFile(String appraisingId, String appraisingName, String userName, HttpServletResponse response, HttpServletRequest request) throws Exception {
+//        List<UserAttachVo> userAttachVos;
+//        if(null != appraisingId) {
+//            ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
+//            try {
+//                userAttachVos = iUserAttachService.findUserAttachByAppraisingId(Long.valueOf(appraisingId));
+//                // 文件的名称
+//                String downloadFilename = appraisingName + userName + ".zip";
+//                // 转换中文否则可能会产生乱码
+//                downloadFilename = URLEncoder.encode(downloadFilename, "UTF-8");
+//                // 指明response的返回对象是文件流
+//                response.setContentType("application/octet-stream");
+//                // 设置在下载框默认显示的文件名
+//                response.setHeader("Content-Disposition","attachment;filename=" + downloadFilename);
+//
+//                // 将文件打成压缩包并下载
+//                for(UserAttachVo userAttach : userAttachVos) {
+////                    String url = userAttach.getFilePath();
+//                    String url = "";
+//                    zos.putNextEntry(new ZipEntry(userAttach.getFileName()));
+//                    HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+//                    conn.setReadTimeout(5000);
+//                    conn.setConnectTimeout(5000);
+//                    conn.setRequestMethod("GET");
+//                    BufferedInputStream fis = null;
+//                    if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+//                        fis = new BufferedInputStream(conn.getInputStream());
+//                    }
+//                    byte[] buffer = new byte[1024];
+//                    int r = 0;
+//                    if (null != fis) {
+//                        while ((r = fis.read(buffer)) != -1) {
+//                            zos.write(buffer, 0, r);
+//                        }
+//                        fis.close();
+//                    }
+//                }
+//            } catch (Exception e) {
+//                log.error("下载文件失败", e);
+//            } finally {
+//                zos.flush();
+//                zos.close();
+//            }
+//        }
+//    }
 
     private List<ExcelExportEntity> getExportKeyList(){
         List<ExcelExportEntity> keyList = new LinkedList<>();
@@ -240,6 +291,8 @@ public class MapTrayChipMoveController {
         keyList.add(key11);
         ExcelExportEntity key12 = new ExcelExportEntity("晶圆Y","12");
         keyList.add(key12);
+        ExcelExportEntity key13 = new ExcelExportEntity("物料信息","13");
+        keyList.add(key13);
         return keyList;
     }
 
@@ -268,6 +321,7 @@ public class MapTrayChipMoveController {
                 data.put("10", MapUtil.getString(item, "dmId"));
                 data.put("11", MapUtil.getString(item, "dmX"));
                 data.put("12", MapUtil.getString(item, "dmY"));
+                data.put("13", MapUtil.getString(item, "materialInfo"));
                 dataList.add(data);
             }
         }

@@ -110,7 +110,14 @@
 		SELECT `id`, `chip_id` AS chipId, `eqp_id` AS eqpId, `production_no` AS productionNo,
 		`lot_no` AS lotNo, `to_tray_id` AS toTrayId, `to_x` AS toX, `to_y` AS toY, `to_z` AS toZ,
 		`judge_result` AS judgeResult, `start_time` AS startTime,`dm_id`as dmId,`dm_x` as dmX,`dm_y` as dmY,
-		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr
+		DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') as startTimeStr,
+		(
+			select GROUP_CONCAT(CONCAT(b.material_name,'/', b.lot_no,'/' ,IFNULL(b.params,'')))
+			  from mes_lot_material a
+			  LEFT JOIN mes_lot_material_info b on a.id = b.material_id
+			 where a.eqp_id = chip.eqp_id
+			   and a.lot_no = chip.lot_no
+		) as 'materialInfo'
 		FROM `map_tray_chip_move` chip
 		<where>
 			<choose>
@@ -184,8 +191,8 @@
 			</choose>
 		</where>
 		ORDER BY `start_time` DESC
-		LIMIT #{offset},#{pageSize}
 	</select>
+<!--	LIMIT #{offset},#{pageSize}-->
 
 	<select id="queryChip" resultType="map" parameterType="string">
 	    SELECT mv.`id`, mv.`chip_id` AS chipId, mv.`eqp_id` AS eqpId, ec.`eqp_type` AS eqpType,

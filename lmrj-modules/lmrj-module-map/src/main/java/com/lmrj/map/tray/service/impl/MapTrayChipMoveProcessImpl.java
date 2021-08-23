@@ -604,7 +604,7 @@ public class MapTrayChipMoveProcessImpl extends CommonServiceImpl<MapTrayChipMov
             //同一种设备的modelName 报上来的却不一样
             if (data.getEqpId().contains("3DAOI")) {
                 data.setEqpModelName("PARMI-XCEED");
-            } else if (data.getEqpId().contains("DM")) {
+            } else if (data.getEqpId().contains("-DM")) {
                 data.setEqpModelName("AFM15");
             } else if (data.getEqpId().contains("HB2-SMT")) {
                 data.setEqpModelName("YSM-10");
