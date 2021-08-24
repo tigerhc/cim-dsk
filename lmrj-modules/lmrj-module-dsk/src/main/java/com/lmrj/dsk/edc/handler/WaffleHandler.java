@@ -25,6 +25,7 @@ public class WaffleHandler {
         try {
             List<Map<String, Object>> dataList = JsonUtil.from(dataJson, ArrayList.class);
             log.info("WaffleHandler_parseWaffleMove:find data in queue,count:"+dataList.size());
+            log.info("WaffleHandler_parseWaffleMove:data:"+dataJson); // TODO 
             int count = mapTrayChipMoveService.insertData(dataList);
             log.info("WaffleHandler_parseWaffleMove:count:"+count);
         }catch(Exception e){
