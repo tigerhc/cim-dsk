@@ -211,7 +211,7 @@ public class EdcDskLogHandler {
                 }
                 try {
                     FabEquipmentStatus fabStatus = fabEquipmentStatusService.findByEqpId(eqpId);
-                    if (!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM")) {
+                    if (!"RUN".equals(fabStatus.getEqpStatus()) && eqpId.contains("SIM-")) {
                         EdcDskLogOperation operation = edcDskLogOperationService.findOperationData(eqpId);
                         if(operation != null && edcDskLogProductionList.get(edcDskLogProductionList.size() - 1).getEndTime().after(operation.getStartTime())){
                             fabStatus.setEqpStatus("RUN");
@@ -988,26 +988,28 @@ public class EdcDskLogHandler {
                 }
                 if (tempFlag) {//检测除首个温度外的其他温度
                     String temp = ovnBatchLotParam.getOtherTempsValue();
-                    String temps[] = temp.split(",");
-                    for (int i = 0; i < temps.length; i += 4) {
-                        double tempOtherPv = Double.parseDouble(temps[i]);
-                        double tempOtherMin = Double.parseDouble(temps[i + 1]);
-                        double tempOtherMax = Double.parseDouble(temps[i + 3]);
-                        if (tempOtherPv > tempOtherMin && tempOtherPv < tempOtherMax) {
-                            _handleEmailLog(eqpId, "NORMAL");
-                        } else if (tempOtherPv < tempOtherMin) {
-                            if (sendFlag) {
-                                break;
-                            } else {
-                                sendFlag = _handleEmailLog(eqpId, "LOW");
-                                curDesc = curDesc + "低于温度的下限位于第" + (i + 2) + "个温度:" + tempOtherPv + ",其上下限为" + tempOtherMin + "到" + tempOtherMax;
-                            }
-                        } else if (tempOtherPv < tempOtherMax) {
-                            if (sendFlag) {
-                                break;
-                            } else {
-                                sendFlag = _handleEmailLog(eqpId, "HEIGHT");
-                                curDesc = curDesc + "超过温度的上限位于第" + (i + 2) + "个温度:" + tempOtherPv + ",其上下限为" + tempOtherMin + "到" + tempOtherMax;
+                    if(temp != null){
+                        String temps[] = temp.split(",");
+                        for (int i = 0; i < temps.length; i += 4) {
+                            double tempOtherPv = Double.parseDouble(temps[i]);
+                            double tempOtherMin = Double.parseDouble(temps[i + 1]);
+                            double tempOtherMax = Double.parseDouble(temps[i + 3]);
+                            if (tempOtherPv > tempOtherMin && tempOtherPv < tempOtherMax) {
+                                _handleEmailLog(eqpId, "NORMAL");
+                            } else if (tempOtherPv < tempOtherMin) {
+                                if (sendFlag) {
+                                    break;
+                                } else {
+                                    sendFlag = _handleEmailLog(eqpId, "LOW");
+                                    curDesc = curDesc + "低于温度的下限位于第" + (i + 2) + "个温度:" + tempOtherPv + ",其上下限为" + tempOtherMin + "到" + tempOtherMax;
+                                }
+                            } else if (tempOtherPv < tempOtherMax) {
+                                if (sendFlag) {
+                                    break;
+                                } else {
+                                    sendFlag = _handleEmailLog(eqpId, "HEIGHT");
+                                    curDesc = curDesc + "超过温度的上限位于第" + (i + 2) + "个温度:" + tempOtherPv + ",其上下限为" + tempOtherMin + "到" + tempOtherMax;
+                                }
                             }
                         }
                     }
