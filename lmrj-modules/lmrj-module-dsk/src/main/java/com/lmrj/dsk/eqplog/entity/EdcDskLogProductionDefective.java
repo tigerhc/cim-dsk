@@ -94,6 +94,9 @@ public class EdcDskLogProductionDefective extends AbstractEntity {
     @TableField(value = "judge_result")
     @Excel(name = "判定结果", orderNum = "1", width = 20)
     private String judgeResult;
+    /**文件名称*/
+    @TableField(value = "csv_log_name")
+    private String csvLogName;
     /**开始时间*/
     @JSONField(format="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss SSS")

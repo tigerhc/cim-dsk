@@ -200,6 +200,11 @@ public class RptLotYieldDayServiceImpl extends CommonServiceImpl<RptLotYieldDayM
     }
 
     @Override
+    public  List<Map<String,Object>> searchOperStand(String lineNo){
+        return baseMapper.searchOperStand(lineNo);
+    }
+
+    @Override
     public  List<Map<String,Object>> findEqp(String lineNo,String stationId,String date){
         return baseMapper.findEqp(lineNo,stationId,date);
     }

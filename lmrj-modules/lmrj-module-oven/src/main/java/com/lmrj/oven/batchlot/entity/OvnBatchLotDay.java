@@ -5,17 +5,14 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
-import lombok.AllArgsConstructor;
+import com.lmrj.core.entity.BaseDataEntity;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @TableName("ovn_batch_lot_day")
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class OvnBatchLotDay {
+public class OvnBatchLotDay extends BaseDataEntity {
 
     @TableId(value = "id", type = IdType.UUID)
     private String id;

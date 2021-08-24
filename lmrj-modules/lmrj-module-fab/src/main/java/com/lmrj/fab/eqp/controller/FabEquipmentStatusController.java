@@ -76,7 +76,7 @@ public class FabEquipmentStatusController extends BaseCRUDController<FabEquipmen
             for (FabEquipmentStatus fabEquipmentStatus : fabEquipmentStatusList) {
                 String eqpId = fabEquipmentStatus.getEqpId();
                 if("ALARM".equals(fabEquipmentStatus.getEqpStatus())){
-                    String alarmStr = eqpId + ":" + fabEquipmentStatus.getAlarmNane();
+                    String alarmStr = eqpId + ":" + fabEquipmentStatus.getAlarmName();
                     alarmInfo = alarmInfo + "            " + alarmStr;
                 }
             }

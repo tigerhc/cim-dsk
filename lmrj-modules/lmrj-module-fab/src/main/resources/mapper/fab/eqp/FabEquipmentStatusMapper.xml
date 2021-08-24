@@ -15,6 +15,7 @@
        t.lot_yield_eqp,
        t.lock_flag,
        t.remarks,
+       t.alarm_name,
        t.create_by,
        t.create_date,
        t.update_by,

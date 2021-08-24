@@ -25,7 +25,6 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
     private IOvnBatchLotService ovnBatchLotService;
     @Autowired
     private IOvnBatchLotParamService ovnBatchLotParamService;
-
     @Override
     public List<OvnBatchLotDay> findDetail(String eqpId, String start, String end) {
         List<OvnBatchLotDay> detail = ovnBatchLotDayMapper.findDetail(eqpId, start, end);
@@ -75,6 +74,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
             Date startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 00:00:00");
             Date endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(periodDate + " 23:59:59");
             List<OvnBatchLot> ovnBatchLots = ovnBatchLotService.findDataByEqpId(DateUtil.formatDate(startTime,"yyyy-MM-dd HH:mm:ss"),DateUtil.formatDate(endTime,"yyyy-MM-dd HH:mm:ss"),eqpId);
+            List<OvnBatchLotDay> newOvnBatchList = new ArrayList<>();
             if (ovnBatchLots != null && ovnBatchLots.size() > 0) {
                 List<Map> list = new ArrayList<>();
                 Map<String, String> map = new HashMap<String, String>();
@@ -94,7 +94,6 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                 try {
                     if (list.size() > 0) {
                         List<Map> retlist = baseMapper.fParamToDay(list, startTime, endTime, periodDate);
-
                         for (Map retmap : retlist) {
                             OvnBatchLotDay ovnBatchLotDay = new OvnBatchLotDay();
                             ovnBatchLotDay.setEqpId(retmap.get("eqpid").toString());
@@ -107,6 +106,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                             ovnBatchLotDay.setTitleOrder(titleOrderMap.get(retmap.get("eqptemp")));
                             ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
                             ovnBatchLotDay.setCreateDate(new Date());
+                            newOvnBatchList.add(ovnBatchLotDay);
                             try {
                                 baseMapper.insert(ovnBatchLotDay);
                                 System.out.println(ovnBatchLotDay.toString());
@@ -135,6 +135,7 @@ public class OvnBatchLotDayServiceImpl extends CommonServiceImpl<OvnBatchLotDayM
                     ovnBatchLotDay.setPeriodDate(list1.get(0).get("periodDate").toString());
                     ovnBatchLotDay.setTitleOrder(0);
                     ovnBatchLotDay.setCreateDate(new Date());
+                    newOvnBatchList.add(ovnBatchLotDay);
                     ovnBatchLotDay.setId(UUID.randomUUID().toString().replace("-","").replace(" ","")+(index++));
                     try {
                         baseMapper.insert(ovnBatchLotDay);

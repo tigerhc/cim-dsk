@@ -592,7 +592,8 @@ public class EdcDskLogHandler {
                     }
                 }
                 edcAmsRecord.setAlarmName(alarmName);
-                alarmInfo = alarmName;
+
+                alarmInfo = alarmName+"("+DateUtil.formatDate(edcDskLogOperation.getStartTime(),"yyyy-MM-dd HH:mm:ss")+")";
                 edcAmsRecord.setAlarmSwitch("1");
                 edcAmsRecord.setLotNo(edcDskLogOperation.getLotNo());
                 edcAmsRecord.setLotYield(edcDskLogOperation.getLotYield());

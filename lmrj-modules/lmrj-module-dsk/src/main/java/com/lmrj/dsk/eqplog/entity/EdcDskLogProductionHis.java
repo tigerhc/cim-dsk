@@ -88,6 +88,9 @@ public class EdcDskLogProductionHis extends AbstractEntity {
     /**消耗时间*/
     @TableField(value = "duration")
     private Double duration;
+    /**文件名称*/
+    @TableField(value = "csv_log_name")
+    private String csvLogName;
 
     public EdcDskLogProductionHis() {
     }

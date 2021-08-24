@@ -34,6 +34,8 @@ public interface IRptLotYieldDayService extends ICommonService<RptLotYieldDay> {
 
     List<Map<String,Object>> searchStand(String lineNo);
 
+    List<Map<String,Object>> searchOperStand(String lineNo);
+
     List<Map<String,Object>> findEqp(String lineNo,String stationId,String date);
 
     List<Map<String,Object>> searchStandAndEqp(String lineNo);

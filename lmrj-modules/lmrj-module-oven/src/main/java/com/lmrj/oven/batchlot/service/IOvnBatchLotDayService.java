@@ -1,10 +1,11 @@
 package com.lmrj.oven.batchlot.service;
 
+import com.lmrj.common.mybatis.mvc.service.ICommonService;
 import com.lmrj.oven.batchlot.entity.OvnBatchLotDay;
 
 import java.util.List;
 
-public interface IOvnBatchLotDayService {
+public interface IOvnBatchLotDayService extends ICommonService<OvnBatchLotDay> {
 
     List<OvnBatchLotDay> findDetail(String eqpId,String start, String end);
 
